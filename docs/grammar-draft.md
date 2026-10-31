@@ -2,7 +2,7 @@
 
 Oct 30, 2026 · @Maggie Appleton
 
-> Parts of this draft are superseded. See "Decisions since the grammar draft" in the [README](../README.md).
+> Superseded by the [design model](design-model.md). Kept for history.
 
 The core move: separate **what you've seen** (signals, themes) from **what you claim** (theories), and design everything around making claims that can turn out wrong. This draft covers the grammar (nouns and verbs), the background agent work, three spatial directions and the open questions. Nothing here is at screen level yet.
 
