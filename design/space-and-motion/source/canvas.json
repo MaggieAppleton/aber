@@ -1,0 +1,186 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-31T20:12:00Z"
+  },
+  "title": "Aber — Space & Motion",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "A · World as theme sections",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "OptionB.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "B · Theory board with theme filter",
+      "expand": "fill"
+    },
+    "Theme.dc.html": {
+      "x": 0,
+      "y": 1380,
+      "w": 1440,
+      "h": 900,
+      "title": "Zoom 2 · Theme (strata)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Theory.dc.html": {
+      "x": 1520,
+      "y": 1380,
+      "w": 1440,
+      "h": 900,
+      "title": "Zoom 3 · Theory (compass)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Writing.dc.html": {
+      "x": 3040,
+      "y": 1380,
+      "w": 1440,
+      "h": 900,
+      "title": "Theory · writing mode",
+      "expand": "fill"
+    },
+    "TheoryChat.dc.html": {
+      "x": 4560,
+      "y": 1380,
+      "w": 1440,
+      "h": 900,
+      "title": "Dump-or-ask panel, open (grown from the pill)",
+      "expand": "fill"
+    },
+    "Elevation.dc.html": {
+      "x": 0,
+      "y": 2760,
+      "w": 1440,
+      "h": 820,
+      "title": "Elevation stack (side view)"
+    },
+    "Material.dc.html": {
+      "x": 1520,
+      "y": 2760,
+      "w": 1440,
+      "h": 820,
+      "title": "Material · yours vs not yet yours",
+      "is_interactive": true
+    },
+    "Motion.dc.html": {
+      "x": 0,
+      "y": 4060,
+      "w": 2960,
+      "h": 640,
+      "title": "Motion · card zooms into compass"
+    },
+    "PhoneWorld.dc.html": {
+      "x": 0,
+      "y": 5180,
+      "w": 390,
+      "h": 844,
+      "title": "Phone · World"
+    },
+    "PhoneTheory.dc.html": {
+      "x": 470,
+      "y": 5180,
+      "w": 390,
+      "h": 844,
+      "title": "Phone · Theory"
+    },
+    "PhoneTriage.dc.html": {
+      "x": 940,
+      "y": 5180,
+      "w": 390,
+      "h": 844,
+      "title": "Phone · Morning triage"
+    },
+    "PhoneCapture.dc.html": {
+      "x": 1410,
+      "y": 5180,
+      "w": 390,
+      "h": 844,
+      "title": "Phone · Capture and dump log"
+    },
+    "Prototypes.dc.html": {
+      "x": 3040,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "Prototypes area (from the rail)",
+      "expand": "fill"
+    },
+    "WorldScale.dc.html": {
+      "x": 4560,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "A2 · World at scale (100+ themes)",
+      "expand": "fill"
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "WorldScale.dc.html",
+    "OptionB.dc.html",
+    "Prototypes.dc.html",
+    "Theme.dc.html",
+    "Theory.dc.html",
+    "Writing.dc.html",
+    "TheoryChat.dc.html",
+    "Elevation.dc.html",
+    "Material.dc.html",
+    "Motion.dc.html",
+    "PhoneWorld.dc.html",
+    "PhoneTheory.dc.html",
+    "PhoneTriage.dc.html",
+    "PhoneCapture.dc.html"
+  ],
+  "notes": {
+    "rowBase": {
+      "x": 0,
+      "y": -300,
+      "text": "Decision 1 · What is the base plane?",
+      "kind": "title1",
+      "maxW": 6000
+    },
+    "rowZoom": {
+      "x": 0,
+      "y": 1080,
+      "text": "Three zoom levels: World → Theme → Theory",
+      "kind": "title1",
+      "maxW": 6000
+    },
+    "rowElev": {
+      "x": 0,
+      "y": 2460,
+      "text": "Elevation and material",
+      "kind": "title1",
+      "maxW": 2960
+    },
+    "rowMotion": {
+      "x": 0,
+      "y": 3760,
+      "text": "Motion",
+      "kind": "title1",
+      "maxW": 2960
+    },
+    "rowPhone": {
+      "x": 0,
+      "y": 4880,
+      "text": "Phone",
+      "kind": "title1",
+      "maxW": 1800
+    }
+  },
+  "designSystems": []
+}

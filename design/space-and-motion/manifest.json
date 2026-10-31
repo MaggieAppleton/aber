@@ -1,0 +1,152 @@
+[
+  {
+    "source": "Main.dc.html",
+    "file": "WorldA.html",
+    "title": "A · World as theme sections",
+    "w": 1440,
+    "h": 900,
+    "x": 0,
+    "y": 0,
+    "page": true
+  },
+  {
+    "source": "WorldScale.dc.html",
+    "file": "WorldAtScale.html",
+    "title": "A2 · World at scale (100+ themes)",
+    "w": 1440,
+    "h": 900,
+    "x": 4560,
+    "y": 0,
+    "page": true
+  },
+  {
+    "source": "OptionB.dc.html",
+    "file": "WorldB.html",
+    "title": "B · Theory board with theme filter",
+    "w": 1440,
+    "h": 900,
+    "x": 1520,
+    "y": 0,
+    "page": true
+  },
+  {
+    "source": "Prototypes.dc.html",
+    "file": "Prototypes.html",
+    "title": "Prototypes area (from the rail)",
+    "w": 1440,
+    "h": 900,
+    "x": 3040,
+    "y": 0,
+    "page": true
+  },
+  {
+    "source": "Theme.dc.html",
+    "file": "Theme.html",
+    "title": "Zoom 2 · Theme (strata)",
+    "w": 1440,
+    "h": 900,
+    "x": 0,
+    "y": 1380,
+    "page": true
+  },
+  {
+    "source": "Theory.dc.html",
+    "file": "Theory.html",
+    "title": "Zoom 3 · Theory (compass)",
+    "w": 1440,
+    "h": 900,
+    "x": 1520,
+    "y": 1380,
+    "page": true
+  },
+  {
+    "source": "Writing.dc.html",
+    "file": "TheoryWriting.html",
+    "title": "Theory · writing mode",
+    "w": 1440,
+    "h": 900,
+    "x": 3040,
+    "y": 1380,
+    "page": true
+  },
+  {
+    "source": "TheoryChat.dc.html",
+    "file": "DumpPanelOpen.html",
+    "title": "Dump-or-ask panel, open (grown from the pill)",
+    "w": 1440,
+    "h": 900,
+    "x": 4560,
+    "y": 1380,
+    "page": true
+  },
+  {
+    "source": "Elevation.dc.html",
+    "file": "Elevation.html",
+    "title": "Elevation stack (side view)",
+    "w": 1440,
+    "h": 820,
+    "x": 0,
+    "y": 2760,
+    "page": false
+  },
+  {
+    "source": "Material.dc.html",
+    "file": "Material.html",
+    "title": "Material · yours vs not yet yours",
+    "w": 1440,
+    "h": 820,
+    "x": 1520,
+    "y": 2760,
+    "page": false
+  },
+  {
+    "source": "Motion.dc.html",
+    "file": "Motion.html",
+    "title": "Motion · card zooms into compass",
+    "w": 2960,
+    "h": 640,
+    "x": 0,
+    "y": 4060,
+    "page": false
+  },
+  {
+    "source": "PhoneWorld.dc.html",
+    "file": "PhoneWorld.html",
+    "title": "Phone · World",
+    "w": 390,
+    "h": 844,
+    "x": 0,
+    "y": 5180,
+    "page": false
+  },
+  {
+    "source": "PhoneTheory.dc.html",
+    "file": "PhoneTheory.html",
+    "title": "Phone · Theory",
+    "w": 390,
+    "h": 844,
+    "x": 470,
+    "y": 5180,
+    "page": false
+  },
+  {
+    "source": "PhoneTriage.dc.html",
+    "file": "PhoneTriage.html",
+    "title": "Phone · Morning triage",
+    "w": 390,
+    "h": 844,
+    "x": 940,
+    "y": 5180,
+    "page": false
+  },
+  {
+    "source": "PhoneCapture.dc.html",
+    "file": "PhoneCapture.html",
+    "title": "Phone · Capture and dump log",
+    "w": 390,
+    "h": 844,
+    "x": 1410,
+    "y": 5180,
+    "page": false
+  }
+]

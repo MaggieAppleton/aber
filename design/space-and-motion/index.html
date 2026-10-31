@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aber · Space and motion</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<style>
+:root{--ground:#F6F5F2;--surface:#FFFFFF;--ink:#1C1B19;--quiet:#5F5D57;--hair:#D9D6CE}
+body{margin:0;background:var(--ground);color:var(--ink);font:15px/1.5 'IBM Plex Sans',system-ui,sans-serif}
+main{max-width:1240px;margin:0 auto;padding:48px 16px 96px}
+h1{font-size:32px;line-height:1.2;margin:0 0 8px}
+.lead{color:var(--quiet);max-width:760px;margin:0 0 40px}
+h2{font:500 12px/1 'IBM Plex Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--quiet);margin:48px 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:20px}
+article{background:var(--surface);border:1px solid var(--hair);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+article.wide{grid-column:1/-1}
+article img{display:block;width:100%;height:auto;border-bottom:1px solid var(--hair);background:var(--ground)}
+article.phone img{max-width:260px;margin:0 auto;border-bottom:none}
+.meta{display:flex;align-items:baseline;gap:12px;padding:14px 16px 0}
+h3{font-size:16px;margin:0;flex:1} h3 a{color:inherit;text-decoration:none}
+.status{font:11px 'IBM Plex Mono',monospace;color:var(--quiet);white-space:nowrap}
+p{margin:8px 16px 0} .files{font:12px 'IBM Plex Mono',monospace;color:var(--quiet);margin:10px 16px 16px;overflow-wrap:anywhere}
+a{color:var(--ink)}
+</style>
+</head>
+<body><main>
+<h1>Aber · Space and motion</h1>
+<p class="lead">Layers 2–3 of the Aber design model (where things live, how they move), exported from the Claude Design canvas on 31 October 2026. Every board is a standalone HTML file in <code>boards/</code> with a screenshot in <code>screenshots/</code>; the original canvas sources are in <code>source/</code>. All content is placeholder example data. The written model is <code>docs/design-model.md</code> in the repo root.</p>
+<section><h2>World (base plane)</h2><div class="grid"><article class=""><a href="boards/WorldA.html"><img src="screenshots/WorldA.png" alt="A · World as theme sections" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/WorldA.html">A · World as theme sections</a></h3><span class="status">Current</span></div>
+<p>One section per theme with its theories as cards; open themes show an inline + to state a theory; drafts sit at the end of their section and collapse into a ghost stack past three. Works for a handful of themes.</p><p class="files"><a href="boards/WorldA.html">boards/WorldA.html</a> · 1440×900 · source <a href="source/Main.dc.html">source/Main.dc.html</a></p></article><article class=""><a href="boards/WorldAtScale.html"><img src="screenshots/WorldAtScale.png" alt="A2 · World at scale (100+ themes)" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/WorldAtScale.html">A2 · World at scale (100+ themes)</a></h3><span class="status">Proposed</span></div>
+<p>How the World page survives 100+ themes: pinned themes expanded, themes that moved since yesterday as rows, then a sortable table of all themes. Find (⌘K) in the rail reaches everything else.</p><p class="files"><a href="boards/WorldAtScale.html">boards/WorldAtScale.html</a> · 1440×900 · source <a href="source/WorldScale.dc.html">source/WorldScale.dc.html</a></p></article><article class=""><a href="boards/WorldB.html"><img src="screenshots/WorldB.png" alt="B · Theory board with theme filter" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/WorldB.html">B · Theory board with theme filter</a></h3><span class="status">Alternative</span></div>
+<p>One grid of every theory with a theme filter in the rail. Kept for comparison: it hides open themes and doesn&#x27;t scale either.</p><p class="files"><a href="boards/WorldB.html">boards/WorldB.html</a> · 1440×900 · source <a href="source/OptionB.dc.html">source/OptionB.dc.html</a></p></article><article class=""><a href="boards/Prototypes.html"><img src="screenshots/Prototypes.png" alt="Prototypes area (from the rail)" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/Prototypes.html">Prototypes area (from the rail)</a></h3><span class="status">Current</span></div>
+<p>Prototypes as their own area, reached from the link pinned to the bottom of the rail. Grouped by status, with media and the theories each embodies.</p><p class="files"><a href="boards/Prototypes.html">boards/Prototypes.html</a> · 1440×900 · source <a href="source/Prototypes.dc.html">source/Prototypes.dc.html</a></p></article></div></section><section><h2>Zoom levels: World → Theme → Theory</h2><div class="grid"><article class=""><a href="boards/Theme.html"><img src="screenshots/Theme.png" alt="Zoom 2 · Theme (strata)" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/Theme.html">Zoom 2 · Theme (strata)</a></h3><span class="status">Current</span></div>
+<p>Zoom 2. Strata: the theme&#x27;s theories above, its signals below, with mention counts and evidence chips.</p><p class="files"><a href="boards/Theme.html">boards/Theme.html</a> · 1440×900 · source <a href="source/Theme.dc.html">source/Theme.dc.html</a></p></article><article class=""><a href="boards/Theory.html"><img src="screenshots/Theory.png" alt="Zoom 3 · Theory (compass)" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/Theory.html">Zoom 3 · Theory (compass)</a></h3><span class="status">Current</span></div>
+<p>Zoom 3. The compass: prototypes above, evidence below (supports | undermines), causes left, consequences right, rival peeking from behind. Shows a suggested revision, a draft consequence and suggested evidence.</p><p class="files"><a href="boards/Theory.html">boards/Theory.html</a> · 1440×900 · source <a href="source/Theory.dc.html">source/Theory.dc.html</a></p></article><article class=""><a href="boards/TheoryWriting.html"><img src="screenshots/TheoryWriting.png" alt="Theory · writing mode" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/TheoryWriting.html">Theory · writing mode</a></h3><span class="status">Current</span></div>
+<p>Focusing a theory&#x27;s body: the compass directions shrink to edge tabs with counts and the body becomes a writing column.</p><p class="files"><a href="boards/TheoryWriting.html">boards/TheoryWriting.html</a> · 1440×900 · source <a href="source/Writing.dc.html">source/Writing.dc.html</a></p></article><article class=""><a href="boards/DumpPanelOpen.html"><img src="screenshots/DumpPanelOpen.png" alt="Dump-or-ask panel, open (grown from the pill)" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/DumpPanelOpen.html">Dump-or-ask panel, open (grown from the pill)</a></h3><span class="status">Current</span></div>
+<p>The dump-or-ask pill grown into its panel over a theory: SEES row with removable context chips, the conversation and what the agent produced, one input for dumping or asking.</p><p class="files"><a href="boards/DumpPanelOpen.html">boards/DumpPanelOpen.html</a> · 1440×900 · source <a href="source/TheoryChat.dc.html">source/TheoryChat.dc.html</a></p></article></div></section><section><h2>Elevation and material</h2><div class="grid"><article class=""><a href="boards/Elevation.html"><img src="screenshots/Elevation.png" alt="Elevation stack (side view)" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/Elevation.html">Elevation stack (side view)</a></h3><span class="status">Current</span></div>
+<p>Side view of the elevation stack, tiers 0–7. Drafts and suggestions are a material on tier 0, not a tier.</p><p class="files"><a href="boards/Elevation.html">boards/Elevation.html</a> · 1440×820 · source <a href="source/Elevation.dc.html">source/Elevation.dc.html</a></p></article><article class=""><a href="boards/Material.html"><img src="screenshots/Material.png" alt="Material · yours vs not yet yours" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/Material.html">Material · yours vs not yet yours</a></h3><span class="status">Current · interactive</span></div>
+<p>Yours vs not yet yours: theory card states, draft states with a working accept / discard demo, and real vs suggested evidence links.</p><p class="files"><a href="boards/Material.html">boards/Material.html</a> · 1440×820 · source <a href="source/Material.dc.html">source/Material.dc.html</a></p></article></div></section><section><h2>Motion</h2><div class="grid"><article class="wide"><a href="boards/Motion.html"><img src="screenshots/Motion.png" alt="Motion · card zooms into compass" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/Motion.html">Motion · card zooms into compass</a></h3><span class="status">Current</span></div>
+<p>Storyboard: a card grows into the compass from its own bounds and shrinks back on Esc. A storyboard, not an animation.</p><p class="files"><a href="boards/Motion.html">boards/Motion.html</a> · 2960×640 · source <a href="source/Motion.dc.html">source/Motion.dc.html</a></p></article></div></section><section><h2>Phone</h2><div class="grid"><article class="phone"><a href="boards/PhoneWorld.html"><img src="screenshots/PhoneWorld.png" alt="Phone · World" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/PhoneWorld.html">Phone · World</a></h3><span class="status">Current</span></div>
+<p>World on the phone with the dump-or-ask pill and mic bottom centre.</p><p class="files"><a href="boards/PhoneWorld.html">boards/PhoneWorld.html</a> · 390×844 · source <a href="source/PhoneWorld.dc.html">source/PhoneWorld.dc.html</a></p></article><article class="phone"><a href="boards/PhoneTheory.html"><img src="screenshots/PhoneTheory.png" alt="Phone · Theory" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/PhoneTheory.html">Phone · Theory</a></h3><span class="status">Current</span></div>
+<p>The compass as one vertical page; each section keeps its direction arrow.</p><p class="files"><a href="boards/PhoneTheory.html">boards/PhoneTheory.html</a> · 390×844 · source <a href="source/PhoneTheory.dc.html">source/PhoneTheory.dc.html</a></p></article><article class="phone"><a href="boards/PhoneTriage.html"><img src="screenshots/PhoneTriage.png" alt="Phone · Morning triage" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/PhoneTriage.html">Phone · Morning triage</a></h3><span class="status">Current</span></div>
+<p>Morning triage: stepping through everything not yet yours, swipe right to accept, left to discard.</p><p class="files"><a href="boards/PhoneTriage.html">boards/PhoneTriage.html</a> · 390×844 · source <a href="source/PhoneTriage.dc.html">source/PhoneTriage.dc.html</a></p></article><article class="phone"><a href="boards/PhoneCapture.html"><img src="screenshots/PhoneCapture.png" alt="Phone · Capture and dump log" loading="lazy"></a>
+<div class="meta"><h3><a href="boards/PhoneCapture.html">Phone · Capture and dump log</a></h3><span class="status">Current</span></div>
+<p>The pill opened into its composer, with the dump log above it.</p><p class="files"><a href="boards/PhoneCapture.html">boards/PhoneCapture.html</a> · 390×844 · source <a href="source/PhoneCapture.dc.html">source/PhoneCapture.dc.html</a></p></article></div></section>
+</main></body></html>
