@@ -1,0 +1,21 @@
+# Dependencies and build output
+node_modules/
+dist/
+build/
+
+# Secrets: never commit these
+.env
+.env.*
+!.env.example
+
+# Local database files
+data/
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+
+# OS and editor clutter
+.DS_Store
+.vscode/
+.idea/
