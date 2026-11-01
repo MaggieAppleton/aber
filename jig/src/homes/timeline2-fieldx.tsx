@@ -1,6 +1,8 @@
-import { useMemo, useState, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as RPointerEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Icon, Conf } from "./atoms";
+import { setEdit } from "./edits";
+import type { OnOpen } from "./panes";
 import type { Scale } from "./timeline2-data";
 import { H, SPRING, LensFrame, Marks, ThemePicker, useDwell, useLive, wrap, textWidth, yearsFor, type Live } from "./timeline2-shared";
 import { useGraph, useExpansion, visibleSet, reach, type Dir } from "./timeline2-graph";
@@ -26,15 +28,28 @@ export function FieldChains({ scale, variant }: { scale: Scale; variant: FieldVa
   const open = useDemoOpen();
   return (
     <LensFrame obj={open.obj} onOpen={open.onOpen} onClose={open.close} className="t2a t2x">
-      {w => <Plot scale={scale} width={w} variant={variant} open={open} />}
+      {w => <FieldPlot scale={scale} width={w} variant={variant} selected={open.selected} onOpen={open.onOpen} demo={open} />}
     </LensFrame>
   );
 }
 
-function Plot({ scale, width, variant, open }: { scale: Scale; width: number; variant: FieldVariant; open: ReturnType<typeof useDemoOpen> }) {
+/**
+ * The field itself, laid out for a given width and height. Hosts pass the selection (the open theory) and onOpen.
+ * `demo` adds the jig's rest/replay button; `draggable` lets a theory be dragged to a new year and confidence.
+ */
+export function FieldPlot({ scale, width, height = H, bottom = BOTTOM, variant, selected, onOpen, demo, draggable, onChain }: {
+  scale: Scale; width: number; height?: number; bottom?: number; variant: FieldVariant;
+  selected?: string; onOpen: OnOpen; demo?: ReturnType<typeof useDemoOpen>; draggable?: boolean;
+  /** Told when the chain view opens or closes, so a host can size it to what is visible. */
+  onChain?: (on: boolean) => void;
+}) {
   const reduced = useReducedMotion();
-  const { selected, onOpen } = open;
   const live = useLive(scale);
+  const H = height, BOTTOM = bottom;
+  const box = useRef<HTMLDivElement>(null);
+  const [drag, setDrag] = useState<{ id: string; x: number; y: number } | null>(null);
+  const start = useRef<{ id: string; x: number; y: number; ox: number; oy: number } | null>(null);
+  const justDragged = useRef(false);
   const g = useGraph(live);
   const [filter, setFilter] = useState<string>();
   const [chainOn, setChainOn] = useState(false);
@@ -219,19 +234,53 @@ function Plot({ scale, width, variant, open }: { scale: Scale; width: number; va
   const tipId = dwell.hot && (!selected ? mode === "dots" || mode === "line" : !tags.get(dwell.hot) || tags.get(dwell.hot)!.cut) ? dwell.hot : undefined;
   const tip = tipId ? g.by.get(tipId) : undefined;
   const away = chainOn && !!selected;
+  useEffect(() => { onChain?.(away); }, [away]);
 
   const onKey = (e: KeyboardEvent) => {
     if (e.key !== "Escape") return;
-    if (chainOn) { setChainOn(false); e.stopPropagation(); return; }
-    if (variant !== "bundle" && ex.pop()) e.stopPropagation();
+    if (chainOn) { setChainOn(false); e.stopPropagation(); e.preventDefault(); return; }
+    if (variant !== "bundle" && ex.pop()) { e.stopPropagation(); e.preventDefault(); }
   };
+
+  /* ── drag: move a theory to change its year (and confidence, for held theories) ── */
+  const by = g.by;
+  const local = (e: { clientX: number; clientY: number }) => { const r = box.current!.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+  const target = (t: Live, x: number, y: number) => {
+    const yr = Math.max(years[0], Math.min(years.at(-1)!, years[0] + Math.floor((x - LEFT) / colW)));
+    let r = 0; for (let i = 0; i < 5; i++) if (y >= tops[i]) r = i;
+    return { yr, r: t.draft ? 5 : r };
+  };
+  const onDown = (e: RPointerEvent, t: Live) => {
+    if (!draggable || e.button !== 0 || away) return;
+    const p = local(e), at = pos.get(t.id)!;
+    start.current = { id: t.id, x: p.x, y: p.y, ox: p.x - at.x, oy: p.y - at.y };
+  };
+  const onMove = (e: RPointerEvent) => {
+    const s0 = start.current;
+    if (!s0) return;
+    const p = local(e);
+    if (!drag && Math.hypot(p.x - s0.x, p.y - s0.y) < 5) return;
+    if (!drag) box.current?.setPointerCapture(e.pointerId);
+    dwell.clear();
+    setDrag({ id: s0.id, x: p.x - s0.ox, y: by.get(s0.id)!.draft ? pos.get(s0.id)!.y : p.y - s0.oy });
+  };
+  const onUp = () => {
+    const s0 = start.current;
+    start.current = null;
+    if (!s0 || !drag) return;
+    const t = by.get(s0.id)!, { yr, r } = target(t, drag.x + 7, drag.y + 7);
+    setEdit("theory", t.id, t.draft ? { horizon: yr } : { horizon: yr, confidence: 5 - r });
+    justDragged.current = true;
+    setDrag(null);
+  };
+  const slot = drag ? (() => { const t = by.get(drag.id)!; const { yr, r } = target(t, drag.x + 7, drag.y + 7); return { x: colX(yr), y: tops[r], h: heights[r] }; })() : null;
   const fromDot = (id: string) => { const p = pos.get(id); return p ? { x: p.cx - DOT / 2, y: p.cy - DOT / 2 } : undefined; };
 
   return (
-    <div className="t2a-plot" onKeyDown={onKey}>
+    <div className="t2a-plot" ref={box} onKeyDown={onKey} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { start.current = null; setDrag(null); }}>
       <div className="t2-toolbar">
         <ThemePicker scale={scale} live={live} value={filter} onChange={setFilter} />
-        <DemoButton open={open} onReset={() => { setChainOn(false); ex.reset(); }} />
+        {demo && <DemoButton open={demo} onReset={() => { setChainOn(false); ex.reset(); }} />}
         {variant === "morph" && selected && (
           <button className="t2-tool" aria-label="Follow chain" title="Follow chain (Esc to return)" aria-pressed={chainOn} onClick={() => setChainOn(c => !c)}>
             <Icon name="chain" size={15} weight={chainOn ? "fill" : "regular"} />
@@ -246,8 +295,9 @@ function Plot({ scale, width, variant, open }: { scale: Scale; width: number; va
         {tops.map((y, r) => <i key={r} className="t2a-hline" data-draft={r === 5 ? "" : undefined} style={{ top: y, left: 10, right: RIGHT }} />)}
         {[5, 4, 3, 2, 1].map((c, r) => <span key={c} className="t2a-conf" style={{ top: tops[r] + PAD + 1, left: 12 }}><Conf n={c} /></span>)}
         <span className="t2a-conf" style={{ top: tops[5] + PAD + 1, left: 12 }} title="Drafts: no confidence yet"><i className="t2a-ring" aria-label="Drafts" /></span>
+        {slot && <motion.i className="t2a-slot" initial={false} animate={{ x: slot.x + 1, y: slot.y + 1 }} transition={{ type: "spring", stiffness: 600, damping: 40 }} style={{ width: colW - 2, height: slot.h - 2 }} />}
 
-        <motion.svg key={`links${selected}${variant}`} className="t2a-links" width={width} height={H} aria-hidden initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2, delay: reduced ? 0 : 0.3 }}>
+        <motion.svg key={`links${selected}${variant}`} className="t2a-links" width={width} height={H} aria-hidden initial={{ opacity: 0 }} animate={{ opacity: drag ? 0 : 1 }} transition={{ duration: 0.2, delay: reduced ? 0 : 0.3 }}>
           <Chevrons />
           {[...links].sort((x, y) => Number(y.deep) - Number(x.deep)).map(l => {
             // Dwell on a theory in the chain: its own links stay, the rest step back.
@@ -266,14 +316,16 @@ function Plot({ scale, width, variant, open }: { scale: Scale; width: number; va
           if (!p) return null;
           const on = isVis(t.id), isSel = selected === t.id;
           const m = selected || mode === "dots" ? "dots" : mode;
+          const dragging = drag?.id === t.id;
           return (
             <motion.button key={t.id} data-tid={t.id} className="t2a-item" data-mode={m} data-draft={t.draft ? "" : undefined}
-              data-sel={isSel ? "" : undefined} data-dim={selected && !on ? "" : undefined} data-hover={dwell.hover === t.id ? "" : undefined}
-              style={{ width: m === "dots" ? DOT + 4 : colW - 12, zIndex: isSel ? 4 : on ? 3 : 1 }}
-              initial={false} animate={{ x: p.x, y: p.y }} transition={reduced ? { duration: 0 } : SPRING}
+              data-sel={isSel ? "" : undefined} data-dim={selected && !on ? "" : undefined} data-hover={dwell.hover === t.id ? "" : undefined} data-dragging={dragging ? "" : undefined}
+              style={{ width: m === "dots" ? DOT + 4 : colW - 12, zIndex: dragging ? 7 : isSel ? 4 : on ? 3 : 1, cursor: draggable ? undefined : "pointer" }}
+              initial={false} animate={dragging ? { x: drag.x, y: drag.y } : { x: p.x, y: p.y }} transition={dragging || reduced ? { duration: 0 } : SPRING}
               aria-label={t.claim}
               onPointerEnter={() => dwell.enter(t.id)} onPointerLeave={() => dwell.leave(t.id)} onFocus={() => dwell.enter(t.id)} onBlur={() => dwell.leave(t.id)}
-              onClick={() => onOpen("theory", t.id)}>
+              onPointerDown={e => onDown(e, t)}
+              onClick={() => { if (justDragged.current) { justDragged.current = false; return; } onOpen("theory", t.id); }}>
               <i className="t2a-dot" data-challenge={t.challenge ? "" : undefined} />
               {m !== "dots" && <span className="t2a-label">{t.claim}</span>}
             </motion.button>
@@ -281,7 +333,7 @@ function Plot({ scale, width, variant, open }: { scale: Scale; width: number; va
         })}
 
         <AnimatePresence>
-          {[...tags.values()].map(tag => {
+          {[...tags.values()].filter(tag => tag.id !== drag?.id).map(tag => {
             const t = g.by.get(tag.id)!, p = pos.get(tag.id)!, b = badgeOf(tag.id);
             return (
               <motion.div key={`${selected}${tag.id}`} className="t2x-tag" data-side={tag.side} data-sel={tag.id === selected ? "" : undefined} data-draft={t.draft ? "" : undefined}

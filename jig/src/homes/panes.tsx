@@ -1,8 +1,13 @@
-import { createElement, useLayoutEffect, useRef, useState, type FormEvent, type HTMLAttributes, type KeyboardEvent, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { DUMPS, SIGNALS, THEORIES, PROTOTYPES, theoriesIn, theme, theory, signalsFor, prototypesFor, type Signal } from "./data";
-import { Icon, IconButton, Conf, DumpIcon, Mark, ProtoGlyph, Kbd } from "./atoms";
+import { Icon, IconButton, Conf, DumpIcon, Mark, ProtoGlyph } from "./atoms";
 import { useEdit } from "./edits";
+import { Editable } from "./editable";
+import { Tripwire, tripState, type Decision } from "./tripwire";
+import { tripFor } from "./trips";
+import { ConfidenceSpark, type SparkVariant } from "./confidence-spark";
+import { stancesFor, TODAY } from "./histories";
 import "./panes.css";
 
 /*
@@ -33,26 +38,12 @@ function useUnfold(nav: PaneNav) {
   return { inline, unfolded, toggle };
 }
 
-const Swap = () => <Icon name="swap" size={12} />;
+export { Editable };
 
-/* ── Editable text ──
- * Uncontrolled contentEditable kept in step with the store: typing writes to the store, and the DOM is only
- * rewritten when the stored value differs from it (an edit made elsewhere), so the caret never jumps. */
-export function Editable({ value, onChange, as = "div", className, placeholder, singleLine, ...rest }: {
-  value: string; onChange: (v: string) => void; as?: "div" | "h1"; className?: string; placeholder?: string; singleLine?: boolean;
-} & Omit<HTMLAttributes<HTMLElement>, "onChange" | "children">) {
-  const ref = useRef<HTMLElement>(null);
-  useLayoutEffect(() => { const el = ref.current; if (el && el.textContent !== value) el.textContent = value; }, [value]);
-  return createElement(as, {
-    ...rest, ref, className: "pn-edit" + (className ? " " + className : ""), contentEditable: "plaintext-only", suppressContentEditableWarning: true,
-    role: "textbox", "aria-multiline": singleLine ? undefined : true, "data-placeholder": placeholder,
-    onInput: (e: FormEvent<HTMLElement>) => onChange(e.currentTarget.textContent ?? ""),
-    onKeyDown: (e: KeyboardEvent<HTMLElement>) => {
-      if (e.key === "Escape") { e.stopPropagation(); e.currentTarget.blur(); }
-      if (singleLine && e.key === "Enter") { e.preventDefault(); e.currentTarget.blur(); }
-    },
-  });
-}
+/** Confidence history variant in the pane (no pick yet; see /details). */
+const SPARK: SparkVariant = "A";
+
+const Swap = () => <Icon name="swap" size={12} />;
 
 /* Live names, for lists, chips and tiles elsewhere. */
 export const Claim = ({ id }: { id: string }) => <>{useEdit("theory", id)[0].claim}</>;
@@ -116,6 +107,8 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
   const ev = signalsFor(id);
   const leadsTo = THEORIES.filter(x => x.follows.includes(id));
   const protos = prototypesFor(id);
+  const trip = tripFor(id);
+  const tripped = tripState(edit.tripwire, trip.hits, edit.decisions) === "tripped";
   return (
     <div className="pn-doc">
       <div className="pn-chips">{t.themes.map(th => <button key={th} className="pn-chip" title="Theme" onClick={() => onOpen("theme", th)}><Icon name="theme" size={12} /><ThemeName id={th} /></button>)}</div>
@@ -125,8 +118,8 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
           ? <div className="pn-meta-row"><dt className="ap-label">Draft</dt><dd><span className="ap-ghost-actions"><IconButton icon="check" label="Accept (A)" /><IconButton icon="x" label="Discard (X)" /></span></dd></div>
           : <div className="pn-meta-row"><dt className="ap-label">Confidence</dt><dd>
               <span className="pn-conf" role="radiogroup" aria-label="Confidence">{[1, 2, 3, 4, 5].map(i => <button key={i} role="radio" aria-checked={i === conf} aria-label={`${i} of 5`} title={`${i} of 5`} data-on={i <= conf ? "" : undefined} onClick={() => set({ confidence: i })} />)}</span>
-              <Spark values={conf !== t.history.at(-1) ? [...t.history, conf] : t.history} />
-              {t.challenge && <Mark kind="challenge" />}
+              <ConfidenceSpark stances={stancesFor(id, edit.log, edit.confidence)} variant={SPARK} />
+              {(trip.hits.length ? tripped : t.challenge) && <Mark kind="challenge" />}
             </dd></div>}
         <div className="pn-meta-row"><dt className="ap-label">Happens by</dt><dd className="pn-year" role="group" aria-label="Happens by">
           <button className="pn-step" aria-label="Earlier" title="Earlier" onClick={() => set({ horizon: edit.horizon - 1 })}><Icon name="minus" size={12} /></button>
@@ -138,7 +131,7 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
         </dd></div>}
       </dl>
       <Editable className="pn-body" value={edit.body} onChange={body => set({ body })} aria-label="Body" />
-      <Tripwire value={edit.tripwire} onChange={tripwire => set({ tripwire })} />
+      <TheoryTripwire id={id} />
       <div className="pn-grid">
         {(["supports", "undermines"] as const).map(st => {
           const items = ev.filter(s => s.evidence.find(e => e.theory === id)!.stance === st);
@@ -245,7 +238,7 @@ export function PrototypePane({ id, nav }: { id: string; nav: PaneNav }) {
       </dl>
       <div className="pn-media"><button className="pn-play" aria-label="Play recording" title="Play recording"><Icon name="play" size={14} /></button></div>
       <Editable className="pn-body" value={edit.body} onChange={body => set({ body })} placeholder="What it is and what you learned" aria-label="Notes" />
-      <div className="pn-chips"><span className="pn-chip pn-static"><Icon name="link" size={12} />github.com/…</span><Kbd>⌘L</Kbd></div>
+      <div className="pn-chips"><span className="pn-chip pn-static"><Icon name="link" size={12} />github.com/…</span></div>
     </div>
   );
 }
@@ -286,30 +279,25 @@ function Reveal({ show, children }: { show: boolean; children: ReactNode }) {
   );
 }
 
-/* Confidence over time, values 1 to 5. */
-function Spark({ values }: { values: number[] }) {
-  const w = 44, h = 14, n = Math.max(values.length - 1, 1);
-  const pts = values.map((v, i) => `${(i / n) * (w - 2) + 1},${h - 1 - ((v - 1) / 4) * (h - 2)}`).join(" ");
-  const last = pts.split(" ").at(-1)!.split(",");
-  return (
-    <svg className="pn-spark" width={w} height={h} viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`History ${values.join(", ")}`}>
-      <polyline points={pts} fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx={last[0]} cy={last[1]} r="1.8" fill="currentColor" />
-    </svg>
-  );
-}
-
-/* What would change my mind: a glyph, its label and the user's words, always shown. */
-function Tripwire({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const name = "What would change my mind";
-  const ed = useRef<HTMLDivElement>(null);
-  return (
-    <div className="pn-trip" role="group" aria-label={name}>
-      <button className="pn-trip-glyph" aria-label={name} tabIndex={-1} onClick={() => ed.current?.querySelector<HTMLElement>("[contenteditable]")?.focus()}><Icon name="turn" size={16} /></button>
-      <div className="pn-trip-main" ref={ed}>
-        <span className="ap-label">{name}</span>
-        <Editable className="pn-tripwire" value={value} onChange={onChange} aria-label={name} />
-      </div>
-    </div>
-  );
+/* What would change my mind: the shared sentence tripwire, its words and decisions kept in the edits store. */
+function TheoryTripwire({ id }: { id: string }) {
+  const [edit, set] = useEdit("theory", id);
+  const trip = tripFor(id);
+  // While the empty blank is being typed into, keep its layout; it becomes a sentence once it loses focus.
+  const [typing, setTyping] = useState(false);
+  const state = typing ? "empty" : tripState(edit.tripwire, trip.hits, edit.decisions);
+  const conf = edit.confidence ?? 3;
+  const decide = (hid: string, d?: Decision) => {
+    const prev = edit.decisions[hid], hit = trip.hits.find(h => h.id === hid)!;
+    const decisions = { ...edit.decisions };
+    if (d) decisions[hid] = d; else delete decisions[hid];
+    if (d === "accepted" && prev !== "accepted") {
+      const level = Math.max(1, conf - 1);
+      set({ decisions, confidence: level, log: [...edit.log, { id: `acc-${hid}`, date: TODAY, short: "Now", level, note: `Lowered: ${hit.gist}`, signal: hit.gist, challenge: true }] });
+    } else if (prev === "accepted" && d !== "accepted") {
+      set({ decisions, confidence: Math.min(5, conf + 1), log: edit.log.filter(x => x.id !== `acc-${hid}`) });
+    } else set({ decisions });
+  };
+  return <Tripwire state={state} text={edit.tripwire} setText={tripwire => set({ tripwire })} begin={() => setTyping(true)} commit={() => setTyping(false)}
+    hits={trip.hits} decisions={edit.decisions} decide={decide} conf={conf} date={trip.date} />;
 }

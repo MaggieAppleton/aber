@@ -1,9 +1,10 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Icon } from "./atoms";
 import { Editable } from "./panes";
 import { CONDS, HITS, TRIP_TEXT, METRIC, READINGS, READING_TRIPPED, CHECKED, type TripState, type Hit } from "./details-data";
-import { ConfSteps, EASE, HitRow, type Decision } from "./details-pane";
+import { ConfSteps } from "./details-pane";
+import { EASE, HitRow, Tripwire, Unfold, Watch as TwWatch, type Decision } from "./tripwire";
 
 /* Five ways to show "what would change my mind" and what happens when a signal trips it. */
 
@@ -13,17 +14,9 @@ export type TripProps = {
 };
 const NAME = "What would change my mind";
 
-const Watch = () => <span className="dt-watch" title={`Watching new signals, ${CHECKED} checked so far`} aria-label="Watching" />;
+const Watch = () => <TwWatch checked={CHECKED} />;
 const Red = () => <span className="ap-mark" data-kind="challenge" title="Challenged" aria-label="Challenged" />;
 const pending = (p: TripProps, hits = HITS) => hits.filter(h => !p.decisions[h.id]);
-
-function Unfold({ show, children }: { show: boolean; children: ReactNode }) {
-  return (
-    <AnimatePresence initial={false}>
-      {show && <motion.div className="dt-unfold" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3, ease: EASE }}>{children}</motion.div>}
-    </AnimatePresence>
-  );
-}
 
 /** The decided signals, folded to one line until asked for. */
 function Log({ p, hits = HITS, date = "31 Oct", open: start = false }: { p: TripProps; hits?: Hit[]; date?: string; open?: boolean }) {
@@ -38,7 +31,7 @@ function Log({ p, hits = HITS, date = "31 Oct", open: start = false }: { p: Trip
         <span>Tripped {date}</span>
         <span className="ap-muted">{[acc && `${acc} accepted`, dis && `${dis} dismissed`].filter(Boolean).join(", ")}</span>
       </button>
-      <Unfold show={open}><div className="dt-hits">{done.map(h => <HitRow key={h.id} hit={h} decision={p.decisions[h.id]} onDecide={d => p.decide(h.id, d)} conf={p.conf} />)}</div></Unfold>
+      <Unfold show={open}><div className="tw-hits">{done.map(h => <HitRow key={h.id} hit={h} decision={p.decisions[h.id]} onDecide={d => p.decide(h.id, d)} conf={p.conf} />)}</div></Unfold>
     </div>
   );
 }
@@ -96,7 +89,7 @@ export function TripB(p: TripProps) {
           <motion.div key={cur.id} className="dt-tb-challenge" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.25, ease: EASE }}>
             <div className="dt-tb-sig">
               <Icon name="signal" size={14} />
-              <span className="dt-hit-gist">{cur.gist}</span>
+              <span className="tw-hit-gist">{cur.gist}</span>
               <span className="ap-muted">{cur.source}</span>
             </div>
             <span className="ap-muted">{cur.why}</span>
@@ -105,12 +98,12 @@ export function TripB(p: TripProps) {
                 <span className="ap-label">Confidence</span>
                 <ConfSteps conf={to} onChange={setTo} />
                 <Editable className="pn-note dt-tb-note" value={note} onChange={setNote} placeholder="Why" aria-label="Why" singleLine />
-                <button className="ap-btn dt-accept" onClick={() => { p.setConf(to); p.decide(cur.id, "accepted"); setAccepting(undefined); }}>Save</button>
+                <button className="ap-btn tw-accept" onClick={() => { p.setConf(to); p.decide(cur.id, "accepted"); setAccepting(undefined); }}>Save</button>
                 <button className="pn-step" aria-label="Cancel" title="Cancel" onClick={() => setAccepting(undefined)}><Icon name="x" size={12} /></button>
               </div>
             ) : (
               <div className="dt-tb-acts">
-                <button className="ap-btn dt-accept" onClick={() => { setTo(Math.max(1, p.conf - 1)); setNote(`Lowered: ${cur.gist}`); setAccepting(cur.id); }}>Accept</button>
+                <button className="ap-btn tw-accept" onClick={() => { setTo(Math.max(1, p.conf - 1)); setNote(`Lowered: ${cur.gist}`); setAccepting(cur.id); }}>Accept</button>
                 <button className="ap-btn dt-ghostbtn" onClick={() => p.decide(cur.id, "dismissed")}>Dismiss</button>
                 {live.length > 1 && <span className="dt-tb-pager">
                   <button className="pn-step" aria-label="Previous signal" title="Previous signal" onClick={() => setI(Math.max(0, i - 1))} disabled={i === 0}><Icon name="chevronLeft" size={12} /></button>
@@ -127,67 +120,10 @@ export function TripB(p: TripProps) {
   );
 }
 
-/* ── C. Sentence: the tripwire written in the theory's own voice, flagged in place when it trips ── */
+/* ── C. Sentence: the shared tripwire (./tripwire), as the theory pane uses it ── */
 export function TripC(p: TripProps) {
-  const [open, setOpen] = useState(true);
-  const [logOpen, setLogOpen] = useState(false);
-  const box = useRef<HTMLDivElement>(null);
-  const live = p.state === "tripped" ? pending(p) : [];
-  const tripped = live.length > 0;
-  /* The blank's first rule starts where "if " ends, so track the lead's width. */
-  useLayoutEffect(() => {
-    const lead = box.current?.querySelector<HTMLElement>(".dt-tc-lead"); if (!lead || p.state !== "empty") return;
-    const set = () => box.current?.style.setProperty("--tc-lead", `${lead.offsetWidth}px`);
-    set(); const ro = new ResizeObserver(set); ro.observe(lead); return () => ro.disconnect();
-  }, [p.state]);
-  const done = HITS.filter(h => p.decisions[h.id]);
-  const acc = done.filter(h => p.decisions[h.id] === "accepted").length, dis = done.length - acc;
-  const focusEnd = () => {
-    const el = box.current?.querySelector<HTMLElement>("[contenteditable]"); if (!el) return;
-    el.focus();
-    const r = document.createRange(); r.selectNodeContents(el); r.collapse(false);
-    const sel = getSelection(); sel?.removeAllRanges(); sel?.addRange(r);
-  };
-  const lead = (
-    <span className="dt-tc-lead" onMouseDown={e => { e.preventDefault(); focusEnd(); }}>
-      <span className="dt-tc-icon" data-tripped={tripped ? "" : undefined}><Icon name="turn" size={16} /></span>
-      {"I'd change my mind if "}
-    </span>
-  );
-  if (p.state === "empty") return (
-    <div className="dt-tc" role="group" aria-label={NAME} ref={box}>
-      <div className="dt-tc-line dt-tc-blankline">
-        {lead}
-        <Editable className="dt-tc-blank" value={p.text} onChange={p.setText} onBlur={p.commit} aria-label={NAME} />
-      </div>
-    </div>
-  );
-  return (
-    <div className="dt-tc" role="group" aria-label={NAME} ref={box}>
-      <div className="dt-tc-line">
-        {lead}
-        <Editable className="dt-tc-phrase" value={p.text === TRIP_TEXT ? lower(p.text) : p.text} onChange={p.setText} onBlur={p.commit} aria-label={NAME} singleLine
-          data-tripped={tripped ? "" : undefined} />.
-        {p.state === "watching" && <span className="dt-tc-after"><Watch /></span>}
-        {tripped && (
-          <button className="dt-tc-flag" aria-expanded={open} onClick={() => setOpen(o => !o)} title={`${live.length} signals match`} aria-label={`${live.length} signals match`}>
-            <span className="ap-ghost-badge">{live.length}</span>
-          </button>
-        )}
-        {p.state === "resolved" && done.length > 0 && (
-          <button className="dt-tc-flag dt-tc-done" aria-expanded={logOpen} onClick={() => setLogOpen(o => !o)} title="Tripped 31 Oct">
-            <Icon name="check" size={12} />
-            <span>{[acc && `${acc} accepted`, dis && `${dis} dismissed`].filter(Boolean).join(", ")}</span>
-          </button>
-        )}
-      </div>
-      <Unfold show={(p.state === "tripped" && open) || (p.state === "resolved" && logOpen)}>
-        <div className="dt-hits dt-tc-hits">
-          <AnimatePresence initial={false}>{(p.state === "resolved" ? done : HITS).map(h => <HitRow key={h.id} hit={h} decision={p.decisions[h.id]} onDecide={d => p.decide(h.id, d)} conf={p.conf} />)}</AnimatePresence>
-        </div>
-      </Unfold>
-    </div>
-  );
+  return <Tripwire state={p.state} text={p.text === TRIP_TEXT ? lower(p.text) : p.text} setText={p.setText} commit={p.commit}
+    hits={HITS} decisions={p.decisions} decide={p.decide} conf={p.conf} date="31 Oct" />;
 }
 const lower = (s: string) => s && s[0].toLowerCase() + s.slice(1).replace(/\.$/, "");
 
@@ -225,7 +161,7 @@ export function TripD(p: TripProps) {
             <div key={id} className="dt-td-item" data-resolved={c?.resolved ? "" : undefined}>
               <Row glyph={glyph} text={texts[id] ?? c?.text ?? ""} onText={v => setTexts(t => ({ ...t, [id]: v }))} placeholder="A condition" status={status} autoFocus={!c} />
               {(open.length > 0 || (p.state === "resolved" && done.length > 0)) && (
-                <div className="dt-hits dt-td-hits">
+                <div className="tw-hits dt-td-hits">
                   <AnimatePresence initial={false}>{hits.map(h => <HitRow key={h.id} hit={h} decision={p.decisions[h.id]} onDecide={d => p.decide(h.id, d)} conf={p.conf} compact />)}</AnimatePresence>
                 </div>
               )}
@@ -279,7 +215,7 @@ export function TripE(p: TripProps) {
         <span className="ap-muted">in a year</span>
       </div>
       <Gauge th={th} readings={empty ? [] : READINGS} fresh={fresh} pending={pend} empty={empty} />
-      {pend && <div className="dt-hits"><HitRow hit={{ ...hit, why: `Puts the year at −${-READING_TRIPPED.v}%, short of −${-th}%` }} onDecide={d => p.decide(hit.id, d)} conf={p.conf} /></div>}
+      {pend && <div className="tw-hits"><HitRow hit={{ ...hit, why: `Puts the year at −${-READING_TRIPPED.v}%, short of −${-th}%` }} onDecide={d => p.decide(hit.id, d)} conf={p.conf} /></div>}
       {p.state === "resolved" && <Log p={p} hits={[hit]} />}
     </div>
   );

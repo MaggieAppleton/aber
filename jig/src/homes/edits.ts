@@ -1,5 +1,8 @@
 import { useSyncExternalStore } from "react";
 import { PROTOTYPES, theme, theory, type Prototype } from "./data";
+import type { Stance } from "./histories";
+import type { Decision } from "./tripwire";
+import { tripFor } from "./trips";
 
 /**
  * Per-object edits, shared by every surface on the page (Columns, Atlas) for the page session.
@@ -7,7 +10,13 @@ import { PROTOTYPES, theme, theory, type Prototype } from "./data";
  * so `useSyncExternalStore` sees a new snapshot only for the object that changed.
  */
 export type Edits = {
-  theory: { claim: string; body: string; tripwire: string; confidence: number | null; horizon: number };
+  theory: {
+    claim: string; body: string; tripwire: string; confidence: number | null; horizon: number;
+    /** Accepted or dismissed tripwire matches, by signal id. */
+    decisions: Record<string, Decision>;
+    /** Stances added this session (accepted tripwire challenges), after the theory's recorded history. */
+    log: Stance[];
+  };
   theme: { name: string };
   prototype: { name: string; body: string; status: Prototype["status"] };
   signal: { note: string };
@@ -19,7 +28,7 @@ const listeners = new Set<() => void>();
 
 function seed<K extends EditKind>(kind: K, id: string): Edits[K] {
   const s: { [k in EditKind]: () => Edits[k] } = {
-    theory: () => { const t = theory(id); return { claim: t.claim, body: t.body, tripwire: "", confidence: t.confidence, horizon: t.horizon }; },
+    theory: () => { const t = theory(id); const trip = tripFor(id); return { claim: t.claim, body: t.body, tripwire: trip.text, confidence: t.confidence, horizon: t.horizon, decisions: trip.decisions ?? {}, log: [] }; },
     theme: () => ({ name: theme(id).name }),
     prototype: () => { const p = PROTOTYPES.find(x => x.id === id)!; return { name: p.name, body: "", status: p.status }; },
     signal: () => ({ note: "" }),

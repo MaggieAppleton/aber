@@ -19,7 +19,13 @@
 .pn-title { margin: -4px -8px; padding: 4px 8px; font-size: 26px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; text-wrap: balance; }
 .pn-title[data-draft] { color: var(--ap-ink-2); outline: 1px dashed rgb(0 0 0 / 28%); outline-offset: -1px; }
 .pn-title[data-draft]:focus, .pn-title[data-draft]:focus-visible { outline: 1px dashed rgb(0 0 0 / 40%); outline-offset: -1px; box-shadow: none; }
-.pn-body { margin: -4px -8px; padding: 4px 8px; font-size: 15px; line-height: 1.65; color: var(--ap-ink-2); min-height: 48px; }
+/* The body: the document's main prose. A faint paper tint and generous inset set it apart from the meta above and the
+   tripwire and evidence below (the doc's 16px gap plus 8px each side); the negative margin keeps its text aligned with
+   everything else. Empty, it stays a three-line writing area. */
+.ap .pn-doc > .pn-body.pn-edit { margin: 8px -14px; padding: 14px; max-width: calc(68ch + 28px); font-size: 15px; line-height: 1.65; color: var(--ap-ink-2);
+  min-height: calc(3lh + 28px); border-radius: 8px; background: rgb(0 0 0 / 2%); }
+.ap .pn-doc > .pn-body.pn-edit:hover { background: rgb(0 0 0 / 3%); }
+.ap .pn-doc > .pn-body.pn-edit:focus, .ap .pn-doc > .pn-body.pn-edit:focus-visible { background: var(--pn-edit-bg); box-shadow: inset 0 0 0 1px var(--pn-edit-ring); }
 
 .pn-field-val { color: var(--ap-ink-2); }
 .pn-year { gap: 2px; }
@@ -30,7 +36,6 @@
 .pn-step:hover { background: var(--ap-hover); color: var(--ap-ink); }
 .pn-step:active { transform: scale(0.92); }
 .pn-step:focus-visible { outline: 1.5px solid var(--ap-ink-3); outline-offset: -1.5px; }
-.pn-spark { color: var(--ap-ink-2); display: block; }
 
 .pn-conf { display: inline-flex; gap: 3px; }
 .pn-conf button { width: 20px; height: 6px; padding: 0; border: 0; border-radius: 3px; background: rgb(0 0 0 / 10%); cursor: pointer; transition: background 150ms, transform 100ms; }
@@ -41,14 +46,6 @@
 .pn-rivals { gap: 4px; }
 .ap .pn-rival { gap: 6px; height: auto; min-height: 24px; padding: 3px 8px; white-space: normal; overflow: visible; text-align: left; line-height: 18px; }
 .pn-rival svg { align-self: flex-start; margin-top: 3px; }
-
-/* What would change my mind */
-.pn-trip { display: flex; align-items: flex-start; gap: 8px; }
-.pn-trip-glyph { flex-shrink: 0; width: 16px; height: 18px; padding: 0; border: 0; background: transparent; display: grid; place-items: center; color: var(--ap-ink-3); cursor: text; }
-.pn-trip-main { flex: 1; min-width: 0; display: grid; gap: 4px; }
-.pn-tripwire { min-height: 28px; color: var(--ap-ink-2); line-height: 20px; padding: 4px 8px; background: var(--ap-surface); box-shadow: inset 0 0 0 0.5px var(--ap-line); }
-.pn-tripwire:hover { background: var(--ap-surface); box-shadow: inset 0 0 0 0.5px var(--pn-edit-ring); }
-.pn-tripwire:focus, .pn-tripwire:focus-visible { background: var(--ap-surface); box-shadow: inset 0 0 0 1px var(--pn-edit-ring); }
 
 /* Evidence */
 .pn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }

@@ -1,16 +1,16 @@
 import { useState, type ReactNode } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { SIGNALS } from "./data";
 import { Icon } from "./atoms";
 import { Claim, Editable, SignalRow } from "./panes";
-import { LEVELS, type Hit } from "./details-data";
+import { LEVELS } from "./details-data";
 import "./homes.css";
 import "./panes.css";
 import "./details.css";
 
 /* A realistic slice of the theory pane, with slots for the detail under study. */
 
-export const EASE = [0.16, 1, 0.3, 1] as const;
+export { EASE } from "./tripwire";
 const noop = () => {};
 
 export function ConfSteps({ conf, onChange }: { conf: number; onChange: (n: number) => void }) {
@@ -76,27 +76,4 @@ export function Seg<K extends string>({ value, options, onChange, label }: { val
   );
 }
 
-/* ── A signal the tripwire agent matched: dashed until decided ── */
-export type Decision = "accepted" | "dismissed";
-export function HitRow({ hit, decision, onDecide, conf, compact }: { hit: Hit; decision?: Decision; onDecide: (d?: Decision) => void; conf: number; compact?: boolean }) {
-  const reduce = useReducedMotion();
-  return (
-    <motion.div layout={reduce ? false : "position"} className="dt-hit" data-decided={decision ? "" : undefined} data-compact={compact ? "" : undefined}
-      initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4, transition: { duration: 0.12 } }} transition={{ duration: 0.3, ease: EASE }}>
-      <div className="dt-hit-text">
-        <span className="dt-hit-gist">{hit.gist}</span>
-        <span className="ap-muted">{decision ? <Outcome d={decision} conf={conf} /> : <>{hit.why}</>}</span>
-      </div>
-      <span className="ap-muted dt-hit-src">{hit.source}</span>
-      <span className="dt-hit-acts">
-        {decision
-          ? <button className="pn-step" aria-label="Undo" title="Undo" onClick={() => onDecide(undefined)}><Icon name="undo" size={12} /></button>
-          : <>
-              <button className="ap-btn dt-accept" onClick={() => onDecide("accepted")} title="Accept and lower confidence">Accept</button>
-              <button className="pn-step dt-dismiss" aria-label="Dismiss" title="Dismiss" onClick={() => onDecide("dismissed")}><Icon name="x" size={12} /></button>
-            </>}
-      </span>
-    </motion.div>
-  );
-}
-const Outcome = ({ d, conf }: { d: Decision; conf: number }) => d === "accepted" ? <>Accepted, lowered to {conf}</> : <>Dismissed</>;
+export { HitRow, type Decision } from "./tripwire";

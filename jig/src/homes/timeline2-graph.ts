@@ -82,7 +82,7 @@ export type ChainCard = { id: string; col: number; x: number; y: number; w: numb
 export type ChainEdge = { a: string; b: string; pts: [number, number][] };
 export type ChainLayout = { cards: ChainCard[]; edges: ChainEdge[]; width: number; height: number; rival?: { x: number; y: number }; crossings: number };
 
-export const CARD = { pad: 10, line: 17, meta: 22, gap: 10, colGap: 58, maxW: 210, approach: 18, exit: 10 };
+export const CARD = { pad: 10, line: 17, meta: 22, gap: 10, colGap: 58, maxW: 210, minW: 150, approach: 22, exit: 10 };
 
 export function layoutChain(g: Graph, sel: string, width: number, height: number): ChainLayout {
   const t0 = g.by.get(sel)!;
@@ -148,10 +148,10 @@ export function layoutChain(g: Graph, sel: string, width: number, height: number
   const c0 = order[0 - min];
   c0.splice(c0.indexOf(sel) + 1, 0, ...rivals);
 
-  const w = Math.min(CARD.maxW, Math.floor((width - 32 - CARD.colGap * (ncol - 1)) / ncol));
+  // Cards never narrow past minW: a narrow host scrolls sideways instead.
+  const w = Math.max(CARD.minW, Math.min(CARD.maxW, Math.floor((width - 32 - CARD.colGap * (ncol - 1)) / ncol)));
   const x0 = Math.max(16, (width - (ncol * w + (ncol - 1) * CARD.colGap)) / 2);
   const cards: ChainCard[] = [];
-  const colH: number[] = [];
   order.forEach((c, ci) => {
     let y = 0;
     c.forEach(id => {
@@ -163,21 +163,51 @@ export function layoutChain(g: Graph, sel: string, width: number, height: number
       cards.push({ id, col: ci, x: x0 + ci * (w + CARD.colGap), y, w, h, lines, rival });
       y += h + CARD.gap;
     });
-    colH.push(y - CARD.gap);
   });
-  const tall = Math.max(...colH);
-  const top = 64, avail = height - top - 24;
-  // Centre each column on the available height (or on the tallest column when it overflows).
+  // Align centres outward from the selected column: each card wants its centre on the mean centre of its neighbours in
+  // the column nearer the selection, so a single parent and child sit on one horizontal line and a fan-out centres
+  // on its parent. Cards in a column keep their order and gap: overlapping wants merge into runs centred on their mean.
+  const mid = (c: ChainCard) => c.y + c.h / 2;
+  const byCol = order.map((_, ci) => cards.filter(c => c.col === ci));
+  const sweep = [...Array.from({ length: ncol - s0 - 1 }, (_, i) => s0 + 1 + i), ...Array.from({ length: s0 }, (_, i) => s0 - 1 - i)];
+  for (const ci of sweep) {
+    const right = ci > s0, ref = new Map(byCol[right ? ci - 1 : ci + 1].map(c => [c.id, c]));
+    const want = byCol[ci].map(c => {
+      const ns = segs.filter(([a, b]) => right ? b === c.id && ref.has(a) : a === c.id && ref.has(b)).map(([a, b]) => mid(ref.get(right ? a : b)!));
+      return ns.length ? ns.reduce((x, y) => x + y, 0) / ns.length : mid(c);
+    });
+    const runs: { cs: ChainCard[]; want: number[] }[] = [];
+    const runH = (r: { cs: ChainCard[] }) => r.cs.reduce((a, c) => a + c.h, 0) + (r.cs.length - 1) * CARD.gap + r.cs.filter(c => c.rival).length * 18;
+    const runTop = (r: { cs: ChainCard[]; want: number[] }) => {
+      // The run's top such that the mean offset of its cards' centres from their wants is zero.
+      let off = 0; const offs: number[] = [];
+      r.cs.forEach(c => { if (c.rival) off += 18; offs.push(off + c.h / 2); off += c.h + CARD.gap; });
+      return r.want.reduce((a, w, i) => a + w - offs[i], 0) / r.want.length;
+    };
+    byCol[ci].forEach((c, i) => {
+      runs.push({ cs: [c], want: [want[i]] });
+      while (runs.length > 1) {
+        const a = runs[runs.length - 2], b = runs[runs.length - 1];
+        if (runTop(a) + runH(a) + CARD.gap <= runTop(b)) break;
+        runs.pop(); a.cs.push(...b.cs); a.want.push(...b.want);
+      }
+    });
+    for (const r of runs) { let y = runTop(r); r.cs.forEach(c => { if (c.rival) y += 18; c.y = y; y += c.h + CARD.gap; }); }
+  }
+  // Fit the whole chain into the frame: centred when it fits, starting at the top when it is taller.
+  const y0 = Math.min(...cards.map(c => c.y)), y1 = Math.max(...cards.map(c => c.y + c.h));
+  const top = 64, avail = height - top - 24, tall = y1 - y0;
   const frame = Math.max(avail, tall);
-  cards.forEach(c => { c.y += top + (frame - colH[c.col]) / 2; });
+  cards.forEach(c => { c.y += top + (frame - tall) / 2 - y0; });
   const at = new Map(cards.map(c => [c.id, c]));
-  const anchor = (c: ChainCard) => c.dummy ? c.y + 7 : c.y + CARD.pad + CARD.line / 2;
+  // Links attach at each card's vertical centre.
+  const anchor = (c: ChainCard) => c.y + c.h / 2;
   // Each source gets its own vertical lane in the gap after its column, so links from different cards never share a run.
   // Lanes are ordered by how far down a source's links travel: links heading furthest down take the rightmost lane,
   // so a source's exit never has to cross another source's vertical run.
   const lane = new Map<string, number>();
   const at0 = new Map(cards.map(c => [c.id, c]));
-  const anchorOf = (id: string) => { const c = at0.get(id)!; return c.dummy ? c.y + 7 : c.y + CARD.pad + CARD.line / 2; };
+  const anchorOf = (id: string) => anchor(at0.get(id)!);
   order.forEach(c => {
     const srcs = c.filter(id => segs.some(([a]) => a === id));
     const drop = (id: string) => { const ts = segs.filter(([a]) => a === id).map(([, b]) => anchorOf(b) - anchorOf(id)); return ts.reduce((s, x) => s + x, 0) / ts.length; };
@@ -205,7 +235,7 @@ export function layoutChain(g: Graph, sel: string, width: number, height: number
     return { a, b, pts };
   });
   const s = at.get(sel)!, r = rivals.length ? at.get(rivals[0]) : undefined;
-  return { cards: cards.filter(c => !c.dummy), edges: chainEdges, width, height: top + frame + 24, rival: r ? { x: s.x + 14, y: r.y - 14 - 9 } : undefined, crossings: Math.min(cy, cb) };
+  return { cards: cards.filter(c => !c.dummy), edges: chainEdges, width: Math.max(width, Math.ceil(x0 + ncol * w + (ncol - 1) * CARD.colGap + 16)), height: top + frame + 24, rival: r ? { x: s.x + 14, y: r.y - 14 - 9 } : undefined, crossings: Math.min(cy, cb) };
 }
 
 /** Orthogonal path with soft corners through a list of points (each hop: across, down, across). */

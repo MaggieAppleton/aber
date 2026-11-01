@@ -10,7 +10,7 @@ import { ObjectPane, type ObjKind, type PaneNav } from "./panes";
 import { CurrentHome } from "./current";
 import { ColumnsDeveloped, columnsWidth } from "./columns2";
 import { AtlasHosted } from "./atlas2";
-import { Timeline } from "./timeline";
+import { TimelineHosted } from "./timeline-app";
 import { DumpOrAsk, DOCK_W, PRIOR, escapeDump, useDump, type Sees } from "./pill-study";
 import "./homes.css";
 import "./panes.css";
@@ -152,7 +152,7 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
   if (view === "current") body = <CurrentHome host={{ open, onOpen: openObj, compact }} />;
   else if (view === "columns") body = <ColumnsDeveloped fold="rails" host={{ open, onOpen: (k, id) => openObj(k as ObjKind, id), onClose: closeObj, unfolded, onUnfold: setUnfolded, compact, onRestore: () => setSnap(restore[view] ?? "wide") }} />;
   else if (view === "atlas") body = <AtlasHosted open={open} onOpen={openObj} width={contentW} height={APP_H} />;
-  else body = <Timeline width={contentW} height={APP_H} open={open} onOpen={openObj} />;
+  else body = <TimelineHosted width={contentW} height={APP_H} open={open} onOpen={openObj} compact={compact} />;
 
   const objKey = open && `${open.kind}:${open.id}`;
   const scroller = useRef<HTMLDivElement>(null);

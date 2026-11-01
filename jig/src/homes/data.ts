@@ -37,8 +37,8 @@ export const THEORIES: Theory[] = [
     body: "If tokens are cheap and agents remember, there's no reason to switch them off." },
   { id: "d1", claim: "Local models absorb most everyday agent work", themes: ["cost"], confidence: null, supports: 3, undermines: 0, draft: true, horizon: 2028, follows: [], rivals: [], pending: 0, history: [],
     body: "Drafted overnight from 3 signals about open-weight models." },
-  { id: "d2", claim: "Software is priced per outcome, not per seat", themes: ["cost", "personal"], confidence: null, supports: 1, undermines: 0, draft: true, horizon: 2030, follows: ["t1"], rivals: [], pending: 0, history: [],
-    body: "Extrapolated from Tokens become nearly free." },
+  { id: "d2", claim: "Software is priced per outcome, not per seat", themes: ["cost", "personal"], confidence: null, supports: 1, undermines: 0, draft: true, horizon: 2030, follows: ["t1", "t7"], rivals: [], pending: 0, history: [],
+    body: "Extrapolated from Tokens become nearly free, and from agents that run all the time." },
   { id: "d3", claim: "Review shifts from diffs to intent", themes: ["review"], confidence: null, supports: 2, undermines: 0, draft: true, horizon: 2028, follows: ["t4"], rivals: [], pending: 0, history: [],
     body: "Drafted from yesterday's voice note." },
 ];

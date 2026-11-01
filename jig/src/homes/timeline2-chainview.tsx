@@ -25,8 +25,8 @@ export function ChainView({ g, sel, width, height, from, onOpen }: {
   const centre = { x: width / 2, y: height / 2 };
   return (
     <motion.div className="t2x-chain ap-scroll" initial={{ opacity: 1 }} exit={{ opacity: 1 }}>
-      <div className="t2x-chain-inner" style={{ height: L.height }}>
-        <motion.svg className="t2x-chain-links" width={width} height={L.height} aria-hidden
+      <div className="t2x-chain-inner" style={{ height: L.height, width: L.width }}>
+        <motion.svg className="t2x-chain-links" width={L.width} height={L.height} aria-hidden
           initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: reduced ? 0 : 0.28, duration: 0.2 } }} exit={{ opacity: 0, transition: { duration: 0.08 } }}>
           <Chevrons />
           {L.edges.map(e => <path key={`${e.a}>${e.b}`} data-a={e.a} data-b={e.b} className="t2-link" data-accent={e.a === sel || e.b === sel ? "" : undefined} d={orthoPath(e.pts)} markerEnd={chev(e.a === sel || e.b === sel ? "accent" : "ink")} />)}

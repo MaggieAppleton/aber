@@ -190,7 +190,7 @@
 .t2x-badge:focus-visible { outline: 2px solid rgb(47 111 237 / 55%); outline-offset: 1px; }
 
 /* Chain layout (Field 2, River R2) */
-.t2x-chain { position: absolute; inset: 0; z-index: 6; overflow-y: auto; }
+.t2x-chain { position: absolute; inset: 0; z-index: 6; overflow: auto; }
 .t2x-chain-inner { position: relative; min-height: 100%; }
 .t2x-chain-links { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
 .t2x-card { position: absolute; left: 0; top: 0; display: grid; gap: 6px; padding: 10px; border: 0; border-radius: 8px; background: var(--ap-surface); box-shadow: var(--ap-shadow-1); text-align: left; cursor: pointer; transition: box-shadow 150ms ease-out; }

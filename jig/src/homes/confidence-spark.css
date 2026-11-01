@@ -1,0 +1,22 @@
+/* Confidence history sparkline beside the confidence steps. Tokens from .ap (homes.css). */
+.ap { --cs-up: #1f7a4d; --cs-down: #b7791f; }
+.cs { position: relative; display: inline-flex; border-radius: 4px; outline: none; cursor: default; }
+.cs svg { display: block; overflow: visible; }
+.cs:focus-visible { box-shadow: 0 0 0 1.5px var(--ap-ink-3); }
+.cs [data-tone="flat"] { --t: var(--ap-ink-3); }
+.cs [data-tone="up"] { --t: var(--cs-up); }
+.cs [data-tone="down"] { --t: var(--cs-down); }
+.cs [data-tone="challenge"] { --t: var(--ap-neg); }
+.cs-line { fill: none; stroke: var(--t); stroke-width: 1.75; stroke-linecap: square; stroke-linejoin: miter; }
+.cs-round { stroke-linecap: round; stroke-linejoin: round; }
+.cs-ink { stroke: var(--ap-ink-2); stroke-width: 1.5; }
+.cs-stop { stop-color: var(--t); }
+.cs-end { fill: var(--t); stroke: var(--ap-bg); stroke-width: 1; }
+.cs-pt { fill: var(--t); }
+.cs-base { stroke: rgb(0 0 0 / 14%); stroke-width: 1; stroke-dasharray: 1.5 2; }
+.cs-tip { position: absolute; top: calc(100% + 6px); z-index: 4; pointer-events: none; display: grid; gap: 3px; padding: 7px 9px; border-radius: 8px; background: var(--ap-surface); box-shadow: var(--ap-shadow-float); font-size: 12px; line-height: 1.45; color: var(--ap-ink-2); text-wrap: pretty; }
+.cs-log { display: grid; gap: 4px; }
+.cs-row { display: grid; grid-template-columns: 44px 30px minmax(0, 1fr); gap: 8px; align-items: baseline; }
+.cs-d { display: inline-flex; align-items: center; gap: 1px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--t); }
+.cs-d svg { align-self: center; position: relative; top: 1px; }
+.cs-d[data-tone="flat"] { font-weight: 500; }
