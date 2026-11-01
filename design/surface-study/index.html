@@ -29,84 +29,96 @@
   --hit: 28px;
 }
 
-/* ---------- Direction A · Instrument ---------- */
-#study[data-dir="instrument"] {
-  --font: "Geist", ui-sans-serif, system-ui, sans-serif; --mono: "Geist Mono", ui-monospace, monospace;
-  --ground: #f6f7f9; --surface: #ffffff; --raised: #ffffff; --sunk: #eef0f4; --glass: rgb(255 255 255 / 72%); --blur: 18px;
-  --ink: #14171c; --ink-2: #4b5260; --ink-3: #8b92a0; --line: rgb(15 23 42 / 8%); --line-2: rgb(15 23 42 / 5%);
-  --state-hover: rgb(15 23 42 / 4.5%); --state-press: rgb(15 23 42 / 8%);
-  --accent: #0e7c76; --accent-ink: #ffffff; --accent-wash: rgb(14 124 118 / 9%); --accent-line: rgb(14 124 118 / 38%);
-  --focus: #0e7c76;
-  --new: #2f6fed; --challenge: #c4402f; --challenge-wash: rgb(196 64 47 / 7%); --rose: #1f7a4d; --fell: #b7791f;
+/* ---------- Neutral scales, verified against @radix-ui/colors 3.0.0 and tailwindcss 3.4.17 ----------
+   Mapping: ground = between steps 2 and 3 (Radix) or 50 and 100 (Tailwind); sunk = step 3 / 100;
+   ink = 12 / 900; ink-2 = 11 / 600; ink-3 = 9 / between 400 and 500. Shadows and lines are tinted with ink. */
+#study[data-neu="gray"]  { --n-ground: color-mix(in oklab, #f9f9f9 55%, #f0f0f0); --n-sunk: #f0f0f0; --ink: #202020; --ink-2: #646464; --ink-3: #8d8d8d; --shc: 32 32 32; }
+#study[data-neu="zinc"]  { --n-ground: color-mix(in oklab, #fafafa 40%, #f4f4f5); --n-sunk: #f4f4f5; --ink: #18181b; --ink-2: #52525b; --ink-3: color-mix(in oklab, #a1a1aa 45%, #71717a); --shc: 24 24 27; }
+#study[data-neu="slate"] { --n-ground: color-mix(in oklab, #f9f9fb 55%, #f0f0f3); --n-sunk: #f0f0f3; --ink: #1c2024; --ink-2: #60646c; --ink-3: #8b8d98; --shc: 28 32 36; }
+#study[data-neu="sage"]  { --n-ground: color-mix(in oklab, #f7f9f8 55%, #eef1f0); --n-sunk: #eef1f0; --ink: #1a211e; --ink-2: #5f6563; --ink-3: #868e8b; --shc: 26 33 30; }
+
+/* ---------- Shared tokens and semantics (Radix steps: 9 solid, 11 text, 3 wash) ---------- */
+#study {
+  --ground: var(--n-ground); --surface: #ffffff; --raised: #ffffff; --sunk: var(--n-sunk); --glass: rgb(255 255 255 / 74%);
+  --line: rgb(var(--shc) / 9%); --line-2: rgb(var(--shc) / 5.5%);
+  --state-hover: rgb(var(--shc) / 4.5%); --state-press: rgb(var(--shc) / 8%);
+  --new: #0090ff;                                   /* blue 9 */
+  --challenge: #e5484d; --challenge-text: #ce2c31; --challenge-wash: #feebec;   /* red 9, 11, 3 */
+  --rose: #46a758;                                  /* grass 9: confidence rose */
+  --fell: #ab6400;                                  /* amber 11: confidence fell */
+  --draft-line: rgb(var(--shc) / 26%); --draft-fill: rgb(255 255 255 / 45%);
   --h-signal: var(--ink-3); --h-theme: var(--ink-3); --h-theory: var(--ink-3); --h-proto: var(--ink-3);
-  --draft-line: rgb(15 23 42 / 22%); --draft-fill: rgb(255 255 255 / 45%);
+  --sel-wash: color-mix(in oklab, var(--accent-wash) 55%, var(--surface)); --sel-ring: inset 0 0 0 1px var(--accent-line);
+}
+
+/* ---------- Material · Crisp ---------- */
+#study[data-mat="crisp"] {
+  --font: "Geist", ui-sans-serif, system-ui, sans-serif; --mono: "Geist Mono", ui-monospace, monospace; --blur: 18px;
   --r-1: 4px; --r-2: 7px; --r-3: 10px; --r-4: 14px; --r-pill: 999px;
   --hi: inset 0 0 0 0 transparent;
-  --sh-card: 0 0 0 0.5px rgb(15 23 42 / 10%), 0 1px 2px rgb(15 23 42 / 5%);
-  --sh-card-hover: 0 0 0 0.5px rgb(15 23 42 / 16%), 0 1px 2px rgb(15 23 42 / 6%);
-  --sh-raised: 0 0 0 0.5px rgb(15 23 42 / 12%), 0 2px 4px -1px rgb(15 23 42 / 6%), 0 8px 18px -6px rgb(15 23 42 / 12%);
-  --sh-float: 0 0 0 0.5px rgb(15 23 42 / 10%), 0 4px 8px -2px rgb(15 23 42 / 6%), 0 12px 28px -6px rgb(15 23 42 / 14%);
-  --sh-sheet: 0 0 0 0.5px rgb(15 23 42 / 10%), 0 8px 16px -4px rgb(15 23 42 / 8%), 0 20px 44px -10px rgb(15 23 42 / 18%);
-  --sh-pop: 0 0 0 0.5px rgb(15 23 42 / 12%), 0 6px 12px -2px rgb(15 23 42 / 8%), 0 16px 36px -8px rgb(15 23 42 / 20%);
-  --sh-modal: 0 0 0 0.5px rgb(15 23 42 / 12%), 0 24px 64px -12px rgb(15 23 42 / 30%);
-  --sh-tip: 0 2px 8px rgb(15 23 42 / 22%);
-  --sel-wash: var(--accent-wash); --sel-ring: inset 0 0 0 1px var(--accent-line);
+  --sh-card: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 1px 2px rgb(var(--shc) / 5%);
+  --sh-card-hover: 0 0 0 0.5px rgb(var(--shc) / 16%), 0 1px 2px rgb(var(--shc) / 6%);
+  --sh-raised: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 2px 4px -1px rgb(var(--shc) / 6%), 0 8px 18px -6px rgb(var(--shc) / 12%);
+  --sh-float: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 4px 8px -2px rgb(var(--shc) / 6%), 0 12px 28px -6px rgb(var(--shc) / 14%);
+  --sh-sheet: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 8px 16px -4px rgb(var(--shc) / 8%), 0 20px 44px -10px rgb(var(--shc) / 18%);
+  --sh-pop: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 6px 12px -2px rgb(var(--shc) / 8%), 0 16px 36px -8px rgb(var(--shc) / 20%);
+  --sh-modal: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 24px 64px -12px rgb(var(--shc) / 30%);
+  --sh-tip: 0 2px 8px rgb(var(--shc) / 22%);
   --dur-1: 90ms; --dur-2: 160ms; --dur-3: 260ms; --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --spring: cubic-bezier(0.16, 1, 0.3, 1); --spring-dur: 380ms; --press: 0.97;
 }
 
-/* ---------- Direction B · Field Atlas ---------- */
-#study[data-dir="field"] {
-  --font: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
-  --ground: #ecece4; --surface: #fbfbf7; --raised: #fffffb; --sunk: #e2e2d8; --glass: rgb(251 251 247 / 82%); --blur: 12px;
-  --ink: #1c211e; --ink-2: #4c534e; --ink-3: #848a83; --line: rgb(40 48 36 / 12%); --line-2: rgb(40 48 36 / 7%);
-  --state-hover: rgb(40 48 36 / 5%); --state-press: rgb(40 48 36 / 9%);
-  --accent: #1c211e; --accent-ink: #fbfbf7; --accent-wash: rgb(28 33 30 / 6%); --accent-line: rgb(28 33 30 / 45%);
-  --focus: #1c211e;
-  --new: #2f6fed; --challenge: #c2412d; --challenge-wash: rgb(194 65 45 / 8%); --rose: #1f7a4d; --fell: #b7791f;
-  --h-signal: #23857b; --h-theme: #a8771f; --h-theory: #5a4fc4; --h-proto: #8a6a52;
-  --draft-line: rgb(40 48 36 / 30%); --draft-fill: rgb(251 251 247 / 40%);
+/* ---------- Material · Paper ---------- */
+#study[data-mat="paper"] {
+  --font: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace; --blur: 10px; --glass: color-mix(in oklab, var(--surface) 88%, transparent);
   --r-1: 3px; --r-2: 5px; --r-3: 7px; --r-4: 11px; --r-pill: 999px;
   --hi: inset 0 0 0 0 transparent;
-  --sh-card: 0 0 0 0.5px rgb(50 45 30 / 16%), 0 1px 0 rgb(50 45 30 / 8%);
-  --sh-card-hover: 0 0 0 0.5px rgb(50 45 30 / 26%), 0 1px 0 rgb(50 45 30 / 10%);
-  --sh-raised: 0 0 0 0.5px rgb(50 45 30 / 20%), 0 2px 0 rgb(50 45 30 / 6%), 0 8px 16px -8px rgb(50 45 30 / 22%);
-  --sh-float: 0 0 0 0.5px rgb(50 45 30 / 16%), 0 2px 4px rgb(50 45 30 / 6%), 0 10px 24px -8px rgb(50 45 30 / 24%);
-  --sh-sheet: 0 0 0 0.5px rgb(50 45 30 / 16%), 0 16px 36px -10px rgb(50 45 30 / 28%);
-  --sh-pop: 0 0 0 0.5px rgb(50 45 30 / 18%), 0 12px 30px -8px rgb(50 45 30 / 30%);
-  --sh-modal: 0 0 0 0.5px rgb(50 45 30 / 18%), 0 24px 60px -12px rgb(50 45 30 / 36%);
-  --sh-tip: 0 2px 6px rgb(50 45 30 / 26%);
-  --sel-wash: color-mix(in oklab, var(--obj, var(--ink)) 9%, var(--surface)); --sel-ring: inset 0 0 0 1px color-mix(in oklab, var(--obj, var(--ink)) 55%, transparent);
+  --sh-card: 0 0 0 0.5px rgb(var(--shc) / 15%), 0 1px 0 rgb(var(--shc) / 7%);
+  --sh-card-hover: 0 0 0 0.5px rgb(var(--shc) / 24%), 0 1px 0 rgb(var(--shc) / 9%);
+  --sh-raised: 0 0 0 0.5px rgb(var(--shc) / 18%), 0 2px 0 rgb(var(--shc) / 6%), 0 8px 16px -8px rgb(var(--shc) / 20%);
+  --sh-float: 0 0 0 0.5px rgb(var(--shc) / 15%), 0 2px 4px rgb(var(--shc) / 5%), 0 10px 24px -8px rgb(var(--shc) / 22%);
+  --sh-sheet: 0 0 0 0.5px rgb(var(--shc) / 15%), 0 16px 36px -10px rgb(var(--shc) / 26%);
+  --sh-pop: 0 0 0 0.5px rgb(var(--shc) / 17%), 0 12px 30px -8px rgb(var(--shc) / 28%);
+  --sh-modal: 0 0 0 0.5px rgb(var(--shc) / 17%), 0 24px 60px -12px rgb(var(--shc) / 34%);
+  --sh-tip: 0 2px 6px rgb(var(--shc) / 24%);
   --dur-1: 90ms; --dur-2: 170ms; --dur-3: 280ms; --ease: cubic-bezier(0.25, 0.8, 0.25, 1);
   --spring: linear(0, 0.006, 0.025 2.8%, 0.101 6.1%, 0.539 18.9%, 0.721 25.3%, 0.849 31.5%, 0.937 38.1%, 0.968 41.8%, 0.991 45.7%, 1.006 50.1%, 1.015 55%, 1.017 63.9%, 1.001 85.9%, 1);
   --spring-dur: 460ms; --press: 0.975;
 }
 
-/* ---------- Direction C · Gel ---------- */
-#study[data-dir="gel"] {
-  --font: "Figtree", ui-sans-serif, system-ui, sans-serif; --mono: "Geist Mono", ui-monospace, monospace;
-  --ground: #f2f1f9; --surface: #ffffff; --raised: #ffffff; --sunk: #e9e7f5; --glass: rgb(255 255 255 / 66%); --blur: 22px;
-  --ink: #18162a; --ink-2: #4d4a66; --ink-3: #8d8aa6; --line: rgb(40 30 110 / 9%); --line-2: rgb(40 30 110 / 5%);
-  --state-hover: rgb(90 70 220 / 6%); --state-press: rgb(90 70 220 / 11%);
-  --accent: #6e4cf5; --accent-ink: #ffffff; --accent-wash: rgb(110 76 245 / 10%); --accent-line: rgb(110 76 245 / 42%);
-  --focus: #6e4cf5;
-  --new: #2f6fed; --challenge: #d43f3a; --challenge-wash: rgb(212 63 58 / 8%); --rose: #1f8a55; --fell: #c2821c;
-  --h-signal: var(--ink-3); --h-theme: var(--ink-3); --h-theory: var(--ink-3); --h-proto: var(--ink-3);
-  --draft-line: rgb(80 60 200 / 30%); --draft-fill: rgb(255 255 255 / 50%);
+/* ---------- Material · Soft ---------- */
+#study[data-mat="soft"] {
+  --font: "Figtree", ui-sans-serif, system-ui, sans-serif; --mono: "Geist Mono", ui-monospace, monospace; --blur: 22px; --glass: color-mix(in oklab, var(--surface) 66%, transparent);
   --r-1: 6px; --r-2: 10px; --r-3: 14px; --r-4: 20px; --r-pill: 999px;
-  --hi: inset 0 1px 0 rgb(255 255 255 / 90%), inset 0 -1px 0 rgb(40 30 110 / 5%);
-  --sh-card: 0 0 0 0.5px rgb(40 30 110 / 8%), 0 1px 1px rgb(40 30 110 / 4%), 0 3px 8px -3px rgb(40 30 110 / 10%);
-  --sh-card-hover: 0 0 0 0.5px rgb(40 30 110 / 12%), 0 1px 1px rgb(40 30 110 / 5%), 0 4px 10px -3px rgb(40 30 110 / 13%);
-  --sh-raised: 0 0 0 1px var(--accent-line), 0 0 0 4px var(--accent-wash), 0 10px 24px -8px rgb(70 40 200 / 25%);
-  --sh-float: 0 0 0 0.5px rgb(40 30 110 / 10%), 0 6px 12px -4px rgb(60 40 160 / 10%), 0 16px 36px -10px rgb(60 40 160 / 24%);
-  --sh-sheet: 0 0 0 0.5px rgb(40 30 110 / 10%), 0 24px 52px -14px rgb(60 40 160 / 30%);
-  --sh-pop: 0 0 0 0.5px rgb(40 30 110 / 12%), 0 18px 40px -12px rgb(60 40 160 / 32%);
-  --sh-modal: 0 0 0 0.5px rgb(40 30 110 / 12%), 0 30px 80px -16px rgb(60 40 160 / 40%);
-  --sh-tip: 0 4px 12px rgb(40 30 110 / 28%);
-  --sel-wash: var(--accent-wash); --sel-ring: inset 0 0 0 1px var(--accent-line);
+  --hi: inset 0 1px 0 rgb(255 255 255 / 95%), inset 0 -1px 0 rgb(var(--shc) / 4%);
+  --sh-card: 0 0 0 0.5px rgb(var(--shc) / 7%), 0 1px 1px rgb(var(--shc) / 3%), 0 3px 8px -3px rgb(var(--shc) / 9%);
+  --sh-card-hover: 0 0 0 0.5px rgb(var(--shc) / 11%), 0 1px 1px rgb(var(--shc) / 4%), 0 4px 10px -3px rgb(var(--shc) / 12%);
+  --sh-raised: 0 0 0 0.5px rgb(var(--shc) / 8%), 0 0 0 4px var(--sel-glow, transparent), 0 10px 24px -8px rgb(var(--shc) / 18%);
+  --sh-float: 0 0 0 0.5px rgb(var(--shc) / 8%), 0 6px 12px -4px rgb(var(--shc) / 8%), 0 16px 36px -10px rgb(var(--shc) / 20%);
+  --sh-sheet: 0 0 0 0.5px rgb(var(--shc) / 8%), 0 24px 52px -14px rgb(var(--shc) / 26%);
+  --sh-pop: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 18px 40px -12px rgb(var(--shc) / 28%);
+  --sh-modal: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 30px 80px -16px rgb(var(--shc) / 36%);
+  --sh-tip: 0 4px 12px rgb(var(--shc) / 24%);
+  --sel-glow: var(--accent-wash);
   --dur-1: 100ms; --dur-2: 180ms; --dur-3: 300ms; --ease: cubic-bezier(0.3, 0.7, 0.2, 1);
   --spring: linear(0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1);
-  --spring-dur: 560ms; --press: 0.95;
+  --spring-dur: 520ms; --press: 0.95;
+}
+
+/* ---------- Accent ("you are acting here"): Radix solid 9, hover 10, text 11, wash 3, ring 7 ---------- */
+#study[data-acc="ink"]    { --accent: var(--ink); --accent-hover: color-mix(in oklab, var(--ink) 86%, white); --accent-text: var(--ink); --accent-ink: #ffffff; --accent-wash: rgb(var(--shc) / 5.5%); --accent-line: rgb(var(--shc) / 36%); --focus: var(--ink); }
+#study[data-acc="teal"]   { --accent: #12a594; --accent-hover: #0d9b8a; --accent-text: #008573; --accent-ink: #ffffff; --accent-wash: #e0f8f3; --accent-line: #83cdc1; --focus: #12a594; }
+#study[data-acc="jade"]   { --accent: #29a383; --accent-hover: #26997b; --accent-text: #208368; --accent-ink: #ffffff; --accent-wash: #e6f7ed; --accent-line: #8bceb6; --focus: #29a383; }
+#study[data-acc="cyan"]   { --accent: #00a2c7; --accent-hover: #0797b9; --accent-text: #107d98; --accent-ink: #ffffff; --accent-wash: #def7f9; --accent-line: #7dcedc; --focus: #00a2c7; }
+#study[data-acc="orange"] { --accent: #f76b15; --accent-hover: #ef5f00; --accent-text: #cc4e00; --accent-ink: #ffffff; --accent-wash: #ffefd6; --accent-line: #f5ae73; --focus: #f76b15; }
+
+/* ---------- Object colours (optional): object type, doubled with its glyph. Radix step 11 ---------- */
+#study[data-hue="on"] { --h-signal: #107d98; --h-theme: #208368; --h-theory: #cc4e00; --h-proto: var(--ink-2); }   /* cyan 11, jade 11, orange 11 */
+/* Declared on the objects themselves so var(--obj) resolves to each object's own colour */
+#study[data-hue="on"] :is(.card, .row, .chip, .sig, .bitem) {
+  --sel-wash: color-mix(in oklab, var(--obj, var(--accent)) 7%, var(--surface));
+  --sel-ring: inset 0 0 0 1px color-mix(in oklab, var(--obj, var(--accent)) 45%, transparent);
+  --sel-glow: color-mix(in oklab, var(--obj, var(--accent)) 12%, transparent);
 }
 
 /* ---------- Page ---------- */
@@ -151,6 +163,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .seg button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 .seg .thumb { position: absolute; z-index: 0; top: 3px; bottom: 3px; left: 0; border-radius: 9px; background: var(--pg-bg); box-shadow: 0 0 0 1px var(--pg-line);
   transition: transform var(--spring-dur) var(--spring), width var(--spring-dur) var(--spring); }
+.dirbar .groups { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.dirbar .gl { font-size: 11px; color: var(--pg-mute); text-transform: uppercase; letter-spacing: 0.06em; margin-right: -4px; }
 .dirnote { margin-top: 8px; font-size: 13px; color: var(--pg-mute); max-width: 80ch; }
 
 /* ---------- Specimen: the Aber frame ---------- */
@@ -175,8 +189,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .ib.round { border-radius: var(--r-pill); }
 .btn { display: inline-flex; align-items: center; gap: var(--sp-2); height: var(--hit); padding: 0 var(--sp-4); border-radius: var(--r-2);
   font-weight: 500; font-size: var(--t-12); background: var(--accent); color: var(--accent-ink); box-shadow: var(--hi), 0 1px 2px rgb(0 0 0 / 10%); }
-.btn:hover, .btn.is-hover { background-color: color-mix(in oklab, var(--accent) 88%, white); }
-.btn:active, .btn.is-press { background-color: color-mix(in oklab, var(--accent) 88%, black); }
+.btn:hover, .btn.is-hover { background-color: var(--accent-hover); }
+.btn:active, .btn.is-press { background-color: var(--accent-hover); }
 .btn.ghost { background: var(--surface); color: var(--ink); box-shadow: var(--hi), 0 0 0 0.5px var(--line), 0 1px 2px var(--line-2); }
 .btn.ghost:hover, .btn.ghost.is-hover { background: color-mix(in oklab, var(--surface) 94%, var(--ink)); }
 
@@ -207,7 +221,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .card[aria-current="true"], .card.is-sel { background: var(--sel-wash); box-shadow: var(--hi), var(--sh-raised), var(--sel-ring); }
 .card .claim { font-weight: 600; text-wrap: pretty; padding-right: 18px; }
 .claim-icon { position: absolute; top: var(--sp-4); right: var(--sp-3); color: var(--h-theory); opacity: 0.7; transition: color var(--dur-1), opacity var(--dur-1); }
-#study:not([data-dir="field"]) .claim-icon { opacity: 0; }
+#study[data-hue="off"] .claim-icon { opacity: 0; }
 .card .marks { display: flex; align-items: center; gap: var(--sp-3); font-size: var(--t-12); color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .conf-mini { display: inline-flex; gap: 2px; }
 .conf-mini i { width: 9px; height: 3px; border-radius: 2px; background: var(--line); }
@@ -216,7 +230,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .badge-dash { display: inline-grid; place-items: center; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; font-size: var(--t-11); box-shadow: inset 0 0 0 1px var(--draft-line); border: 0; color: var(--ink-2); }
 .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex: none; }
 .dot.new { background: var(--new); box-shadow: 0 0 0 3px color-mix(in oklab, var(--new) 18%, transparent); }
-.dot.chal { background: var(--challenge); box-shadow: 0 0 0 3px var(--challenge-wash); }
+.dot.chal { background: var(--challenge); box-shadow: 0 0 0 3px color-mix(in oklab, var(--challenge) 16%, transparent); }
 
 /* Draft material: not yet mine. Dashed, translucent, no shadow, same plane */
 .card.draft { background: var(--draft-fill); box-shadow: none; }
@@ -228,7 +242,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .card.draft:hover .edge-acts, .card.draft:focus-within .edge-acts, .card.draft.is-hover .edge-acts { opacity: 1; transform: none; }
 .mini { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: var(--r-pill); background: var(--surface); box-shadow: var(--hi), 0 0 0 0.5px var(--line), 0 1px 2px var(--line-2); color: var(--ink-2); }
 .mini.yes:hover { color: var(--rose); }
-.mini.no:hover { color: var(--challenge); }
+.mini.no:hover { color: var(--challenge-text); }
 .card.solidify { animation: solidify var(--spring-dur) var(--spring); }
 @keyframes solidify { 0% { transform: scale(0.97); } 60% { transform: scale(1.012); } 100% { transform: none; } }
 .card.solidify::after { opacity: 0; }
@@ -288,8 +302,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .switcher .ib[aria-pressed="true"]:hover { background: transparent; }
 .switcher .hl { position: absolute; z-index: 0; top: 4px; left: 4px; width: var(--hit); height: var(--hit); border-radius: var(--r-pill); background: var(--surface);
   box-shadow: var(--hi), 0 0 0 0.5px var(--line), 0 1px 3px var(--line); transition: transform var(--spring-dur) var(--spring); }
-#study[data-dir="gel"] .switcher .hl { background: var(--accent-wash); box-shadow: inset 0 0 0 1px var(--accent-line); }
-#study[data-dir="gel"] .switcher .ib[aria-pressed="true"] { color: var(--accent); }
+.switcher .ib[aria-pressed="true"] { color: var(--accent-text); }
 
 .pill { position: absolute; right: 12px; bottom: 12px; z-index: var(--z-1); display: flex; align-items: center; gap: var(--sp-3); width: 248px; height: 40px; padding: 0 var(--sp-1) 0 var(--sp-4);
   border-radius: var(--r-pill); background: var(--glass); -webkit-backdrop-filter: blur(var(--blur)) saturate(1.6); backdrop-filter: blur(var(--blur)) saturate(1.6);
@@ -312,7 +325,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .comp-row { display: flex; align-items: center; gap: var(--sp-1); }
 .comp-row .spacer { flex: 1; }
 .send { width: 30px; height: 30px; border-radius: var(--r-pill); display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); box-shadow: var(--hi); overflow: hidden; }
-.send:hover { background: color-mix(in oklab, var(--accent) 88%, white); }
+.send:hover { background: var(--accent-hover); }
 .send span { display: grid; place-items: center; animation: swap var(--dur-3) var(--spring); }
 @keyframes swap { from { opacity: 0; transform: scale(0.3); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
 
@@ -324,7 +337,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .mi:hover, .mi:focus-visible { color: var(--ink); }
 .mi:focus-visible { outline: 0; background: var(--state-hover); }
 .mi kbd { margin-left: auto; font-family: var(--mono); font-size: var(--t-11); color: var(--ink-3); }
-.mi.danger:hover { color: var(--challenge); background: var(--challenge-wash); }
+.mi.danger:hover { color: var(--challenge-text); background: var(--challenge-wash); }
 .sep { height: 1px; margin: var(--sp-1) var(--sp-2); background: var(--line-2); }
 
 /* Toast (tier 6) */
@@ -407,7 +420,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .bitem .ev-row { grid-column: 2; display: flex; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); border-radius: var(--r-2); box-shadow: inset 0 0 0 1px var(--draft-line); background: var(--draft-fill); color: var(--ink-2); font-size: var(--t-12); }
 .bitem .ev-row svg { color: var(--h-signal); }
 .bitem .why { grid-column: 2; font-size: var(--t-12); color: var(--ink-3); }
-.bitem.chal { background: color-mix(in oklab, var(--challenge-wash) 100%, var(--surface)); }
+.bitem.chal { background: color-mix(in oklab, var(--challenge-wash) 55%, var(--surface)); }
 .bitem.out { transform: translateX(28px); opacity: 0; }
 .bitem.ok { transform: translateX(-6px); opacity: 0; }
 .kbdrow { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--ink-3); margin-top: 8px; }
@@ -453,21 +466,29 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   <symbol id="i-clip" viewBox="0 0 24 24"><path d="M15.5 7.5 8.6 14.4a2 2 0 0 0 2.8 2.8l7.4-7.4a4 4 0 0 0-5.7-5.7l-7.4 7.4a6 6 0 0 0 8.5 8.5l6.2-6.2"/></symbol>
 </svg>
 
-<div id="study" data-dir="field">
+<div id="study" data-mat="crisp" data-neu="slate" data-acc="ink" data-hue="on">
 <div class="wrap">
 
 <header class="top">
   <div class="eyebrow">Aber · design language exploration · 1 Nov 2026</div>
-  <h1>Three surface languages for Aber, one set of components</h1>
-  <p>The grammar, the spatial model and the density stay exactly as the design model fixes them. What changes is layers 3 and 4: material, colour, light and motion. Every component on this page is written once against semantic tokens; switching direction only swaps their values. Hover, press, focus and tab through everything: it is all live.</p>
+  <h1>A surface language for Aber, built from four switches</h1>
+  <p>The grammar, the spatial model and the density stay exactly as the design model fixes them. What changes is layers 3 and 4: material, colour, light and motion. Every component on this page is written once against semantic tokens. Instead of fixed bundles, pick each layer separately: material (shadow, radius, motion), a neutral scale from Radix or Tailwind, an accent, and whether objects carry their own colour. Hover, press, focus and tab through everything: it is all live.</p>
 </header>
 
 <div class="dirbar">
-  <div class="seg" role="group" aria-label="Direction" id="seg">
-    <span class="thumb" aria-hidden="true"></span>
-    <button type="button" data-d="instrument" aria-pressed="false">A · Instrument</button>
-    <button type="button" data-d="field" aria-pressed="true">B · Field Atlas</button>
-    <button type="button" data-d="gel" aria-pressed="false">C · Gel</button>
+  <div class="groups">
+    <span class="gl">Material</span>
+    <div class="seg" role="group" aria-label="Material" data-axis="mat"><span class="thumb" aria-hidden="true"></span>
+      <button type="button" data-v="crisp">Crisp</button><button type="button" data-v="paper">Paper</button><button type="button" data-v="soft">Soft</button></div>
+    <span class="gl">Neutral</span>
+    <div class="seg" role="group" aria-label="Neutral" data-axis="neu"><span class="thumb" aria-hidden="true"></span>
+      <button type="button" data-v="gray">Gray</button><button type="button" data-v="zinc">Zinc</button><button type="button" data-v="slate">Slate</button><button type="button" data-v="sage">Sage</button></div>
+    <span class="gl">Accent</span>
+    <div class="seg" role="group" aria-label="Accent" data-axis="acc"><span class="thumb" aria-hidden="true"></span>
+      <button type="button" data-v="ink">Ink</button><button type="button" data-v="teal">Teal</button><button type="button" data-v="jade">Jade</button><button type="button" data-v="cyan">Cyan</button><button type="button" data-v="orange">Orange</button></div>
+    <span class="gl">Object colours</span>
+    <div class="seg" role="group" aria-label="Object colours" data-axis="hue"><span class="thumb" aria-hidden="true"></span>
+      <button type="button" data-v="on">On</button><button type="button" data-v="off">Off</button></div>
   </div>
   <div class="dirnote" id="dirnote"></div>
 </div>
@@ -488,16 +509,16 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   <p class="lede">The existing encoding map extended, keeping one meaning per variable. Rows marked <span class="tag new-meaning">new meaning</span> are decisions for you, not defaults.</p>
   <div class="panel scroll-x">
     <table class="map">
-      <thead><tr><th>Variable</th><th>Means</th><th>A · Instrument</th><th>B · Field Atlas</th><th>C · Gel</th></tr></thead>
+      <thead><tr><th>Variable</th><th>Means</th><th>Options on this page</th></tr></thead>
       <tbody>
-        <tr><td>Ground tint</td><td>Nothing. A hue-biased neutral so greys look chosen</td><td>Cool slate</td><td>Stone, green-grey</td><td>Lavender</td></tr>
-        <tr><td>Accent hue <span class="tag new-meaning">new meaning</span></td><td>You are acting here: selection, focus ring, primary button, current view</td><td>Teal</td><td>Ink (no hue)</td><td>Violet</td></tr>
-        <tr><td>Object hue <span class="tag new-meaning">new meaning</span></td><td>Object type, doubled with the existing glyph</td><td>None, grey glyphs</td><td>Signal teal, theme ochre, theory indigo, prototype umber</td><td>None, grey glyphs</td></tr>
-        <tr><td>Blue, red, green, amber</td><td>Unchanged: new, challenge, confidence rose, confidence fell</td><td colspan="3">Same hues in all three; given a soft halo so they read at a glance</td></tr>
-        <tr><td>Shadow</td><td>Height above the base plane, and nothing else</td><td>Crisp, cool, three layers</td><td>Paper: hard 1 px foot plus soft drop</td><td>Soft, tinted, with an inner top highlight</td></tr>
-        <tr><td>Dashed outline</td><td>Not yet mine (drafts, suggestions)</td><td colspan="3">Unchanged. Accepting animates the dash away so the object solidifies in place</td></tr>
-        <tr><td>Wash plus 1 px ring</td><td>Selected or open</td><td>Accent wash</td><td>Wash in the object's own hue</td><td>Accent ring plus outer glow</td></tr>
-        <tr><td>Press</td><td>"I felt that": scale plus deeper state layer</td><td>0.97, no overshoot</td><td>0.975, small settle</td><td>0.95, springy</td></tr>
+        <tr><td>Neutral tint</td><td>Nothing. A trace of hue so greys look chosen</td><td>Radix Gray (none), Tailwind Zinc (trace of cool), Radix Slate (faint blue), Radix Sage (faint green). Shadows and lines take the neutral's darkest step, so they match the tint</td></tr>
+        <tr><td>Accent <span class="tag new-meaning">new meaning</span></td><td>You are acting here: selection, focus ring, primary button, current view</td><td>Ink, Teal, Jade, Cyan, Orange. Radix step 9 for fills, 10 for hover, 11 for text, 3 for washes, 7 for rings</td></tr>
+        <tr><td>Object colour <span class="tag new-meaning">new meaning</span></td><td>Object type, doubled with the existing glyph</td><td>Signal cyan, theme jade, theory orange, prototype neutral (Radix step 11), or off</td></tr>
+        <tr><td>Blue, red, green, amber</td><td>Unchanged: new, challenge, confidence rose, confidence fell</td><td>Moved to Radix: blue 9, red 9 (11 for text), grass 9, amber 11. Each dot gets a soft halo so it reads at a glance</td></tr>
+        <tr><td>Shadow</td><td>Height above the base plane, and nothing else</td><td>Crisp: three thin layers. Paper: hard 1 px foot plus soft drop. Soft: wide and diffuse, with a white highlight along the top edge</td></tr>
+        <tr><td>Dashed outline</td><td>Not yet mine (drafts, suggestions)</td><td>Unchanged. Accepting animates the dash away so the object solidifies in place</td></tr>
+        <tr><td>Wash plus 1 px ring</td><td>Selected or open</td><td>Accent wash, or the object's own colour when object colours are on</td></tr>
+        <tr><td>Press</td><td>"I felt that": scale plus deeper state layer</td><td>0.97 crisp, 0.975 paper, 0.95 soft</td></tr>
       </tbody>
     </table>
   </div>
@@ -638,12 +659,13 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 <section>
   <h2>My read, and what needs your call</h2>
   <div class="cols">
-    <div class="panel"><h3>Recommendation · moderate confidence</h3><p>Field Atlas as the base, with Gel's press feel and inner highlight on floating chrome only. It is the only direction where the new colour carries information (object type) rather than decoration, which fits "nothing arbitrary", and its map-ink palette gives Atlas, Columns and Timeline something to draw with. Instrument is the safe option and closest to today. Gel is the most fun, but its overshoot will start to feel slow on actions you repeat dozens of times a morning, such as Briefing triage.</p></div>
+    <div class="panel"><h3>Recommendation · moderate confidence</h3><p>Crisp, Slate, Ink accent, object colours on. The colour wheel is already crowded: blue, red, green and amber are taken by meanings. Object colours add three more hues, so a coloured accent on top of them starts to compete (the page warns when that happens). Pick one colour system: either objects carry colour and the accent stays ink, or objects stay grey and one brand accent (Teal or Orange) does the work. The first gives colour a job everywhere; the second is calmer.</p></div>
     <div class="panel"><h3>Decisions for you</h3><ul>
       <li>Should colour mean object type? It adds a meaning to the encoding map and means prototype status can no longer borrow blue and green.</li>
       <li>Should the accent mean "you are acting here"? This also splits the focus ring away from the blue "new" dot, which share a tint today.</li>
       <li>Keep "hover never lifts"? I kept it. Cards rise only when selected or dragged.</li>
-      <li>Font: Inter today. Plex Sans (already in <code>design/space-and-motion/assets</code>), Geist or Figtree go with each direction.</li>
+      <li>Which neutral? I would pick Slate or Zinc; Sage leans green next to the jade theme colour.</li>
+      <li>Font: Inter today. Each material shows a candidate: Geist (Crisp), IBM Plex Sans (Paper, already in <code>design/space-and-motion/assets</code>), Figtree (Soft).</li>
     </ul></div>
     <div class="panel"><h3>If you pick one, the path</h3><ul>
       <li>Replace the literal dump in <code>design-tokens.css</code> with about 60 semantic tokens, as on this page.</li>
@@ -666,11 +688,15 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   const study = $('#study');
   const icon = (id, cls = 'i s') => `<svg class="${cls}"><use href="#i-${id}"/></svg>`;
 
-  const NOTES = {
-    instrument: 'Instrument: precise and calm. Cool slate neutrals, one teal accent for "you are acting here", crisp layered shadows, glass floating chrome, motion that settles without overshoot. Closest to today, with real depth and colour added.',
-    field: 'Field Atlas: a surveyor\'s notebook. Stone ground, ink as the accent, and four map inks that colour each object\'s glyph, so a theory is indigo and a signal teal everywhere. Selection washes in the object\'s own ink. Paper shadows with a hard 1 px foot.',
-    gel: 'Gel: tactile and playful. Lavender-tinted ground, violet accent, rounder corners, an inner top highlight on every raised surface, glows on selection and springy press. The most fun; the risk is that overshoot slows repeated actions.'
+  const AX = { mat: ['crisp', 'paper', 'soft'], neu: ['gray', 'zinc', 'slate', 'sage'], acc: ['ink', 'teal', 'jade', 'cyan', 'orange'], hue: ['on', 'off'] };
+  const DEF = { mat: 'crisp', neu: 'slate', acc: 'ink', hue: 'on' };
+  const NOTE = {
+    crisp: 'Crisp: thin layered shadows, frosted-glass floating chrome, motion that settles without overshoot.',
+    paper: 'Paper: flatter, smaller radii, a hard 1 px foot under each card like stacked sheets, a small settle in motion.',
+    soft: 'Soft: rounder corners, a white highlight along the top edge of raised surfaces, a glow around selection, springy press.',
+    gray: 'Radix Gray, no tint.', zinc: 'Tailwind Zinc, a trace of cool.', slate: 'Radix Slate, faintly blue.', sage: 'Radix Sage, faintly green.'
   };
+  const CLASH = { teal: 'the jade theme colour', jade: 'the jade theme colour', cyan: 'the cyan signal colour', orange: 'the orange theory colour' };
 
   /* ---------- Data (from the seeded example library) ---------- */
   const themes = [
@@ -779,7 +805,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 
   /* ---------- Toast ---------- */
   const t = $('#toast'), tm = $('#toastMsg'), undo = $('#undo'); let tTimer, undoFn, hovering = false;
-  function toast(msg, fn) { tm.textContent = msg; undoFn = fn; undo.hidden = !fn; t.hidden = false; clearTimeout(tTimer); arm(); }
+  function toast(msg, fn) { t.style.bottom = comp.hidden ? '60px' : (comp.offsetHeight + 20) + 'px'; tm.textContent = msg; undoFn = fn; undo.hidden = !fn; t.hidden = false; clearTimeout(tTimer); arm(); }
   const arm = () => { clearTimeout(tTimer); tTimer = setTimeout(() => { if (!hovering) t.hidden = true; else arm(); }, 4000); };
   t.addEventListener('pointerenter', () => hovering = true); t.addEventListener('pointerleave', () => { hovering = false; arm(); });
   undo.onclick = () => { if (undoFn) undoFn(); undoFn = null; t.hidden = true; };
@@ -851,27 +877,33 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   function paintFoundation() {
     const cs = getComputedStyle(study);
     $('#radii').innerHTML = ['r-1', 'r-2', 'r-3', 'r-4'].map(r => `<div style="border-radius:var(--${r})">${cs.getPropertyValue('--' + r).trim()}</div>`).join('') + '<div style="border-radius:999px;width:70px">pill</div>';
-    const roles = [['ground', 'Ground'], ['surface', 'Surface'], ['sunk', 'Sunk'], ['ink', 'Ink'], ['accent', 'Accent · acting'], ['new', 'New'], ['challenge', 'Challenge'], ['rose', 'Confidence rose'], ['h-signal', 'Signal'], ['h-theme', 'Theme'], ['h-theory', 'Theory'], ['h-proto', 'Prototype']];
+    const roles = [['ground', 'Ground'], ['surface', 'Surface'], ['sunk', 'Sunk'], ['ink-3', 'Ink 3'], ['ink-2', 'Ink 2'], ['ink', 'Ink'], ['accent', 'Accent · acting'], ['accent-wash', 'Accent wash'], ['new', 'New'], ['challenge', 'Challenge'], ['rose', 'Confidence rose'], ['h-signal', 'Signal'], ['h-theme', 'Theme'], ['h-theory', 'Theory'], ['h-proto', 'Prototype']];
     $('#palette').innerHTML = roles.map(([v, n]) => `<div class="sw"><i style="background:var(--${v})"></i><div><b>${n}</b><span>--${v}</span></div></div>`).join('');
     $('#m1').textContent = cs.getPropertyValue('--dur-1').trim() + ' · ease-out';
     $('#m2').textContent = cs.getPropertyValue('--dur-3').trim() + ' · ease-out';
     $('#m3').textContent = cs.getPropertyValue('--spring-dur').trim() + ' · spring';
   }
 
-  /* ---------- Direction switching ---------- */
-  const seg = $('#seg'), thumb = $('.thumb', seg);
-  const placeThumb = () => { const b = $('button[aria-pressed="true"]', seg); thumb.style.width = b.offsetWidth + 'px'; thumb.style.transform = `translateX(${b.offsetLeft}px)`; };
-  function setDir(d, save = true) {
-    if (!NOTES[d]) d = 'field';
-    study.dataset.dir = d; $$('button', seg).forEach(b => b.setAttribute('aria-pressed', b.dataset.d === d));
-    $('#dirnote').textContent = NOTES[d]; placeThumb(); paintFoundation();
-    if (save) { try { localStorage.setItem('aber-dir', d); } catch (_) {} if (location.hash !== '#' + d) history.replaceState?.(null, '', '#' + d); }
+  /* ---------- Axis switching ---------- */
+  const segs = $$('.seg[data-axis]');
+  const placeThumb = seg => { const b = $('button[aria-pressed="true"]', seg); const th = $('.thumb', seg); if (!b) return; th.style.width = b.offsetWidth + 'px'; th.style.transform = `translateX(${b.offsetLeft}px)`; };
+  const placeAll = () => segs.forEach(placeThumb);
+  const state = { ...DEF };
+  function apply(save = true) {
+    for (const k in AX) { study.dataset[k] = state[k]; }
+    segs.forEach(seg => $$('button', seg).forEach(b => b.setAttribute('aria-pressed', b.dataset.v === state[seg.dataset.axis])));
+    let note = `${NOTE[state.mat]} ${NOTE[state.neu]}`;
+    if (state.hue === 'on' && CLASH[state.acc]) note += ` Note: this accent sits close to ${CLASH[state.acc]}, so two colour systems compete.`;
+    $('#dirnote').textContent = note; placeAll(); paintFoundation();
+    if (save) { const h = [state.mat, state.neu, state.acc, state.hue].join('-'); try { localStorage.setItem('aber-axes', h); } catch (_) {} if (location.hash !== '#' + h) history.replaceState?.(null, '', '#' + h); }
   }
-  seg.addEventListener('click', e => { const b = e.target.closest('button[data-d]'); if (b) setDir(b.dataset.d); });
-  addEventListener('hashchange', () => setDir(location.hash.slice(1), false));
-  addEventListener('resize', placeThumb);
-  let start = location.hash.slice(1); if (!NOTES[start]) { try { start = localStorage.getItem('aber-dir') || 'field'; } catch (_) { start = 'field'; } }
-  setDir(start, false);
-  if (document.fonts?.ready) document.fonts.ready.then(placeThumb);
+  function parse(h) { const parts = (h || '').split('-'); const out = { ...DEF }; let ok = false; Object.keys(AX).forEach((k, i) => { if (AX[k].includes(parts[i])) { out[k] = parts[i]; ok = true; } }); return ok ? out : null; }
+  segs.forEach(seg => seg.addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (!b) return; state[seg.dataset.axis] = b.dataset.v; apply(); }));
+  addEventListener('hashchange', () => { const p = parse(location.hash.slice(1)); if (p) { Object.assign(state, p); apply(false); } });
+  addEventListener('resize', placeAll);
+  let saved = null; try { saved = localStorage.getItem('aber-axes'); } catch (_) {}
+  Object.assign(state, parse(location.hash.slice(1)) || parse(saved) || DEF);
+  apply(false);
+  if (document.fonts?.ready) document.fonts.ready.then(placeAll);
 })();
 </script>
