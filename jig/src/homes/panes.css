@@ -2,7 +2,11 @@
 .ap { --pn-edit-hover: rgb(0 0 0 / 2.5%); --pn-edit-bg: rgb(0 0 0 / 3.5%); --pn-edit-ring: rgb(0 0 0 / 14%); }
 
 .pn-doc { max-width: 680px; padding: 40px 48px 120px; display: grid; gap: 16px; }
-.pn-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-height: 24px; }
+/* Meta: a label/value list under the title. Labels are quiet and fixed; nothing moves on hover. */
+.pn-meta { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: 16px; row-gap: 4px; margin: 0; }
+.pn-meta-row { display: contents; }
+.pn-meta dt { display: flex; align-items: center; min-height: 24px; font-size: 12px; }
+.pn-meta dd { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; min-height: 24px; margin: 0; }
 
 /* Editable text: no browser focus rectangle. A faint tint that reaches past the text on hover,
    and the tint plus a hairline inset ring while editing. Padding with matching negative margin keeps
@@ -17,20 +21,12 @@
 .pn-title[data-draft]:focus, .pn-title[data-draft]:focus-visible { outline: 1px dashed rgb(0 0 0 / 40%); outline-offset: -1px; box-shadow: none; }
 .pn-body { margin: -4px -8px; padding: 4px 8px; font-size: 15px; line-height: 1.65; color: var(--ap-ink-2); min-height: 48px; }
 
-/* Expanding field: a compact mark that grows in place to show its name and control. */
-.pn-field { display: inline-flex; align-items: center; min-height: 24px; padding: 0 6px; margin: 0 -6px; border-radius: 6px; color: var(--ap-ink-3); outline: none; transition: background 150ms ease-out; }
-.pn-field:hover, .pn-field[data-open] { background: var(--ap-line-2); }
-.pn-field:focus-visible { box-shadow: inset 0 0 0 1.5px var(--ap-ink-3); }
 .pn-field-val { color: var(--ap-ink-2); }
-.pn-meta .pn-field .ap-label { font-size: 13px; }
+.pn-year { gap: 2px; }
+.pn-year .pn-field-val { min-width: 4ch; text-align: center; }
 .pn-reveal { display: inline-flex; overflow: hidden; white-space: nowrap; flex-shrink: 0; }
-.pn-reveal[data-axis="y"] { display: flex; }
-.pn-reveal-in { display: inline-flex; align-items: center; }
-.pn-reveal[data-axis="x"][data-side="start"] .pn-reveal-in { padding-right: 6px; }
-.pn-reveal[data-axis="x"][data-side="end"] .pn-reveal-in { padding-left: 6px; }
-.pn-reveal[data-axis="y"] .pn-reveal-in { padding-bottom: 4px; }
-.pn-reveal[data-side="end"] + .pn-field-val, .pn-field > svg + .pn-field-val { padding-left: 4px; }
-.pn-step { width: 20px; height: 20px; padding: 0; border: 0; border-radius: 5px; background: transparent; display: grid; place-items: center; color: var(--ap-ink-2); cursor: pointer; transition: background 100ms, transform 100ms; }
+.pn-reveal-in { display: inline-flex; align-items: center; padding-left: 6px; }
+.pn-step { width: 20px; height: 20px; padding: 0; border: 0; border-radius: 5px; background: transparent; display: grid; place-items: center; color: var(--ap-ink-3); flex-shrink: 0; cursor: pointer; transition: background 100ms, transform 100ms; }
 .pn-step:hover { background: var(--ap-hover); color: var(--ap-ink); }
 .pn-step:active { transform: scale(0.92); }
 .pn-step:focus-visible { outline: 1.5px solid var(--ap-ink-3); outline-offset: -1.5px; }
@@ -41,26 +37,24 @@
 .pn-conf button[data-on] { background: var(--ap-ink); }
 .pn-conf button:hover { transform: scaleY(1.5); }
 
-.ap .pn-rival { gap: 6px; }
-.pn-rival .pn-clip { min-width: 0; }
-.pn-clip { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Rival and tested theories: the full claim, wrapping when it must. */
+.pn-rivals { gap: 4px; }
+.ap .pn-rival { gap: 6px; height: auto; min-height: 24px; padding: 3px 8px; white-space: normal; overflow: visible; text-align: left; line-height: 18px; }
+.pn-rival svg { align-self: flex-start; margin-top: 3px; }
 
 /* What would change my mind */
-.pn-trip { display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px; margin: 0 -8px; }
-.pn-trip-glyph { flex-shrink: 0; width: 16px; height: 20px; padding: 0; border: 0; background: transparent; display: grid; place-items: center; color: var(--ap-ink-3); cursor: text; }
-.pn-trip-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-/* The wrap clips while its height animates; it reaches 8px past the text each side so the open box isn't cut. */
-.pn-trip-wrap { overflow: hidden; margin: 0 -8px; padding: 0 8px; }
-.pn-tripwire { min-height: 20px; color: var(--ap-ink-2); line-height: 20px; margin: 0 -8px; padding: 0 8px; }
-.pn-trip[data-open] .pn-tripwire { padding: 4px 8px; background: var(--ap-surface); box-shadow: inset 0 0 0 0.5px var(--ap-line); }
-.pn-trip[data-open] .pn-tripwire:focus, .pn-trip[data-open] .pn-tripwire:focus-visible { box-shadow: inset 0 0 0 1px var(--pn-edit-ring); }
-.pn-trip:not([data-open]) .pn-tripwire:hover { background: transparent; }
+.pn-trip { display: flex; align-items: flex-start; gap: 8px; }
+.pn-trip-glyph { flex-shrink: 0; width: 16px; height: 18px; padding: 0; border: 0; background: transparent; display: grid; place-items: center; color: var(--ap-ink-3); cursor: text; }
+.pn-trip-main { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.pn-tripwire { min-height: 28px; color: var(--ap-ink-2); line-height: 20px; padding: 4px 8px; background: var(--ap-surface); box-shadow: inset 0 0 0 0.5px var(--ap-line); }
+.pn-tripwire:hover { background: var(--ap-surface); box-shadow: inset 0 0 0 0.5px var(--pn-edit-ring); }
+.pn-tripwire:focus, .pn-tripwire:focus-visible { background: var(--ap-surface); box-shadow: inset 0 0 0 1px var(--pn-edit-ring); }
 
 /* Evidence */
 .pn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .pn-col { display: grid; gap: 4px; align-content: start; }
-.pn-ev-head { justify-self: start; margin: 0 0 2px; padding: 0 4px; font-size: 12px; }
-.pn-ev-name { font-weight: 500; color: var(--ap-ink-2); }
+.pn-ev-head { display: flex; align-items: center; gap: 6px; min-height: 24px; padding: 0 0 0 4px; font-size: 12px; color: var(--ap-ink-3); }
+.pn-ev-head .pn-step { margin-left: auto; }
 
 /* A signal, unfolding in place */
 .pn-sig { border-radius: 7px; background: var(--ap-sunk); transition: background 100ms, box-shadow 150ms; }

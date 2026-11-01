@@ -1,4 +1,4 @@
-import { createElement, useEffect, useLayoutEffect, useRef, useState, type FormEvent, type HTMLAttributes, type KeyboardEvent, type ReactNode } from "react";
+import { createElement, useLayoutEffect, useRef, useState, type FormEvent, type HTMLAttributes, type KeyboardEvent, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { DUMPS, SIGNALS, THEORIES, PROTOTYPES, theoriesIn, theme, theory, signalsFor, prototypesFor, type Signal } from "./data";
 import { Icon, IconButton, Conf, DumpIcon, Mark, ProtoGlyph, Kbd } from "./atoms";
@@ -120,31 +120,23 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
     <div className="pn-doc">
       <div className="pn-chips">{t.themes.map(th => <button key={th} className="pn-chip" title="Theme" onClick={() => onOpen("theme", th)}><Icon name="theme" size={12} /><ThemeName id={th} /></button>)}</div>
       <Editable as="h1" className="pn-title" value={edit.claim} onChange={claim => set({ claim })} singleLine aria-label="Claim" data-draft={t.draft ? "" : undefined} />
-      <div className="pn-meta">
+      <dl className="pn-meta">
         {t.draft
-          ? <span className="ap-ghost-actions"><IconButton icon="check" label="Accept (A)" /><IconButton icon="x" label="Discard (X)" /></span>
-          : <Field name="Confidence">{open => <>
-              <Reveal show={open} side="start"><span className="ap-label">Confidence</span></Reveal>
-              <span className="pn-conf" role="radiogroup" aria-label="Confidence">{[1, 2, 3, 4, 5].map(i => <button key={i} role="radio" aria-checked={i === conf} aria-label={`${i} of 5`} data-on={i <= conf ? "" : undefined} onClick={() => set({ confidence: i })} />)}</span>
-              <Reveal show={open} side="end"><Spark values={conf !== t.history.at(-1) ? [...t.history, conf] : t.history} /></Reveal>
-            </>}</Field>}
-        <Field name="Happens by" focusable>{open => <>
-          <Reveal show={!open} side="start"><Icon name="clock" size={12} /></Reveal>
-          <Reveal show={open} side="start"><span className="ap-label">Happens by</span></Reveal>
-          <Reveal show={open} side="start"><button className="pn-step" aria-label="Earlier" onClick={() => set({ horizon: edit.horizon - 1 })}><Icon name="minus" size={12} /></button></Reveal>
+          ? <div className="pn-meta-row"><dt className="ap-label">Draft</dt><dd><span className="ap-ghost-actions"><IconButton icon="check" label="Accept (A)" /><IconButton icon="x" label="Discard (X)" /></span></dd></div>
+          : <div className="pn-meta-row"><dt className="ap-label">Confidence</dt><dd>
+              <span className="pn-conf" role="radiogroup" aria-label="Confidence">{[1, 2, 3, 4, 5].map(i => <button key={i} role="radio" aria-checked={i === conf} aria-label={`${i} of 5`} title={`${i} of 5`} data-on={i <= conf ? "" : undefined} onClick={() => set({ confidence: i })} />)}</span>
+              <Spark values={conf !== t.history.at(-1) ? [...t.history, conf] : t.history} />
+              {t.challenge && <Mark kind="challenge" />}
+            </dd></div>}
+        <div className="pn-meta-row"><dt className="ap-label">Happens by</dt><dd className="pn-year" role="group" aria-label="Happens by">
+          <button className="pn-step" aria-label="Earlier" title="Earlier" onClick={() => set({ horizon: edit.horizon - 1 })}><Icon name="minus" size={12} /></button>
           <span className="ap-num pn-field-val">{edit.horizon}</span>
-          <Reveal show={open} side="end"><button className="pn-step" aria-label="Later" onClick={() => set({ horizon: edit.horizon + 1 })}><Icon name="plus" size={12} /></button></Reveal>
-        </>}</Field>
-        {t.rivals.map(r => (
-          <Field key={r} name="Rival">{open => <>
-            <Reveal show={open} side="start"><span className="ap-label">Rival</span></Reveal>
-            <motion.button className="pn-chip pn-rival" title="Rival" onClick={() => onOpen("theory", r)} initial={false} animate={{ maxWidth: open ? 420 : 180 }} transition={open ? { duration: 0.25, ease: EASE } : { duration: 0.12, ease: "easeOut" }}>
-              <Swap /><span className="pn-clip"><Claim id={r} /></span>
-            </motion.button>
-          </>}</Field>
-        ))}
-        {t.challenge && <Mark kind="challenge" />}
-      </div>
+          <button className="pn-step" aria-label="Later" title="Later" onClick={() => set({ horizon: edit.horizon + 1 })}><Icon name="plus" size={12} /></button>
+        </dd></div>
+        {t.rivals.length > 0 && <div className="pn-meta-row"><dt className="ap-label">Rival</dt><dd className="pn-rivals">
+          {t.rivals.map(r => <button key={r} className="pn-chip pn-rival" onClick={() => onOpen("theory", r)}><Swap /><span><Claim id={r} /></span></button>)}
+        </dd></div>}
+      </dl>
       <Editable className="pn-body" value={edit.body} onChange={body => set({ body })} aria-label="Body" />
       <Tripwire value={edit.tripwire} onChange={tripwire => set({ tripwire })} />
       <div className="pn-grid">
@@ -153,12 +145,12 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
           const name = st === "supports" ? "Supports" : "Undermines";
           return (
             <div key={st} className="pn-col">
-              <Field name={name} focusable className="pn-ev-head">{open => <>
+              <div className="pn-ev-head">
                 <Icon name={st === "supports" ? "arrowUp" : "arrowDown"} size={12} />
-                <Reveal show={open} side="end"><span className="pn-ev-name">{name}</span></Reveal>
+                <span className="ap-label">{name}</span>
                 <span className="ap-num pn-field-val">{items.length}</span>
-                <Reveal show={open} side="end"><button className="pn-step" aria-label={st === "supports" ? "Add supporting evidence" : "Add undermining evidence"} onClick={() => {}}><Icon name="plus" size={12} /></button></Reveal>
-              </>}</Field>
+                <button className="pn-step" aria-label={st === "supports" ? "Add supporting evidence" : "Add undermining evidence"} title={st === "supports" ? "Add supporting evidence" : "Add undermining evidence"} onClick={() => {}}><Icon name="plus" size={12} /></button>
+              </div>
               {items.map(s => (
                 <SignalRow key={s.id} s={s} context={id} open={inline && unfolded === s.id} current={!inline && unfolded === s.id}
                   onToggle={() => toggle(s.id)} onOpen={onOpen} suggested={s.evidence.find(x => x.theory === id)!.suggested} />
@@ -202,14 +194,12 @@ export function ThemeHead({ id }: { id: string }) {
   return (
     <>
       <Editable as="h1" className="pn-title" value={edit.name} onChange={name => set({ name })} singleLine aria-label="Theme name" />
-      <div className="pn-meta">
-        <Field name="Signals" focusable>{open => <>
-          <Icon name="signal" size={12} />
-          <Reveal show={open} side="end"><span className="ap-label">Signals</span></Reveal>
+      <dl className="pn-meta">
+        <div className="pn-meta-row"><dt className="ap-label">Signals</dt><dd>
           <span className="ap-num pn-field-val">{theme(id).signals}</span>
-        </>}</Field>
-        {theoriesIn(id).length === 0 && <Mark kind="open" />}
-      </div>
+          {theoriesIn(id).length === 0 && <Mark kind="open" />}
+        </dd></div>
+      </dl>
     </>
   );
 }
@@ -243,12 +233,16 @@ export function PrototypePane({ id, nav }: { id: string; nav: PaneNav }) {
   return (
     <div className="pn-doc">
       <Editable as="h1" className="pn-title" value={edit.name} onChange={name => set({ name })} singleLine aria-label="Prototype name" />
-      <div className="pn-meta">
-        <span className="pn-status" role="radiogroup" aria-label="Status">
-          {STATUSES.map(s => <StatusButton key={s} s={s} on={s === edit.status} onClick={() => set({ status: s })} />)}
-        </span>
-        {p.theories.map(t => <button key={t} className="pn-chip" title="Tests" data-draft={theory(t).draft ? "" : undefined} onClick={() => nav.onOpen("theory", t)}><Icon name="theory" size={12} /><Claim id={t} /></button>)}
-      </div>
+      <dl className="pn-meta">
+        <div className="pn-meta-row"><dt className="ap-label">Status</dt><dd>
+          <span className="pn-status" role="radiogroup" aria-label="Status">
+            {STATUSES.map(st => <StatusButton key={st} s={st} on={st === edit.status} onClick={() => set({ status: st })} />)}
+          </span>
+        </dd></div>
+        {p.theories.length > 0 && <div className="pn-meta-row"><dt className="ap-label">Tests</dt><dd className="pn-rivals">
+          {p.theories.map(t => <button key={t} className="pn-chip pn-rival" data-draft={theory(t).draft ? "" : undefined} onClick={() => nav.onOpen("theory", t)}><Icon name="theory" size={12} /><span><Claim id={t} /></span></button>)}
+        </dd></div>}
+      </dl>
       <div className="pn-media"><button className="pn-play" aria-label="Play recording" title="Play recording"><Icon name="play" size={14} /></button></div>
       <Editable className="pn-body" value={edit.body} onChange={body => set({ body })} placeholder="What it is and what you learned" aria-label="Notes" />
       <div className="pn-chips"><span className="pn-chip pn-static"><Icon name="link" size={12} />github.com/…</span><Kbd>⌘L</Kbd></div>
@@ -256,17 +250,14 @@ export function PrototypePane({ id, nav }: { id: string; nav: PaneNav }) {
   );
 }
 
+/* The selected status shows its name; the others are glyphs, named on keyboard focus and to assistive tech. */
 function StatusButton({ s, on, onClick }: { s: string; on: boolean; onClick: () => void }) {
-  const [hover, setHover] = useState(false);
-  const timer = useRef<number>(undefined);
-  useEffect(() => () => clearTimeout(timer.current), []);
+  const [focus, setFocus] = useState(false);
   return (
-    <button role="radio" aria-checked={on} aria-label={s} onClick={onClick}
-      onPointerEnter={e => { if (e.pointerType === "touch") return; clearTimeout(timer.current); timer.current = window.setTimeout(() => setHover(true), 120); }}
-      onPointerLeave={() => { clearTimeout(timer.current); setHover(false); }}
-      onFocus={e => { if (e.currentTarget.matches(":focus-visible")) setHover(true); }} onBlur={() => setHover(false)}>
+    <button role="radio" aria-checked={on} aria-label={s} title={s} onClick={onClick}
+      onFocus={e => { if (e.currentTarget.matches(":focus-visible")) setFocus(true); }} onBlur={() => setFocus(false)}>
       <span className="pn-status-glyph" aria-hidden><ProtoGlyph status={s} selected={on} /></span>
-      <Reveal show={on || hover} side="end"><span className="pn-status-name">{s}</span></Reveal>
+      <Reveal show={on || focus}><span className="pn-status-name">{s}</span></Reveal>
     </button>
   );
 }
@@ -278,54 +269,16 @@ export function ObjectPane({ kind, id, nav }: { kind: ObjKind; id: string; nav: 
   return <PrototypePane id={id} nav={nav} />;
 }
 
-/* ── Expanding field ──
- * At rest a compact mark. After a short hover, on keyboard focus, or on tap, it grows in place
- * to show its name and its control; it closes on leave or blur unless something inside is being edited. */
-export function Field({ name, focusable, className, children }: { name: string; focusable?: boolean; className?: string; children: (open: boolean) => ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const timer = useRef<number>(undefined);
-  const tapped = useRef(false);
-  const [hover, setHover] = useState(false);
-  const [focus, setFocus] = useState(false);
-  const [pinned, setPinned] = useState(false);
-  const open = hover || focus || pinned;
-  useEffect(() => () => clearTimeout(timer.current), []);
-  useEffect(() => {
-    if (!pinned) return;
-    const away = (e: PointerEvent) => { if (!ref.current?.contains(e.target as Node)) setPinned(false); };
-    document.addEventListener("pointerdown", away);
-    return () => document.removeEventListener("pointerdown", away);
-  }, [pinned]);
-  return (
-    <div ref={ref} className={"pn-field" + (className ? " " + className : "")} role="group" aria-label={name} tabIndex={focusable ? 0 : undefined} data-open={open ? "" : undefined}
-      onPointerEnter={e => { if (e.pointerType === "touch") return; clearTimeout(timer.current); timer.current = window.setTimeout(() => setHover(true), 120); }}
-      onPointerLeave={e => { if (e.pointerType === "touch") return; clearTimeout(timer.current); setHover(false); }}
-      onPointerDown={e => {
-        if (e.pointerType !== "touch") return;
-        if (!open) { tapped.current = true; setPinned(true); }
-        else if (pinned && !(e.target as Element).closest("button,[contenteditable]")) setPinned(false);
-      }}
-      onClickCapture={e => { if (tapped.current) { tapped.current = false; e.preventDefault(); e.stopPropagation(); } }}
-      onFocus={e => { const el = e.target as HTMLElement; if (el.isContentEditable || el.matches(":focus-visible")) setFocus(true); }}
-      onBlur={e => { if (!ref.current?.contains(e.relatedTarget as Node)) setFocus(false); }}>
-      {children(open)}
-    </div>
-  );
-}
-
-/** A piece of a field that grows in sideways (or downwards) when the field opens. */
-export function Reveal({ show, side, axis = "x", children }: { show: boolean; side: "start" | "end"; axis?: "x" | "y"; children: ReactNode }) {
+/** A status name that grows in sideways when its status is chosen. */
+function Reveal({ show, children }: { show: boolean; children: ReactNode }) {
   const reduce = useReducedMotion();
-  const inT = { duration: reduce ? 0.15 : 0.25, ease: EASE };
-  const outT = { duration: reduce ? 0.1 : 0.12, ease: "easeOut" as const };
   const shut = reduce ? "auto" : 0;
   return (
     <AnimatePresence initial={false}>
       {show && (
-        <motion.span className="pn-reveal" data-side={side} data-axis={axis}
-          initial={axis === "x" ? { width: shut, opacity: 0 } : { height: shut, opacity: 0 }}
-          animate={axis === "x" ? { width: "auto", opacity: 1, transition: inT } : { height: "auto", opacity: 1, transition: inT }}
-          exit={axis === "x" ? { width: shut, opacity: 0, transition: outT } : { height: shut, opacity: 0, transition: outT }}>
+        <motion.span className="pn-reveal" initial={{ width: shut, opacity: 0 }}
+          animate={{ width: "auto", opacity: 1, transition: { duration: reduce ? 0.15 : 0.25, ease: EASE } }}
+          exit={{ width: shut, opacity: 0, transition: { duration: reduce ? 0.1 : 0.12, ease: "easeOut" } }}>
           <span className="pn-reveal-in">{children}</span>
         </motion.span>
       )}
@@ -346,22 +299,17 @@ function Spark({ values }: { values: number[] }) {
   );
 }
 
-/* What would change my mind: a glyph and the user's words at rest; label and field when open. */
+/* What would change my mind: a glyph, its label and the user's words, always shown. */
 function Tripwire({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const name = "What would change my mind";
   const ed = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
-  const has = !!value.trim();
   return (
-    <Field name={name} className="pn-trip">{open => <>
+    <div className="pn-trip" role="group" aria-label={name}>
       <button className="pn-trip-glyph" aria-label={name} tabIndex={-1} onClick={() => ed.current?.querySelector<HTMLElement>("[contenteditable]")?.focus()}><Icon name="turn" size={16} /></button>
       <div className="pn-trip-main" ref={ed}>
-        <Reveal show={open} side="end" axis="y"><span className="ap-label">{name}</span></Reveal>
-        <motion.div className="pn-trip-wrap" initial={false} animate={{ height: open || has ? "auto" : reduce ? "auto" : 0, opacity: open || has ? 1 : 0 }}
-          transition={open ? { duration: 0.25, ease: EASE } : { duration: 0.12, ease: "easeOut" }}>
-          <Editable className="pn-tripwire" value={value} onChange={onChange} aria-label={name} />
-        </motion.div>
+        <span className="ap-label">{name}</span>
+        <Editable className="pn-tripwire" value={value} onChange={onChange} aria-label={name} />
       </div>
-    </>}</Field>
+    </div>
   );
 }
