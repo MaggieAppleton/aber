@@ -13,6 +13,7 @@ import { DevelopDetailsJig } from "./develop-details";
 import { DevelopIconsJig } from "./develop-icons";
 import { DevelopDecideJig } from "./develop-decide";
 import { ReferenceJig } from "./reference";
+import { DevelopThemeContentsJig } from "./develop-theme-contents";
 import "./jig.css";
 import "./minis/wf.css";
 
@@ -21,6 +22,7 @@ const JIGS = {
   app: { title: "App (canonical)", view: DevelopAppJig },
   decide: { title: "Decide", view: DevelopDecideJig },
   details: { title: "Pane details", view: DevelopDetailsJig },
+  "theme-contents": { title: "Theme pane contents", view: DevelopThemeContentsJig },
   icons: { title: "Icons", view: DevelopIconsJig },
   timeline: { title: "Timeline", view: DevelopTimelineJig },
   pill: { title: "Dump or ask", view: DevelopPillJig },
