@@ -82,7 +82,7 @@ export type ChainCard = { id: string; col: number; x: number; y: number; w: numb
 export type ChainEdge = { a: string; b: string; pts: [number, number][] };
 export type ChainLayout = { cards: ChainCard[]; edges: ChainEdge[]; width: number; height: number; rival?: { x: number; y: number }; crossings: number };
 
-export const CARD = { pad: 10, line: 17, meta: 22, gap: 10, colGap: 44, maxW: 210 };
+export const CARD = { pad: 10, line: 17, meta: 22, gap: 10, colGap: 58, maxW: 210, approach: 18, exit: 10 };
 
 export function layoutChain(g: Graph, sel: string, width: number, height: number): ChainLayout {
   const t0 = g.by.get(sel)!;
@@ -195,9 +195,11 @@ export function layoutChain(g: Graph, sel: string, width: number, height: number
       // The last hop stops short of the card, so the arrowhead has room to breathe.
       if (i > 0) pts.push([i === path.length - 1 ? c.x - 6 : c.x, y]);
       if (i < path.length - 1) {
-        const n = laneN[c.col], step = Math.min(7, (CARD.colGap - 20) / Math.max(1, n - 1));
+        // Lanes fill the gap from the card's edge (plus a clear exit) to the start of the next card's approach, so the
+        // final run into a card is always at least CARD.approach long and never starts beside an arrowhead.
+        const n = laneN[c.col], room = CARD.colGap - 6 - CARD.approach - CARD.exit, step = Math.min(7, room / Math.max(1, n - 1));
         pts.push([c.x + c.w, y]);
-        pts.push([c.x + c.w + CARD.colGap / 2 - ((n - 1) * step) / 2 + lane.get(id)! * step, NaN]);
+        pts.push([c.x + c.w + CARD.exit + lane.get(id)! * step, NaN]);
       }
     });
     return { a, b, pts };

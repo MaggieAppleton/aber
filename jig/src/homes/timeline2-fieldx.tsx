@@ -16,7 +16,7 @@ import { useDemoOpen, DemoButton, Trail, Chevrons, chev } from "./timeline2-chai
  */
 
 export type FieldVariant = "hop" | "morph" | "bundle";
-const TOP = 72, LEFT = 74, RIGHT = 12, BOTTOM = 12, LINE = 17, PAD = 8, MIN_ROW = 30, DOT = 10, TAG_H = 18, TAG_MAX = 230, VLINE = 24, GAP = 6;
+const TOP = 72, LEFT = 74, RIGHT = 12, BOTTOM = 12, LINE = 17, PAD = 8, MIN_ROW = 30, DOT = 10, TAG_H = 18, TAG_MAX = 230, VLINE = 30, GAP = 6, APPROACH = 22, JOG = 19;
 type Mode = "full" | "line" | "dots";
 type Place = { x: number; y: number; cx: number; cy: number; lines: string[] };
 type Box = { x: number; y: number; w: number; h: number };
@@ -95,7 +95,8 @@ function Plot({ scale, width, variant, open }: { scale: Scale; width: number; va
       const want = Math.min(t.id === selected ? 300 : TAG_MAX, textWidth(t.claim, t.id === selected ? 600 : 500) + 10) + (b ? 34 : 0) + (rivals.includes(t.id) ? 18 : 0);
       const w = Math.max(60, Math.min(want, width - 6 - (cx + GAP + rOf(t.id))));
       tagW.set(t.id, { w, cut: w < want });
-      const srcs = edges.filter(([a, b2]) => b2 === t.id && kOf.has(a) && dotCx(g.by.get(a)!) < cx - 4).map(([a]) => a);
+      // Sources sit left of (or in the same column as) their consequences and are already placed.
+      const srcs = edges.filter(([a, b2]) => b2 === t.id && kOf.has(a) && dotCx(g.by.get(a)!) < cx + 4).map(([a]) => a);
       const tryLine = (L: number) => {
         const k = r * 100 + L;
         const label = { k, x0: cx - rOf(t.id) - 2, x1: cx + GAP + rOf(t.id) + w + 4 };
@@ -109,15 +110,21 @@ function Plot({ scale, width, variant, open }: { scale: Scale; width: number; va
           const sk = kOf.get(s)!, scx = dotCx(g.by.get(s)!);
           let lane = laneOf.get(s);
           if (lane === undefined) {
-            // Leave straight down/up from the dot, unless another dot in its column is in the way: then use the gutter.
-            const blocked = dots.some(d => d.id !== s && Math.abs(d.x - scx) < 2 && between(d.k, sk, k));
-            lane = blocked ? scx - 16 + (gutters.get(Math.round(scx)) ?? 0) * 5 : scx;
+            // Leave straight down/up from the dot, unless another dot in its column is in the way, or the consequence is
+            // in the same column: then step out to a lane far enough left that the approach keeps its full length.
+            // The lane is chosen once, so judge it against every row the source's links will reach, not just this one.
+            const rows = edges.filter(([a2, b2]) => a2 === s && isVis(b2)).map(([, b2]) => rowOf(g.by.get(b2)!));
+            const lo = Math.min(sk, k, ...rows.map(x => x * 100)), hi = Math.max(sk, k, ...rows.map(x => x * 100 + 99));
+            const blocked = Math.abs(scx - cx) < 4 || dots.some(d => d.id !== s && Math.abs(d.x - scx) < 2 && between(d.k, lo, hi));
+            lane = blocked ? scx - DOT / 2 - GAP - APPROACH - 4 - (gutters.get(Math.round(scx)) ?? 0) * 6 : scx;
           }
           const v = vs.get(s), k0 = Math.min(sk, k, v?.k0 ?? sk), k1 = Math.max(sk, k, v?.k1 ?? sk);
           // The vertical run may not cross a label, an arrival or a dot.
           if (hs.some(h => h.src !== s && between(h.k, k0 - 0.5, k1 + 0.5) && h.k !== sk && lane! > h.x0 - 3 && lane! < h.x1 + 3 && (h.k !== k))) bad++;
-          if (dots.some(d => d.id !== s && Math.abs(d.x - lane!) < DOT && between(d.k, k0, k1 + 0.5) && d.k !== k)) bad++;
-          const arr = { k, x0: lane, x1: cx - rOf(t.id), src: s };
+          if (dots.some(d => d.id !== s && Math.abs(d.x - lane!) < rOf(d.id) + GAP + 1 && between(d.k, k0, k1 + 0.5) && d.k !== k)) bad++;
+          // The approach must keep its full length before the arrowhead.
+          if (cx - rOf(t.id) - GAP - lane! < APPROACH) return null;
+          const arr = { k, x0: lane, x1: cx + rOf(t.id) + GAP, src: s };
           // The arrival may not cross another source's vertical run, or another arrival on this line.
           for (const [o, ov] of vs) if (o !== s && ov.x > arr.x0 + 1 && ov.x < arr.x1 && between(k, ov.k0, ov.k1)) bad++;
           if (hs.some(h => h.k === k && h.src !== s && !(h.src === undefined && h.x0 > cx - DOT) && arr.x0 < h.x1 && arr.x1 > h.x0)) return null;
@@ -128,12 +135,15 @@ function Plot({ scale, width, variant, open }: { scale: Scale; width: number; va
       // Take the first clean line; if none is clean within reach, the line with the fewest crossings.
       let L = 0, ok: ReturnType<typeof tryLine> = null;
       for (let i = 0; i < 16; i++) { const c = tryLine(i); if (c && (!ok || c.bad < ok.bad)) { ok = c; L = i; } if (ok && ok.bad === 0) break; }
-      if (!ok) { L = 16; while (!(ok = tryLine(L))) L++; }
+      if (!ok) { L = 16; while (!(ok = tryLine(L)) && L < 40) L++; }
+      if (!ok) { L = rowLines[r]; ok = { k: r * 100 + L, label: { k: r * 100 + L, x0: cx, x1: cx + w }, lanes: new Map(), arrivals: [], bad: 99 }; }
       hs.push(ok.label, ...ok.arrivals);
       for (const [s, lane] of ok.lanes) {
         if (!laneOf.has(s) && lane !== dotCx(g.by.get(s)!)) { const key = Math.round(dotCx(g.by.get(s)!)); gutters.set(key, (gutters.get(key) ?? 0) + 1); }
         laneOf.set(s, lane);
         const v = vs.get(s), sk = kOf.get(s)!;
+        // A lane in the gutter is reached by a short jog between lines; keep other runs off it too.
+        if (lane !== dotCx(g.by.get(s)!)) hs.push({ k: sk + (ok.k > sk ? 0.5 : -0.5), x0: lane, x1: dotCx(g.by.get(s)!), src: s });
         vs.set(s, { x: lane, k0: Math.min(sk, ok.k, v?.k0 ?? sk), k1: Math.max(sk, ok.k, v?.k1 ?? sk) });
       }
       kOf.set(t.id, ok.k); dots.push({ x: cx, k: ok.k, id: t.id });
@@ -190,10 +200,13 @@ function Plot({ scale, width, variant, open }: { scale: Scale; width: number; va
       const p = P(a), q = P(b);
       if (!p || !q) continue;
       let pts: [number, number][];
-      const lx = laneOf.get(a), end: [number, number] = [q.cx - R(b) - GAP, q.cy];
-      if (q.cx > p.cx + 4 && lx !== undefined && Math.abs(lx - p.cx) > 0.5) pts = [[p.cx - R(a) - GAP, p.cy], [lx, p.cy], [lx, q.cy], end];
-      else if (q.cx > p.cx + 4) pts = [[p.cx, p.cy + (q.cy > p.cy ? 1 : -1) * (R(a) + GAP)], [p.cx, q.cy], end];
-      else pts = [[p.cx - R(a) - GAP, p.cy], [q.cx - 16, p.cy], [q.cx - 16, q.cy], end];
+      const lx = laneOf.get(a), end: [number, number] = [q.cx - R(b) - GAP, q.cy], dir = q.cy > p.cy ? 1 : -1;
+      if (q.cx > p.cx - 4 && lx !== undefined && Math.abs(lx - p.cx) > 0.5)
+        // Out of the dot's bottom (or top), a short jog between lines to the lane, then down and in. Never out of the
+        // dot's left side, which is where its own incoming link arrives.
+        pts = [[p.cx, p.cy + dir * (R(a) + GAP)], [p.cx, p.cy + dir * JOG], [lx, p.cy + dir * JOG], [lx, q.cy], end];
+      else if (q.cx > p.cx + 4) pts = [[p.cx, p.cy + dir * (R(a) + GAP)], [p.cx, q.cy], end];
+      else pts = [[p.cx, p.cy + dir * (R(a) + GAP)], [p.cx, p.cy + dir * JOG], [q.cx - 40, p.cy + dir * JOG], [q.cx - 40, q.cy], end];
       const [hx0, hy] = pts[pts.length - 2], hx1 = pts[pts.length - 1][0], hop = Math.abs(pts[pts.length - 1][1] - hy) < 0.5 && hx1 - hx0 > 30 ? `M ${hx0 + 9} ${hy} H ${hx1 - 10}` : undefined;
       out.push({ hop, key: `${a}>${b}`, a, b, d: roundPath(pts), pts: sample(pts), arrow: true, deep: a !== selected && b !== selected });
     }
