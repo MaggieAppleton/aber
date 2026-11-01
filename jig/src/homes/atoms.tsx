@@ -3,20 +3,26 @@ import type { Theory, Dump } from "./data";
 import { prototypesFor } from "./data";
 
 import {
-  MagnifyingGlass, Plus, Minus, Microphone, Cube, TrayArrowDown, Check, X, CaretRight, CaretLeft, CaretDown, Broadcast, Link,
-  Waveform, TextAlignLeft, Sun, Lightbulb, MapTrifold, Table, Stack, Clock, ArrowUp, ArrowDown, SidebarSimple, Signpost,
+  MagnifyingGlass, Plus, Minus, Microphone, PencilRuler, TrayArrowDown, Check, X, CaretRight, CaretLeft, CaretDown, Pulse, Link,
+  Waveform, TextAlignLeft, Sun, Target, Compass, MapTrifold, Table, Clock, ArrowUp, ArrowDown, SidebarSimple, Signpost,
   ArrowsLeftRight, Paperclip, Stop, Play, Pause, ArrowCounterClockwise, ArrowClockwise, Monitor, Image,
   PencilSimple, Globe, Question, PushPin, QuestionMark, Crosshair, Rows, Columns, ChartScatter, ArrowsOutSimple, ArrowsInSimple, TreeStructure, ArrowRight, ArrowLeft, ArrowElbowDownRight, ArrowElbowUpRight, type Icon as PhosphorIcon, type IconWeight,
 } from "@phosphor-icons/react";
 
-/** Every glyph in the jigs. One icon per object type: dump, signal, theme, theory, prototype. */
+/** One glyph per object type. Swap an object's icon here and every jig follows.
+ *  `nudge` is optical size compensation in px, so round glyphs sit level with square ones. */
+export const OBJECT_ICONS = {
+  dump: { icon: TrayArrowDown, nudge: 0 },
+  signal: { icon: Pulse, nudge: 0 },
+  theme: { icon: Compass, nudge: 0 },
+  theory: { icon: Target, nudge: 0 },
+  prototype: { icon: PencilRuler, nudge: 0 },
+} satisfies Record<string, { icon: PhosphorIcon; nudge: number }>;
+export type ObjectKind = keyof typeof OBJECT_ICONS;
+
+/** Every glyph in the jigs. Object types come from OBJECT_ICONS. */
 const ICONS = {
-  // object types
-  dump: TrayArrowDown,
-  signal: Broadcast,
-  theme: Stack,
-  theory: Lightbulb,
-  prototype: Cube,
+  ...Object.fromEntries(Object.entries(OBJECT_ICONS).map(([k, v]) => [k, v.icon])) as Record<ObjectKind, PhosphorIcon>,
   // dump kinds
   wave: Waveform,
   text: TextAlignLeft,
@@ -73,7 +79,8 @@ export type { IconWeight };
 /** fill = active or selected, nothing else. */
 export const Icon = ({ name, size = 16, weight = "regular" }: { name: IconName; size?: number; weight?: IconWeight }) => {
   const C = ICONS[name];
-  return <C size={size} weight={weight} aria-hidden />;
+  const nudge = name in OBJECT_ICONS ? OBJECT_ICONS[name as ObjectKind].nudge : 0;
+  return <C size={size + nudge} weight={weight} aria-hidden />;
 };
 
 export const IconButton = ({ icon, label, onClick, pressed }: { icon: IconName; label: string; onClick?: () => void; pressed?: boolean }) => (

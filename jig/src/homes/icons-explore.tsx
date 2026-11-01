@@ -30,7 +30,8 @@ export const G = ({ n, size = 16, fill }: { n: Glyph; size?: number; fill?: bool
 
 export type Concept = "signal" | "theme" | "theory" | "prototype";
 export const CONCEPTS: Concept[] = ["signal", "theme", "theory", "prototype"];
-export const CURRENT: Record<Concept, Glyph> = { signal: "Broadcast", theme: "Stack", theory: "Lightbulb", prototype: "Cube" };
+/** Mirrors OBJECT_ICONS in atoms.tsx. */
+export const CURRENT: Record<Concept, Glyph> = { signal: "Pulse", theme: "Compass", theory: "Target", prototype: "PencilRuler" };
 export type Set = Record<Concept, Glyph>;
 
 type Candidate = { n: Glyph; note: string };
@@ -69,6 +70,7 @@ export const META: Record<Concept, { title: string; gist: string; candidates: Ca
       { n: "Planet", note: "A world of its own with things in orbit. Evocative; big for a flat tag." },
       { n: "Mountains", note: "Terrain to explore. Echoes the Atlas, but reads as a photo or landscape." },
       { n: "Compass", note: "Direction of attention. More about heading than gathering." },
+      { n: "Binoculars", note: "What I'm watching for. Attention as looking out, not heading. Busier than Compass at 12px." },
       { n: "MapTrifold", note: "A territory I'm mapping. Already the Atlas surface icon." },
       { n: "Hexagon", note: "A cell, a tile in a field. Clean and neutral; meaning is thin." },
       { n: "Graph", note: "Connected nodes. Implies a network, not an area." },
@@ -110,7 +112,7 @@ export const META: Record<Concept, { title: string; gist: string; candidates: Ca
       { n: "AppWindow", note: "A running app or demo. Screen-shaped; narrow for physical builds." },
       { n: "Rocket", note: "Shipping something. Loud and launch-y." },
       { n: "Robot", note: "A built machine. Reads as AI or agent." },
-      { n: "Package", note: "A shipped artefact. Close to the current cube." },
+      { n: "Package", note: "A shipped artefact. Close to Cube." },
       { n: "PuzzlePiece", note: "A piece that fits the theory. Reads as plugin or integration." },
       { n: "TestTube", note: "An experiment. Pairs with Flask if theory is lab-themed; can blur with it." },
     ],
