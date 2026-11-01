@@ -6,23 +6,23 @@ To the next agent: this note is everything you need to pick up the work without 
 
 Aber is a tool for Maggie (Maggie Appleton, a design engineer at GitHub Next) for developing theories of the near future in technology, software development and agents. She dumps raw material: X links, articles, long voice notes. Agents split it into **signals**, file them into **themes**, and propose evidence and drafts. She states **theories** (claims that could be wrong), writes what would change her mind, and spins up **prototypes**. The core idea is to separate what she has *seen* from what she *claims*, and to design around claims that can turn out wrong.
 
-v1 is for her alone, on an iPhone and two MacBooks. It runs on the team's Coolify server, so it is a work tool. Multiplayer (up to about 10 people) comes later.
+v1 is for her alone. **This build round runs locally on her MacBook only.** The eventual home is the team's Coolify server, which makes it a work tool; that, phone capture and multiplayer (up to about 10 people) come later.
 
 ## Where we are
 
-The design is settled for v1. One decision is open: the **agent framework**. After that, an overnight agent builds v1 from the build spec.
+The design and the agent stack are settled for v1 (agent framework decided 1 Nov 2026: Vercel AI SDK 7 with an own SQLite job queue, on Node). Next, an overnight agent builds v1 from the build spec, to run locally.
 
 ## Where things are
 
 | Read | For |
 | --- | --- |
-| [docs/design-model.md](design-model.md) | **The source of truth.** Concepts, the authority rule (and its one exception), verbs, relationships, surfaces, behaviour, encoding map, the one open question |
+| [docs/design-model.md](design-model.md) | **The source of truth.** Concepts, the authority rule (and its one exception), verbs, relationships, surfaces, behaviour, encoding map, implementation decisions |
 | [docs/build-spec.md](build-spec.md) | **For the build agent.** Architecture, SQL schema, typed tool layer, agent interface and jobs, interface spec by surface, slices with acceptance criteria and Playwright checks, rules |
-| [docs/agent-architecture-research.md](agent-architecture-research.md) | The agent framework options (being written). The decision gets recorded here |
+| [docs/agent-architecture-research.md](agent-architecture-research.md) | Why the agent stack is AI SDK 7 + an own SQLite queue, and the model plan per job (decided) |
 | [design/decisions.json](../design/decisions.json) | Every pick and note, made on the jigs. Already folded into the model and spec |
 | [jig/](../jig/) | Interactive jigs. `cd jig && bun install && bun run dev`, then http://localhost:5181. **[`/app`](http://localhost:5181/app) is canonical** for the whole app; **[`/reference`](http://localhost:5181/reference)** indexes every canonical route and its constants; [`/decide`](http://localhost:5181/decide) holds the decisions |
 | [docs/design-exploration.md](design-exploration.md) | History: what was tried, decided and rejected up to 31 Oct. Read it before proposing anything, so you don't re-propose rejected ideas. Where it disagrees with the model, the model wins |
-| [docs/hosting-guide.md](hosting-guide.md) | Tailscale, Litestream, B2 and the iPhone Shortcut, written for a personal server. Section 4.12 of the build spec says what changes on Coolify |
+| [docs/hosting-guide.md](hosting-guide.md) | Tailscale, Litestream, B2 and the iPhone Shortcut, written for a personal server. Not used this round; section 13 of the build spec says what changes on Coolify, later |
 | [docs/reference/interface-grammar.md](reference/interface-grammar.md) | Maggie's design method. **Follow it.** |
 | [design/space-and-motion/index.html](../design/space-and-motion/index.html) | The earlier space-and-motion boards. Historical: superseded by `/app` where they differ |
 
@@ -63,10 +63,10 @@ The full method is in `reference/interface-grammar.md`. The essentials:
 
 ## Next steps, in order
 
-1. **Decide the agent framework** with Maggie, from [agent-architecture-research.md](agent-architecture-research.md). She prefers OpenAI models for cost and may want both OpenAI and Anthropic. Record the decision in that file; the build spec's agent interface (section 5) is written so any candidate fits.
-2. **Confirm with the Coolify server's owner** how the server joins Tailscale and that the app can stay off the public internet (build spec, assumption A3).
-3. **Run the overnight build** from [build-spec.md](build-spec.md), slice by slice. The build agent leaves ambiguities in `docs/build-notes.md` rather than inventing.
-4. **Review in the morning:** parity screenshots in `test-results/parity/`, `docs/build-notes.md`, and the known gaps in section 12 of the spec (dump log, Atlas layout for real data, the building-status blue).
+1. **Run the overnight build** from [build-spec.md](build-spec.md), slice by slice, locally on Maggie's MacBook (Node, `npm`, SQLite in `app/data/`, `localhost` only). The build agent leaves ambiguities in `docs/build-notes.md` rather than inventing.
+2. **Supply 10–20 real dumps** for the evals, and run the OpenAI vs Claude comparison before locking models.
+3. **Review in the morning:** parity screenshots in `test-results/parity/`, `docs/build-notes.md`, and the known gaps in section 12 of the spec (Atlas layout for real data, the delete confirmation, the building-status blue).
+4. **Later:** deployment to the team Coolify server, backups to B2, auth and phone capture (build spec, section 13). Confirm with the server's owner how it joins Tailscale first.
 
 ## Things not to redo
 

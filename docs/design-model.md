@@ -1,6 +1,6 @@
 # Design Model: Aber
 
-Last updated 1 Nov 2026. This is the source of truth for what Aber is and how it behaves. All four layers are settled for v1. The one open decision is the agent framework (section 6).
+Last updated 1 Nov 2026. This is the source of truth for what Aber is and how it behaves. All four layers and the agent stack are settled for v1. Nothing is open (section 6).
 
 - **Visuals:** the jigs are canonical for how things look and move. Run `bun install && bun run dev` in `jig/`, then open http://localhost:5181. [`/app`](http://localhost:5181/app) is the whole app in one frame; [`/reference`](http://localhost:5181/reference) indexes every canonical route and constant.
 - **Decisions:** every pick is stored in [`design/decisions.json`](../design/decisions.json), made on [`/decide`](http://localhost:5181/decide) and the other jigs.
@@ -12,10 +12,10 @@ Last updated 1 Nov 2026. This is the source of truth for what Aber is and how it
 | --- | --- |
 | Who | Maggie, alone in v1. Later: separate accounts and shared themes and theories for up to about 10 people |
 | Audience | Fluent |
-| Posture | Laptop: sovereign (long thinking and writing sessions). Phone: transient (capture and a quick look) |
+| Posture | Laptop: sovereign (long thinking and writing sessions). Phone, once hosted: transient (capture and a quick look) |
 | Devices | iPhone, two MacBooks |
 | Context of use | Capturing on the go from X, Safari and voice notes; a morning look at what agents did overnight; deep sessions stating, writing and challenging theories |
-| Where it runs | The team's Coolify server, so Aber is a **work tool** (section 5, Implementation notes) |
+| Where it runs | This build round: Maggie's MacBook only, on `localhost`. Eventually: the team's Coolify server, which makes Aber a **work tool** (Implementation notes) |
 
 Purposes:
 
@@ -244,7 +244,7 @@ Prototypes have no view of their own: a "Prototypes" link sits at the bottom of 
 
 ### Surfaces
 
-| Surface | Tier | Attachment | Origin | Persistence | Narrow screen (phone v1) |
+| Surface | Tier | Attachment | Origin | Persistence | Narrow screen |
 | --- | --- | --- | --- | --- | --- |
 | View | 0 | The world | Cross-fades with a slight scale on switch | Permanent | Briefing only |
 | Theme index (Theme sections) | 0, inside the view | Left of the sections | — | Permanent | — |
@@ -264,7 +264,7 @@ Prototypes have no view of their own: a "Prototypes" link sits at the bottom of 
 
 **Both open.** The pane and the dump column are docked peers. The column owns the far-right edge because it grows from the corner pill; the pane narrows and sits left of it; the view compresses (Timeline scrolls sideways rather than squeezing labels).
 
-**Posture:** sovereign on the laptop, so chrome stays quiet; transient on the phone, which in v1 is for capture (Shortcut) and a quick look (Briefing and the pane).
+**Posture:** sovereign on the laptop, so chrome stays quiet; transient on the phone, which (once Aber is hosted) is for capture (Shortcut) and a quick look (Briefing and the pane). The narrow layouts are built in v1; reaching them from the phone comes with hosting.
 
 ### Superseded
 
@@ -375,19 +375,22 @@ The full plan is in [build-spec.md](build-spec.md).
 | Area | Decision |
 | --- | --- |
 | Front end | React + Vite + TypeScript, lifting the jig components |
-| Server | Hono + SQLite behind a typed tool layer; agents never touch the database directly |
-| Writes | Every row has an owner; every write records its actor (me, or which agent job and model) |
+| Server | Hono on Node 22+, SQLite (`better-sqlite3`) behind a typed tool layer; agents never touch the database directly |
+| Agents | Vercel AI SDK 7 (the open-source `ai` library, not Vercel hosting) inside the server. Provider objects always, never plain model strings. OpenAI by default, Claude configured as the alternative per job ([agent-architecture-research.md](agent-architecture-research.md)) |
+| Models | Transcription `gpt-transcribe`; processing and chat `gpt-6.1-terra`; evidence linking, tripwire and de-duplication (including the near-duplicate merge) `gpt-6-luna`; later jobs `gpt-6.1-sol`, batched overnight. Set per job in one config file |
+| Background jobs | A `jobs` table in Aber's SQLite with a worker loop in the server. A crashed job restarts from the beginning; every agent write carries a `runId`, and a failed run's drafts and suggestions are cleared before the retry |
+| Processing runs | The `agent_runs` table (job, model, tokens, cost, status, timings). Not shown in the app |
+| Articles | Full fetched article text goes to the model for processing and evidence linking; stored as best effort, never depended on |
+| Chat | AI SDK UI (`useChat`) in the dump-or-ask column. Generative UI components in v1: theory card, evidence split, signal list, theme activity |
+| Evals | Vitest fixture tests on Maggie's real dumps; first, a comparison of OpenAI and Claude on 10–20 of them before locking models |
+| Writes | Every row has an owner; every write records its actor (me, or which agent job and run) |
 | Confidence | Append-only stance log: person, theory, confidence, note, time |
-| Inflows | Manual only. iPhone capture is an Apple Shortcut posting to the dump endpoint |
-| Transcription | Server-side |
-| Backups | Litestream streams the database to Backblaze B2; media lives on the server disk and is backed up to B2 separately |
-| Hosting | The team's Coolify server. Aber is therefore a work tool: its data sits on work infrastructure and falls under work policies. Moving it later is a database file plus a media folder |
-| Phone v1 | Apple Shortcut capture, plus a minimal responsive Briefing and object pane |
+| Inflows | Manual only |
+| This round | Runs locally on Maggie's MacBook: `npm` scripts, SQLite file and media in a local data folder, bound to `localhost`, no auth. An optional local backup copies the database and media |
+| Later | Hosting on the **team Coolify server** (decided as the eventual target): Docker, Tailscale-only access with token auth, Litestream to Backblaze B2, media backed up to B2, iPhone capture through an Apple Shortcut. Aber then becomes a work tool: its data sits on work infrastructure under work policies. Moving it later is a database file plus a media folder |
 
 ## 6. Open questions
 
-| # | Question | Status |
-| --- | --- | --- |
-| 1 | **Agent framework.** Which framework runs the agent jobs, and how both OpenAI and Anthropic models are used (Maggie prefers OpenAI for cost) | Open. Options are being researched in [agent-architecture-research.md](agent-architecture-research.md). The build spec keeps the agent layer behind a small interface so any candidate can implement it |
+None for v1. The last one, the agent framework, was decided on 1 Nov 2026: Vercel AI SDK 7 with an own SQLite job queue ([agent-architecture-research.md](agent-architecture-research.md), recommendation A).
 
-Everything else from the previous list is answered above: base plane (Theme sections, with Columns, Atlas, Timeline and Briefing as views), compass (superseded by the pane), chat as dumps (yes), Pin (dropped), drafts (no expiry, stack by age), hosting (team Coolify), bin (30 days), near-duplicates (automatic, logged, undoable), sources (several), tombstones (kept), retire reasons (complete), media (server disk, backed up to B2).
+Answered on 1 Nov: base plane (Theme sections, with Columns, Atlas, Timeline and Briefing as views), compass (superseded by the pane), chat as dumps (yes), Pin (dropped), drafts (no expiry, stack by age), hosting (team Coolify, later), bin (30 days), near-duplicates (automatic, logged, undoable), sources (several), tombstones (kept), retire reasons (complete), media (server disk backed up to B2 once hosted; local disk this round), agent framework (AI SDK 7).

@@ -1,6 +1,6 @@
 # Build spec: Aber v1
 
-1 Nov 2026. For the overnight build agent. Written in British English; confidence is stated where something is a judgement rather than a decision.
+1 Nov 2026. For the overnight build agent. **This round builds Aber to run locally on Maggie's MacBook only.** Deployment (Coolify, Docker, Litestream, B2, auth, Tailscale) is out of scope; section 13 keeps the notes for later. Written in British English; confidence is stated where something is a judgement rather than a decision.
 
 ## How to use this document
 
@@ -10,9 +10,9 @@
 | This spec | Architecture, schema, tools, agent interface, slices, tests | Wins on how to build |
 | The jigs (`jig/`), especially [`/app`](http://localhost:5181/app) and [`/reference`](http://localhost:5181/reference) | How things look and move | **Wins on visuals and motion.** Routes marked *canonical* are followed pixel for pixel |
 | [design/decisions.json](../design/decisions.json) | Every pick, with Maggie's notes | Record only; already folded into the model and this spec |
-| [agent-architecture-research.md](agent-architecture-research.md) | The agent framework options | The one open decision (section 5) |
+| [agent-architecture-research.md](agent-architecture-research.md) | Why the agent stack is AI SDK 7 + an own SQLite queue, model prices, the per-job model plan | Decided 1 Nov 2026; section 5 here is the build version |
 | [reference/interface-grammar.md](reference/interface-grammar.md) | Maggie's design method | Use the review gate before calling a slice done |
-| [hosting-guide.md](hosting-guide.md) | Tailscale, Litestream, B2 and Shortcut steps | Written for a personal server; section 4.12 says what changes on Coolify |
+| [hosting-guide.md](hosting-guide.md) | Tailscale, Litestream, B2 and Shortcut steps | **Not used this round.** Deployment is in section 13, Later |
 
 Run the jigs: `cd jig && bun install && bun run dev`, then open http://localhost:5181. `/reference` lists every canonical route and the constants that drive them.
 
@@ -22,13 +22,13 @@ Aber is Maggie's tool for developing theories of the near future. She dumps raw 
 
 | Step | In v1 |
 | --- | --- |
-| Capture | Apple Shortcut → capture endpoint; the dump-or-ask pill and column in the web app (text, links, images, voice) |
+| Capture | The dump-or-ask pill and column in the web app (text, links, images, voice), and the capture endpoint (tested locally with `curl`; the Apple Shortcut is later and optional) |
 | Process | Transcription; the processing agent splits dumps into signals, files them, de-duplicates (exact links, tombstones, near-duplicate merges), drafts theories and prototypes, proposes revisions, replies |
 | Browse | Five views (Theme sections, Columns, Atlas, Timeline, Briefing) and one shared object pane |
 | Theories | Write, edit (versioned), confidence with an append-only stance log and sparkline, the tripwire sentence, evidence, rivals, follows-from, prototypes, retire with a reason |
 | Briefing | An inbox lens over what changed since Maggie last looked |
-| Agents | Process dumps, link evidence, tripwire |
-| Phone | Shortcut capture, plus a minimal responsive Briefing and object pane |
+| Agents | Process dumps, link evidence, tripwire, and chat replies in dump or ask |
+| Narrow screens | Briefing and the object pane are responsive at phone width (tested in Playwright). Using it from the phone needs hosting, so that is later |
 
 ## 2. Non-goals for v1
 
@@ -40,6 +40,8 @@ Aber is Maggie's tool for developing theories of the near future. She dumps raw 
 | Multiplayer, accounts, sharing | Later (up to about 10 people). Keep `owner_id` on every row so it's cheap |
 | Postgres | SQLite for v1, with the guardrails in 4.4 |
 | The full app on a phone | Only Briefing and the pane are responsive in v1 |
+| Deployment, remote access, auth, off-site backups | Later (section 13). This round runs on `localhost` only |
+| Phone capture via the Apple Shortcut | Later and optional: the phone can only reach the laptop if both are on the same network or tailnet |
 | Automatic inflows (feeds, scraping) | Inflows are manual only |
 | Splitting themes | Merge and re-file instead |
 | Dark mode | Not designed. Use tokens so it can be added |
@@ -49,12 +51,12 @@ Aber is Maggie's tool for developing theories of the near future. She dumps raw 
 | # | Assumption | Confidence | If wrong |
 | --- | --- | --- | --- |
 | A1 | One person (Maggie) uses v1. A single `people` row | High | — |
-| A2 | The team Coolify server can run a Docker Compose app with a persistent volume | Moderate | Fall back to a single Dockerfile with Litestream run in-process (4.11) |
-| A3 | The app is reachable only privately (over Tailscale, or Coolify's internal network behind Tailscale), never on the public internet | Moderate; **must be confirmed with whoever runs the server** | Keep the app-level token auth (4.13), which is built regardless |
-| A4 | Other people with access to the Coolify host can read the data volume | High (that's how shared servers work) | This is the main implication of Aber being a work tool. Nothing in Aber should be more private than work notes |
-| A5 | API keys for OpenAI and Anthropic, and the B2 bucket, are provided as environment variables at deploy time | High | — |
-| A6 | Bun is the runtime for server, tests and tooling (the jigs already use it). The research doc lists Bun vs Node as an open question; follow its decision if it records one | Moderate (judgement) | Node 22 + `better-sqlite3` works with the same code if `bun:sqlite` is wrapped |
-| A7 | The agent framework is decided before the overnight build, and recorded in `agent-architecture-research.md` | Moderate | Build everything against the fake model client (5.4) and leave one adapter stub, with a note |
+| A2 | Everything runs on Maggie's MacBook: Node 22 LTS or later, `npm` scripts, a SQLite file and media in a local data directory, server bound to `127.0.0.1` | High (decided for this round) | — |
+| A3 | Nothing is exposed beyond the laptop, so there is no auth this round | High | Add the token auth in section 13 before any exposure |
+| A4 | OpenAI and Anthropic API keys are in a local `.env` (git-ignored), so every job can switch provider in config | High | Run with OpenAI only; the Claude alternatives stay configured but unused |
+| A5 | `ffmpeg` is installed locally (Homebrew) for splitting long audio | Moderate | Skip splitting; long audio fails with a clear error in the dump log |
+| A6 | The laptop is awake when agent jobs run. Jobs queued while it sleeps run when it wakes | High | — |
+| A7 | The jigs keep using Bun; the app uses Node | High | — |
 
 ## 4. Architecture
 
@@ -62,25 +64,17 @@ Aber is Maggie's tool for developing theories of the near future. She dumps raw 
 
 ```mermaid
 flowchart LR
-  subgraph clients["Maggie's devices (over Tailscale)"]
-    web["Web app<br/>React + Vite"]
-    sc["Apple Shortcut"]
-  end
-  subgraph server["Coolify: aber (Docker Compose)"]
-    api["Hono HTTP API<br/>+ SSE"] --> tools["Typed tool layer<br/>authority rule, actor, events"]
-    worker["Job runner<br/>(same process)"] --> agents["Agent layer<br/>runtime + model client"]
+  subgraph laptop["Maggie's MacBook (localhost only)"]
+    web["Web app<br/>React + Vite"] --> api["Hono HTTP API<br/>+ SSE, on Node"]
+    curl["curl (capture tests)"] -->|POST /api/dumps| api
+    api --> tools["Typed tool layer<br/>authority rule, actor, events"]
+    worker["Job runner<br/>(same process)"] --> agents["Agent layer<br/>AI SDK 7"]
     agents --> tools
     tools --> db[("SQLite<br/>data/aber.db")]
     api --> media[("data/media/")]
-    ls["Litestream"] --- db
-    mb["Media backup"] --- media
   end
-  web --> api
-  sc -->|POST /api/dumps| api
   agents -->|HTTPS| llm["OpenAI / Anthropic"]
   api -->|transcribe| llm
-  ls --> b2["Backblaze B2"]
-  mb --> b2
 ```
 
 Everything that changes data goes through the typed tool layer, whether the caller is Maggie (via the HTTP API) or an agent. Agents never see SQL.
@@ -89,25 +83,25 @@ Everything that changes data goes through the typed tool layer, whether the call
 
 ```
 app/
-  package.json            bun workspaces: web, server, shared
+  package.json            npm workspaces: web, server, shared
   shared/                 zod schemas, types, concept enums, tool names (imported by both sides)
   server/
     src/db/               schema.ts (Drizzle), migrations/, seed.ts (the jig world)
     src/tools/            one file per concept: dumps.ts, signals.ts, themes.ts, theories.ts, prototypes.ts, suggestions.ts, merges.ts
     src/tools/authority.ts
-    src/agents/           runtime interface, model clients, jobs/process-dump.ts, link-evidence.ts, tripwire.ts, prompts/
+    src/agents/           models.ts (model per job), providers.ts, run.ts (agent_runs + cleanup), jobs/process-dump.ts,
+                          link-evidence.ts, tripwire.ts, chat.ts, prompts/, fetch-article.ts
     src/jobs/             queue.ts, runner.ts
-    src/http/             routes.ts, capture.ts, sse.ts, auth.ts, media.ts
+    src/http/             routes.ts, capture.ts, chat.ts, sse.ts, auth.ts, media.ts
     src/transcribe/
   web/
     src/ui/               lifted from jig/src/homes (atoms, panes, tripwire, confidence-spark, pill, views)
     src/data/             API client (hono/client), live store (replaces jig edits.ts)
+    src/chat/             useChat wiring; tool-part → component map
     src/app/              shell, routes
   e2e/                    Playwright specs, one per slice
-  evals/                  fixtures/ and run.ts
-Dockerfile
-compose.yaml
-litestream.yml
+  evals/                  fixtures/ (Maggie's real dumps) and *.eval.ts (Vitest)
+scripts/backup.sh       optional: copies data/aber.db (via SQLite's backup API) and data/media/ to a dated folder
 ```
 
 ### 4.3 Stack
@@ -115,20 +109,23 @@ litestream.yml
 | Layer | Choice | Status |
 | --- | --- | --- |
 | Front end | React 19 + Vite + TypeScript, `motion`, `@phosphor-icons/react`, Inter | Decided (React); versions follow `jig/package.json` |
-| Server | Hono on Bun | Hono decided; Bun is a judgement (A6) |
-| Database | SQLite (`bun:sqlite`), WAL mode, Drizzle ORM and migrations | SQLite decided; Drizzle is a judgement, moderate |
+| Server | Hono on Node 22+ (`@hono/node-server`) | Decided |
+| Database | SQLite via `better-sqlite3`, WAL mode, Drizzle ORM and migrations | SQLite decided; driver and Drizzle are judgements, moderate |
 | Validation | zod, shared between server and web | Judgement, high |
 | Client calls | `hono/client` typed RPC | Judgement, moderate |
 | Live updates | Server-sent events | Judgement, high |
-| Backups | Litestream → B2; media folder → B2 | Decided |
-| Agents | Behind the interface in section 5; framework open | **Open** |
-| Tests | `bun test`, Playwright | Judgement, high |
+| Backups | Optional local copy (`npm run backup`); off-site backups are later | Decided for this round |
+| Agents | Vercel AI SDK 7 (`ai`, `@ai-sdk/openai`, `@ai-sdk/anthropic`) in the Hono server; chat via AI SDK UI (`@ai-sdk/react` `useChat`). No Vercel hosting | Decided ([research](agent-architecture-research.md)) |
+| Background jobs | A `jobs` table in Aber's SQLite with a worker loop in the server process | Decided |
+| Tests | Vitest (unit and evals), Playwright | Decided (Vitest), judgement (Playwright, high) |
 
 ### 4.4 Database schema
 
 Guardrails that keep a later move to Postgres cheap: text IDs (ULID); timestamps as ISO 8601 UTC text; booleans as `0/1`; JSON as text validated by zod; `STRICT` tables; no SQLite-only functions in application queries; every row has `owner_id`; all access through the tool layer.
 
 Every mutable table carries `created_at, created_by, updated_at, updated_by`, where an **actor** is a string: `person:<id>` or `agent:<job>:<run_id>`. The run row holds the provider and model. They're shown once below as `-- audit` to keep the sketch short.
+
+**`run_id` on every agent write.** Every table an agent can write to (signals, signal_sources, signal_origins, signal_themes, mentions, themes, theories, theory_themes, evidence, follows, prototypes, prototype_theories, suggestions, merges, replies, events) also carries a nullable `run_id TEXT REFERENCES agent_runs(id)`. That is what makes a retried job safe (4.10).
 
 ```sql
 -- People and audit -----------------------------------------------------------
@@ -180,11 +177,11 @@ CREATE TABLE transcripts (
   PRIMARY KEY (dump_id, media_id)
 ) STRICT;
 
--- The agent's answer to a dump. components_json holds generative UI blocks (section 6.9).
+-- The agent's answer to a dump: the AI SDK UI message parts (text and tool parts), so useChat can re-render them (6.9).
 CREATE TABLE replies (
   id TEXT PRIMARY KEY, dump_id TEXT NOT NULL REFERENCES dumps(id),
-  text TEXT, components_json TEXT NOT NULL DEFAULT '[]',
-  run_id TEXT NOT NULL REFERENCES job_runs(id), created_at TEXT NOT NULL
+  parts_json TEXT NOT NULL DEFAULT '[]',
+  run_id TEXT NOT NULL REFERENCES agent_runs(id), created_at TEXT NOT NULL
 ) STRICT;
 
 -- Signals ----------------------------------------------------------------------
@@ -308,7 +305,7 @@ CREATE TABLE suggestions (
                                            -- merge: {other_id}; challenge: {signal_id, why, tripwire_version}
   reasoning TEXT NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('pending','accepted','discarded')),
-  run_id TEXT NOT NULL REFERENCES job_runs(id), dump_id TEXT,
+  run_id TEXT NOT NULL REFERENCES agent_runs(id), dump_id TEXT,
   decided_at TEXT, seen_at TEXT, created_at TEXT NOT NULL
 ) STRICT;
 CREATE INDEX suggestions_target ON suggestions(target_kind, target_id, status);
@@ -334,11 +331,16 @@ CREATE TABLE jobs (
   created_at TEXT NOT NULL
 ) STRICT;
 
-CREATE TABLE job_runs (                    -- the "processing runs" in the model; called agent_runs in the research doc
-  id TEXT PRIMARY KEY, job_id TEXT NOT NULL REFERENCES jobs(id), agent TEXT NOT NULL,
+-- One row per agent run (a job attempt, or one chat turn). This is the design model's "processing runs".
+-- Not shown in the app UI; query it directly.
+CREATE TABLE agent_runs (
+  id TEXT PRIMARY KEY, job_id TEXT REFERENCES jobs(id),          -- NULL for chat turns
+  job TEXT NOT NULL,                                              -- process_dump, link_evidence, tripwire, chat, transcribe
+  attempt INTEGER NOT NULL DEFAULT 1,
   provider TEXT NOT NULL, model TEXT NOT NULL, prompt_version TEXT NOT NULL,
-  input_tokens INTEGER, output_tokens INTEGER, cost_usd REAL,
-  status TEXT NOT NULL, trace_json TEXT,   -- tool calls and results, for debugging and evals
+  input_tokens INTEGER, output_tokens INTEGER, cached_input_tokens INTEGER, cost_usd REAL,
+  status TEXT NOT NULL CHECK (status IN ('running','done','failed','cleared')),
+  error TEXT, trace_json TEXT,            -- steps, tool calls and results (from onStepFinish), for debugging and evals
   started_at TEXT NOT NULL, finished_at TEXT
 ) STRICT;
 ```
@@ -367,7 +369,9 @@ type ToolCtx = { actor: Actor; ownerId: string; dumpId?: string; tx: Db };
 type Tool<I, O> = { name: string; input: z.ZodType<I>; output: z.ZodType<O>; who: "person" | "agent" | "both"; run: (ctx: ToolCtx, i: I) => Promise<O> };
 ```
 
-Each call runs in one transaction, appends an `events` row with `before_json` and `after_json`, and publishes an SSE message. A tool marked `person` is never offered to an agent runtime, **and** checks the actor itself.
+Each call runs in one transaction, appends an `events` row with `before_json` and `after_json`, and publishes an SSE message. A tool marked `person` is never offered to an agent, **and** checks the actor itself.
+
+**Defined once, used three ways.** Each tool's Zod input schema and `run` function live in `server/src/tools/`. The same definition is exported as a plain function (for HTTP routes and tests) and, for agent-allowed tools, wrapped as an AI SDK `tool({ description, inputSchema, execute })` whose `execute` calls `run` with `actor = { kind: 'agent', job, runId }`. Shared Zod types live in `shared/` so the web app uses them too.
 
 **The authority rule, enforced in `tools/authority.ts`:**
 
@@ -417,7 +421,8 @@ function assertMayWrite(actor: Actor, target: { kind: ObjectKind; id: string; st
 | `createDraftPrototype` | agent | |
 | `proposeEvidence`, `proposeRevision`, `proposeChallenge`, `proposeMerge` | agent | Create pending suggestions. `proposeMerge` is unused in v1 |
 | `decideSuggestion` | person | Accept, rephrase-then-accept, or discard. Accepting a challenge appends a stance one step lower (minimum 1) with note `Lowered: <gist>` and cause `challenge_accepted`. Undoing that decision appends a stance restoring the previous level (cause `undo`); the log stays append-only |
-| `reply` | agent | Write the reply to a dump, with components |
+| `reply` | agent | Store the reply to a dump as UI message parts |
+| `showTheory`, `showEvidenceSplit`, `showSignalList`, `showThemeActivity` | agent (chat only) | Read-only display tools: return the data a generative UI component renders (6.9) |
 | `search`, `similarSignals`, `similarTheories`, `listThemes`, `listTheories`, `getTheory`, `getSignal`, `listTripwires` | both | Reads for agents and Find (⌘K) |
 
 ### 4.6 HTTP API
@@ -429,9 +434,10 @@ function assertMayWrite(actor: Actor, target: { kind: ObjectKind; id: string; st
 | `POST /api/tools/:name` | Call any `person` tool with JSON input; validated by its zod schema; actor is the session's person |
 | `GET /api/world` | One snapshot for the views: themes, theories (with current confidence, balance, pending, tripwire state), signals (paged), prototypes, relationships |
 | `GET /api/objects/:kind/:id` | One object with everything the pane shows |
+| `POST /api/chat` | Dump-or-ask chat: stores the message as a dump, then streams the reply with `streamText` as an AI SDK UI message stream |
 | `GET /api/events/stream` | SSE: dump status changes, new and changed objects, new suggestions |
-| `GET /media/:id` | Serve a media file (auth required) |
-| `GET /healthz` | Liveness for Coolify |
+| `GET /media/:id` | Serve a media file |
+| `GET /healthz` | Liveness (used by hosting later) |
 
 ### 4.7 Capture endpoint (Apple Shortcut)
 
@@ -439,156 +445,181 @@ function assertMayWrite(actor: Actor, target: { kind: ObjectKind; id: string; st
 
 | | |
 | --- | --- |
-| Auth | `Authorization: Bearer $ABER_CAPTURE_TOKEN` (or the session cookie from the web app) |
+| Auth | None this round (localhost only). Section 13 adds a bearer token |
 | Body, JSON | `{ text?: string, urls?: string[], note?: string, from?: "shortcut" \| "web" \| "column", context?: Sees[] }` |
 | Body, multipart | Fields as above, plus `file` parts (audio such as `.m4a`, images) |
 | Idempotency | Optional `Idempotency-Key` header; a repeat returns the original dump |
 | Limits | 250 MB per request (judgement: covers about an hour of Voice Memos audio; moderate) |
 | Response | `201 { id, status: "received" }` within 1 s. Never waits for processing |
-| Failure | Non-2xx with a short JSON error. The Shortcut shows "Not saved" and copies the input to the clipboard (hosting guide, step 6b) |
+| Failure | Non-2xx with a short JSON error |
 
-Shortcut text and the `note` field are stored verbatim in `dumps.text`. URLs become link attachments, normalised (lower-case host, strip `www.`, map `twitter.com` to `x.com`, drop `utm_*`, `fbclid`, `si`, `s`, `t` on x.com, and trailing slashes).
+Text and the `note` field are stored verbatim in `dumps.text`. URLs become link attachments, normalised (lower-case host, strip `www.`, map `twitter.com` to `x.com`, drop `utm_*`, `fbclid`, `si`, `s`, `t` on x.com, and trailing slashes).
+
+**Testing capture locally:**
+
+```
+curl -X POST http://127.0.0.1:3000/api/dumps -H 'Content-Type: application/json' \
+  -d '{"text":"Small models are eating routine work","urls":["https://x.com/someone/status/123"],"from":"shortcut"}'
+curl -X POST http://127.0.0.1:3000/api/dumps -F from=shortcut -F file=@note.m4a
+```
+
+The Apple Shortcut (hosting guide, step 6b) posts the same body. It only works when the phone can reach the laptop, which needs the server bound beyond localhost and some auth (section 13), so phone capture is later and optional.
 
 ### 4.8 Transcription
 
 | | |
 | --- | --- |
 | Where | Server-side, as a `transcribe` job before `process_dump` |
-| Interface | `Transcriber.transcribe(media: MediaRef): Promise<{ text, provider, model }>` |
-| Default | OpenAI transcription (the hosting guide costs `gpt-4o-mini-transcribe` and `gpt-4o-transcribe`); pick through config. Confidence moderate; follow the agent framework decision if it says otherwise |
+| Model | OpenAI `gpt-transcribe`, through the `@ai-sdk/openai` provider object (Anthropic offers no speech-to-text; [research, section 5](agent-architecture-research.md#5-model-plan-per-job)). `gpt-4o-transcribe` and `-mini` are deprecated |
 | Long audio | Check the provider's per-file limit; if over, split with `ffmpeg` (in the image) on silence into chunks and join the text |
 | Original | The audio is always kept as media |
+| Run | Writes an `agent_runs` row like any other job |
 
 ### 4.9 Media
 
 | | |
 | --- | --- |
-| Where | `data/media/YYYY/MM/<ulid>.<ext>` on the server volume, hashed (sha256) |
-| Served | `GET /media/:id`, auth required, `Cache-Control: private, max-age=31536000, immutable` |
-| Backup | A sidecar syncs `data/media/` to a B2 bucket prefix every hour (`rclone sync`, or `restic` for versioned snapshots; judgement: restic, moderate, because a sync mirrors deletions) |
+| Where | `data/media/YYYY/MM/<ulid>.<ext>` on local disk, hashed (sha256) |
+| Served | `GET /media/:id`, `Cache-Control: private, max-age=31536000, immutable` |
+| Backup | Optional `npm run backup` copies the database (using SQLite's online backup, so it's consistent while running) and `data/media/` into `backups/<date>/`. Off-site backup is later |
 | Images | Outline `1px rgba(0,0,0,0.1)` when shown |
 
 ### 4.10 Jobs
 
-A small queue in SQLite, run in the server process.
+A `jobs` table in Aber's SQLite, worked by a loop in the server process (decided; [research, architecture A](agent-architecture-research.md#a-ai-sdk-7-everywhere--own-sqlite-queue-recommended)).
 
 | | |
 | --- | --- |
 | Claim | `UPDATE jobs SET status='running', locked_at=now WHERE id = (SELECT id FROM jobs WHERE status='queued' AND run_after<=now ORDER BY created_at LIMIT 1) RETURNING *` |
 | Concurrency | 2 workers (judgement) |
+| Runs | Each attempt opens an `agent_runs` row (`attempt` = n) and passes its `runId` to every tool call |
 | Retries | 3 attempts, backoff 30 s, 5 min, 30 min; then `failed`, shown in the dump log |
-| Stale locks | Re-queue `running` jobs locked for more than 10 minutes at start-up |
+| Restart from the beginning | A crashed or failed attempt is retried from the start, never resumed. **Before the retry, the runner clears the failed run's writes**: delete the drafts, suggestions, mentions, filings, origins, evidence, replies and signals carrying its `run_id`; undo its merges from their snapshots; mark the run `cleared`. Writes by a person are never touched, and nothing outside that `run_id` is |
+| Idempotent writes | Tools that create something accept the `runId` and are no-ops on a repeat with the same key within a run (e.g. `createSignal` keyed on run + normalised URL or gist hash) |
+| Stale locks | At start-up, `running` jobs locked for more than 10 minutes are treated as crashed: clear their run, then re-queue |
 | Chaining | `transcribe` → `process_dump` → one `link_evidence` and one `tripwire` per new signal |
 | Scheduled | `purge_bin` daily: hard-delete dumps past `purge_after` (and their media) |
-| Spend | A per-day token and cost cap from env; when hit, jobs wait until tomorrow and the dump log shows it |
+| Spend | A per-day cost cap from env, summed from `agent_runs.cost_usd`; when hit, jobs wait until tomorrow and the dump log shows it |
+| Batch | Later overnight jobs use the provider's batch API (about 50% off); not needed in v1 |
 
-### 4.11 Litestream
+The runner clearing a failed run's writes is not an agent deleting anything: it puts back the state from before that attempt.
 
-`litestream.yml` replicates `data/aber.db` to `s3://$B2_BUCKET/db` at the B2 S3 endpoint. Run as a Compose sidecar sharing the volume (fallback for A2: run `litestream replicate -exec "bun run start"` as the container command). WAL mode on. Document the restore drill from the hosting guide (step 5c) in `app/README.md`.
+### 4.11 Local setup
 
-### 4.12 Docker and Coolify
-
-| File | Contents |
+| | |
 | --- | --- |
-| `Dockerfile` | Multi-stage: build `web` with Vite; runtime `oven/bun` with `ffmpeg`; server serves `web/dist` and the API on port 3000 |
-| `compose.yaml` | `app` (volume `./data:/app/data`, `env_file`, healthcheck `/healthz`), `litestream` (same volume), `media-backup` (same volume, hourly) |
-| Env | `ABER_CAPTURE_TOKEN`, `ABER_SESSION_SECRET`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `AGENT_PROVIDER`, model names per tier, `B2_*`, `DAILY_SPEND_CAP_USD` |
-
-What changes from the hosting guide because hosting is the **team Coolify server**:
-
-| Topic | Implication |
-| --- | --- |
-| Ownership | Aber is a work tool. Its data sits on work infrastructure under work policies. Keep personal material out, or move hosting later (a database file and a media folder) |
-| Access to the host | Server admins can read the volume (A4). Nothing in the app can prevent that |
-| Network | Don't attach a public domain in Coolify. Expose the app only on the tailnet (A3). Confirm how the team's server joins Tailscale |
-| Ports | Bind to `127.0.0.1` or the internal network only; Docker's published ports bypass host firewalls (hosting guide, 4b) |
-| Deploys | Coolify builds from the Git repo; no `deploy.sh` needed |
-| Backups | Use Maggie's own B2 bucket and keys unless the team has a policy (ask) |
-| Cost | No server cost; AI costs as in the hosting guide |
-
-### 4.13 Auth
-
-| Client | How |
-| --- | --- |
-| Web app | Visit `/login#<token>` once per device; the page posts the fragment to `POST /api/session`, which sets an `HttpOnly; Secure; SameSite=Strict` session cookie signed with `ABER_SESSION_SECRET` (a fragment never reaches server logs). No login form (no instructional text, nothing public) |
-| Shortcut | Bearer `ABER_CAPTURE_TOKEN` |
-| Everything | Required on every route except `/healthz`, even on the tailnet (defence in depth on a shared server) |
+| Data directory | `app/data/` (git-ignored): `aber.db` (WAL mode) and `media/`. Overridable with `ABER_DATA_DIR` |
+| Binding | The server listens on `127.0.0.1:3000` only. Vite on `127.0.0.1:5173` proxies `/api` and `/media` to it |
+| Env | `.env` (git-ignored): `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `AGENT_MODE` (`live` or `fake`), `DAILY_SPEND_CAP_USD`, `ABER_DATA_DIR`. Models per job are in `server/src/agents/models.ts`, not env |
+| Production-like run | `npm run build && npm start` serves `web/dist` and the API from one Node process on 3000 |
+| Auth | None. Every route is open to `127.0.0.1` only |
+| Health | `GET /healthz` (kept for later hosting) |
 
 ## 5. The agent layer
 
-**The framework is the one open decision.** Maggie prefers OpenAI models for cost and may want both OpenAI and Anthropic. The options are in [agent-architecture-research.md](agent-architecture-research.md) (on 1 Nov it recommends AI SDK 7 with an own SQLite queue, moderate–high confidence, pending Maggie). The rest of the app depends only on the interface below, so any candidate can implement it. Whichever is chosen: use provider instances rather than bare model strings, and pin models per job in one config file.
+**Decided 1 Nov 2026** ([agent-architecture-research.md](agent-architecture-research.md), recommendation A, chosen by Maggie):
 
-### 5.1 Interface
+| Decision | Detail |
+| --- | --- |
+| Library | Vercel AI SDK 7 (`ai`) inside the Hono server on Node. The open-source library only; no Vercel hosting |
+| Providers | `@ai-sdk/openai` and `@ai-sdk/anthropic`, both wired. **Always pass provider objects** (`openai('gpt-6.1-terra')`, `anthropic('claude-sonnet-5-5')`), never plain model-name strings: a bare string routes through Vercel's AI Gateway by default |
+| Jobs | Own `jobs` table and worker loop (4.10); `agent_runs` records every run |
+| Durability | A crashed job restarts from the beginning; `runId` on every write plus clean-up before retry makes that safe |
+| Chat | `streamText` with display tools, rendered by `useChat` (6.9) |
+| Evals | Vitest fixture tests on Maggie's real dumps (5.5) |
+| Article content | Fetch the full article text and send it to the model for processing and evidence linking. Store it on the signal as best effort (`fetched_json`); a signal never depends on it |
+
+### 5.1 Model per job
+
+One config file, `server/src/agents/models.ts`, maps each job to a provider object. OpenAI first; the Claude alternative per job is configured beside it so switching is a one-line change. Prices and volumes are in the [research, section 5](agent-architecture-research.md#5-model-plan-per-job).
+
+| Job | Model (OpenAI) | Configured alternative | v1 |
+| --- | --- | --- | --- |
+| Transcribe | `gpt-transcribe` | (stays on OpenAI) | Yes |
+| Process a dump | `gpt-6.1-terra` | `claude-sonnet-5-5` | Yes |
+| Link evidence | `gpt-6-luna` | `claude-haiku-5-5` | Yes |
+| Tripwire | `gpt-6-luna` | `claude-haiku-5-5` | Yes |
+| De-duplicate (including the automatic near-duplicate merge decision) | `gpt-6-luna` | `claude-haiku-5-5` | Near-duplicate merge: yes, as a step called from processing. Nightly de-duplicate: later |
+| Chat (dump or ask) | `gpt-6.1-terra` | `claude-sonnet-5-5` | Yes |
+| Cluster, diagnosticity, extrapolate, red-team | `gpt-6.1-sol` (batch for overnight) | per research | Later |
+
+Keep every request under 100k input tokens (Claude Haiku's price cliff; hosting guide). OpenAI's guide says GPT-6 tool calling should use the Responses API; check `@ai-sdk/openai` does this when wiring it up (research, "Unverified", moderate).
+
+### 5.2 The internal interface (for testability)
+
+The app doesn't call the AI SDK from everywhere. Jobs go through one small seam so tests can swap in a scripted model:
 
 ```ts
-type ModelTier = "fast" | "standard" | "deep";                 // mapped to provider models in config
+// server/src/agents/run.ts
+type AgentJob = "transcribe" | "process_dump" | "link_evidence" | "tripwire" | "near_dup" | "chat";
 
-interface ModelClient {                                         // one per provider; a router picks by tier and config
-  generate<T>(req: {
-    tier: ModelTier; system: string; messages: Message[];
-    tools?: ToolSpec[];                                         // from the tool registry, agent-allowed only
-    output?: z.ZodType<T>;                                      // structured output when no tools are needed
-    maxOutputTokens?: number;
-  }): Promise<{ text?: string; output?: T; toolCalls?: ToolCall[]; usage: Usage; provider: string; model: string }>;
-  embed(texts: string[]): Promise<Float32Array[]>;
-}
-
-interface AgentRuntime {                                        // the tool loop; this is what a framework replaces
-  run(spec: AgentJobSpec, input: unknown, ctx: { runId: string; ownerId: string; dumpId?: string }): Promise<RunResult>;
-}
-
-type AgentJobSpec = {
-  kind: AgentJobKind; promptVersion: string; tier: ModelTier;
-  system: string; tools: string[];                              // tool names; the runtime resolves them from the registry
-  maxSteps: number;                                             // tool-call budget
-  maxInputTokens: number;                                       // keep every request under 100k (hosting guide, the Haiku cliff)
+type AgentSpec = {
+  job: AgentJob; promptVersion: string;
+  system: string;
+  tools: (runId: string) => Record<string, Tool>;  // AI SDK tool() objects built from the typed tool layer
+  maxSteps: number;                                 // stopWhen: stepCountIs(maxSteps)
+  maxInputTokens: number;
 };
 
-type RunResult = { status: "done" | "failed"; trace: TraceStep[]; usage: Usage };
+// Opens an agent_runs row, calls generateText / streamText with models[job] and the tools,
+// records each step from onStepFinish into trace_json, then tokens, cost and status.
+function runAgent(spec: AgentSpec, input: { prompt: string | ModelMessage[] }, ctx: { jobId?: string; attempt: number; dumpId?: string }): Promise<RunResult>;
+function streamAgent(spec: AgentSpec, input: { messages: UIMessage[] }, ctx: { dumpId: string }): Response;   // chat
+
+// Which model a job uses. In tests (AGENT_MODE=fake) this returns an AI SDK MockLanguageModel scripted from fixtures.
+function modelFor(job: AgentJob): LanguageModel;
 ```
 
 | Rule | Why |
 | --- | --- |
-| The runtime calls tools only through the registry, with `actor = { kind: "agent", job, runId }` | The authority rule lives in the tools, not in prompts |
-| Tool errors (including `AuthorityError`) go back to the model as tool results, and into the trace | The agent can recover; tests can see violations |
-| Every run writes a `job_runs` row with provider, model, prompt version, tokens, cost and trace | "Processing runs" in the model; evals and debugging |
-| Provider and model per tier come from env | Swap providers without code changes |
-| Overnight work may use a provider batch API where the framework supports it | Cost (hosting guide) |
-
-### 5.2 Implementations to build
-
-| Implementation | When |
-| --- | --- |
-| `FakeModelClient` | Always. Deterministic, scripted by fixture: given a dump fixture, returns the recorded tool calls. Used by unit tests, Playwright and local development (`AGENT_PROVIDER=fake`) |
-| A minimal `AgentRuntime` (tool loop over `ModelClient.generate`) | Always. About 100 lines; it is also the fallback if the chosen framework doesn't fit |
-| The chosen framework's adapter | Once the decision is recorded. If it isn't, leave `src/agents/adapters/<name>.ts` as a stub that throws, and note it in `docs/build-notes.md` |
+| Tools reach the database only through the typed tool layer, with `actor = { kind: 'agent', job, runId }` | The authority rule lives in the tools, not in prompts |
+| Tool errors (including `AuthorityError`) return to the model as tool results and land in `trace_json` | The agent can recover; tests can see violations |
+| Every run writes `agent_runs`: job, provider, model, prompt version, tokens, cost, status, timings | The model's "processing runs"; spend cap; debugging. Not shown in the app UI |
+| `AGENT_MODE=fake` uses the AI SDK's mock language model with scripted tool calls per fixture | Deterministic unit and e2e tests, no API keys |
 
 ### 5.3 v1 agent jobs
 
 | | Process a dump | Link evidence | Tripwire |
 | --- | --- | --- | --- |
 | Trigger | `process_dump` after capture (and after `transcribe`) | Each new signal | Each new signal; and `setTripwire` (look back over signals from the last 90 days; judgement, moderate) |
-| Tier | standard | fast | fast to filter, standard to judge |
-| Input | Dump text, transcripts, attachments with best-effort fetched content, context pills, `is_ask`; theme list; held and draft theory claims; for each link, exact matches by normalised URL and tombstones; top similar signals by embedding | The signal (gist, sources, note); top 8 theories by embedding similarity, with claim, body and current evidence | The signal; theories with non-empty tripwires, pre-filtered by embedding similarity to the tripwire text (top 10) |
+| Model | `gpt-6.1-terra`; the near-duplicate decision is a separate `near_dup` call on `gpt-6-luna` | `gpt-6-luna` | `gpt-6-luna` |
+| Input | Dump text, transcripts, attachments with **full fetched article text**, context pills, `is_ask`; theme list; held and draft theory claims; for each link, exact matches by normalised URL and tombstones; top similar signals by embedding | The signal (gist, sources, note, full fetched text); top 8 theories by embedding similarity, with claim, body and current evidence | The signal; theories with non-empty tripwires, pre-filtered by embedding similarity to the tripwire text (top 10) |
 | Reads | `getDump`, `similarSignals`, `listThemes`, `listTheories`, `getTheory` | `getSignal`, `similarTheories`, `getTheory` | `getSignal`, `listTripwires`, `getTheory` |
-| Writes | `createSignal`, `attachOrigin`, `fileSignal`, `mergeNearDuplicateSignals`, `recordMention`, `createDraftTheme`, `createDraftTheory`, `createDraftPrototype`, `linkEvidence` / `linkTheoryTheme` / `linkFollows` on its own drafts, `proposeRevision`, `reply` | `proposeEvidence` on held theories; `linkEvidence` on drafts | `proposeChallenge` |
-| Output | Signals filed into themes; merges; drafts; revision suggestions; a reply with components (6.9) | Evidence suggestions with stance and one-line reasoning | Challenge suggestions with a one-line "why" (shown under the hit) |
+| Writes | `createSignal`, `attachOrigin`, `fileSignal`, `mergeNearDuplicateSignals` (after `near_dup` says yes), `recordMention`, `createDraftTheme`, `createDraftTheory`, `createDraftPrototype`, `linkEvidence` / `linkTheoryTheme` / `linkFollows` on its own drafts, `proposeRevision`, `reply` | `proposeEvidence` on held theories; `linkEvidence` on drafts | `proposeChallenge` |
+| Output | Signals filed into themes; merges; drafts; revision suggestions; a reply (filed tokens and draft cards) | Evidence suggestions with stance and one-line reasoning | Challenge suggestions with a one-line "why" (shown under the hit) |
 | Must not | Create a signal whose URL matches a tombstone; create a second signal for an already-saved link; edit a held theory | Change confidence; touch held theories except by proposing | Change confidence. Only a person accepting a challenge lowers it |
-| Ask messages | Answer from the world via reads; usually only a reply. Material in an ask is still processed | — | — |
 | Near-duplicate rule | Merge only when both describe the same event or finding (not merely the same topic). Keep both sources. Join notes if both have one (judgement, moderate) | — | — |
 
-Prompts live in `src/agents/prompts/<job>.md` with a version string; bump it on every change.
+Embeddings come from an OpenAI embedding model through the same provider (the hosting guide costs `text-embedding-3-small`; confirm it's current when wiring up). Fetching uses a plain HTTP fetch plus readability extraction (judgement, moderate); paywalled or failed fetches leave `fetched_json` empty and the dump still processes.
 
-### 5.4 Evals
+**Chat** (`POST /api/chat`, model `gpt-6.1-terra`): the message is stored as a dump first, then `streamAgent` answers with read tools plus the four display tools (`showTheory`, `showEvidenceSplit`, `showSignalList`, `showThemeActivity`) and the open context pills in the prompt. A material message is also enqueued for `process_dump`, whose filed tokens and drafts join the same reply.
 
-| Fixture set | Checks |
+Prompts live in `server/src/agents/prompts/<job>.md` with a version string; bump it on every change.
+
+### 5.4 What the build agent builds
+
+| Piece | Notes |
 | --- | --- |
-| 20 dumps (text, links, a transcript) with expected outcomes in `evals/fixtures/` | Signal count within a range; each filed to an expected theme; repeat links attach instead of duplicating; tombstoned links never return; planted near-duplicates merge and decoys (same topic, different finding) don't |
-| 10 theory + signal pairs | Evidence stance matches the label |
-| 8 tripwires with planted hits and decoys | Hits trip; decoys don't |
-| Every run | Zero `AuthorityError`s in traces |
+| `models.ts` | Job → provider object, OpenAI and Claude entries both present |
+| `providers.ts` | `createOpenAI` and `createAnthropic` with keys from env |
+| `run.ts` | `runAgent`, `streamAgent`, `modelFor`, `agent_runs` writes, cost from token counts and a price table copied from the research doc |
+| `cleanup.ts` | Clear a run's writes before a retry (4.10) |
+| Tool wrappers | Agent-allowed tools as AI SDK `tool()` objects from the shared Zod schemas |
+| Fake mode | Scripted mock models per fixture for tests |
 
-`bun run eval` runs against the configured provider and prints a table; it is not part of CI (costs money). Unit and e2e tests use the fake client.
+### 5.5 Evals
+
+Vitest fixture tests in `app/evals/`, run with `npm run eval` against live models (costs money; not part of CI). Unit and e2e tests use fake mode.
+
+| Order | Eval | Checks |
+| --- | --- | --- |
+| 1, first | **OpenAI vs Claude on 10–20 of Maggie's own dumps**, before locking models | Same checks as below, run once per configured model per job; prints a side-by-side table of pass rates, tokens and cost. promptfoo is optional for a richer side-by-side |
+| 2 | Dumps with expected outcomes in `evals/fixtures/` | Signal count within a range; each filed to an expected theme; repeat links attach instead of duplicating; tombstoned links never return; planted near-duplicates merge and decoys (same topic, different finding) don't |
+| 3 | 10 theory + signal pairs | Evidence stance matches the label |
+| 4 | 8 tripwires with planted hits and decoys | Hits trip; decoys don't |
+| Every run | | Zero `AuthorityError`s in traces |
+
+Maggie supplies the real dumps; until she does, the build agent writes the harness with a handful of synthetic fixtures from the jig world and notes it.
 
 ## 6. Interface spec by surface
 
@@ -697,9 +728,9 @@ Lift components from `jig/src/homes/` rather than rewriting them. Replace the ji
 | Context | The pills float above the input, lined up with its left edge; removable; the crosshair toggles picking, and clicking any `[data-pick]` object adds it. Esc stops picking |
 | Composer | "Dump anything, or ask"; Return sends, Shift-Return a new line; a pasted URL becomes a link chip (favicon at once, title resolves after); + attaches; mic records; send is an up arrow that becomes a question mark (ask) when the text contains "?" |
 | Voice | The mic turns the pill (or composer) into the take: discard, live waveform, time, stop. Stop sends the note as a dump. Recorded notes show a scrubbable waveform and the transcript |
-| Sent | Every message is a Dump (`captured_from='column'`, `context_json` from the pills). Attachments on a sent message stack (style `fanX`) |
+| Sent | Every message is a Dump (`captured_from='column'`, `context_json` from the pills), stored before the model is called. Material in it is then processed by `process_dump` as usual. Attachments on a sent message stack (style `fanX`) |
 | Reply | A spinner while working, then staggered blocks (0.07 s): text; **filed** tokens (theme icon, name, count badge; click lists the gists); **draft** cards (dashed; accept and discard on the card's top edge; accepting solidifies it in place). Drafts accepted here solidify wherever else they show |
-| Generative UI | Replies carry `components_json`: an ordered list from a fixed library: `text`, `filed {themeId, signalIds}`, `draft {kind, id}`, `suggestion {id}`, `theory {id}`, `signal {id}`, `theme {id}`. The agent picks components; the web app renders them with the same components the views use. Unknown types are dropped and logged |
+| Generative UI | The column uses AI SDK UI `useChat` against `POST /api/chat`. Replies are text plus typed tool parts; the web app switches on `part.type` and renders, when the part reaches `output-available`: `tool-showTheory` → **theory card**; `tool-showEvidenceSplit` → **evidence split** (supports / undermines columns, as in the pane); `tool-showSignalList` → **signal list** (signal rows); `tool-showThemeActivity` → **theme activity** (a theme's new signals, theories and counts since a date). Processing results render as the jig's **filed** tokens and **draft** cards. Each component is the same one the views use. Unknown part types are dropped and logged. Parts are stored in `replies.parts_json` so the thread re-renders after reload |
 | Drop | Dragging links, images or cards onto the closed pill swells it and dumps them directly, without opening |
 | Toast | After the column closes (or a direct dump finishes): counts made ("3 signals, 1 draft") with Undo, just above the pill; 5 s, held while hovered. Undo moves that dump to the bin (judgement, moderate; the jig only hides the toast) |
 
@@ -745,19 +776,19 @@ Lift components from `jig/src/homes/` rather than rewriting them. Replace the ji
 
 ## 7. Slices, in build order
 
-Each slice is a vertical cut that works end to end, ends with its Playwright spec passing, and is one commit (or a short series) on its own branch. Use `AGENT_PROVIDER=fake` and the seeded jig world for all e2e checks.
+Each slice is a vertical cut that works end to end, ends with its Playwright spec passing, and is one commit (or a short series) on its own branch. Use `AGENT_MODE=fake` and the seeded jig world for all e2e checks.
 
 ### Slice 0: Scaffold
 
 | Acceptance criterion | Check |
 | --- | --- |
-| `bun install && bun run dev` starts the server on 3000 and Vite on 5173 with a proxy | `e2e/00-scaffold.spec.ts`: `/healthz` returns 200; `/` renders the empty shell |
-| Migrations create every table in 4.4; `bun run seed` loads the jig world | Unit: row counts match `data.ts` |
+| `npm install && npm run dev` starts the server (Node) on 3000 and Vite on 5173 with a proxy | `e2e/00-scaffold.spec.ts`: `/healthz` returns 200; `/` renders the empty shell |
+| Migrations create every table in 4.4; `npm run seed` loads the jig world | Unit: row counts match `data.ts` |
 | The tool registry exists with `assertMayWrite`; an agent actor calling a `person` tool throws `AuthorityError` | Unit: `tools/authority.test.ts` |
 | Every tool call writes one `events` row with the actor | Unit |
 | `stances` rejects UPDATE and DELETE | Unit |
 | Tokens (`--ap-*`), Inter, atoms and `OBJECT_ICONS` are lifted; Theme icon is Binoculars | Unit snapshot of `OBJECT_ICONS` names |
-| Auth: requests without a cookie or token get 401 | e2e |
+| The server refuses connections on any interface but `127.0.0.1` | e2e: binding check |
 
 ### Slice 1: Capture, dump stored, dump log
 
@@ -771,25 +802,40 @@ Each slice is a vertical cut that works end to end, ends with its Playwright spe
 | Delete shows the confirmation with counts; the dump moves to the bin; Restore brings back everything it removed | e2e + unit on `deleteDump` / `restoreDump` |
 | `purge_bin` hard-deletes dumps past 30 days | Unit with a fake clock |
 
-### Slice 2: Processing → signals filed into themes
+### Slice 2: Agent layer setup
 
 | Acceptance criterion | Check |
 | --- | --- |
-| The job queue claims, retries with backoff, marks failures, and re-queues stale locks | Unit |
-| `transcribe` stores a transcript (fake transcriber in tests), then enqueues `process_dump` | Unit |
-| `process_dump` with the fake client turns fixture D1 into three signals filed in "Cost of intelligence", each with D1 as origin | `e2e/02-process.spec.ts`: capture → SSE → signals appear in the dump log row and in `/api/world` |
+| `models.ts` maps every v1 job to an OpenAI provider object, with the Claude alternative beside it; a lint test fails if any model is given as a plain string | Unit: `agents/models.test.ts` scans for `model: "` strings |
+| `providers.ts` builds OpenAI and Anthropic providers from env; with `AGENT_MODE=fake`, `modelFor` returns scripted mock models | Unit |
+| Agent-allowed tools are AI SDK `tool()` objects built from the same Zod schemas as the typed tool layer; `person` tools are absent from every agent tool set | Unit |
+| The `jobs` table and worker loop claim jobs, retry with backoff (30 s, 5 min, 30 min) and mark `failed` after 3 attempts | Unit with a fake clock |
+| Each attempt writes an `agent_runs` row with job, provider, model, prompt version, tokens, cost, status, timings and trace | Unit |
+| **Retry clean-up:** a fake job that creates a draft theory, a suggestion and a signal and then throws is retried; before the retry, everything carrying the failed `run_id` is gone, its merges are undone, the run is `cleared`, and the second attempt's writes are the only ones left | Unit: `jobs/retry-cleanup.test.ts` |
+| Clean-up never touches rows written by a person or by another run, even on the same objects (e.g. a note Maggie added to a signal the failed run created survives as an event and blocks deleting that signal; the run is marked `failed` instead, with a note) | Unit |
+| A job whose lock is older than 10 minutes at start-up is treated as crashed: its run is cleared and it is re-queued | Unit |
+| A repeat tool call with the same run and key is a no-op | Unit |
+| The daily spend cap, summed from `agent_runs.cost_usd`, pauses the queue | Unit |
+| One live smoke call per provider succeeds when keys are present (skipped otherwise) | `npm run smoke:providers` |
+
+### Slice 3: Processing → signals filed into themes
+
+| Acceptance criterion | Check |
+| --- | --- |
+| `transcribe` stores a transcript from `gpt-transcribe` (fake in tests), then enqueues `process_dump` | Unit |
+| `process_dump` in fake mode turns fixture D1 into three signals filed in "Cost of intelligence", each with D1 as origin | `e2e/03-process.spec.ts`: capture → SSE → signals appear in the dump log row and in `/api/world` |
 | A repeat link attaches the new dump to the existing signal and records a mention; no new signal | Unit + e2e |
 | A link matching a tombstone creates nothing and is noted in the run trace | Unit |
 | A near-duplicate merges: one signal, two sources, a `merges` row with snapshot; Undo restores both exactly | Unit (snapshot round-trip) + e2e (Undo in the dump log) |
 | An agent attempt to edit a held theory fails with `AuthorityError` in the trace and changes nothing | Unit |
-| Every run writes `job_runs` with provider, model, prompt version and tokens | Unit |
-| The real provider adapter is wired if the framework decision is recorded; otherwise a stub and a note | Manual; `docs/build-notes.md` |
+| Full article text is fetched and sent to the model; a failed fetch leaves `fetched_json` empty and the signal is still created | Unit with a stubbed fetch |
+| `npm run eval -- --compare` runs the OpenAI vs Claude comparison over the eval fixtures and prints the table | Manual |
 
-### Slice 3: Theme sections and the object pane (read and write)
+### Slice 4: Theme sections and the object pane (read and write)
 
 | Acceptance criterion | Check |
 | --- | --- |
-| Theme sections matches `/app?view=current` with the same seed | `e2e/03-sections.spec.ts`: screenshot saved to `test-results/parity/` beside one of the jig (for Maggie; not a failing assertion) |
+| Theme sections matches `/app?view=current` with the same seed | `e2e/04-sections.spec.ts`: screenshot saved to `test-results/parity/` beside one of the jig (for Maggie; not a failing assertion) |
 | Clicking a theory opens the pane from the right; Esc closes it the same way | e2e |
 | Editing a claim, body, horizon or theme name persists across reload and appends a version for theories | e2e + unit |
 | Pane snaps: ⌘[ and ⌘] step through compact / half / wide / full; with the column open, compact is skipped when it lands within 40 px of half | e2e reads the pane width |
@@ -798,11 +844,11 @@ Each slice is a vertical cut that works end to end, ends with its Playwright spe
 | Prototype pane: status changes persist | e2e |
 | The view switcher shows; ⌘1 is Theme sections | e2e |
 
-### Slice 4: Theories, confidence, tripwire, evidence
+### Slice 5: Theories, confidence, tripwire, evidence
 
 | Acceptance criterion | Check |
 | --- | --- |
-| Setting confidence appends a stance and the sparkline gains a step in the right colour | `e2e/04-theories.spec.ts` + unit |
+| Setting confidence appends a stance and the sparkline gains a step in the right colour | `e2e/05-theories.spec.ts` + unit |
 | The tripwire sentence moves empty → watching on blur with words | e2e |
 | `link_evidence` (fake) proposes evidence; it shows dashed in Supports or Undermines; accepting makes it solid; discarding removes it | e2e |
 | `tripwire` (fake) on a planted signal trips t3: signpost red, wavy underline, dashed count; Accept lowers confidence one step with note `Lowered: <gist>`; Undo appends a restoring stance | e2e + unit (stance log stays append-only) |
@@ -811,95 +857,90 @@ Each slice is a vertical cut that works end to end, ends with its Playwright spe
 | Rivals and follows-from chips open the linked theory | e2e |
 | Agents can't call `setConfidence` | Unit |
 
-### Slice 5: Briefing
+### Slice 6: Briefing
 
 | Acceptance criterion | Check |
 | --- | --- |
-| ⌘5 shows every unseen challenge, draft, revision, evidence suggestion and new-signal group | `e2e/05-briefing.spec.ts` |
+| ⌘5 shows every unseen challenge, draft, revision, evidence suggestion and new-signal group | `e2e/06-briefing.spec.ts` |
 | J / K move the cursor; A and X settle the item and it leaves; U unmerges a near-duplicate; Return opens the object in the pane | e2e |
 | Acting marks items seen; their blue dots disappear in other views | e2e |
 | At 390 px wide, Briefing is one column and the pane opens full screen | e2e with a phone viewport |
 
-### Slice 6: Atlas
+### Slice 7: Atlas
 
 | Acceptance criterion | Check |
 | --- | --- |
-| ⌘3 shows circles on Paper with landmarks sized by confidence | `e2e/06-atlas.spec.ts` + parity screenshot |
+| ⌘3 shows circles on Paper with landmarks sized by confidence | `e2e/07-atlas.spec.ts` + parity screenshot |
 | At rest halos are faint; past zoom 1.6 ticks clear and claims show; past 2.5 gists show | e2e via `+` key and DOM attributes |
 | Clicking a territory opens the theme and centres the map; a drag never opens what it ends on | e2e |
 | Layout is deterministic for the same data | Unit |
 
-### Slice 7: Timeline
+### Slice 8: Timeline
 
 | Acceptance criterion | Check |
 | --- | --- |
-| ⌘4 shows the Field: year across, confidence down, drafts in a dashed row | `e2e/07-timeline.spec.ts` + parity screenshot |
+| ⌘4 shows the Field: year across, confidence down, drafts in a dashed row | `e2e/08-timeline.spec.ts` + parity screenshot |
 | Selecting shows one hop with "+n" badges; a badge opens the next level; Esc closes levels one at a time, then the pane | e2e |
 | Follow chain morphs to columns by depth; Esc morphs back | e2e |
 | Dragging a held theory to another year and row persists horizon and appends a stance | e2e |
 | With the pane at wide, the field scrolls sideways and keeps the selected theory in view | e2e |
 
-### Slice 8: Columns
+### Slice 9: Columns
 
 | Acceptance criterion | Check |
 | --- | --- |
-| ⌘2 shows the five columns in order | `e2e/08-columns.spec.ts` + parity screenshot |
+| ⌘2 shows the five columns in order | `e2e/09-columns.spec.ts` + parity screenshot |
 | Opening a theory folds the other columns to rails with related counts | e2e |
 | Unfolding a signal pulls its relatives to the top of each column and dims the rest | e2e |
 | At full pane, every column is a rail; clicking one restores the previous snap | e2e |
 
-### Slice 9: Dump-or-ask chat with generative UI
+### Slice 10: Dump-or-ask chat with generative UI
 
 | Acceptance criterion | Check |
 | --- | --- |
-| Context pills float above the input, naming the open object then the view; removing one drops it from the sent dump's context | `e2e/09-chat.spec.ts` |
+| Context pills float above the input, naming the open object then the view; removing one drops it from the sent dump's context | `e2e/10-chat.spec.ts` |
 | The crosshair picks a theory card on screen into a pill; Esc stops picking | e2e |
-| A message with "?" shows the question-mark send; it's stored as a dump with `is_ask=1`; the reply renders `text` | e2e |
+| A message with "?" shows the question-mark send; it's stored as a dump with `is_ask=1` before the model is called; the reply streams through `useChat` | e2e |
+| Asking about the open theory renders a **theory card** and an **evidence split**; asking what's new in a theme renders **theme activity**; asking for signals renders a **signal list**. Each is the same component the views use | e2e with scripted fake tool calls |
+| After a reload, the thread re-renders from `replies.parts_json` | e2e |
 | A material message gets a reply with `filed` tokens (count badges that unfold gists) and a `draft` card; accepting it solidifies it here and in Theme sections | e2e |
 | Pasting a URL makes a link chip; attachments stack on the sent message | e2e |
 | The mic records (fake media in tests), stop sends a voice dump; the transcript appears under the note | e2e with a fake `MediaRecorder` |
 | Dropping a link on the closed pill dumps it without opening; the toast shows counts and Undo | e2e |
-| Unknown component types are dropped and logged | Unit |
+| Unknown tool-part types are dropped and logged | Unit |
 
-### Slice 10: Phone and the Shortcut
+### Slice 11: Capture from outside the app, and narrow screens
 
 | Acceptance criterion | Check |
 | --- | --- |
-| `app/README.md` documents the Shortcut exactly (hosting guide 6b) with this server's URL pattern and the bearer header | Review |
-| At 390 × 844, `/` opens Briefing; theories open full-screen in the pane; no other view is reachable | `e2e/10-phone.spec.ts` |
+| `app/README.md` shows the `curl` captures (text, links, an audio file) and they produce dumps that process like any other | `e2e/11-capture.spec.ts` runs the same requests |
+| `app/README.md` notes the Apple Shortcut as later and optional, linking hosting guide 6b | Review |
+| At 390 × 844, `/` opens Briefing; theories open full-screen in the pane; no other view is reachable | `e2e/11-narrow.spec.ts` |
 | Tap targets are at least 40 × 40 px | e2e measures them |
-
-### Slice 11: Deployment
-
-| Acceptance criterion | Check |
-| --- | --- |
-| `docker compose up --build` runs app, Litestream and media backup locally against a MinIO stand-in for B2 | Manual script `scripts/compose-smoke.sh` |
-| Killing the app container and restoring the database from Litestream recovers the latest dump | `scripts/restore-drill.sh` |
-| `/healthz` is the Coolify health check; the app listens only on the internal network | Review of `compose.yaml` |
-| `app/README.md` has the Coolify steps, env vars and the restore drill | Review |
+| `npm run backup` writes a consistent copy of the database and media to `backups/<date>/`; the copy opens and holds the latest dump | `scripts/backup.test.ts` |
 
 ## 8. Testing strategy
 
 | Layer | Tool | Covers |
 | --- | --- | --- |
-| Tool layer | `bun test` against a temp SQLite file | Every rule in the authority table, as agent and person actors; delete and restore round-trips; merge snapshot and undo; append-only stances; tombstones; event rows |
-| Jobs | `bun test` with a fake clock | Claiming, retries, backoff, stale locks, chaining, spend cap |
-| Agents | `bun test` with `FakeModelClient` | Each job's tool sequence on fixtures; `AuthorityError` reaches the trace; prompt version recorded |
+| Tool layer | Vitest against a temp SQLite file | Every rule in the authority table, as agent and person actors; delete and restore round-trips; merge snapshot and undo; append-only stances; tombstones; event rows |
+| Jobs | Vitest with a fake clock | Claiming, retries, backoff, run clean-up before retry, stale locks, chaining, spend cap |
+| Agents | Vitest in fake mode (AI SDK mock models) | Each job's tool sequence on fixtures; `AuthorityError` reaches the trace; `agent_runs` rows; no plain-string models |
 | Front end | Playwright (Chromium; WebKit for the phone slice) | The slice specs above, using keyboard paths as well as pointer paths, and `prefers-reduced-motion` once per view |
 | Visual parity | Playwright screenshots of app and jig with the same seed | Saved for Maggie's review; not a failing check |
-| Evals | `bun run eval` with a real provider | 5.4; run by hand |
+| Evals | `npm run eval` (Vitest) with live models | 5.5; run by hand; the OpenAI vs Claude comparison first |
 | Accessibility | `@axe-core/playwright` on each view | No serious violations; every icon button has an accessible name |
 
 ## 9. Running locally
 
 ```
 cd app
-bun install
-bun run db:migrate && bun run seed      # the jig world
-AGENT_PROVIDER=fake bun run dev         # server :3000, web :5173
-bun test                                # unit
-bunx playwright test                    # e2e (starts the dev servers)
-bun run eval                            # needs API keys; costs money
+npm install                             # Node 22+
+npm run db:migrate && npm run seed      # the jig world
+AGENT_MODE=fake npm run dev             # server :3000, web :5173
+npm test                                # Vitest unit tests
+npx playwright test                     # e2e (starts the dev servers)
+npm run eval                            # live models; needs API keys; costs money
 ```
 
 Keep the jigs running beside it (`cd jig && bun run dev`, port 5181) to compare.
@@ -908,17 +949,16 @@ Keep the jigs running beside it (`cd jig && bun run dev`, port 5181) to compare.
 
 | # | Statement |
 | --- | --- |
-| 1 | Every slice's acceptance criteria pass, and `bun test` and `bunx playwright test` are green |
-| 2 | A link shared from the iPhone Shortcut appears as a filed signal within a minute, traceable to its dump |
-| 3 | A voice memo shared from the phone is transcribed and processed |
+| 1 | Every slice's acceptance criteria pass, and `npm test` and `npx playwright test` are green |
+| 2 | A link captured with `curl` or the pill appears as a filed signal within a minute, traceable to its dump |
+| 3 | A voice note (recorded in the pill, or an `.m4a` posted with `curl`) is transcribed and processed |
 | 4 | All five views and the pane work with real data, and match their canonical jigs on the seed |
 | 5 | Confidence history is an append-only stance log, and no agent can change it (unit-tested) |
-| 6 | A planted signal trips a tripwire overnight, and Briefing shows it in the morning |
+| 6 | A planted signal trips a tripwire, and Briefing shows it the next time Maggie looks |
 | 7 | A near-duplicate merge can be undone from the dump log, restoring both signals exactly |
 | 8 | A deleted dump can be restored from the bin within 30 days, and is purged after |
-| 9 | The restore drill has been run once from Litestream, and media restores from B2 |
-| 10 | The app runs on the Coolify server, reachable only privately, behind token auth |
-| 11 | The interface-grammar review gate has been run over the built app, with findings in `docs/build-notes.md` |
+| 9 | The app runs locally with `npm run dev` and `npm start`, bound to `127.0.0.1`, with data in `app/data/` |
+| 10 | The interface-grammar review gate has been run over the built app, with findings in `docs/build-notes.md` |
 
 ## 11. Rules for the build agent
 
@@ -939,14 +979,31 @@ Keep the jigs running beside it (`cd jig && bun run dev`, port 5181) to compare.
 | Stop rather than invent | On an ambiguity this spec and the jigs don't settle, choose the smallest reversible option, mark it `// AMBIGUITY:` in code, and add a line to `docs/build-notes.md` (what, where, what you chose, what Maggie needs to decide). If it affects the grammar (a new noun, verb, tier or visual meaning), don't build it; note it and move on |
 | Don't edit the design sources | `docs/design-model.md`, `design/`, `jig/` are read-only for the build |
 | Keep requests under 100k tokens | Per the hosting guide; set `maxInputTokens` per job |
+| Provider objects only | Never pass a model as a plain string to the AI SDK (it would route via Vercel's AI Gateway) |
 
 ## 12. Known gaps for Maggie
 
 | Gap | Where it bites | What the spec does meanwhile |
 | --- | --- | --- |
-| Agent framework | Slice 2 | Interface plus fake client; adapter stub |
+| Real dumps for evals | Slice 2 | Harness with synthetic fixtures until Maggie supplies 10–20 dumps |
 | Deleting a dump: the jig has no confirmation; the model shows consequences first | Slice 1 | Build the confirmation with counts, flagged |
-| Atlas layout for arbitrary data | Slice 6 | Deterministic circle packing, flagged |
+| Atlas layout for arbitrary data | Slice 7 | Deterministic circle packing, flagged |
 | Building-status blue equals the "new" blue | Everywhere prototypes show | Built as the jig shows; flagged in the encoding map |
-| Phone pane presentation | Slice 10 | Full screen from the right (judgement) |
-| How the team's Coolify server joins Tailscale | Slice 11 | Token auth regardless; confirm with the server owner |
+| Phone pane presentation | Slice 11 | Full screen from the right (judgement) |
+
+## 13. Later: deployment
+
+Out of scope this round. Kept here so nothing decided is lost. The eventual target is the **team Coolify server** (design model, Implementation notes), which makes Aber a work tool.
+
+| Piece | Notes from the earlier plan |
+| --- | --- |
+| Containers | Multi-stage `Dockerfile` (build `web` with Vite; runtime `node:22-slim` or later with `ffmpeg`; one process on port 3000). `compose.yaml` with `app` (volume `./data:/app/data`, healthcheck `/healthz`), `litestream` and `media-backup` sidecars on the same volume |
+| Coolify | Builds from the Git repo. Don't attach a public domain. Bind to `127.0.0.1` or the internal network: Docker's published ports bypass host firewalls (hosting guide, 4b). Confirm with the server's owner that Compose with a persistent volume works, and how the server joins Tailscale |
+| Work-tool implications | Data sits on work infrastructure under work policies; anyone with access to the host can read the volume. Nothing in Aber should be more private than work notes. Moving later is a database file and a media folder |
+| Network | Reachable only over Tailscale, never the public internet (hosting guide, steps 1, 3 and 4c) |
+| Auth | Web: visit `/login#<token>` once per device; the page posts the fragment to `POST /api/session`, which sets an `HttpOnly; Secure; SameSite=Strict` cookie signed with `ABER_SESSION_SECRET`. Capture: `Authorization: Bearer $ABER_CAPTURE_TOKEN`. Required on every route but `/healthz`, even on the tailnet |
+| Database backup | Litestream streams `data/aber.db` to a private Backblaze B2 bucket (hosting guide, step 5); quarterly restore drill (5c) |
+| Media backup | `data/media/` to B2 hourly; `restic` rather than `rclone sync`, because a sync mirrors deletions (judgement, moderate) |
+| Phone | The Apple Shortcut posting to `/api/dumps` with the bearer token; Tailscale VPN On Demand for `*.ts.net` (hosting guide, step 6). Then the responsive Briefing and pane become reachable on the phone |
+| Checks to write then | `docker compose up --build` smoke test against a MinIO stand-in for B2; a restore drill script; review that nothing listens publicly |
+
