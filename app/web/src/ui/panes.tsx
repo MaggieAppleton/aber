@@ -195,10 +195,11 @@ export function ThemePane({ id, nav }: { id: string; nav: PaneNav }) {
   const ss = SIGNALS.filter(s => s.themes.includes(id));
   return (
     <div className="pn-doc">
+      <div className="pn-theme-actions"><IconButton icon="trash" label="Retire theme" onClick={()=>void retireObject("theme",id)}/></div>
       <ThemeHead id={id} />
       <RetirementNotice row={rowFor("theme",id)}/>
       <SuggestionActions id={id}/>
-      <div className="pn-chips">{rowFor("theme",id)?.status==="draft"&&<><button className="ap-btn" aria-keyshortcuts="a" title="Accept draft theme (A)" onClick={()=>act("acceptDraft",{kind:"theme",id})}>Accept</button><IconButton icon="x" label="Discard draft theme (X)" shortcut="x" onClick={()=>act("discardDraft",{kind:"theme",id})}/></>}<IconButton icon="trash" label="Retire theme" onClick={()=>void retireObject("theme",id)}/></div>
+      {rowFor("theme",id)?.status==="draft"&&<div className="pn-chips"><button className="ap-btn" aria-keyshortcuts="a" title="Accept draft theme (A)" onClick={()=>act("acceptDraft",{kind:"theme",id})}>Accept</button><IconButton icon="x" label="Discard draft theme (X)" shortcut="x" onClick={()=>act("discardDraft",{kind:"theme",id})}/></div>}
       <div className="pn-cards pn-deck">
         {theoriesIn(id).map(t => <TheoryTile key={t.id} id={t.id} deck onClick={() => nav.onOpen("theory", t.id)} />)}
         <TooltipButton className="pn-tile pn-add" aria-label="State a theory" tooltip="State a theory" onClick={()=>void createObject("theory",id)}><Icon name="plus" /></TooltipButton>

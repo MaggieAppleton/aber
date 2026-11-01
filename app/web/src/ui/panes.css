@@ -173,3 +173,5 @@
 .pn-feed-chip > span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pn-feed-chip > svg { flex-shrink: 0; }
 .pn-feed-chip[data-suggested] { box-shadow: none; outline: var(--size-px-1) dashed var(--color-gray-0-a-28); outline-offset: var(--size-px-neg-1); }
+/* A theme's own actions sit in the pane's top-right corner, just left of expand and close. */
+.pn-theme-actions { position: absolute; top: var(--size-px-10); right: calc(var(--size-px-10) + 2 * var(--size-px-28) + var(--size-px-2) + var(--size-px-4)); z-index: 2; display: flex; gap: var(--size-px-4); }
