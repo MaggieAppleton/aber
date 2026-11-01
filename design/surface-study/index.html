@@ -247,9 +247,12 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .sig .src { font-size: var(--t-12); color: var(--ink-3); }
 .sig .more { grid-column: 2; display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-3) var(--spring); }
 .sig .more > div { overflow: hidden; font-size: var(--t-12); color: var(--ink-2); }
-.sig[aria-expanded="true"] { background: var(--sunk); }
+.sig { background-color: rgb(var(--shc) / 4%); }   /* tinted at rest so a signal reads as an object on the white pane */
+.sig:hover, .sig.is-hover { background-color: rgb(var(--shc) / 7%); }
+.sig[aria-expanded="true"] { background: var(--sel-wash); box-shadow: var(--sel-lift); }   /* open: the selected style */
 .sig[aria-expanded="true"] .more { grid-template-rows: 1fr; }
-.sig.suggested { box-shadow: inset 0 0 0 1px var(--draft-line); background: var(--draft-fill); }
+.sig.suggested, .sig.suggested:hover { box-shadow: inset 0 0 0 1px var(--draft-line); background: var(--draft-fill); }
+.sig.suggested:hover, .sig.suggested.is-hover { background: rgb(var(--shc) / 3%); }
 
 /* Floating chrome (tier 1, floating) */
 .switcher { position: absolute; left: 12px; bottom: 12px; z-index: var(--z-1); display: flex; gap: 2px; padding: 4px; border-radius: var(--r-pill);

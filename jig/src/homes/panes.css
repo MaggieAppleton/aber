@@ -55,7 +55,7 @@
 
 /* A signal, unfolding in place */
 .pn-sig { border-radius: 7px; background: var(--ap-sunk); transition: background 100ms, box-shadow 150ms; }
-.pn-sig[data-open] { background: var(--ap-surface); box-shadow: var(--ap-shadow-1); }
+.pn-sig[data-open] { background: var(--ap-surface); box-shadow: var(--ap-sel); }   /* open: the selected style */
 .pn-sig[data-current] { box-shadow: var(--ap-sel); }
 .pn-sig[data-suggested] { background: transparent; outline: 1px dashed rgb(var(--ap-shc) / 12%); outline-offset: -1px; }
 .pn-ev { display: grid; gap: 2px; width: 100%; text-align: left; padding: 7px 10px; border: 0; border-radius: 7px; background: transparent; color: var(--ap-ink-2); cursor: pointer; transition: background 100ms; }
