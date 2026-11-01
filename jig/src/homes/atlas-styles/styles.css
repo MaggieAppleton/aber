@@ -1,41 +1,95 @@
-/* Atlas map styles. Strokes divide by --z so lines stay hairline on screen at any zoom. */
+/* Atlas map structures and treatments. Strokes divide by --z so lines stay hairline on screen at any zoom. */
 .a2-svg { position: absolute; left: 0; top: 0; overflow: visible; }
-.a2-svg[data-layer="sigs"] { pointer-events: none; }
 .a2-svg [role="button"] { outline: none; cursor: pointer; }
 .a2[data-variant="side"] .a2-svg [role="button"][data-zoomed] { cursor: grab; }
-
-/* Signals */
-.a2-sig { r: calc(1.4px * (0.5 + 0.5 / var(--z))); fill: rgb(0 0 0 / 24%); }
-.a2-sig[data-tint] { fill: oklch(0.5 0.05 var(--h)); fill-opacity: 0.55; r: calc(1.2px * (0.5 + 0.5 / var(--z))); }
-.a2-sig[data-fresh] { fill: #2f6fed; fill-opacity: 1; r: calc(1.9px * (0.5 + 0.5 / var(--z))); }
 
 /* ── Terrain ── */
 .a2-map[data-style="terrain"] { --a2-ground: #f6f5f1; }
 .a2-iso { fill: rgb(60 50 30 / 3.2%); stroke: rgb(60 50 30 / 22%); stroke-width: calc(0.75px / var(--z)); stroke-linejoin: round; pointer-events: none; }
 .a2-iso[data-lv="0"] { fill: rgb(60 50 30 / 2%); stroke: rgb(60 50 30 / 30%); }
 .a2-iso[data-lv="3"] { stroke: rgb(60 50 30 / 40%); }
+.a2-iso-in { fill: none; stroke: none; pointer-events: none; }
 .a2-hit { fill: transparent; stroke: transparent; stroke-width: calc(1.25px / var(--z)); transition: fill 150ms ease-out, stroke 150ms ease-out; }
 .a2-hit:hover { fill: rgb(60 50 30 / 3%); }
 .a2-hit[data-sel] { stroke: rgb(0 0 0 / 55%); }
 .a2-hit:focus-visible { stroke: var(--ap-ink-3); }
+/* Terrain names sit straight on the ground, so they wear a ground-coloured halo */
+.a2-map[data-style="terrain"] .a2-name { text-shadow: 0 0 2px var(--a2-ground), 0 0 2px var(--a2-ground), 0 0 4px var(--a2-ground); }
 
-/* ── Cartographic ── */
-.a2-blob { fill: oklch(0.955 0.024 var(--h)); fill-opacity: 0.85; stroke: oklch(0.7 0.045 var(--h)); stroke-width: calc(1px / var(--z)); mix-blend-mode: multiply; transition: fill 150ms ease-out, stroke 150ms ease-out; }
-.a2-blob:hover { fill: oklch(0.925 0.04 var(--h)); }
-.a2-blob[data-open] { fill: oklch(0.97 0.014 var(--h)); }
-.a2-blob[data-sel] { stroke: rgb(0 0 0 / 60%); stroke-width: calc(1.25px / var(--z)); }
-.a2-blob:focus-visible { stroke: var(--ap-ink-2); }
-.a2-map[data-style="cartographic"] .a2-name { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ap-ink-3); }
-.a2-map[data-style="cartographic"] .a2-name[data-sel] { color: var(--ap-ink); }
+/*
+ * ═════ Treatments ═════
+ * A treatment is the surface over either structure: ground colour, territory fill, edges, depth, signal dots,
+ * landmark glyphs and label chips. Stacking, label placement, colour meanings (blue new, red challenge,
+ * dashed draft) and the camera never change. Paper has no rules: it is the current look.
+ */
+.a2-map[data-treatment] { background: var(--a2-ground); color: var(--ap-ink); }
+.a2-region::after { content: ""; position: absolute; inset: calc(5px / var(--z)); border-radius: 50%; pointer-events: none; }
 
-/* ── Tiles ── */
-.a2-cell { fill: oklch(0.9 0.045 var(--h)); transition: fill 150ms ease-out; }
-.a2-tgroup:hover .a2-cell { fill: oklch(0.875 0.055 var(--h)); }
-.a2-tgroup[data-sel] .a2-cell { fill: oklch(0.83 0.065 var(--h)); }
-.a2-tgroup:focus-visible .a2-cell { fill: oklch(0.86 0.05 var(--h)); }
+/* ── Fine line: white ground, no fills, hairline ink edges, small dark dots, ringed landmarks, labels without chips ── */
+.a2-map[data-treatment="fine"] { --a2-ground: #fff; }
+.a2-map[data-treatment="fine"] .a2-region { background: transparent; box-shadow: inset 0 0 0 calc(1px / var(--z)) rgb(0 0 0 / 34%); }
+.a2-map[data-treatment="fine"] .a2-region:hover { background: rgb(0 0 0 / 2.5%); }
+.a2-map[data-treatment="fine"] .a2-region[data-sel] { background: rgb(0 0 0 / 2.5%); box-shadow: inset 0 0 0 calc(1.5px / var(--z)) var(--ap-ink); }
+.a2-map[data-treatment="fine"] .a2-region[data-open] { box-shadow: inset 0 0 0 calc(1px / var(--z)) rgb(0 0 0 / 18%); }
+.a2-map[data-treatment="fine"] .a2-iso { fill: none; stroke: rgb(0 0 0 / 20%); }
+.a2-map[data-treatment="fine"] .a2-iso[data-lv="0"] { stroke: rgb(0 0 0 / 42%); stroke-width: calc(1px / var(--z)); }
+.a2-map[data-treatment="fine"] .a2-iso[data-lv="3"] { stroke: rgb(0 0 0 / 34%); }
+.a2-map[data-treatment="fine"] .a2-hit:hover { fill: rgb(0 0 0 / 2.5%); }
+.a2-map[data-treatment="fine"] .a2-hit[data-sel] { stroke: rgb(0 0 0 / 75%); stroke-width: calc(1.5px / var(--z)); }
+.a2-map[data-treatment="fine"] .a2-dot { width: 2px; height: 2px; margin: -1px; background: rgb(0 0 0 / 46%); }
+.a2-map[data-treatment="fine"] .a2-dot[data-fresh] { width: 3px; height: 3px; margin: -1.5px; background: #2f6fed; }
+.a2-map[data-treatment="fine"] .a2-pin:not([data-draft]) i { background: var(--a2-ground); box-shadow: inset 0 0 0 2px var(--ap-ink), 0 0 0 2px var(--a2-ground); }
+.a2-map[data-treatment="fine"] .a2-pin[data-sel]:not([data-draft]) i { background: var(--ap-ink); box-shadow: 0 0 0 2px var(--a2-ground), 0 0 0 3.5px var(--ap-ink); }
+.a2-map[data-treatment="fine"] .a2-claim { background: transparent; box-shadow: none; text-shadow: 0 0 2px #fff, 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff; }
+.a2-map[data-treatment="fine"] .a2-name { text-shadow: 0 0 2px #fff, 0 0 2px #fff, 0 0 4px #fff; }
 
-/* Names sit straight on the ground in the new styles, so they wear a paper halo */
-.a2-map:not([data-style="circles"]) .a2-name { text-shadow: 0 0 2px var(--a2-ground), 0 0 2px var(--a2-ground), 0 0 4px var(--a2-ground); }
+/* ── Graphite: cool grey ground, lit-from-centre fills with inner shading and an inner line, crosses, square landmarks, small-caps names ── */
+.a2-map[data-treatment="graphite"] { --a2-ground: #eceef1; --gr: 38 50 68; }
+/* Rim shading sinks each disc a hair into the ground; where discs cross, one's rim shades the other (soft occlusion) */
+.a2-map[data-treatment="graphite"] .a2-region { background: rgb(var(--gr) / 4%); box-shadow: inset 0 0 0 0.5px rgb(var(--gr) / 16%), inset 0 0 22px rgb(var(--gr) / 8%); }
+.a2-map[data-treatment="graphite"] .a2-region::after { box-shadow: inset 0 0 0 calc(0.75px / var(--z)) rgb(var(--gr) / 13%); }
+.a2-map[data-treatment="graphite"] .a2-region:hover { background: rgb(var(--gr) / 6%); }
+.a2-map[data-treatment="graphite"] .a2-region[data-sel] { background: rgb(var(--gr) / 6.5%); box-shadow: inset 0 0 0 calc(1.25px / var(--z)) rgb(var(--gr) / 70%), inset 0 0 22px rgb(var(--gr) / 9%); }
+.a2-map[data-treatment="graphite"] .a2-region[data-open] { background: transparent; box-shadow: inset 0 0 0 calc(1px / var(--z)) rgb(var(--gr) / 18%); }
+.a2-map[data-treatment="graphite"] .a2-region[data-open]::after { box-shadow: none; }
+.a2-map[data-treatment="graphite"] .a2-iso { fill: rgb(var(--gr) / 4.5%); stroke: rgb(var(--gr) / 15%); }
+.a2-map[data-treatment="graphite"] .a2-iso[data-lv="0"] { fill: rgb(255 255 255 / 40%); stroke: rgb(var(--gr) / 26%); stroke-width: calc(4.5px / var(--z)); }
+.a2-map[data-treatment="graphite"] .a2-iso-in { stroke: var(--a2-ground); stroke-width: calc(3px / var(--z)); }
+.a2-map[data-treatment="graphite"] .a2-iso[data-lv="3"] { stroke: rgb(var(--gr) / 30%); }
+.a2-map[data-treatment="graphite"] .a2-hit:hover { fill: rgb(255 255 255 / 35%); }
+.a2-map[data-treatment="graphite"] .a2-hit[data-sel] { stroke: rgb(var(--gr) / 75%); }
+.a2-map[data-treatment="graphite"] .a2-dot { width: 5px; height: 5px; margin: -2.5px; border-radius: 0; --dc: rgb(var(--gr) / 58%);
+  background: linear-gradient(var(--dc), var(--dc)) center / 100% 1px no-repeat, linear-gradient(var(--dc), var(--dc)) center / 1px 100% no-repeat; }
+.a2-map[data-treatment="graphite"] .a2-dot[data-fresh] { width: 6px; height: 6px; margin: -3px; --dc: #2f6fed;
+  background: linear-gradient(var(--dc), var(--dc)) center / 100% 1.5px no-repeat, linear-gradient(var(--dc), var(--dc)) center / 1.5px 100% no-repeat; }
+.a2-map[data-treatment="graphite"] .a2-pin:not([data-draft]) i { border-radius: 2px; background: #2a3442; }
+.a2-map[data-treatment="graphite"] .a2-pin[data-sel]:not([data-draft]) i { box-shadow: 0 0 0 2px var(--a2-ground), 0 0 0 3.5px #2a3442; }
+.a2-map[data-treatment="graphite"] .a2-claim { background: #fafbfc; box-shadow: 0 0 0 0.5px rgb(var(--gr) / 14%); }
+.a2-map[data-treatment="graphite"] .a2-name { font-variant-caps: all-small-caps; letter-spacing: 0.03em; color: #4f5967; text-shadow: 0 0 2px var(--a2-ground), 0 0 4px var(--a2-ground); }
+.a2-map[data-treatment="graphite"] .a2-name[data-sel] { color: #1d2530; }
 
-/* Landmark glyphs per style: size still follows confidence */
-.a2-map[data-style="cartographic"] .a2-pin:not([data-draft]) i { background: var(--a2-ground); box-shadow: inset 0 0 0 2.5px var(--ap-ink), 0 0 0 1.5px var(--a2-ground); }
+/* ── Night: ink ground, light tints, tone-on-tone edges, soft dots, light landmarks, dark chips ── */
+.a2-map[data-treatment="night"] {
+  --a2-ground: #18191c; --ap-ink: #ededed; --ap-ink-2: #b6b6b6; --ap-ink-3: #8e8e8e; --ap-neg: #ee6b56;
+  --ap-surface: #26272b; --ap-hover: #34353a; --ap-shadow-1: 0 0 0 0.5px rgb(255 255 255 / 10%), 0 1px 2px rgb(0 0 0 / 30%);
+  --nb: #4a86f7;
+}
+/* A soft glow at each disc's centre, where its signals are densest */
+.a2-map[data-treatment="night"] .a2-region { --glow: 7%; background: radial-gradient(circle, rgb(255 255 255 / var(--glow)), rgb(255 255 255 / calc(var(--glow) * 0.45)) 75%); box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 10%); }
+.a2-map[data-treatment="night"] .a2-region:hover { --glow: 10%; }
+.a2-map[data-treatment="night"] .a2-region[data-sel] { --glow: 10%; box-shadow: inset 0 0 0 calc(1.25px / var(--z)) rgb(255 255 255 / 60%); }
+.a2-map[data-treatment="night"] .a2-region[data-open] { background: transparent; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 16%); }
+.a2-map[data-treatment="night"] .a2-iso { fill: rgb(255 255 255 / 2.5%); stroke: rgb(255 255 255 / 13%); }
+.a2-map[data-treatment="night"] .a2-iso[data-lv="0"] { fill: rgb(255 255 255 / 2%); stroke: rgb(255 255 255 / 24%); }
+.a2-map[data-treatment="night"] .a2-iso[data-lv="3"] { stroke: rgb(255 255 255 / 30%); }
+.a2-map[data-treatment="night"] .a2-hit:hover { fill: rgb(255 255 255 / 3%); }
+.a2-map[data-treatment="night"] .a2-hit[data-sel] { stroke: rgb(255 255 255 / 65%); }
+.a2-map[data-treatment="night"] .a2-dot { background: rgb(255 255 255 / 34%); }
+.a2-map[data-treatment="night"] .a2-dot[data-fresh], .a2-map[data-treatment="night"] .ap-mark[data-kind="fresh"] { background: var(--nb); }
+.a2-map[data-treatment="night"] .a2-claim { box-shadow: 0 0 0 0.5px rgb(255 255 255 / 12%); }
+.a2-map[data-treatment="night"] .a2-name { color: var(--ap-ink-2); text-shadow: 0 0 2px var(--a2-ground), 0 0 4px var(--a2-ground); }
+.a2-map[data-treatment="night"] .a2-name[data-sel] { color: var(--ap-ink); }
+
+/* Focus reads the same in every treatment */
+.a2-map[data-treatment] .a2-region:focus-visible { box-shadow: inset 0 0 0 calc(1.5px / var(--z)) var(--ap-ink-3); }
+.a2-map[data-treatment] .a2-region[data-sel]:focus-visible { box-shadow: inset 0 0 0 calc(1.5px / var(--z)) var(--ap-ink); }

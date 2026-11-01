@@ -1,6 +1,6 @@
 import { THEMES, theoriesIn, type Theory } from "../data";
 
-/** World size and the territory layout every map style shares. */
+/** World size and the territory layout both map structures share. */
 export const W = 1240, H = 760;
 export const REGION: Record<string, { x: number; y: number; r: number }> = {
   cost: { x: 600, y: 370, r: 150 }, memory: { x: 820, y: 290, r: 160 }, personal: { x: 420, y: 230, r: 130 },
@@ -21,14 +21,8 @@ export function pinPos(t: Theory) {
   return { x: cx + Math.cos(a) * d, y: cy + Math.sin(a) * d };
 }
 
-/**
- * Theme hues for the styles that colour territories. Calm and low in chroma, kept away from
- * blue (new) and red (challenge). Only cost touches others on the map, so its neighbours differ most from it.
- */
-export const HUE: Record<string, number> = { cost: 85, personal: 305, memory: 150, funding: 200, review: 55, interfaces: 120, identity: 345 };
-
-/* ── Signals: one deterministic set for the new styles, clustered around the theories they feed ── */
-export type Sig = { id: string; theme: string; themes: string[]; x: number; y: number; fresh: boolean; ax: number; ay: number; d: number };
+/* ── Signals: one deterministic set for terrain, clustered around the theories they feed ── */
+export type Sig = { id: string; theme: string; themes: string[]; x: number; y: number; fresh: boolean };
 
 function gauss(r: () => number) { return Math.sqrt(-2 * Math.log(Math.max(1e-6, r()))) * Math.cos(2 * Math.PI * r()); }
 
@@ -43,7 +37,7 @@ export const SIGS: Sig[] = THEMES.flatMap(th => {
     const dx = x - R.x, dy = y - R.y, d = Math.hypot(dx, dy), max = R.r * 0.9;
     if (d > max) { x = R.x + (dx / d) * max; y = R.y + (dy / d) * max; }
     const themes = [th.id, ...THEMES.filter(o => o.id !== th.id && Math.hypot(x - REGION[o.id].x, y - REGION[o.id].y) < REGION[o.id].r * 0.78).map(o => o.id)].slice(0, 2);
-    return { id: `${th.id}${i}`, theme: th.id, themes, x, y, fresh: i < th.fresh, ax: a.x, ay: a.y, d: Math.hypot(x - a.x, y - a.y) };
+    return { id: `${th.id}${i}`, theme: th.id, themes, x, y, fresh: i < th.fresh };
   });
 });
 
@@ -156,90 +150,4 @@ export function terrain(): Terrain {
     return { id: th.id, d: ringsPath(land), name: namePlace(th.id, b.y0 + 12, b.y1 - 30) };
   });
   return (terrainCache = { levels, hits });
-}
-
-/* ── Cartographic: an organic outline per theme, drawn through its signals ── */
-export type Blob = { id: string; d: string; name: { x: number; y: number } };
-let blobCache: Blob[] | undefined;
-export function blobs(): Blob[] {
-  if (blobCache) return blobCache;
-  return (blobCache = THEMES.map(th => {
-    const R = REGION[th.id], r = rand(th.id.charCodeAt(0) * 31 + th.signals);
-    const own = SIGS.filter(s => s.themes.includes(th.id));
-    const pins = theoriesIn(th.id).map(pinPos);
-    const pts = [...own, ...pins];
-    const N = 18;
-    let rad = [...Array(N)].map((_, k) => {
-      const a = (k / N) * Math.PI * 2;
-      let m = R.r * 0.42;
-      for (const p of pts) {
-        const dx = p.x - R.x, dy = p.y - R.y, d = Math.hypot(dx, dy);
-        const da = Math.abs(((Math.atan2(dy, dx) - a + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
-        if (da < Math.PI / 7) m = Math.max(m, d * Math.cos(da) + 18);
-      }
-      return Math.min(R.r * 1.02, m);
-    });
-    for (let pass = 0; pass < 2; pass++) rad = rad.map((v, k) => (rad[(k - 1 + N) % N] + v * 2 + rad[(k + 1) % N]) / 4);
-    const ring: P[] = rad.map((v, k) => {
-      const a = (k / N) * Math.PI * 2 + (r() - 0.5) * 0.12, j = 1 + (r() - 0.5) * 0.1;
-      return [R.x + Math.cos(a) * v * j, R.y + Math.sin(a) * v * j];
-    });
-    const ys = ring.map(p => p[1]);
-    return { id: th.id, d: closedSpline(ring, 1), name: namePlace(th.id, Math.min(...ys) + 16, Math.max(...ys) - 34) };
-  }));
-}
-
-/* ── Tiles: each signal takes a hex, packed tight around what it feeds ── */
-export const HEX = 9.5;
-export type Cell = { id: string; x: number; y: number; themes: string[]; fresh: boolean };
-export type Tiles = { cells: Cell[]; names: Record<string, { x: number; y: number }>; hex: string; halves: [string, string] };
-let tileCache: Tiles | undefined;
-export function tiles(): Tiles {
-  if (tileCache) return tileCache;
-  const w = Math.sqrt(3) * HEX;
-  const centre = (q: number, rr: number) => ({ x: w * (q + rr / 2), y: 1.5 * HEX * rr });
-  const toAxial = (x: number, y: number) => {
-    const qf = (Math.sqrt(3) / 3 * x - y / 3) / HEX, rf = (2 / 3 * y) / HEX, sf = -qf - rf;
-    let q = Math.round(qf), r = Math.round(rf); const s = Math.round(sf);
-    const dq = Math.abs(q - qf), dr = Math.abs(r - rf), ds = Math.abs(s - sf);
-    if (dq > dr && dq > ds) q = -r - s; else if (dr > ds) r = -q - s;
-    return [q, r] as const;
-  };
-  // Each theme grows as one clump from its centre: every signal takes the free cell touching its theme
-  // that sits nearest where the signal wants to be (pulled in toward the theory it feeds).
-  const taken = new Set<string>(), cells: Cell[] = [];
-  const NB = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
-  for (const th of [...THEMES].sort((a, b) => b.signals - a.signals)) {
-    const R = REGION[th.id], mine = SIGS.filter(s => s.theme === th.id)
-      .map(s => ({ s, tx: s.ax + (s.x - s.ax) * 0.4, ty: s.ay + (s.y - s.ay) * 0.4 }))
-      .sort((a, b) => Math.hypot(a.tx - R.x, a.ty - R.y) - Math.hypot(b.tx - R.x, b.ty - R.y));
-    const own: [number, number][] = [];
-    for (const { s, tx, ty } of mine) {
-      let cand: [number, number][];
-      if (!own.length) { const [q, r] = toAxial(R.x, R.y); cand = [[q, r]]; for (let k = 1; k < 4; k++) for (const [dq, dr] of NB) cand.push([q + dq * k, r + dr * k]); }
-      else cand = own.flatMap(([q, r]) => NB.map(([dq, dr]) => [q + dq, r + dr] as [number, number]));
-      let best: [number, number] | undefined, bd = Infinity;
-      for (const [q, r] of cand) {
-        if (taken.has(`${q},${r}`)) continue;
-        // Nearest to where it wants to be, but a cell hugged by more of its own theme wins: clumps, not chains.
-        const c = centre(q, r), hug = NB.filter(([dq, dr]) => own.some(o => o[0] === q + dq && o[1] === r + dr)).length;
-        const d = Math.hypot(c.x - tx, c.y - ty) - hug * HEX * 1.1;
-        if (d < bd) { bd = d; best = [q, r]; }
-      }
-      if (!best) continue;
-      taken.add(`${best[0]},${best[1]}`); own.push(best);
-      const c = centre(best[0], best[1]);
-      cells.push({ id: s.id, x: c.x, y: c.y, themes: s.themes, fresh: s.fresh });
-    }
-  }
-  const names: Tiles["names"] = {};
-  for (const th of THEMES) {
-    const mine = cells.filter(c => c.themes[0] === th.id);
-    names[th.id] = { x: REGION[th.id].x, y: Math.min(...mine.map(c => c.y)) - HEX - 22 };
-  }
-  // One hex (pointy top) drawn a hair small so cells read as tiles, plus its left and right halves.
-  const k = HEX - 0.9, pts = [...Array(6)].map((_, i) => { const a = Math.PI / 180 * (60 * i - 90); return [f1(Math.cos(a) * k), f1(Math.sin(a) * k)] as P; });
-  const hex = `M${pts.map(p => p.join(",")).join("L")}Z`;
-  const halves: [string, string] = [`M${[pts[0], pts[5], pts[4], pts[3]].map(p => p.join(",")).join("L")}Z`, `M${[pts[0], pts[1], pts[2], pts[3]].map(p => p.join(",")).join("L")}Z`];
-  return (tileCache = { cells, names, hex, halves });
 }

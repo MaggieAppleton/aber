@@ -1,16 +1,17 @@
-import { useMemo, type CSSProperties, type KeyboardEvent } from "react";
+import { useMemo, type KeyboardEvent } from "react";
 import { THEMES, theoriesIn, theme } from "../data";
 import { Mark } from "../atoms";
 import { ThemeName } from "../panes";
-import { W, H, REGION, HUE, SIGS, rand, terrain, blobs, tiles } from "./geo";
+import { W, H, REGION, SIGS, rand, terrain } from "./geo";
 import "./styles.css";
 
-export type MapStyle = "circles" | "terrain" | "tiles" | "cartographic";
-export const MAP_STYLES: MapStyle[] = ["circles", "terrain", "tiles", "cartographic"];
+/** Structure: how territories are drawn. */
+export type MapStyle = "circles" | "terrain";
+/** Treatment: the surface over either structure (ground, fills, edges, dots, pins, labels). Unset is the current look. */
+export type Treatment = "paper" | "fine" | "graphite" | "night";
 
 type GroundProps = { focus?: string; selTheme?: string; onRegion: (id: string) => void };
 const isOpen = (id: string) => theoriesIn(id).length === 0;
-const hue = (id: string) => ({ ["--h" as string]: HUE[id] }) as CSSProperties;
 /** Bigger territories first, so a smaller one that overlaps stays clickable. */
 const BY_SIZE = [...THEMES].sort((a, b) => REGION[b.id].r - REGION[a.id].r);
 
@@ -36,9 +37,10 @@ function Names({ at, selTheme }: { at: (id: string) => { x: number; y: number };
   });
 }
 
-const Svg = ({ layer, children }: { layer: "ground" | "sigs"; children: React.ReactNode }) => (
-  <svg className="a2-svg" data-layer={layer} width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-hidden={layer === "sigs" ? true : undefined}>{children}</svg>
-);
+/** Signals: one element per signal in both structures, so a treatment styles them the same way. */
+function Dots({ dots }: { dots: { id: string; x: number; y: number; fresh: boolean }[] }) {
+  return dots.map(d => <i key={d.id} className="a2-dot" data-fresh={d.fresh ? "" : undefined} style={{ left: d.x, top: d.y }} />);
+}
 
 /* ── Circles: the baseline ── */
 function Circles(props: GroundProps) {
@@ -62,18 +64,8 @@ function Circles(props: GroundProps) {
         );
       })}
       <Names at={id => ({ x: REGION[id].x, y: REGION[id].y - REGION[id].r + 16 })} selTheme={selTheme} />
-      {dots.map(d => <i key={d.id} className="a2-dot" data-fresh={d.fresh ? "" : undefined} style={{ left: d.x, top: d.y }} />)}
+      <Dots dots={dots} />
     </>
-  );
-}
-
-/** Signals as fine points; new ones blue and a touch larger. */
-function Signals({ tint }: { tint?: boolean }) {
-  return (
-    <Svg layer="sigs">
-      {SIGS.filter(s => !s.fresh).map(s => <circle key={s.id} className="a2-sig" cx={s.x} cy={s.y} style={tint ? hue(s.theme) : undefined} data-tint={tint ? "" : undefined} />)}
-      {SIGS.filter(s => s.fresh).map(s => <circle key={s.id} className="a2-sig" data-fresh="" cx={s.x} cy={s.y} />)}
-    </Svg>
   );
 }
 
@@ -83,54 +75,19 @@ function Terrain(props: GroundProps) {
   const hits = BY_SIZE.map(th => t.hits.find(h => h.id === th.id)!);
   return (
     <>
-      <Svg layer="ground">
+      <svg className="a2-svg" width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
         {t.levels.map((d, i) => <path key={i} className="a2-iso" data-lv={i} d={d} fillRule="evenodd" />)}
+        {/* The coastline's inner line, drawn only by treatments with a double edge */}
+        <path className="a2-iso-in" d={t.levels[0]} fillRule="evenodd" />
         {hits.map(h => <path key={h.id} className="a2-hit" d={h.d} fillRule="evenodd" {...hitProps(h.id, props)} />)}
-      </Svg>
+      </svg>
       <Names at={id => t.hits.find(h => h.id === id)!.name} selTheme={props.selTheme} />
-      <Signals />
-    </>
-  );
-}
-
-/* ── Cartographic: organic territories, place-name type, stippled signals ── */
-function Cartographic(props: GroundProps) {
-  const bs = blobs();
-  return (
-    <>
-      <Svg layer="ground">
-        {BY_SIZE.map(th => { const b = bs.find(x => x.id === th.id)!; return <path key={b.id} className="a2-blob" d={b.d} style={hue(b.id)} {...hitProps(b.id, props)} />; })}
-      </Svg>
-      <Names at={id => bs.find(b => b.id === id)!.name} selTheme={props.selTheme} />
-      <Signals tint />
-    </>
-  );
-}
-
-/* ── Tiles: a hex per signal ── */
-function Tiles(props: GroundProps) {
-  const t = tiles();
-  return (
-    <>
-      <Svg layer="ground">
-        {BY_SIZE.map(th => (
-          <g key={th.id} className="a2-tgroup" style={hue(th.id)} {...hitProps(th.id, props)}>
-            {t.cells.filter(c => c.themes[0] === th.id).map(c => c.themes.length > 1
-              ? <g key={c.id} transform={`translate(${c.x} ${c.y})`}><path className="a2-cell" d={t.halves[0]} /><path className="a2-cell" d={t.halves[1]} style={hue(c.themes[1])} /></g>
-              : <path key={c.id} className="a2-cell" d={t.hex} transform={`translate(${c.x} ${c.y})`} />)}
-          </g>
-        ))}
-      </Svg>
-      <Names at={id => t.names[id]} selTheme={props.selTheme} />
-      <Svg layer="sigs">{t.cells.filter(c => c.fresh).map(c => <circle key={c.id} className="a2-sig" data-fresh="" cx={c.x} cy={c.y} />)}</Svg>
+      <Dots dots={SIGS} />
     </>
   );
 }
 
 /** Everything under the landmarks: territories, their names, then signals. */
 export function Ground({ style, ...props }: GroundProps & { style: MapStyle }) {
-  if (style === "terrain") return <Terrain {...props} />;
-  if (style === "tiles") return <Tiles {...props} />;
-  if (style === "cartographic") return <Cartographic {...props} />;
-  return <Circles {...props} />;
+  return style === "terrain" ? <Terrain {...props} /> : <Circles {...props} />;
 }

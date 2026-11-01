@@ -6,14 +6,14 @@ import { Icon, IconButton, Mark, Pill } from "./atoms";
 import { ObjectPane, ThemeHead, TheoryTile, SignalRow, Claim, type ObjKind, type OnOpen, type PaneNav } from "./panes";
 import { useCamera, type Camera } from "./atlas2-camera";
 import { W, H, REGION, pinPos } from "./atlas-styles/geo";
-import { Ground, type MapStyle } from "./atlas-styles/grounds";
+import { Ground, type MapStyle, type Treatment } from "./atlas-styles/grounds";
 import { placeLabels, GAP, type Place } from "./atlas-styles/labels";
 import "./atlas2.css";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const T = { duration: 0.6, ease: EASE };
 export type Variant = "side" | "deep";
-export type { MapStyle };
+export type { MapStyle, Treatment };
 type Doc = { kind: "theory" | "prototype"; id: string };
 
 /** Fit the world into a viewport, or centre and zoom on one territory. */
@@ -59,9 +59,9 @@ function shrinkWrap(el: HTMLElement) {
 const pinR = (t: Theory, sel: boolean) => (t.draft ? 5 : (8 + (t.confidence ?? 0) * 1.5) / 2 + 2) * (sel ? 1.3 : 1);
 const LANDMARKS = THEORIES.map(t => ({ t, p: pinPos(t) }));
 
-function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, inert, mapStyle = "circles" }: {
+function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, inert, mapStyle = "circles", treatment }: {
   vw: number; vh: number; focus?: string; claims?: string; selTheme?: string; selPin?: string;
-  onRegion: (id: string) => void; onPin: (id: string, at: { x: number; y: number }) => void; inert?: boolean; mapStyle?: MapStyle;
+  onRegion: (id: string) => void; onPin: (id: string, at: { x: number; y: number }) => void; inert?: boolean; mapStyle?: MapStyle; treatment?: Treatment;
 }) {
   const [peek, setPeek] = useState<string>();
   const timer = useRef<number>(undefined);
@@ -119,7 +119,7 @@ function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, in
   });
 
   return (
-    <div className="a2-map" inert={inert} ref={box} tabIndex={inert ? -1 : 0} role="group" aria-roledescription="map" aria-label="Atlas map" data-style={mapStyle}
+    <div className="a2-map" inert={inert} ref={box} tabIndex={inert ? -1 : 0} role="group" aria-roledescription="map" aria-label="Atlas map" data-style={mapStyle} data-treatment={treatment}
       data-panning={cam.panning ? "" : undefined} data-far={scale < FAR_Z ? "" : undefined} {...cam.handlers}>
       <motion.div className="a2-world" style={{ x: cam.x, y: cam.y, scale: cam.s, originX: 0, originY: 0 }}>
         <Ground style={mapStyle} focus={focus} selTheme={selTheme} onRegion={onRegion} />
@@ -181,8 +181,11 @@ function useResetScroll(dep: string | undefined) {
 
 /* ═════ Side pane ═════ */
 const MAPW = 496;
+/** A frame smaller than the full 1240×760 (the jig's treatment grid): its map width when the pane is open. */
+export type FrameSize = { w: number; h: number; mapw: number };
 
-function SidePane({ mapStyle }: { mapStyle?: MapStyle }) {
+function SidePane({ mapStyle, treatment, size }: { mapStyle?: MapStyle; treatment?: Treatment; size?: FrameSize }) {
+  const fw = size?.w ?? W, fh = size?.h ?? H, mw = size?.mapw ?? MAPW;
   const [themeId, setTheme] = useState<string>();
   const [doc, setDoc] = useState<Doc>();
   const [unfolded, setUnfolded] = useState<string>();
@@ -207,14 +210,16 @@ function SidePane({ mapStyle }: { mapStyle?: MapStyle }) {
 
   const frame = useEscape(back);
   return (
-    <div className="ap a2" data-variant="side" tabIndex={0} ref={frame}>
-      <motion.div className="a2-mapbox" data-shrunk={open ? "" : undefined} initial={false} animate={{ width: open ? MAPW : W }} transition={T}>
-        <AtlasMap mapStyle={mapStyle} vw={open ? MAPW : W} vh={H} focus={themeId} selTheme={themeId} selPin={doc?.kind === "theory" ? doc.id : undefined}
+    <div className="ap a2" data-variant="side" data-compact={size ? "" : undefined} tabIndex={0} ref={frame}
+      style={size ? { width: fw, minWidth: fw, height: fh } : undefined}>
+      <motion.div className="a2-mapbox" data-shrunk={open ? "" : undefined} initial={false} animate={{ width: open ? mw : fw }} transition={T}>
+        <AtlasMap mapStyle={mapStyle} treatment={treatment} vw={open ? mw : fw} vh={fh} focus={themeId} selTheme={themeId} selPin={doc?.kind === "theory" ? doc.id : undefined}
           onRegion={id => openObj("theme", id)} onPin={id => openObj("theory", id)} />
       </motion.div>
       <AnimatePresence>
         {open && (
-          <motion.aside key="side" className="a2-side" initial={{ x: W - MAPW }} animate={{ x: 0 }} exit={{ x: W - MAPW }} transition={T}>
+          <motion.aside key="side" className="a2-side" style={size ? { width: fw - mw } : undefined}
+            initial={{ x: fw - mw }} animate={{ x: 0 }} exit={{ x: fw - mw }} transition={T}>
             <div className="a2-close"><IconButton icon="x" label="Close (Esc)" onClick={close} /></div>
             <div className="a2-side-scroll ap-scroll" ref={scroller}>
               <AnimatePresence mode="wait" initial={false}>
@@ -374,10 +379,10 @@ export function AtlasHosted({ open, onOpen, width, height, mapStyle = "circles" 
 }
 
 /** Atlas, developed: two ways to open a territory or landmark to read and write it without losing the map. */
-export function AtlasDeveloped({ variant, mapStyle }: { variant: Variant; mapStyle?: MapStyle }) {
+export function AtlasDeveloped({ variant, mapStyle, treatment, size }: { variant: Variant; mapStyle?: MapStyle; treatment?: Treatment; size?: FrameSize }) {
   return (
     <MotionConfig reducedMotion="user">
-      {variant === "side" ? <SidePane mapStyle={mapStyle} /> : <DeepZoom />}
+      {variant === "side" ? <SidePane mapStyle={mapStyle} treatment={treatment} size={size} /> : <DeepZoom />}
     </MotionConfig>
   );
 }
