@@ -8,6 +8,7 @@ export { VoicePlayback } from "../chat/voice-playback";
 import { currentObjectDrag,readObjectDrag,type DraggedObject } from "../data/object-drag";
 import { useLiveDump } from "../chat/use-dump";
 import { ToolParts } from "../chat/parts";
+import { AssistantText } from "../chat/assistant-text";
 /* Dump-or-ask pill study: the pill, its closed states and how it opens (B2: a column growing up from the bottom-right pill).
    One state hook (useDump) drives every frame, so live frames and scripted demos share the same component. */
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
@@ -344,7 +345,7 @@ export function AgentMsg({ m, api, last }: { m: Extract<Msg, { who: "agent" }>; 
           : (
             <motion.div key="done" className="ps-agent-body" initial="h" animate="v" variants={{ v: { transition: { staggerChildren: 0.07 } } }}>
               {m.parts && <ToolParts parts={m.parts}/>}
-              {m.say && <motion.p className="ps-say" variants={ITEM}>{m.say}</motion.p>}
+              {m.say && <motion.p className="ps-say" variants={ITEM}><AssistantText text={m.say}/></motion.p>}
               {m.filed.length > 0 && <motion.div className="ps-filed-row" variants={ITEM}>{m.filed.map(f => <FiledToken key={f.theme} f={f} />)}</motion.div>}
               {m.draft && <motion.div variants={ITEM}><DraftView d={m.draft} onDecide={st => api.decide(m.id, st)} target={last} /></motion.div>}
             </motion.div>

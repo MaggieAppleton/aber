@@ -5,11 +5,12 @@ import { SignalRow } from "../ui/panes";
 import { SIGNALS, THEORIES, THEMES } from "../ui/data";
 import { openObject } from "../app/dialogs";
 import { ObjectChatCard } from "./object-card";
+import { AssistantText } from "./assistant-text";
 
 const seenUnknown = new Set<string>();
 export function ToolParts({parts}:{parts:any[]}) {
   return <>{parts.map((part,index)=>{
-    if(part.type==="text") return <p className="ps-say" key={index}>{part.text}</p>;
+    if(part.type==="text") return <p className="ps-say" key={index}><AssistantText text={part.text??""}/></p>;
     if(part.type==="data-filed")return <FiledToken key={index} f={{theme:part.data.themeName??THEMES.find(t=>t.id===part.data.themeId)?.name??"",n:part.data.count,gists:(part.data.signals??[]).map((s:any)=>s.gist)}}/>;
     if(part.type==="data-draft") return <ObjectChatCard key={index} data={part.data} draftPart/>;
     if(part.type==="step-start"||part.type==="reasoning"||part.type?.startsWith("data-"))return null;
