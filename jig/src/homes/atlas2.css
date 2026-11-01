@@ -36,17 +36,53 @@
 .a2-lab { position: absolute; width: 0; height: 0; transform: scale(calc(min(1, 0.55 + 0.45 * var(--z)) / var(--z))); transform-origin: 0 0; pointer-events: none; }
 .a2-claim { box-sizing: border-box; position: absolute; top: var(--dy); left: var(--off); width: max-content; max-width: 240px; translate: 0 -50%; font-size: 12px; font-weight: 600; line-height: 16px; text-align: left; text-wrap: balance;
   background: var(--a2-ground); box-shadow: 0 0 0 0.5px rgb(0 0 0 / 6%); padding: 2px 5px; border-radius: 4px; cursor: pointer;
-  opacity: 0; clip-path: inset(0 100% 0 0); transition: opacity 200ms ease-out, clip-path 400ms var(--ap-ease); }
+  opacity: 0; clip-path: inset(0 100% 0 0); transition: opacity 200ms ease-out, clip-path 400ms var(--ap-ease), left 200ms var(--ap-ease), right 200ms var(--ap-ease); }
 .a2-lab[data-flip] .a2-claim { left: auto; right: var(--off); clip-path: inset(0 0 0 100%); }
 .a2-lab[data-show] .a2-claim { opacity: 1; clip-path: inset(-2px -2px -2px -2px); pointer-events: auto; }
 .a2-leader { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: visible; opacity: 0; transition: opacity 200ms ease-out; }
 .a2-leader line { stroke: var(--ap-ink-3); stroke-width: 1; }
 .a2-lab[data-show] .a2-leader { opacity: 1; }
 
-/* Strict stacking: ground < names < signals < landmarks < labels < the hovered landmark < the selected one */
+/* Signal counts beside a territory's name (when signals are not drawn): total, then new in blue */
+.a2-count { display: inline-flex; align-items: center; gap: 6px; margin-left: 2px; font-weight: 400; color: var(--ap-ink-3); }
+.a2-count-new { display: inline-flex; align-items: center; gap: 3px; color: #2f6fed; }
+
+/* Signals as evidence: one tick per link, around the landmark it bears on (counter-scaled with the landmarks) */
+.a2-halo, .a2-loose { position: absolute; width: 0; height: 0; transform-origin: 0 0; transition: opacity 250ms ease-out, visibility 250ms; }
+.a2-halo { transform: scale(calc(min(1, 0.55 + 0.45 * var(--z)) / var(--z))); }
+/* Signals that bear on no theory hang under the territory name, at the name's scale */
+.a2-loose { transform: scale(calc(1 / var(--z))); }
+.a2-halo[data-hidden], .a2-loose[data-hidden], .a2-map[data-far] .a2-loose:not([data-sel]) { opacity: 0; visibility: hidden; }
+.a2-tick { position: absolute; left: 0; top: -3px; width: 12px; height: 6px; border: 0; padding: 0 1px; background: none; transform-origin: 0 50%; cursor: pointer; outline: none; }
+.a2-tick i { display: block; width: 8px; height: 2px; margin-top: 2px; --tc: rgb(0 0 0 / 46%); background: var(--tc); transition: background 120ms ease-out, height 120ms ease-out, margin 120ms ease-out; }
+.a2-loose .a2-tick i { --tc: rgb(0 0 0 / 32%); }
+.a2-tick[data-fresh] i { --tc: #2f6fed; }
+/* Suggested links are not yet yours: dashed, like a draft */
+.a2-tick[data-sug] i { background: repeating-linear-gradient(to right, var(--tc) 0 2.5px, transparent 2.5px 4px); }
+.a2-tick[data-hot] i, .a2-tick[data-sel] i, .a2-tick:focus-visible i { height: 3px; margin-top: 1.5px; }
+.a2-tick[data-hot]:not([data-fresh]) i, .a2-tick[data-sel]:not([data-fresh]) i, .a2-tick:focus-visible:not([data-fresh]) i { --tc: var(--ap-ink); }
+.a2-map[data-treatment="night"] .a2-tick i { --tc: rgb(255 255 255 / 45%); }
+.a2-map[data-treatment="night"] .a2-tick[data-fresh] i { --tc: var(--nb); }
+
+/* A signal's gist, tethered to its tick by a short line */
+.a2-tip { position: absolute; z-index: 10; width: max-content; max-width: 240px; translate: -50% calc(-100% - 9px); transform-origin: 50% 100%; display: grid; gap: 2px;
+  padding: 6px 8px; border-radius: 6px; background: var(--ap-surface); box-shadow: var(--ap-shadow-1); font-size: 12px; line-height: 16px; pointer-events: none; }
+.a2-tip[data-below] { translate: -50% 9px; transform-origin: 50% 0; }
+.a2-tip::after { content: ""; position: absolute; left: calc(50% + var(--tx)); top: 100%; width: 1px; height: 7px; background: var(--ap-ink-3); }
+.a2-tip[data-below]::after { top: auto; bottom: 100%; }
+.a2-tip-gist { font-weight: 500; color: var(--ap-ink); }
+.a2-tip-gist .ap-mark { margin-right: 6px; vertical-align: 1px; }
+.a2-tip-how { color: var(--ap-ink-3); }
+
+/* Gists label the ticks up close: the claim's chip, lighter, so a theory still outranks its evidence */
+.a2-lab-at { position: absolute; width: 0; height: 0; }
+.a2-gist { font-weight: 400; color: var(--ap-ink-2); max-width: 180px; }
+.a2-lab[data-sel] .a2-gist { color: var(--ap-ink); }
+
+/* Strict stacking: ground < names < signals (dots, ticks) < landmarks < labels < the hovered landmark < the selected one */
 .a2-region, .a2-svg { z-index: 1; }
 .a2-name { z-index: 2; }
-.a2-dot { z-index: 3; }
+.a2-dot, .a2-halo, .a2-loose { z-index: 3; }
 .a2-pin { z-index: 4; }
 .a2-lab { z-index: 5; }
 .a2-pin[data-peek] { z-index: 6; }

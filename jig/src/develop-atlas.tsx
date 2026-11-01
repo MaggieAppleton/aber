@@ -1,5 +1,5 @@
 import { JigPage } from "./jig";
-import { AtlasDeveloped, type MapStyle, type Treatment } from "./homes/atlas2";
+import { AtlasDeveloped, type MapStyle, type SignalEncoding, type Treatment } from "./homes/atlas2";
 import { useDecisions } from "./store";
 import "./homes/homes.css";
 
@@ -28,15 +28,54 @@ const TREATMENTS: { k: Treatment; name: string; ground: string; territories: str
     dots: "Soft light dots; new a brighter blue", pins: "Light disc, ink halo", labels: "Ink chip, light text" },
 ];
 
+/** Three ways to show signals, all in Paper. Each row says what a mark means and how you reach a signal. */
+const ENCODINGS: { k: SignalEncoding; name: string; rest: string; close: string; reach: string; cost: string }[] = [
+  { k: "none", name: "A. None", rest: "No marks. Each territory name carries its signal count, then new ones as a blue dot and number",
+    close: "Same", reach: "Open the territory: its signals list in the pane", cost: "Cleanest; says nothing about which theory a signal bears on" },
+  { k: "halo", name: "B. Evidence halos", rest: "A tick per evidence link around its theory: supports above right, undermines below left, suggested dashed, new blue. Unlinked signals under the territory name",
+    close: "Same ticks, more room", reach: "Hover a tick for its gist; click unfolds it in the theory's pane", cost: "Shows weight of evidence at a glance; busier at rest" },
+  { k: "zoom", name: "C. Revealed on zoom", rest: "As A", close: `Halos fade in past 1.6\u00d7; gists label the ticks past 2.5\u00d7, clear of landmarks and labels`,
+    reach: "Zoom in, then hover or click a tick or its gist", cost: "Clean overview, evidence where you look; the halo is hidden until you zoom" },
+];
+
 export function DevelopAtlasJig() {
   const { decisions, update } = useDecisions();
   const picked = decisions["atlas-treatment"]?.choice;
+  const pickedSig = decisions["atlas-signals"]?.choice;
   return (
     <JigPage title="Atlas, developed"
       intro={<>
         <p>Two ways to open a territory or landmark to read and write it without losing the map. Esc steps back one level in each.</p>
         <table className="hm-where" style={{ marginTop: 8 }}><tbody>{ROWS.map(([a, b]) => <tr key={a}><th style={{ width: 160 }}>{a}</th><td>{b}</td></tr>)}</tbody></table>
       </>}>
+      <section className="hm" id="signals">
+        <div className="hm-head"><div className="hm-head-text"><h2>Signals on the map</h2><p>Signals placed where they mean something, or not drawn at all. Paper treatment. Click a tick to unfold its signal in the pane.</p></div></div>
+        <table className="hm-where">
+          <thead><tr><th>Encoding</th><th>At rest</th><th>Zoomed in</th><th>Reach a signal</th><th>Trade-off</th></tr></thead>
+          <tbody>{ENCODINGS.map(e => <tr key={e.k}><th style={{ width: 140 }}>{e.name}</th><td>{e.rest}</td><td>{e.close}</td><td>{e.reach}</td><td>{e.cost}</td></tr>)}</tbody>
+        </table>
+        {STRUCTURES.map(st => (
+          <div key={st.k} style={{ display: "grid", gap: 8, marginTop: 20 }}>
+            <strong style={{ fontWeight: 600, paddingInline: 2 }}>{st.name}</strong>
+            <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fill, ${SIZE.w}px)`, gap: "20px 8px" }}>
+              {ENCODINGS.map(e => {
+                const on = pickedSig === e.k;
+                return (
+                  <div key={e.k} style={{ display: "grid", gap: 8 }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingInline: 2 }}>
+                      <span>{e.name}</span>
+                      {st.k === "circles" && <button className="jig-choose" aria-pressed={on} aria-label={`Pick ${e.name}`} onClick={() => update("atlas-signals", { choice: on ? undefined : e.k })}>{on ? "Picked" : "Pick"}</button>}
+                    </div>
+                    <div className="hm-frame" data-signals-frame={`${st.k}:${e.k}`} style={{ padding: 0, overflow: "visible" }}>
+                      <AtlasDeveloped variant="side" mapStyle={st.k} treatment="paper" signals={e.k} size={SIZE} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </section>
       <section className="hm" id="treatment">
         <div className="hm-head"><div className="hm-head-text"><h2>Map treatment</h2><p>Four surfaces for either structure: same data, layout, stacking and camera. Blue is new, red is a challenge, dashed is a draft in every one. Paper is the current look.</p></div></div>
         <table className="hm-where">

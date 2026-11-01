@@ -6,14 +6,17 @@ import { Icon, IconButton, Mark, Pill } from "./atoms";
 import { ObjectPane, ThemeHead, TheoryTile, SignalRow, Claim, type ObjKind, type OnOpen, type PaneNav } from "./panes";
 import { useCamera, type Camera } from "./atlas2-camera";
 import { W, H, REGION, pinPos } from "./atlas-styles/geo";
-import { Ground, type MapStyle, type Treatment } from "./atlas-styles/grounds";
-import { placeLabels, GAP, type Place } from "./atlas-styles/labels";
+import { Ground, nameAt, type MapStyle, type Treatment } from "./atlas-styles/grounds";
+import { placeLabels, pinScale, GAP, type LabelPin, type Obstacle, type Place } from "./atlas-styles/labels";
+import { TICKS, LOOSE, LOOSE_STEP, LOOSE_DY, TK, REVEAL_Z, GIST_Z, tickInner, tickOuter, haloR, rad, type SignalEncoding, type Tick } from "./atlas-styles/signals";
 import "./atlas2.css";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const T = { duration: 0.6, ease: EASE };
 export type Variant = "side" | "deep";
-export type { MapStyle, Treatment };
+export type { MapStyle, Treatment, SignalEncoding };
+/** Open a signal: unfold it inside the theory it bears on, or inside its theme when it bears on none. */
+export type OnSignal = (id: string, theory: string | undefined, theme: string) => void;
 type Doc = { kind: "theory" | "prototype"; id: string };
 
 /** Fit the world into a viewport, or centre and zoom on one territory. */
@@ -59,9 +62,30 @@ function shrinkWrap(el: HTMLElement) {
 const pinR = (t: Theory, sel: boolean) => (t.draft ? 5 : (8 + (t.confidence ?? 0) * 1.5) / 2 + 2) * (sel ? 1.3 : 1);
 const LANDMARKS = THEORIES.map(t => ({ t, p: pinPos(t) }));
 
-function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, inert, mapStyle = "circles", treatment }: {
+const stanceText = (tk: Tick) => !tk.theory ? "Not evidence for a theory yet"
+  : `${tk.suggested ? "Suggested: " : ""}${tk.stance === "supports" ? "Supports" : "Undermines"} \u201c${theory(tk.theory).claim}\u201d`;
+/** A tick's state: new, suggested (not yet yours), part of the signal under the pointer, or the signal open in the pane. */
+const tickMarks = (tk: Tick, hot: Tick | undefined, selSig: string | undefined) => ({
+  "data-fresh": tk.fresh ? "" : undefined, "data-sug": tk.suggested ? "" : undefined,
+  "data-hot": hot?.sig.id === tk.sig.id ? "" : undefined, "data-sel": selSig === tk.sig.id ? "" : undefined,
+});
+
+/** A signal's gist, tethered to its tick. */
+function SignalTip({ tk, at, vw }: { tk: Tick; at: { x: number; y: number; below: boolean }; vw: number }) {
+  const W2 = 120, x = Math.max(W2 + 8, Math.min(vw - W2 - 8, at.x));
+  return (
+    <motion.div className="a2-tip" role="tooltip" data-below={at.below ? "" : undefined} style={{ left: x, top: at.y, ["--tx" as string]: `${at.x - x}px` }}
+      initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, transition: { duration: 0.1 } }} transition={{ duration: 0.16, ease: "easeOut" }}>
+      <span className="a2-tip-gist">{tk.fresh && <Mark kind="fresh" />}{tk.sig.gist}</span>
+      <span className="a2-tip-how">{stanceText(tk)}</span>
+    </motion.div>
+  );
+}
+
+function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, inert, mapStyle = "circles", treatment, signals = "scatter", selSig, onSignal }: {
   vw: number; vh: number; focus?: string; claims?: string; selTheme?: string; selPin?: string;
   onRegion: (id: string) => void; onPin: (id: string, at: { x: number; y: number }) => void; inert?: boolean; mapStyle?: MapStyle; treatment?: Treatment;
+  signals?: SignalEncoding; selSig?: string; onSignal?: OnSignal;
 }) {
   const [peek, setPeek] = useState<string>();
   const timer = useRef<number>(undefined);
@@ -104,14 +128,54 @@ function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, in
 
   const { scale, tx, ty } = cam.snap;
   const near = (p: { x: number; y: number }) => { const sx = p.x * scale + tx, sy = p.y * scale + ty; return scale >= CLAIM_Z && sx > 0 && sx < vw && sy > 0 && sy < vh; };
+  // Evidence ticks: always (halo), or once the camera is close enough to read them (zoom); gists label them closer still.
+  const halos = signals === "halo" || (signals === "zoom" && scale >= REVEAL_Z);
+  const gists = signals === "zoom" && scale >= GIST_Z;
+  const k = pinScale(scale);
+  /** A point at a natural-pixel distance from a landmark, in world coordinates (the landmark layer is counter-scaled). */
+  const from = (p: { x: number; y: number }, a: number, d: number) => ({ x: p.x + Math.cos(rad(a)) * d * k / scale, y: p.y + Math.sin(rad(a)) * d * k / scale });
+  const labelR = (t: Theory) => halos ? haloR(t.id, pinR(t, t.id === selPin)) : pinR(t, t.id === selPin);
+  const pins: LabelPin[] = LANDMARKS.map(({ t, p }) => ({ id: t.id, x: p.x, y: p.y, r: labelR(t), ro: pinR(t, t.id === selPin), prio: (t.draft ? 0 : 10) + (t.confidence ?? 0) }));
+  const obstacles: Obstacle[] = [];
   const wanted = new Set(LANDMARKS.filter(({ t, p }) => (claims && t.themes.includes(claims)) || near(p)).map(({ t }) => t.id));
-  const places = placeLabels({
-    pins: LANDMARKS.map(({ t, p }) => ({ id: t.id, x: p.x, y: p.y, r: pinR(t, t.id === selPin), prio: (t.draft ? 0 : 10) + (t.confidence ?? 0) })),
-    wanted, forced: new Set(selPin ? [selPin] : []), extra: peek, sizes, scale, tx, vw,
-  });
+  if (halos) for (const { t, p } of LANDMARKS) for (const tk of TICKS[t.id]) {
+    const r = pinR(t, t.id === selPin);
+    obstacles.push({ ...from(p, tk.a, tickInner(r, tk.ring) + TK.len / 2), r: TK.len / 2 + 1 });
+    if (signals !== "zoom") continue;
+    const end = from(p, tk.a, tickOuter(r, tk.ring));
+    pins.push({ id: `sig:${tk.key}`, ...end, r: 2, ro: 0, prio: -10 + (tk.fresh ? 1 : 0) });
+    // Gists keep a margin from the frame edge, so a label never shows cut in half.
+    const sx = end.x * scale + tx, sy = end.y * scale + ty;
+    if (gists && sx > 40 && sx < vw - 40 && sy > 24 && sy < vh - 24) wanted.add(`sig:${tk.key}`);
+  }
+  const places = placeLabels({ pins, obstacles, wanted, forced: new Set(selPin ? [selPin] : []), extra: peek, sizes, scale, tx, vw });
   // A label that hides keeps its last side, so it fades out where it was.
   const lastPlace = useRef<Record<string, Place>>({});
   Object.assign(lastPlace.current, places);
+
+  // A signal's gist, after a short dwell on its tick (at once on keyboard focus).
+  const [tip, setTip] = useState<Tick>();
+  const tipTimer = useRef<number>(undefined);
+  useEffect(() => () => clearTimeout(tipTimer.current), []);
+  const tickProps = (tk: Tick, hidden: boolean) => ({
+    tabIndex: hidden ? -1 : 0,
+    "aria-label": `${tk.sig.gist}. ${stanceText(tk)}`,
+    onClick: (e: { stopPropagation: () => void }) => { e.stopPropagation(); setTip(undefined); onSignal?.(tk.sig.id, tk.theory, tk.theme); },
+    onPointerEnter: () => { clearTimeout(tipTimer.current); tipTimer.current = window.setTimeout(() => setTip(tk), 300); },
+    onPointerLeave: () => { clearTimeout(tipTimer.current); setTip(v => v?.key === tk.key ? undefined : v); },
+    onFocus: () => setTip(tk), onBlur: () => setTip(v => v?.key === tk.key ? undefined : v),
+  });
+  const shown = tip && halos && !cam.panning ? tip : undefined;
+
+  /** Where a tick's tip sits on screen, and whether its tooltip hangs above or below it. */
+  const tipAt = (tk: Tick) => {
+    if (!tk.theory) {
+      const n = nameAt(mapStyle, tk.theme), ts = LOOSE[tk.theme], i = ts.findIndex(x => x.key === tk.key);
+      return { x: n.x * scale + tx + (i - (ts.length - 1) / 2) * LOOSE_STEP, y: n.y * scale + ty + LOOSE_DY + TK.len, below: true };
+    }
+    const t = theory(tk.theory), e = from(pinPos(t), tk.a, tickOuter(pinR(t, t.id === selPin), tk.ring));
+    return { x: e.x * scale + tx, y: e.y * scale + ty, below: Math.sin(rad(tk.a)) > 0.1 };
+  };
 
   const hover = (id: string) => ({
     onPointerEnter: () => { clearTimeout(timer.current); timer.current = window.setTimeout(() => setPeek(id), 400); },
@@ -122,7 +186,26 @@ function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, in
     <div className="a2-map" inert={inert} ref={box} tabIndex={inert ? -1 : 0} role="group" aria-roledescription="map" aria-label="Atlas map" data-style={mapStyle} data-treatment={treatment}
       data-panning={cam.panning ? "" : undefined} data-far={scale < FAR_Z ? "" : undefined} {...cam.handlers}>
       <motion.div className="a2-world" style={{ x: cam.x, y: cam.y, scale: cam.s, originX: 0, originY: 0 }}>
-        <Ground style={mapStyle} focus={focus} selTheme={selTheme} onRegion={onRegion} />
+        <Ground style={mapStyle} focus={focus} selTheme={selTheme} onRegion={onRegion} signals={signals} />
+        {(signals === "halo" || signals === "zoom") && LANDMARKS.map(({ t, p }) => TICKS[t.id].length > 0 && (
+          <div key={t.id} className="a2-halo" data-hidden={halos ? undefined : ""} style={{ left: p.x, top: p.y }}>
+            {TICKS[t.id].map(tk => (
+              <button key={tk.key} className="a2-tick" {...tickMarks(tk, shown, selSig)} {...tickProps(tk, !halos)}
+                style={{ transform: `rotate(${tk.a}deg) translateX(${tickInner(pinR(t, t.id === selPin), tk.ring) - 1}px)` }}><i /></button>
+            ))}
+          </div>
+        ))}
+        {(signals === "halo" || signals === "zoom") && Object.entries(LOOSE).map(([id, ts]) => {
+          const at = nameAt(mapStyle, id);
+          return (
+            <div key={id} className="a2-loose" data-hidden={halos ? undefined : ""} data-sel={selTheme === id ? "" : undefined} style={{ left: at.x, top: at.y }}>
+              {ts.map((tk, i) => (
+                <button key={tk.key} className="a2-tick" {...tickMarks(tk, shown, selSig)} {...tickProps(tk, !halos)}
+                  style={{ transform: `translate(${(i - (ts.length - 1) / 2) * LOOSE_STEP}px, ${LOOSE_DY}px) rotate(90deg)` }}><i /></button>
+              ))}
+            </div>
+          );
+        })}
         {LANDMARKS.map(({ t, p }) => {
           const open = (e: { stopPropagation: () => void }) => { e.stopPropagation(); onPin(t.id, { x: p.x * scale + tx, y: p.y * scale + ty }); };
           const sel = selPin === t.id, pk = peek === t.id && !sel;
@@ -137,12 +220,12 @@ function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, in
         })}
         {LANDMARKS.map(({ t, p }) => {
           const pl = places[t.id], at = pl ?? lastPlace.current[t.id] ?? { side: 1, dy: 0 };
-          const sel = selPin === t.id, pk = peek === t.id && !sel, r = pinR(t, sel);
+          const sel = selPin === t.id, pk = peek === t.id && !sel;
           return (
             <div key={t.id} className="a2-lab" data-show={pl ? "" : undefined} data-flip={at.side < 0 ? "" : undefined} data-sel={sel ? "" : undefined} data-peek={pk ? "" : undefined}
-              style={{ left: p.x, top: p.y, ["--off" as string]: `${r + GAP}px`, ["--dy" as string]: `${at.dy}px` }}>
+              style={{ left: p.x, top: p.y, ["--off" as string]: `${labelR(t) + GAP}px`, ["--dy" as string]: `${at.dy}px` }}>
               {at.dy !== 0 && (
-                <svg className="a2-leader" aria-hidden><line x1={at.side * r} y1={0} x2={at.side * (r + GAP + 1)} y2={at.dy} /></svg>
+                <svg className="a2-leader" aria-hidden><line x1={at.side * labelR(t)} y1={0} x2={at.side * (labelR(t) + GAP + 1)} y2={at.dy} /></svg>
               )}
               <span className="a2-claim" ref={el => { if (el) labelEls.current.set(t.id, el); }} aria-hidden
                 onClick={e => { e.stopPropagation(); onPin(t.id, { x: p.x * scale + tx, y: p.y * scale + ty }); }} {...hover(t.id)}>
@@ -151,7 +234,24 @@ function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, in
             </div>
           );
         })}
+        {signals === "zoom" && LANDMARKS.flatMap(({ t, p }) => TICKS[t.id].map(tk => {
+          const id = `sig:${tk.key}`, pl = places[id], at = pl ?? lastPlace.current[id] ?? { side: 1, dy: 0 };
+          const end = tickOuter(pinR(t, t.id === selPin), tk.ring), ex = Math.cos(rad(tk.a)) * end, ey = Math.sin(rad(tk.a)) * end;
+          return (
+            <div key={id} className="a2-lab" data-kind="sig" data-show={pl ? "" : undefined} data-flip={at.side < 0 ? "" : undefined}
+              data-sel={selSig === tk.sig.id ? "" : undefined} style={{ left: p.x, top: p.y, ["--off" as string]: `${2 + GAP}px`, ["--dy" as string]: `${at.dy}px` }}>
+              <div className="a2-lab-at" style={{ left: ex, top: ey }}>
+                {at.dy !== 0 && <svg className="a2-leader" aria-hidden><line x1={at.side * 2} y1={0} x2={at.side * (2 + GAP + 1)} y2={at.dy} /></svg>}
+                <span className="a2-claim a2-gist" ref={el => { if (el) labelEls.current.set(id, el); }} aria-hidden
+                  onClick={e => { e.stopPropagation(); onSignal?.(tk.sig.id, tk.theory, tk.theme); }}>{tk.sig.gist}</span>
+              </div>
+            </div>
+          );
+        }))}
       </motion.div>
+      <AnimatePresence>
+        {shown && <SignalTip key={shown.key} tk={shown} at={tipAt(shown)} vw={vw} />}
+      </AnimatePresence>
       <ZoomControl cam={cam} />
     </div>
   );
@@ -184,7 +284,7 @@ const MAPW = 496;
 /** A frame smaller than the full 1240×760 (the jig's treatment grid): its map width when the pane is open. */
 export type FrameSize = { w: number; h: number; mapw: number };
 
-function SidePane({ mapStyle, treatment, size }: { mapStyle?: MapStyle; treatment?: Treatment; size?: FrameSize }) {
+function SidePane({ mapStyle, treatment, size, signals }: { mapStyle?: MapStyle; treatment?: Treatment; size?: FrameSize; signals?: SignalEncoding }) {
   const fw = size?.w ?? W, fh = size?.h ?? H, mw = size?.mapw ?? MAPW;
   const [themeId, setTheme] = useState<string>();
   const [doc, setDoc] = useState<Doc>();
@@ -208,13 +308,21 @@ function SidePane({ mapStyle, treatment, size }: { mapStyle?: MapStyle; treatmen
   // Signals unfold inside the pane; the host holds which one so Esc can fold it first.
   const nav: PaneNav = { onOpen: openObj, inline: true, unfolded, onUnfold: (_k, id) => setUnfolded(u => u === id ? undefined : id) };
 
+  // A signal opened from the map unfolds in its theory (or theme); bring it into view once the pane has settled.
+  const openSignal: OnSignal = (id, th, themeId) => { openObj(th ? "theory" : "theme", th ?? themeId); setUnfolded(id); };
+  useEffect(() => {
+    if (!unfolded) return;
+    const t = window.setTimeout(() => scroller.current?.querySelector(".pn-sig[data-open]")?.scrollIntoView({ block: "nearest", behavior: "smooth" }), 320);
+    return () => clearTimeout(t);
+  }, [unfolded, objKey]);
+
   const frame = useEscape(back);
   return (
     <div className="ap a2" data-variant="side" data-compact={size ? "" : undefined} tabIndex={0} ref={frame}
       style={size ? { width: fw, minWidth: fw, height: fh } : undefined}>
       <motion.div className="a2-mapbox" data-shrunk={open ? "" : undefined} initial={false} animate={{ width: open ? mw : fw }} transition={T}>
         <AtlasMap mapStyle={mapStyle} treatment={treatment} vw={open ? mw : fw} vh={fh} focus={themeId} selTheme={themeId} selPin={doc?.kind === "theory" ? doc.id : undefined}
-          onRegion={id => openObj("theme", id)} onPin={id => openObj("theory", id)} />
+          onRegion={id => openObj("theme", id)} onPin={id => openObj("theory", id)} signals={signals} selSig={unfolded} onSignal={openSignal} />
       </motion.div>
       <AnimatePresence>
         {open && (
@@ -365,24 +473,29 @@ function useEscape(back: () => void) {
  * Atlas side-pane variant for a host (the app shell) that draws the object pane itself.
  * The map fills the width it is given and centres on the open object's territory.
  */
-export function AtlasHosted({ open, onOpen, width, height, mapStyle = "circles" }: { open?: { kind: ObjKind; id: string }; onOpen: OnOpen; width: number; height: number; mapStyle?: MapStyle }) {
+export function AtlasHosted({ open, onOpen, width, height, mapStyle = "circles", signals = "scatter", onSignal, selSig }: {
+  open?: { kind: ObjKind; id: string }; onOpen: OnOpen; width: number; height: number; mapStyle?: MapStyle;
+  /** How signals show; "scatter" is the current look. With no onSignal, a signal opens the theory (or theme) it belongs to. */
+  signals?: SignalEncoding; onSignal?: OnSignal; selSig?: string;
+}) {
   const [themeId, setTheme] = useState<string>();
   useEffect(() => { setTheme(t => (open ? contextFor(t, open.kind, open.id) : undefined)); }, [open?.kind, open?.id]);
   return (
     <MotionConfig reducedMotion="user">
       <div className="ap a2" data-variant="side" data-hosted="" style={{ width, height }}>
         <AtlasMap mapStyle={mapStyle} vw={width} vh={height} focus={themeId} selTheme={themeId} selPin={open?.kind === "theory" ? open.id : undefined}
-          onRegion={id => onOpen("theme", id)} onPin={id => onOpen("theory", id)} />
+          onRegion={id => onOpen("theme", id)} onPin={id => onOpen("theory", id)}
+          signals={signals} selSig={selSig} onSignal={onSignal ?? ((_id, th, themeId) => onOpen(th ? "theory" : "theme", th ?? themeId))} />
       </div>
     </MotionConfig>
   );
 }
 
 /** Atlas, developed: two ways to open a territory or landmark to read and write it without losing the map. */
-export function AtlasDeveloped({ variant, mapStyle, treatment, size }: { variant: Variant; mapStyle?: MapStyle; treatment?: Treatment; size?: FrameSize }) {
+export function AtlasDeveloped({ variant, mapStyle, treatment, size, signals }: { variant: Variant; mapStyle?: MapStyle; treatment?: Treatment; size?: FrameSize; signals?: SignalEncoding }) {
   return (
     <MotionConfig reducedMotion="user">
-      {variant === "side" ? <SidePane mapStyle={mapStyle} treatment={treatment} size={size} /> : <DeepZoom />}
+      {variant === "side" ? <SidePane mapStyle={mapStyle} treatment={treatment} size={size} signals={signals} /> : <DeepZoom />}
     </MotionConfig>
   );
 }
