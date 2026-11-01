@@ -77,3 +77,11 @@
 .br-acts .ap-iconbtn[aria-label$="(X)"] { position: absolute; top: 6px; right: 6px; }
 .br-row:has(.br-acts .ap-iconbtn[aria-label$="(X)"]) .br-title { padding-right: 26px; }
 .br-title > .br-open + *, .br-title > .br-static + * { margin-left: 3px; }   /* a trailing mark sits 10px from the title */
+
+/* A signal inside a suggestion or challenge (surface study, option D) */
+.br-sigcard { display: flex; align-items: flex-start; gap: 10px; width: 100%; max-width: 440px; padding: 8px 10px; border-radius: 7px; background: rgb(255 255 255 / 45%); outline: 1px dashed rgb(var(--ap-shc) / 12%); outline-offset: -1px; }
+.br-sigwell { width: 24px; height: 24px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--ap-sunk); color: var(--ap-ink-3); }
+.br-sigtext { display: grid; gap: 1px; min-width: 0; font-size: 13px; color: var(--ap-ink); text-wrap: pretty; }
+.br-sigsrc { font-size: 12px; color: var(--ap-ink-2); }
+.br-stance { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 7px; border-radius: 999px; background: var(--ap-sunk); color: var(--ap-ink-2); font-size: 11px; font-weight: 500; white-space: nowrap; }
+.br-detail > .ap-muted { font-size: 13px; line-height: 1.45; color: var(--ap-ink-2); }   /* the agent's reasoning */

@@ -197,6 +197,17 @@ function Row({ icon, iconTitle, title, onOpen, draft, acts, children, mark }: {
   );
 }
 
+/** A signal inside a suggestion or challenge: its own small card, dashed because it is proposed. Icon well, gist over source, stance tag on the right. */
+function SigCard({ gist, source, stance }: { gist: ReactNode; source: ReactNode; stance: "supports" | "undermines" }) {
+  return (
+    <span className="br-sigcard">
+      <span className="br-sigwell"><Icon name="signal" size={12} /></span>
+      <span className="br-sigtext"><span>{gist}</span><span className="br-sigsrc">{source}</span></span>
+      <span className="br-stance"><Icon name={stance === "supports" ? "arrowUp" : "arrowDown"} size={11} />{stance === "supports" ? "Supports" : "Undermines"}</span>
+    </span>
+  );
+}
+
 function Block({ it, ctx }: { it: Item; ctx: Ctx }) {
   switch (it.kind) {
     case "challenge": return <Challenge it={it} ctx={ctx} />;
@@ -229,7 +240,7 @@ function Block({ it, ctx }: { it: Item; ctx: Ctx }) {
       useActs(ctx, it.id, { a: done, x: done, open });
       return (
         <Row icon="theory" iconTitle="Suggested evidence" title={<Claim id={it.theory} />} onOpen={open} acts={<Decide onAccept={done} onDiscard={done} />}>
-          <span className="br-ghost br-sig"><Icon name={st === "supports" ? "arrowUp" : "arrowDown"} size={12} /><span>{s.gist} <span className="ap-muted">{s.source}</span></span></span>
+          <SigCard gist={s.gist} source={s.source} stance={st === "supports" ? "supports" : "undermines"} />
         </Row>
       );
     }
@@ -259,7 +270,7 @@ function Challenge({ it, ctx }: { it: Extract<Item, { kind: "challenge" }>; ctx:
   return (
     <Row icon="theory" iconTitle="Challenged theory" mark={<Mark kind="challenge" />} title={<Claim id={it.theory} />} onOpen={open}
       acts={<span className="br-acts"><button className="ap-btn" onClick={() => decide(it.hit, "accepted")} title={`Accept and lower confidence to ${Math.max(1, conf - 1)} (A)`}>Accept</button><IconButton icon="x" label="Dismiss (X)" onClick={() => decide(it.hit, "dismissed")} /></span>}>
-      <span className="br-ghost br-sig"><Icon name="arrowDown" size={12} /><span>{hit.gist} <span className="ap-muted">{hit.source}</span></span></span>
+      <SigCard gist={hit.gist} source={hit.source} stance="undermines" />
       <span className="ap-muted">{hit.why}</span>
     </Row>
   );
