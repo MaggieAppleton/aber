@@ -48,7 +48,8 @@
   --fell: #ab6400;                                  /* amber 11: confidence fell */
   --draft-line: rgb(var(--shc) / 26%); --draft-fill: rgb(255 255 255 / 45%);
   --h-signal: var(--ink-3); --h-theme: var(--ink-3); --h-theory: var(--ink-3); --h-proto: var(--ink-3);
-  --sel-wash: color-mix(in oklab, var(--accent-wash) 55%, var(--surface)); --sel-ring: inset 0 0 0 1px var(--accent-line);
+  /* Selection is always neutral: a grey wash, a hairline ring, and lift for cards. Colour never means "selected" */
+  --sel-wash: rgb(var(--shc) / 6%); --sel-ring: inset 0 0 0 1px rgb(var(--shc) / 18%);
 }
 
 /* ---------- Material · Crisp ---------- */
@@ -99,7 +100,7 @@
   --sh-pop: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 18px 40px -12px rgb(var(--shc) / 28%);
   --sh-modal: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 30px 80px -16px rgb(var(--shc) / 36%);
   --sh-tip: 0 4px 12px rgb(var(--shc) / 24%);
-  --sel-glow: var(--accent-wash);
+  --sel-glow: rgb(var(--shc) / 5%);
   --dur-1: 100ms; --dur-2: 180ms; --dur-3: 300ms; --ease: cubic-bezier(0.3, 0.7, 0.2, 1);
   --spring: linear(0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1);
   --spring-dur: 520ms; --press: 0.95;
@@ -114,12 +115,6 @@
 
 /* ---------- Object colours (optional): object type, doubled with its glyph. Radix step 11 ---------- */
 #study[data-hue="on"] { --h-signal: #107d98; --h-theme: #208368; --h-theory: #cc4e00; --h-proto: var(--ink-2); }   /* cyan 11, jade 11, orange 11 */
-/* Declared on the objects themselves so var(--obj) resolves to each object's own colour */
-#study[data-hue="on"] :is(.card, .row, .chip, .sig, .bitem) {
-  --sel-wash: color-mix(in oklab, var(--obj, var(--accent)) 7%, var(--surface));
-  --sel-ring: inset 0 0 0 1px color-mix(in oklab, var(--obj, var(--accent)) 45%, transparent);
-  --sel-glow: color-mix(in oklab, var(--obj, var(--accent)) 12%, transparent);
-}
 
 /* ---------- Page ---------- */
 * { box-sizing: border-box; }
@@ -218,7 +213,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   border-radius: var(--r-3); background: var(--surface); box-shadow: var(--hi), var(--sh-card); }
 .card:hover, .card.is-hover { background: var(--surface); box-shadow: var(--hi), var(--sh-card-hover); }
 .card:hover .claim-icon, .card.is-hover .claim-icon { color: var(--h-theory); opacity: 1; }
-.card[aria-current="true"], .card.is-sel { background: var(--sel-wash); box-shadow: var(--hi), var(--sh-raised), var(--sel-ring); }
+.card[aria-current="true"], .card.is-sel { background: var(--surface); box-shadow: var(--hi), var(--sh-raised), var(--sel-ring); }
 .card .claim { font-weight: 600; text-wrap: pretty; padding-right: 18px; }
 .claim-icon { position: absolute; top: var(--sp-4); right: var(--sp-3); color: var(--h-theory); opacity: 0.7; transition: color var(--dur-1), opacity var(--dur-1); }
 #study[data-hue="off"] .claim-icon { opacity: 0; }
@@ -512,12 +507,12 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
       <thead><tr><th>Variable</th><th>Means</th><th>Options on this page</th></tr></thead>
       <tbody>
         <tr><td>Neutral tint</td><td>Nothing. A trace of hue so greys look chosen</td><td>Radix Gray (none), Tailwind Zinc (trace of cool), Radix Slate (faint blue), Radix Sage (faint green). Shadows and lines take the neutral's darkest step, so they match the tint</td></tr>
-        <tr><td>Accent <span class="tag new-meaning">new meaning</span></td><td>You are acting here: selection, focus ring, primary button, current view</td><td>Ink, Teal, Jade, Cyan, Orange. Radix step 9 for fills, 10 for hover, 11 for text, 3 for washes, 7 for rings</td></tr>
+        <tr><td>Accent <span class="tag new-meaning">new meaning</span></td><td>You are acting here: focus ring, primary button, current view. Not selection</td><td>Ink, Teal, Jade, Cyan, Orange. Radix step 9 for fills, 10 for hover, 11 for text, 3 for washes, 7 for rings</td></tr>
         <tr><td>Object colour <span class="tag new-meaning">new meaning</span></td><td>Object type, doubled with the existing glyph</td><td>Signal cyan, theme jade, theory orange, prototype neutral (Radix step 11), or off</td></tr>
         <tr><td>Blue, red, green, amber</td><td>Unchanged: new, challenge, confidence rose, confidence fell</td><td>Moved to Radix: blue 9, red 9 (11 for text), grass 9, amber 11. Each dot gets a soft halo so it reads at a glance</td></tr>
         <tr><td>Shadow</td><td>Height above the base plane, and nothing else</td><td>Crisp: three thin layers. Paper: hard 1 px foot plus soft drop. Soft: wide and diffuse, with a white highlight along the top edge</td></tr>
         <tr><td>Dashed outline</td><td>Not yet mine (drafts, suggestions)</td><td>Unchanged. Accepting animates the dash away so the object solidifies in place</td></tr>
-        <tr><td>Wash plus 1 px ring</td><td>Selected or open</td><td>Accent wash, or the object's own colour when object colours are on</td></tr>
+        <tr><td>Wash plus 1 px ring</td><td>Selected or open</td><td>Neutral in every combination: a grey wash and hairline ring on rows and chips; cards stay white, gain the ring and lift one tier</td></tr>
         <tr><td>Press</td><td>"I felt that": scale plus deeper state layer</td><td>0.97 crisp, 0.975 paper, 0.95 soft</td></tr>
       </tbody>
     </table>
@@ -693,7 +688,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   const NOTE = {
     crisp: 'Crisp: thin layered shadows, frosted-glass floating chrome, motion that settles without overshoot.',
     paper: 'Paper: flatter, smaller radii, a hard 1 px foot under each card like stacked sheets, a small settle in motion.',
-    soft: 'Soft: rounder corners, a white highlight along the top edge of raised surfaces, a glow around selection, springy press.',
+    soft: 'Soft: rounder corners, a white highlight along the top edge of raised surfaces, a soft grey halo around selection, springy press.',
     gray: 'Radix Gray, no tint.', zinc: 'Tailwind Zinc, a trace of cool.', slate: 'Radix Slate, faintly blue.', sage: 'Radix Sage, faintly green.'
   };
   const CLASH = { teal: 'the jade theme colour', jade: 'the jade theme colour', cyan: 'the cyan signal colour', orange: 'the orange theory colour' };
