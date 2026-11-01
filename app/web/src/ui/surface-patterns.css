@@ -24,7 +24,6 @@
 .ab-edge-host > .ap-card { position: relative; min-width: 0; }
 .ap .ab-edge-host > .ap-card[data-draft] { outline-color: transparent; box-shadow: none; }   /* drafts sit on the plane: no shadow, even when hot */
 .ap .ab-edge-host:is(:hover, :focus-within) > .ap-card[data-draft] { background: color-mix(in oklab, var(--ab-draft-fill) 60%, #fff); }
-.ap .ab-edge-host > .ap-card[data-draft] .ap-card-claim { padding-right: var(--size-px-18); }
 .ab-edge-host > .ap-card::after, .ap .cd-item:has(> [data-edge-card])::after {
   content: ""; position: absolute; inset: 0; border-radius: inherit; border: var(--size-px-1) dashed var(--ab-draft-line);
   opacity: 0; pointer-events: none; transition: opacity 260ms var(--ab-ease);
@@ -125,7 +124,7 @@
 .ab-tooltip[data-side="left"], .ab-tooltip[data-side="right"] { --ab-tip-from: 0px; }
 .ab-tooltip-arrow { display: none; }   /* the study's tooltips have no arrow; the 3px grow shows where they came from */
 .ab-tooltip-key { font: 400 var(--size-px-11)/1 "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace; opacity: 0.6; }
-.ab-tooltip-bracket { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.ab-tooltip-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* ── 9. Toast ──
    Just above the pill (or the open composer); holds while hovered; never takes focus; Undo is also ⌘Z. */

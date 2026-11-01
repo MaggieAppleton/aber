@@ -53,9 +53,9 @@ export function useDraftEdge(kind: DraftKind, id: string, draft: boolean): { dra
     (key === "a" ? accept : discard)(e.currentTarget);
   };
   const actions = live ? <span className="ab-edge-acts">
-    <TooltipButton type="button" className="ab-mini" data-edge="no" aria-label="Discard (X)" tooltip="Discard (X)" aria-keyshortcuts="x"
+    <TooltipButton type="button" className="ab-mini" data-edge="no" aria-label="Discard draft (X)" tooltip="Discard draft (X)" aria-keyshortcuts="x"
       onClick={e => { e.stopPropagation(); discard(e.currentTarget); }}><Icon name="x" size={14} /></TooltipButton>
-    <TooltipButton type="button" className="ab-mini" data-edge="yes" aria-label="Accept (A)" tooltip="Accept (A)" aria-keyshortcuts="a"
+    <TooltipButton type="button" className="ab-mini" data-edge="yes" aria-label="Accept draft (A)" tooltip="Accept draft (A)" aria-keyshortcuts="a"
       onClick={e => { e.stopPropagation(); accept(e.currentTarget); }}><Icon name="check" size={14} /></TooltipButton>
   </span> : null;
   // Every card in a list with drafts keeps the same shape, so settling never remounts it (or drops its focus).

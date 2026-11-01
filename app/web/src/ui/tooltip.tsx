@@ -14,12 +14,12 @@ export function splitShortcut(label: string): { name: string; key?: string } {
   return m ? { name: m[1], key: m[2] } : { name: label };
 }
 
-/** The name, then its shortcut in mono. The brackets stay in the text for assistive tech and tests, but are not shown. */
+/** The name, then its shortcut in mono. Assistive tech and tests read the whole label, brackets included, from one hidden span. */
 function TipLabel({ label }: { label: ReactNode }) {
   if (typeof label !== "string") return <>{label}</>;
   const { name, key } = splitShortcut(label);
   if (!key) return <>{label}</>;
-  return <>{name}<kbd className="ab-tooltip-key"><span className="ab-tooltip-bracket"> (</span>{key}<span className="ab-tooltip-bracket">)</span></kbd></>;
+  return <><span aria-hidden="true">{name}</span><kbd className="ab-tooltip-key" aria-hidden="true">{key}</kbd><span className="ab-tooltip-sr">{label}</span></>;
 }
 
 export function Tooltip({ onOpenChange, ...props }: TooltipPrimitive.Root.Props) {
