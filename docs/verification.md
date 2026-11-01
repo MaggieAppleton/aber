@@ -2,7 +2,15 @@
 
 1 November 2026. Aber runs at **http://127.0.0.1:3000** using the built Node server in live mode. There is no deployment. See [run instructions](../app/README.md) and [decisions](build-notes.md).
 
-## Automated checks
+Current live UI corrections and verification are tracked in [UI issues](ui-issues.md). The checks below preserve the overnight baseline; later corrections supersede its geometry and review conclusions.
+
+## Latest UI review
+
+All user-reported UI issues are tracked in [the issue ledger](ui-issues.md). The latest local build passes 239 unit tests across 47 files, typecheck, build and production smoke. The final full browser run passes all 85 checks: 49 core, 16 follow-up workflow and 20 action-review cases, including the new sidebar/creation regressions. Combined live verification passes eight groups for the new sidebar, inline Prototypes, creation controls, theory header, responsive fit and focus preservation, with zero backend writes.
+
+Reports and screenshots are local ignored artifacts. The dependency audit after adding Markdown reports zero production vulnerabilities. The working tree and all existing Git-history blobs were scanned for provider keys, GitHub tokens, private keys and exact local credentials; no matches were found. `.env`, local data, build output and reports are excluded from Git.
+
+## Automated checks (overnight baseline)
 
 | Check | Result |
 | --- | --- |
@@ -35,7 +43,7 @@ The five new processing-v2 cases completed once per provider: **OpenAI 5/5, Clau
 
 ## Review evidence
 
-- [Design round 1](../reports/design-round1/report.md), [round 2](../reports/design-round2/report.md), [round 3](../reports/design-round3/report.md), and [final recheck](../reports/design-final/report.md): screenshot-based critiques and fixes against the canonical jig, desktop, phone and reduced motion. The final inspected scope has no material design findings.
+- [Design round 1](../reports/design-round1/report.md), [round 2](../reports/design-round2/report.md), [round 3](../reports/design-round3/report.md), and [final recheck](../reports/design-final/report.md): screenshot-based critiques and fixes against the canonical jig, desktop, phone and reduced motion. These earlier reviews did not establish detailed jig parity; subsequent live review found additional issues in the current ledger.
 - [Action/specification audit](../reports/final-code-review.md): six missing paths repaired and verified through the real interface.
 - [Backend preservation review](../reports/final-backend-review.md): merge/bin/restore and suggestion Undo regressions reproduced, fixed and rechecked independently.
 - [Built-app screenshots and measurements](../reports/local-runtime/checks.json): five desktop views and phone Briefing, captured from the running production build.
@@ -46,8 +54,8 @@ The five new processing-v2 cases completed once per provider: **OpenAI 5/5, Clau
 
 ## Additional checker and boundaries
 
-The agent-kit source checker reports zero failures after token extraction and keyboard-focus corrections. Its local browser diagnostic ran 13 cases and 29 frames; all interaction and paste assertions passed. Twenty remaining flags are confirmed accessible-name parser artefacts, with actual browser names present. See [the checker report](../reports/design-check/summary.md).
+At the overnight baseline, the agent-kit source checker reported zero failures after token extraction and keyboard-focus corrections. Its local browser diagnostic ran 13 cases and 29 frames; all interaction and paste assertions passed. Twenty remaining flags are confirmed accessible-name parser artefacts, with actual browser names present. See [the checker report](../reports/design-check/summary.md).
 
-The optional full TypeSafe visual review **has not run and is not a `ready` result**. Automatic approval review rejected exporting screenshots and design context without explicit permission. No TypeSafe export or paid judgement occurred. Approval was requested separately; the remaining reviews stayed local. This additional gate is separate from the completed local application and screenshot-based agent reviews.
+Maggie approved TypeSafe screenshot/context export. The authorised full review captured 13 cases, then received HTTP 400 `max_tokens_exceeded` on its first request; one bounded diagnostic confirmed that error. No valid visual judgement or current `ready` result was returned. See the [checker report](../reports/design-check/summary.md). Detailed visual corrections and current verification are tracked in [UI issues](ui-issues.md).
 
 All sample/eval material is synthetic. Physical microphone permission and real iPhone safe-area hardware were not exercised; browser recording, real transcription, Chromium and WebKit phone layouts were. Hosting, authentication, remote phone access and the later agent jobs remain outside the specified v1 scope.

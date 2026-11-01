@@ -2,6 +2,12 @@
 .ap { --pn-edit-hover: var(--color-gray-0-a-2-5); --pn-edit-bg: var(--color-gray-0-a-3-5); --pn-edit-ring: var(--color-gray-0-a-14); }
 
 .pn-doc { max-width: var(--size-px-680); padding: var(--size-px-40) var(--size-px-48) var(--size-px-120); display: grid; gap: var(--size-px-16); }
+.pn-theory-doc { min-width: 0; grid-template-columns: minmax(0, 1fr); }
+.pn-theory-head { display: flex; align-items: center; gap: var(--size-px-8); min-width: 0; }
+.pn-theory-themes { display: flex; align-items: center; gap: var(--size-px-4); flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.pn-theory-themes .pn-chip { flex: 0 1 auto; min-width: var(--size-px-48); }
+.pn-theory-themes .pn-chip-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pn-theory-actions { display: flex; align-items: center; gap: var(--size-px-4); flex-shrink: 0; }
 /* Meta: a label/value list under the title. Labels are quiet and fixed; nothing moves on hover. */
 .pn-meta { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: var(--size-px-16); row-gap: var(--size-px-4); margin: 0; }
 .pn-meta-row { display: contents; }

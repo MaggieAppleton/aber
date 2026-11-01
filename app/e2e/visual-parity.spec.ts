@@ -38,9 +38,18 @@ test('shared controls and theory pane retain the rendered canonical jig geometry
   await Promise.all([jig.locator('.as-pane .pn-title').waitFor(), page.locator('.as-pane .pn-title').waitFor()]);
   await expect.poll(async () => page.locator('.as-pane').evaluate(node => getComputedStyle(node).transform)).toBe('none');
   await expect.poll(async () => jig.locator('.as-pane').evaluate(node => getComputedStyle(node).transform)).toBe('none');
+  // UI-023 places the existing 28px actions beside 24px theme chips.
+  // The header is 4px taller; chips stay centred and subsequent rows move 4px.
+  await expect(page.locator('.pn-theory-head')).toHaveCSS('height', '28px');
+  const header = await page.locator('.pn-theory-head').boundingBox();
+  const actions = await page.locator('.pn-theory-actions').boundingBox();
+  expect(actions!.x + actions!.width).toBeCloseTo(header!.x + header!.width, 1);
   for (const selector of ['.as-pane', '.as-pane .pn-doc', '.as-pane .pn-title', '.as-pane .pn-chip', '.as-pane .pn-step', '.as-pane .pn-step svg', '.as-pane-close .ap-iconbtn', '.as-pane-close .ap-iconbtn svg']) {
     const dimensions = !selector.endsWith('.pn-doc');
-    await expect.poll(async () => geometry(page.locator(selector), dimensions)).toEqual(await geometry(jig.locator(selector), dimensions));
+    const reference = await geometry(jig.locator(selector), dimensions);
+    const offset = selector.endsWith('.pn-chip') ? 2 : /\.pn-title$|\.pn-step(?: svg)?$/.test(selector) ? 4 : 0;
+    if (dimensions && offset) reference.y = Number(reference.y) + offset;
+    await expect.poll(async () => geometry(page.locator(selector), dimensions)).toEqual(reference);
   }
   await page.screenshot({ path: 'test-results/parity/verified-pane-geometry.png', animations: 'disabled' });
   await jig.close();

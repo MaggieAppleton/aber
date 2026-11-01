@@ -1,9 +1,10 @@
+import { CurrentSidebar } from "./current-sidebar";
 import { rowFor } from "../data/live";
 import { VIEW_CLEARANCE } from "./metrics";
 import { Accordion } from "@base-ui/react/accordion";
-import { createObject, findObjects, ask } from "../app/dialogs";
+import { createObject } from "../app/dialogs";
 import { useRef, useState } from "react";
-import { THEMES, theoriesIn, PROTOTYPES, type Theory } from "./data";
+import { THEMES, theoriesIn, type Theory } from "./data";
 import { TheoryCard, Pill, Icon, IconButton } from "./atoms";
 import { useEdit } from "./edits";
 import { tripFor } from "./trips";
@@ -24,6 +25,7 @@ function LiveCard({ t, hot, onEnter, onLeave, onClick }: { t: Theory; hot?: bool
 /** Baseline: the space-and-motion boards. Docked theme index, theme sections, floating pill. */
 export function CurrentHome({ host }: { host?: CurrentHost }) {
   const [hot, setHot] = useState<string>();
+  const [railCollapsed, setRailCollapsed] = useState(false);
   const [draftsOpen,setDraftsOpen]=useState<Record<string,boolean>>({});
   const [active, setActive] = useState(THEMES[0]?.id ?? "");
   const main = useRef<HTMLElement>(null);
@@ -35,24 +37,9 @@ export function CurrentHome({ host }: { host?: CurrentHost }) {
     m.scrollTo({ top: m.scrollTop + el.getBoundingClientRect().top - m.getBoundingClientRect().top - 16, behavior: "smooth" });
   };
   return (
-    <div className="ap cur" data-hosted={host ? "" : undefined} data-compact={host?.compact ? "" : undefined}>
-      <aside className="cur-rail">
-        <div className="cur-brand">Aber<IconButton icon="search" label="Find (⌘K)" onClick={()=>void findObjects()} /></div>
-        <nav className="cur-index">
-          {THEMES.map(t => {
-            const n = theoriesIn(t.id).length;
-            return (
-              <a key={t.id} href={`#cur-${t.id}`} data-active={active === t.id ? "" : undefined}
-                onClick={e => { e.preventDefault(); setActive(t.id); if (host?.compact) host.onOpen("theme", t.id); else jump(t.id); }}>
-                <span><ThemeName id={t.id} /></span>
-                <span className="ap-muted ap-num">{n || "open"}</span>
-              </a>
-            );
-          })}
-        </nav>
-        <a className="cur-protos" href="#prototypes" onClick={async e=>{e.preventDefault(); const id=await ask({title:"Prototypes",choices:[...PROTOTYPES.map(p=>({id:p.id,label:p.name,kind:"prototype"})),{id:"new",label:"New prototype",kind:"plus"}]}); if(id==="new") void createObject("prototype");else if(id)host?.onOpen("prototype",id);}}><Icon name="prototype" />Prototypes<span className="ap-muted ap-num">{PROTOTYPES.length}</span></a>
-      </aside>
-      <main className="cur-main ap-scroll" ref={main} inert={host?.compact}>
+    <div className="ap cur" data-hosted={host ? "" : undefined} data-compact={host?.compact ? "" : undefined} data-rail-collapsed={railCollapsed ? "" : undefined}>
+      <CurrentSidebar active={active} onCollapsedChange={setRailCollapsed} onOpen={host?.onOpen} onTheme={id => { setActive(id); if (host?.compact) host.onOpen("theme", id); else jump(id); }} />
+      <main className="cur-main ap-scroll" ref={main} inert={!!host?.compact && !railCollapsed}>
         {THEMES.map(t => {
           const ts = theoriesIn(t.id);
           const drafts=ts.filter(theory=>theory.draft);
@@ -67,7 +54,7 @@ export function CurrentHome({ host }: { host?: CurrentHost }) {
                       data-pick={t.id} data-region={t.id} data-kind="theme" data-label={t.name}><ThemeName id={t.id} /></button>
                   : <span className="ap-h cur-theme-name">{t.name}</span>}
                 <span className="ap-muted ap-num">{t.signals} {t.signals===1?"signal":"signals"}</span>
-                {ts.length === 0 && <IconButton icon="plus" label="State a theory" onClick={()=>void createObject("theory",t.id)} />}
+                <IconButton icon="plus" label="State a theory" onClick={()=>void createObject("theory",t.id)} />
               </div>
               {ts.length > 0 && (
                 <div className="cur-cards">
@@ -83,8 +70,6 @@ export function CurrentHome({ host }: { host?: CurrentHost }) {
             </section>
           );
         })}
-        {!THEMES.length && <button className="ap-btn" onClick={()=>void createObject("theme")}>New theme</button>}
-        <div className="ab-create"><IconButton icon="plus" label="New theme" onClick={()=>void createObject("theme")}/><IconButton icon="theory" label="State a theory" onClick={()=>void createObject("theory")}/></div>
         <div style={{ height: VIEW_CLEARANCE.sectionEnd }} />
       </main>
       {!host && <Pill sees="World" />}

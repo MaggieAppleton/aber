@@ -114,8 +114,11 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
   const protos = prototypesFor(id);
   const tripped = tripState(edit.tripwire, trip.hits, edit.decisions) === "tripped";
   return (
-    <div className="pn-doc">
-      <div className="pn-chips">{t.themes.map(th => <button key={th} className="pn-chip" title="Theme" onClick={() => onOpen("theme", th)}><Icon name="theme" size={12} /><ThemeName id={th} /></button>)}</div>
+    <div className="pn-doc pn-theory-doc">
+      <div className="pn-theory-head">
+        <div className="pn-theory-themes">{t.themes.map(th => <button key={th} className="pn-chip" title="Theme" onClick={() => onOpen("theme", th)}><Icon name="theme" size={12} /><span className="pn-chip-name"><ThemeName id={th} /></span></button>)}</div>
+        <div className="pn-theory-actions"><IconButton icon="plus" label="Add a relationship" onClick={async()=>{const choice=await ask({title:"Theory relationships",choices:[{id:"theme",label:"Theme",kind:"theme"},{id:"rival",label:"Rival",kind:"swap"},{id:"follows",label:"Follows from",kind:"chevronLeft"},{id:"prototype",label:"Prototype",kind:"prototype"}]});if(choice)void linkObject(choice as any,id);}}/><IconButton icon="edit" label="Rephrase and accept draft" onClick={async()=>{const claim=await ask({title:"Rephrase theory",field:"Claim",value:edit.claim,submit:t.draft?"Accept":"Save"});if(claim)act(t.draft?"rephraseDraft":"editTheory",{id,kind:"theory",claim});}}/><IconButton icon="trash" label="Retire theory" onClick={()=>void retireObject("theory",id)}/></div>
+      </div>
       <Editable as="h1" className="pn-title" value={edit.claim} onChange={claim => set({ claim })} singleLine aria-label="Claim" data-draft={t.draft ? "" : undefined} />
       <RetirementNotice row={rowFor("theory",id)}/>
       <dl className="pn-meta">
@@ -165,7 +168,6 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
           {protos.map(p => <button key={p.id} className="pn-chip" title="Prototype" onClick={() => onOpen("prototype", p.id)}><ProtoStatus id={p.id} /><ProtoName id={p.id} /></button>)}
         </div>
       )}
-      <div className="pn-chips"><IconButton icon="plus" label="Add a relationship" onClick={async()=>{const choice=await ask({title:"Theory relationships",choices:[{id:"theme",label:"Theme",kind:"theme"},{id:"rival",label:"Rival",kind:"swap"},{id:"follows",label:"Follows from",kind:"chevronLeft"},{id:"prototype",label:"Prototype",kind:"prototype"}]});if(choice)void linkObject(choice as any,id);}}/><IconButton icon="edit" label="Rephrase and accept draft" onClick={async()=>{const claim=await ask({title:"Rephrase theory",field:"Claim",value:edit.claim,submit:t.draft?"Accept":"Save"});if(claim)act(t.draft?"rephraseDraft":"editTheory",{id,kind:"theory",claim});}}/><IconButton icon="trash" label="Retire theory" onClick={()=>void retireObject("theory",id)}/></div>
     </div>
   );
 }

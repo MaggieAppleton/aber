@@ -1,0 +1,46 @@
+# UI issues
+
+Maggie's live review, 1 November 2026. Root coordinates assignments, integration and verification. New comments receive a stable issue ID. Evidence under `reports/` is retained locally and intentionally ignored by Git. An issue is **Done** only after its acceptance checks pass in the running app; a worker's implementation report alone is not completion.
+
+| ID | Issue | Owner | Status | Acceptance / evidence |
+| --- | --- | --- | --- | --- |
+| UI-001 | Match the final jig's icon sizes/alignment, item dimensions, radii and padding across all five views and object/capture surfaces. | `parity_spatial`, `parity_objects`, `parity_lists`; root integrates shared CSS | Done | Matched viewport screenshots and computed geometry; hover/focus/disclosure and phone checks. Evidence: `reports/parity-repair/`. Direct jig comparison regression added. |
+| UI-002 | Remove dump-history control from the capture pill, including its reserved gap. Keep Dumps available elsewhere. | `parity_objects`; root integrates focus return | Done | Removed from running port 3000. Browser test verifies no history segment, opens Dumps from Briefing, restores focus on Escape, and exercises bin/restore. Keyboard access retained. |
+| UI-003 | Keep pending proposals compact at rest instead of displaying the full review form in the object pane. | `parity_objects` | Done | Compact named preview with source/reasoning; Base UI disclosure opens the existing review and rephrase actions. Published in ae6b0db; live collapsed/expanded disclosure checks pass. |
+| UI-004 | Columns: keep selected and related items in their original list order; preserve scroll position. | `parity_lists` | Done | Worker regressions prove unchanged row order and scroll offset, including fold/restore. Published in ae6b0db; live read-only checks pass. |
+| UI-005 | Columns: indicate highlighted related items below the visible scroll area. | `parity_lists` | Done | Accurate above/below counts and explicit navigation pass with a 42-row fixture. Published in ae6b0db; live read-only checks pass. |
+| UI-006 | Columns: replace the strong black selected border with a quiet selected state. | `parity_lists` | Done | Sunk neutral surface and 0.5 px inset hairline implemented; opacity preserved. Published in ae6b0db; live read-only checks pass. |
+| UI-007 | Move the entire view-switcher pill closer to the left and bottom window edges. | `chrome_inset` | Done | Outer pill is 12 px from left and bottom at desktop widths; internal button sizes, radii and padding stay unchanged. |
+| UI-008 | Reduce the chat trigger pill's distance from the right and bottom window edges. | `chrome_inset` | Done | Closed pill is 12 px from right and bottom on desktop and phone; opening/closing still docks correctly. |
+| UI-009 | Hide selection context in the closed chat trigger and leave comfortable blank space. | `chrome_inset` | Done | Normal closed pill is about 250 px wide overall, with no nested context chip; selected context remains visible and functional in the expanded composer. |
+| UI-010 | Make Theme sections headings feel like headings by making them bold. | `parity_lists` | Done | Heading font weight is bold; existing font size, padding, row spacing and navigation stay unchanged. |
+| UI-011 | Replace unattractive native icon-button tooltips with shadcn tooltips. | `parity_objects` | Done | Shared black-background/white-text tooltip; hover and keyboard focus work; pointer exit, blur and Escape dismiss; no duplicate browser tooltip or button-geometry changes. |
+| UI-012 | Replace the black shared-context selection box with a soft blue glow, and prevent it overflowing onto chat. | `parity_spatial` | Done | Subtle blue wash/glow over the selected source, clipped to its visible bounds; chat, neighbouring content and controls remain unaffected. |
+| UI-013 | Match the backing behind open chat to the neighbouring content. | `parity_lists` | Superseded by UI-018 | Initial flush-card interpretation is superseded: UI-018 retains the inset floating card and makes its surrounding backing continuous. |
+| UI-014 | Make the chat composer Attach and Transcribe icon buttons fully round. | `parity_objects` | Done | Circular default/hover/focus surfaces; existing button/icon sizes, padding, tooltips and attachment/recording actions stay unchanged. |
+| UI-015 | Centre the Add something on screen icon inside its circular context-picker button. | `parity_objects` | Done | Glyph centre matches the button centre in normal/picking states on desktop and phone; button geometry, tooltip and context-picking behaviour remain intact. |
+| UI-016 | Render Markdown bold and italics in assistant chat replies. | `parity_lists` | Done | Safe semantic strong/em formatting replaces literal markers; nested emphasis, streaming updates and saved replies work without changing person messages or existing chat layout. |
+| UI-017 | Replace heavy black selection outlines across the app with a subtle hairline and raised shadow. | `parity_objects` | Done | Consistent 12–15% black-opacity hairline plus restrained elevation for selected items; keyboard focus, draft/challenge semantics and geometry remain legible and intact. |
+| UI-018 | Keep chat inset and floating with a border/shadow, while matching the backing behind it to the adjacent pane. | `parity_spatial` | Done | Corrects UI-013 interpretation: floating card retains outside insets and elevation; the surrounding background is continuous with its neighbour, and content reserves its space. |
+| UI-019 | Make the Theme sections sidebar manually collapsible and collapse it automatically when panes squeeze the content. | `parity_spatial` after UI-018 | Done | Reachable collapse/expand controls, usable main content at narrow available widths, automatic restoration when space returns, keyboard support and preserved theme navigation. |
+| UI-020 | Expand Prototypes inline as its own sidebar section instead of opening a modal picker. | `parity_spatial` with UI-019 | Done | Shared Base UI accordion reveals named prototypes in the sidebar; rows open their existing panes, creation remains available, and no modal is used for browsing. |
+| UI-021 | Keep compact interface labels on one line, including sidebar names and theme-header signal counts. | `parity_objects` | Done | Long labels truncate cleanly with full accessible names; counts and controls stay visible; card claims and body copy still wrap naturally. |
+| UI-022 | Move creation controls to their sections: Add theme in the sidebar header and Add theory beside each theme heading. | `parity_lists` | Done | Remove the bottom-of-list creation controls; each section has a clear plus icon with the existing creation flow and correct theme association. |
+| UI-023 | Move theory-pane action buttons from the bottom to the top-right beside the theme labels. | `parity_objects` | Done | Existing relationship, rephrase and retire actions sit in the header row, retain tooltips/keyboard support/confirmations, and fit narrow panes without overlapping labels. |
+
+## Verification queue
+
+| ID | Check | Owner | Status |
+| --- | --- | --- | --- |
+| QA-001 | Recheck chat-draft rephrasing after product-source edits stop. The recorded failure was a Vite reload during the test, confirmed in its trace; no product data loss was reproduced. | `parity_spatial` | Done — unchanged test passes in the frozen full browser run. |
+| QA-002 | Preserve keyboard focus across automatic sidebar collapse/restoration when its focused control unmounts. | `parity_spatial`; reproduced by `parity_lists` | Done — focused regression and final live proof pass. |
+| QA-003 | Keep collapsed Prototypes count clear of its glyph and indent disclosure children. | `parity_objects`, independent visual review | Done — focused regression and final live proof pass. |
+
+UI-001–010 were published from ae6b0db. UI-011–018 and UI-021 are now published on port 3000 from c5a6f3e, c2364fe and 354b7b6; UI-013's initial interpretation is superseded by UI-018. Latest combined live proof passes 13 checks at desktop and phone widths with no browser errors or backend writes (`reports/parity-repair/live-batch2/`). Final verification passes 239 unit tests across 47 files and all 85 browser checks. Scoped regression runs are recorded in `reports/parity-repair/integration-batch2.md`. UI-019, UI-020, UI-022 and UI-023 are also published. Eight combined live verification groups pass with no browser errors or forwarded API writes. All review issues are resolved; UI-013 is explicitly superseded by UI-018.
+
+## Decisions and constraints
+
+- Maggie's latest corrections take precedence over older prose or jig variants. The Columns sorting sentence in `docs/build-spec.md` is corrected; the read-only design model is preserved.
+- Preserve canonical visible dimensions. Extra pointer regions must not inflate the layout or intercept neighbouring chart marks.
+- Preserve data, decisions, keyboard support and existing editing/review functionality. Tests use isolated synthetic databases.
+- TypeSafe export is approved. Its current automated gate is unresolved because the request exceeded the model context limit; this is recorded separately in `reports/parity-repair/typesafe-diagnostic.md`, not counted as a visual pass.

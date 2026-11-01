@@ -22,8 +22,17 @@ build/
 .idea/
 
 # Local verification artefacts and backups
+/reports/
+/app/reports/
 app/test-results/
 app/playwright-report/
 app/backups/
 app/.e2e-data/
 .agent-kit/
+test-results/
+playwright-report/
+coverage/
+.cache/
+/tmp/
+/temp/
+*.log

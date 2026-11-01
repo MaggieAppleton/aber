@@ -10,6 +10,8 @@ v1 is for her alone. **This build round runs locally on her MacBook only.** The 
 
 ## Where we are
 
+Maggie's subsequent live UI review is tracked in [UI issues](ui-issues.md). Follow its latest directions, especially stable Columns ordering, quiet selection and removing history from the capture pill. The older design-model sentence about pulling relatives to the top is superseded by her explicit correction in the build spec.
+
 The local v1 app is implemented in `app/`: React/Vite, a Node API, SQLite and Vercel AI SDK 7 with its own job queue. The built app runs at `http://127.0.0.1:3000`. Start with [run instructions](../app/README.md), [verification](verification.md) and [build decisions](build-notes.md). The design context below remains the reference for future changes.
 
 ## Where things are
@@ -65,7 +67,7 @@ The full method is in `reference/interface-grammar.md`. The essentials:
 
 1. **Review the working local app:** all v1 slices have been implemented. Evidence and deliberate exceptions are in [verification](verification.md); do not rebuild the app from scratch.
 2. **Personal-material evals:** 36 synthetic fixtures, the original provider comparison and targeted follow-ups are retained in `app/evals/`. Five separately versioned processing cases add full articles, a long transcript, physical robotics and revision/dedup checks. Add Maggie's real dumps later without rewriting the historical scores.
-3. **Review in the morning:** screenshots in `app/test-results/parity/` and `reports/`, plus `docs/build-notes.md`. The optional authored demo runs on port 3001 with its own database; reproduction instructions are in `app/README.md`. Architecture/security follow-ups and their fixes are in `reports/overnight/`. The optional full TypeSafe screenshot review awaits explicit export permission; local critiques and diagnostics have run.
+3. **Review in the morning:** screenshots in `app/test-results/parity/` and `reports/`, plus `docs/build-notes.md`. The optional authored demo runs on port 3001 with its own database; reproduction instructions are in `app/README.md`. Architecture/security follow-ups and their fixes are in `reports/overnight/`. TypeSafe export was approved; its full review hit the API context limit and returned no valid judgement. See the checker report and current UI issue ledger.
 4. **Later:** deployment to the team Coolify server, backups to B2, auth and phone capture (build spec, section 13). Confirm with the server's owner how it joins Tailscale first.
 
 ## Things not to redo

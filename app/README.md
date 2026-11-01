@@ -86,4 +86,6 @@ Capture returns a dump ID immediately. The background worker fetches links, tran
 
 The Apple Shortcut is later and optional. It needs reachable hosting and authentication; see [hosting guide step 6b](../docs/hosting-guide.md#6b-the-dump-shortcut). This build listens only on the laptop.
 
-See [verification results](../docs/verification.md) and [build decisions](../docs/build-notes.md). Three design critique rounds and a final screenshot recheck are retained in `reports/` at the repository root. The additional TypeSafe checker has not exported screenshots: its full review requires explicit export permission; local source/browser diagnostics and their documented parser limitations are in `reports/design-check/summary.md`.
+See [verification results](../docs/verification.md) and [build decisions](../docs/build-notes.md). Three design critique rounds and a final screenshot recheck are retained in `reports/` at the repository root. TypeSafe screenshot export was approved, but its full review received an API context-limit error and returned no valid judgement. Details are in `reports/design-check/summary.md`; current UI corrections and verification are in `docs/ui-issues.md`.
+
+Review reports, screenshots and temporary test outputs are retained locally under ignored directories; they are not part of the public repository.
