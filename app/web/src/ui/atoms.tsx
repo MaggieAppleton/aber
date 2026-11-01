@@ -149,7 +149,7 @@ export const Mark = ({ kind, n }: { kind: MarkKind | "pending"; n?: number }) =>
   return <span className="ap-mark" role="img" data-kind={kind} title={label} aria-label={label} />;
 };
 
-export const STATUS_COLOUR: Record<string, string> = { idea: "#c9c9c9", building: "#2f6fed", built: "#1f7a4d", shelved: "transparent" };
+export const STATUS_COLOUR: Record<string, string> = { idea: "#cbcfcd", building: "#0090ff", built: "#46a758", shelved: "transparent" };  // sage 7, blue 9, grass 9
 export const ProtoGlyph = ({ status, selected }: { status: string; selected?: boolean }) => (
   <span className="ap-proto" role="img" data-status={status} title={status} aria-label={status}><Icon name="prototype" size={14} weight={selected ? "fill" : "regular"} /></span>
 );

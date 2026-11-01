@@ -209,13 +209,15 @@ export function Marks({ t, rivalName }: { t: Live; rivalName?: string }) {
 /* ── Text measurement, so label layout is computed rather than guessed ── */
 let ctx: CanvasRenderingContext2D | null = null;
 const cache = new Map<string, string[]>();
-/** Wrap text to a width in 13px Inter at the given weight; returns the lines. */
+/** The app face (Geist, bundled), so measured labels match the rendered ones. */
+const FACE = `"Geist Variable", Geist, Inter, system-ui, sans-serif`;
+/** Wrap text to a width in 13px Geist at the given weight; returns the lines. */
 export function wrap(text: string, width: number, weight = 500): string[] {
   const k = `${weight}|${width}|${text}`;
   const hit = cache.get(k); if (hit) return hit;
   ctx ??= document.createElement("canvas").getContext("2d");
   if (!ctx) return [text];
-  ctx.font = `${weight} 13px Inter, system-ui, sans-serif`;
+  ctx.font = `${weight} 13px ${FACE}`;
   const out: string[] = [];
   let line = "";
   for (const w of text.split(" ")) {
@@ -229,6 +231,6 @@ export function wrap(text: string, width: number, weight = 500): string[] {
 export function textWidth(text: string, weight = 500) {
   ctx ??= document.createElement("canvas").getContext("2d");
   if (!ctx) return text.length * 7;
-  ctx.font = `${weight} 13px Inter, system-ui, sans-serif`;
+  ctx.font = `${weight} 13px ${FACE}`;
   return ctx.measureText(text).width;
 }

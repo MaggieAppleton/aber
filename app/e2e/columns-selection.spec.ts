@@ -51,7 +51,9 @@ test('selecting a lower stock preserves list order and scroll position with a qu
   await writeFile(resolve(artifacts, `${phase}-selection.json`), JSON.stringify({ before, after }, null, 2));
   expect(after.order).toEqual(before.order);
   expect(after.scroll).toBe(before.scroll);
-  expect(after.style.background).toBe('rgb(244, 244, 244)');
+  // Selection is neutral, light and raised: a white surface with the sage-tinted --ap-sel lift, never an ink ring.
+  expect(after.style.background).toBe('rgb(255, 255, 255)');
+  expect(after.style.shadow).toContain('rgba(26, 33, 30, 0.12) 0px 0px 0px 0.5px');
   expect(after.style.shadow).not.toContain('1.5px');
   expect(after.style.shadow).not.toContain('rgb(23, 23, 23)');
   await expect.poll(() => item(page, 'column-position-15').evaluate(node => getComputedStyle(node).opacity)).toBe('0.32');

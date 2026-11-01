@@ -465,10 +465,12 @@ export type Force = { approach?: boolean; hover?: boolean; pressed?: boolean; fo
 const OPEN_T: Transition = { type: "spring", duration: 0.5, bounce: 0.12 };
 const CLOSE_T: Transition = { type: "spring", duration: 0.38, bounce: 0 };
 const SHADOW = {
-  pill: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 4px 14px 0px rgba(0, 0, 0, 0.1)",
-  lift: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 6px 18px 0px rgba(0, 0, 0, 0.12)",
-  sheet: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 8px 24px 0px rgba(0, 0, 0, 0.14)",
+  pill: "0px 0px 0px 0.5px rgba(26, 33, 30, 0.1), 0px 4px 8px -2px rgba(26, 33, 30, 0.06), 0px 12px 28px -6px rgba(26, 33, 30, 0.14)",
+  lift: "0px 0px 0px 0.5px rgba(26, 33, 30, 0.1), 0px 6px 10px -2px rgba(26, 33, 30, 0.07), 0px 16px 32px -6px rgba(26, 33, 30, 0.16)",
+  sheet: "0px 0px 0px 0.5px rgba(26, 33, 30, 0.1), 0px 8px 16px -4px rgba(26, 33, 30, 0.08), 0px 20px 44px -10px rgba(26, 33, 30, 0.18)",
 };
+/** --ap-press: press shrinks, it never darkens. */
+const PRESS = 0.98;
 let activeStage: string | null = null;
 /** Whether the last input was the keyboard, so closing by key hands focus back to the pill (and by pointer doesn't). */
 let keyInput = false;
@@ -684,8 +686,8 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
     },
   };
 
-  const lifted = !s.open && !s.rec && !s.drag && hv;
-  const scale = !s.open && pr ? 0.96 : !s.open && s.drag ? 1.06 : 1;
+  // Nothing lifts on hover; press keeps the tint and shrinks to the shared press scale (0.98).
+  const scale = !s.open && pr ? PRESS : !s.open && s.drag ? 1.06 : 1;
   const recClosed = !s.open && s.rec != null && !phone;
 
   return (
@@ -755,7 +757,7 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
       {/* The surface: pill when closed, panel when open */}
       <motion.div ref={surfaceRef} className="ps-surface" data-variant={variant} data-open={s.open || voiceSheet ? "" : undefined} data-focus={fc && !s.open ? "" : undefined} data-drag={s.drag && !s.open ? "" : undefined}
         initial={false}
-        animate={{ left: box.left, bottom: box.bottom, width: box.width, height: box.height, borderRadius: box.r, y: lifted ? -1 : 0, scale, boxShadow: s.open || voiceSheet ? SHADOW.sheet : lifted || s.drag ? SHADOW.lift : SHADOW.pill }}
+        animate={{ left: box.left, bottom: box.bottom, width: box.width, height: box.height, borderRadius: box.r, scale, boxShadow: s.open || voiceSheet ? SHADOW.sheet : s.drag ? SHADOW.lift : SHADOW.pill }}
         transition={reduced ? { duration: 0 } : { default: s.open || voiceSheet ? OPEN_T : CLOSE_T, y: { duration: 0.15, ease: "easeOut" }, scale: { type: "spring", duration: 0.3, bounce: s.drag ? 0.35 : 0 }, boxShadow: { duration: 0.2 } }}
         style={{ transformOrigin: corner ? "100% 100%" : "50% 100%" }}
         {...dnd}>
