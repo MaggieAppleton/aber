@@ -254,7 +254,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
 .chip { --obj: var(--h-theme); display: inline-flex; align-items: center; gap: var(--sp-1); height: 24px; padding: 0 var(--sp-3) 0 var(--sp-2); border-radius: var(--r-pill); font-size: var(--t-12);
   background: var(--surface); color: var(--ink-2); box-shadow: var(--hi), 0 0 0 0.5px var(--line), 0 1px 1px var(--line-2); }
-.chip .glyph { color: var(--h-theme); }
+.chip .glyph, .ctx .chip .glyph { color: var(--ink-3); }   /* chips are references: glyphs stay neutral in every state */
 .chip:hover, .chip.is-hover { background: color-mix(in oklab, var(--surface) 94%, var(--ink)); color: var(--ink); }
 .chip.is-sel, .chip[aria-current="true"] { background: var(--sel-wash); box-shadow: var(--hi), var(--sel-lift); color: var(--ink); }
 :is(.row, .chip, .card):is([aria-current="true"], .is-sel) :is(.glyph, .claim-icon) { color: var(--ink-2); }
@@ -316,7 +316,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .composer[hidden] { display: grid !important; opacity: 0; transform: scale(0.72, 0.12); pointer-events: none; visibility: hidden; transition: transform var(--dur-2) var(--ease), opacity var(--dur-1) var(--ease), visibility 0s var(--dur-2); }
 .ctx { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
 .ctx .chip { --obj: var(--h-theory); }
-.ctx .chip .glyph { color: var(--h-theory); }
 .composer textarea { width: 100%; resize: none; border: 0; outline: 0; background: transparent; font: inherit; color: var(--ink); min-height: 56px; padding: var(--sp-2) var(--sp-2) 0; }
 .composer textarea::placeholder { color: var(--ink-3); }
 .comp-row { display: flex; align-items: center; gap: var(--sp-1); }
