@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Icon } from "./atoms";
 import { Editable } from "./panes";
@@ -130,26 +130,62 @@ export function TripB(p: TripProps) {
 /* ── C. Sentence: the tripwire written in the theory's own voice, flagged in place when it trips ── */
 export function TripC(p: TripProps) {
   const [open, setOpen] = useState(true);
+  const [logOpen, setLogOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
   const live = p.state === "tripped" ? pending(p) : [];
+  const tripped = live.length > 0;
+  /* The blank's first rule starts where "if " ends, so track the lead's width. */
+  useLayoutEffect(() => {
+    const lead = box.current?.querySelector<HTMLElement>(".dt-tc-lead"); if (!lead || p.state !== "empty") return;
+    const set = () => box.current?.style.setProperty("--tc-lead", `${lead.offsetWidth}px`);
+    set(); const ro = new ResizeObserver(set); ro.observe(lead); return () => ro.disconnect();
+  }, [p.state]);
+  const done = HITS.filter(h => p.decisions[h.id]);
+  const acc = done.filter(h => p.decisions[h.id] === "accepted").length, dis = done.length - acc;
+  const focusEnd = () => {
+    const el = box.current?.querySelector<HTMLElement>("[contenteditable]"); if (!el) return;
+    el.focus();
+    const r = document.createRange(); r.selectNodeContents(el); r.collapse(false);
+    const sel = getSelection(); sel?.removeAllRanges(); sel?.addRange(r);
+  };
+  const lead = (
+    <span className="dt-tc-lead" onMouseDown={e => { e.preventDefault(); focusEnd(); }}>
+      <span className="dt-tc-icon" data-tripped={tripped ? "" : undefined}><Icon name="turn" size={16} /></span>
+      {"I'd change my mind if "}
+    </span>
+  );
+  if (p.state === "empty") return (
+    <div className="dt-tc" role="group" aria-label={NAME} ref={box}>
+      <div className="dt-tc-line dt-tc-blankline">
+        {lead}
+        <Editable className="dt-tc-blank" value={p.text} onChange={p.setText} onBlur={p.commit} aria-label={NAME} />
+      </div>
+    </div>
+  );
   return (
-    <div className="dt-tc" role="group" aria-label={NAME}>
+    <div className="dt-tc" role="group" aria-label={NAME} ref={box}>
       <div className="dt-tc-line">
-        <span className="dt-tc-lead">I'd change my mind if</span>{" "}
-        <Editable className="dt-tc-phrase" value={p.text === TRIP_TEXT ? lower(p.text) : p.text} onChange={p.setText} onBlur={p.commit} placeholder="…" aria-label={NAME} singleLine
-          data-tripped={p.state === "tripped" && live.length ? "" : undefined} data-empty={p.state === "empty" ? "" : undefined} />{p.state !== "empty" && "."}
+        {lead}
+        <Editable className="dt-tc-phrase" value={p.text === TRIP_TEXT ? lower(p.text) : p.text} onChange={p.setText} onBlur={p.commit} aria-label={NAME} singleLine
+          data-tripped={tripped ? "" : undefined} />.
         {p.state === "watching" && <span className="dt-tc-after"><Watch /></span>}
-        {p.state === "tripped" && live.length > 0 && (
+        {tripped && (
           <button className="dt-tc-flag" aria-expanded={open} onClick={() => setOpen(o => !o)} title={`${live.length} signals match`} aria-label={`${live.length} signals match`}>
-            <Red /><span className="ap-ghost-badge">{live.length}</span>
+            <span className="ap-ghost-badge">{live.length}</span>
+          </button>
+        )}
+        {p.state === "resolved" && done.length > 0 && (
+          <button className="dt-tc-flag dt-tc-done" aria-expanded={logOpen} onClick={() => setLogOpen(o => !o)} title="Tripped 31 Oct">
+            <Icon name="check" size={12} />
+            <span>{[acc && `${acc} accepted`, dis && `${dis} dismissed`].filter(Boolean).join(", ")}</span>
           </button>
         )}
       </div>
-      <Unfold show={p.state === "tripped" && open}>
+      <Unfold show={(p.state === "tripped" && open) || (p.state === "resolved" && logOpen)}>
         <div className="dt-hits dt-tc-hits">
-          <AnimatePresence initial={false}>{HITS.map(h => <HitRow key={h.id} hit={h} decision={p.decisions[h.id]} onDecide={d => p.decide(h.id, d)} conf={p.conf} />)}</AnimatePresence>
+          <AnimatePresence initial={false}>{(p.state === "resolved" ? done : HITS).map(h => <HitRow key={h.id} hit={h} decision={p.decisions[h.id]} onDecide={d => p.decide(h.id, d)} conf={p.conf} />)}</AnimatePresence>
         </div>
       </Unfold>
-      {p.state === "resolved" && <Log p={p} />}
     </div>
   );
 }

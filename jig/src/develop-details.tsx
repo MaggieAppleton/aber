@@ -9,33 +9,33 @@ import { HistA, HistB, HistC, HistD, HistE, type HistProps } from "./homes/detai
 type Spec<P> = { k: string; name: string; note: string; view: ComponentType<P> };
 
 const TRIPS: Spec<TripProps>[] = [
+  { k: "C", name: "Sentence", view: TripC, note: "Written in the theory's own voice under the body, the signpost inline at its start. When it trips, the signpost turns red, the phrase gets a red underline and a dashed count, and the signals unfold beneath." },
   { k: "A", name: "Watched field", view: TripA, note: "Today's labelled box, with a breathing dot while the agent watches. Matching signals hang beneath it, dashed, each with Accept and Dismiss." },
   { k: "B", name: "Card with a status strip", view: TripB, note: "A tinted card that turns red when tripped. One signal at a time; Accept opens a confidence change with a note, so accepting is a stance." },
-  { k: "C", name: "Sentence", view: TripC, note: "Written in the theory's own voice under the body. When it trips, the phrase is flagged in place with a red underline and a dashed count." },
   { k: "D", name: "Checklist", view: TripD, note: "Several conditions, each watched on its own and each with its own mark. Past trips stay as ticked rows." },
   { k: "E", name: "Threshold", view: TripE, note: "A metric, a direction and a line. Readings the agent pulls from signals sit on a gauge, so you see it coming before it trips." },
 ];
 const TRIP_ROWS = [
+  ["C. Sentence", "“I'd change my mind if …” in the body's voice", "Phrase underlined red with a dashed count; signals unfold", "No"],
   ["A. Watched field", "One labelled box, quietly watched", "Red mark and count in the header; signals hang beneath, dashed", "No"],
   ["B. Card", "A card with a status strip, challenge worked inside it", "Card tints red; Accept sets the new confidence and a note", "No"],
-  ["C. Sentence", "“I'd change my mind if …” in the body's voice", "Phrase underlined red with a dashed count; signals unfold", "No"],
   ["D. Checklist", "Several conditions, each its own watch", "Per row: breathing, red with count, tick once resolved", "Yes"],
   ["E. Threshold", "Metric and line, with a gauge of readings", "Newest reading lands past the line, dashed until decided", "One metric each"],
 ];
 
 const HISTS: Spec<HistProps>[] = [
-  { k: "A", name: "Tall step chart", view: HistA, note: "Five named levels, 132px tall. Each run takes the colour of the move that began it; a red dot means the fall came from a tripwire challenge." },
-  { k: "B", name: "Curve with events", view: HistB, note: "An S-curve between stances, its stroke green at the top and amber at the bottom. A lane below marks every change; hover anywhere snaps to the nearest." },
-  { k: "C", name: "Ladder", view: HistC, note: "Five rungs across, newest at the top, every note in view. Reads like a diary; long, but nothing hides." },
-  { k: "D", name: "Chart and log", view: HistD, note: "A short step chart over a change log of date, delta and note, with the signal behind it. Pointing at either lights up the other." },
-  { k: "E", name: "Stripes", view: HistE, note: "One band per stance, as wide as it lasted, shaded from amber through grey to green. The current level is the big number." },
+  { k: "A", name: "Steps", view: HistA, note: "Hard steps, no smoothing, across the full 1 to 5 range. Each run takes the colour of the move that began it; red where a fall came from a tripwire challenge." },
+  { k: "B", name: "Steps with a fill", view: HistB, note: "The same steps over a soft fill in the current level's tone: amber when doubtful, grey at even, green when likely or sure." },
+  { k: "C", name: "Angled with change dots", view: HistC, note: "Straight lines between stances, each coloured by its direction, with a small dot at every change." },
+  { k: "D", name: "Ink around even", view: HistD, note: "One ink line around a faint dotted baseline at Even, so above and below read at a glance. Only the end dot carries colour." },
+  { k: "E", name: "Shaded by height", view: HistE, note: "The stroke shades from amber at Doubtful through grey to green at Sure, so where the line sits is its colour." },
 ];
 const HIST_ROWS = [
-  ["A. Step chart", "Steps on five named levels, 132px", "Runs green after a rise, amber after a fall", "Hover or focus"],
-  ["B. Curve", "S-curve, 168px, event lane beneath", "Stroke shaded by height; red events for challenges", "Hover anywhere"],
-  ["C. Ladder", "Rungs across, time running down", "Legs green or amber", "All, always"],
-  ["D. Chart and log", "64px steps over dated rows", "Delta chips", "Latest four, then all"],
-  ["E. Stripes", "Bands, width is duration", "Amber to grey to green by level", "Hover or focus"],
+  ["A. Steps", "Hard steps, 52×20", "Runs by direction", "End dot"],
+  ["B. Steps with a fill", "Steps over a soft fill", "Runs by direction, fill by current level", "End dot"],
+  ["C. Angled", "Straight lines, 52×20", "Segments by direction", "Every change, plus end"],
+  ["D. Ink around even", "Ink line, dotted Even baseline", "End dot only", "End dot"],
+  ["E. Shaded by height", "Straight lines", "Stroke shaded amber to green by level", "End dot"],
 ];
 
 function PickBtn({ group, k }: { group: string; k: string }) {
@@ -102,7 +102,7 @@ function HistVariant({ spec }: { spec: Spec<HistProps> }) {
         {[520, 880].map(w => (
           <div key={w}>
             <div className="dt-frame-label">{w}</div>
-            <PaneSlice width={w} conf={conf} onConf={onConf} evidence={false} history={<V stances={stances} />} />
+            <PaneSlice width={w} conf={conf} onConf={onConf} evidence={false} body={false} confExtra={<V stances={stances} />} />
           </div>
         ))}
       </div>
@@ -130,8 +130,8 @@ export function DevelopDetailsJig() {
         </section>
         <section className="dt-section">
           <h2>Confidence history</h2>
-          <Table head={["Variant", "Shape", "Colour", "Notes"]} rows={HIST_ROWS} />
-          <p className="dt-colour-note">Green for a rise, amber for a fall. Red only where a fall came from an accepted tripwire challenge, the same red as the challenge mark.</p>
+          <Table head={["Variant", "Shape", "Colour", "Dots"]} rows={HIST_ROWS} />
+          <p className="dt-colour-note">Inline beside the confidence steps, 20px tall instead of 14, scaled to the full range so moves read clearly. Green for a rise, amber for a fall, red only for a fall from an accepted tripwire challenge. Hover or focus shows the dated log.</p>
           {HISTS.map(s => <HistVariant key={s.k} spec={s} />)}
         </section>
       </div>
