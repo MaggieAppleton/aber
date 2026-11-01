@@ -82,7 +82,7 @@ export function CurrentSidebar({ active, onTheme, onOpen, onCollapsedChange }: {
       <div className="cur-sidebar-scroll ap-scroll">
         <nav className="cur-index" aria-label="Themes">
           {THEMES.map(theme => <a key={theme.id} href={`#cur-${theme.id}`} data-active={active === theme.id ? "" : undefined} onClick={event => { event.preventDefault(); onTheme(theme.id); if (overlay) closeOverlay(true); }}>
-            <span><ThemeName id={theme.id} /></span>{theme.fresh > 0 && <Mark kind="fresh" />}<span className="ap-muted ap-num">{theoriesIn(theme.id).length || "open"}</span>
+            <span><ThemeName id={theme.id} /></span>{theme.fresh > 0 && <Mark kind="fresh" />}<span className="ap-muted ap-num">{theoriesIn(theme.id).length || null}</span>
           </a>)}
         </nav>
         <Accordion.Root className="cur-prototype-section" value={prototypesOpen ? ["prototypes"] : []} onValueChange={value => setPrototypesOpen(value.length > 0)}>

@@ -11,7 +11,7 @@ import { useState, useRef, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { DUMPS, SIGNALS, THEORIES, PROTOTYPES, theoriesIn, theme, theory, signalsFor, prototypesFor, type Signal } from "./data";
 import { Icon, IconButton, Conf, DumpIcon, Mark, ProtoGlyph } from "./atoms";
-import { useEdit } from "./edits";
+import { flushEdit, useEdit } from "./edits";
 import { Editable } from "./editable";
 import { Tripwire, tripState, type Decision } from "./tripwire";
 import { tripFor } from "./trips";
@@ -117,13 +117,13 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
     <div className="pn-doc pn-theory-doc">
       <div className="pn-theory-head">
         <div className="pn-theory-themes">{t.themes.map(th => <button key={th} className="pn-chip" title="Theme" onClick={() => onOpen("theme", th)}><Icon name="theme" size={12} /><span className="pn-chip-name"><ThemeName id={th} /></span></button>)}</div>
-        <div className="pn-theory-actions"><IconButton icon="plus" label="Add a relationship" onClick={async()=>{const choice=await ask({title:"Theory relationships",choices:[{id:"theme",label:"Theme",kind:"theme"},{id:"rival",label:"Rival",kind:"swap"},{id:"follows",label:"Follows from",kind:"chevronLeft"},{id:"prototype",label:"Prototype",kind:"prototype"}]});if(choice)void linkObject(choice as any,id);}}/><IconButton icon="edit" label="Rephrase and accept draft" onClick={async()=>{const claim=await ask({title:"Rephrase theory",field:"Claim",value:edit.claim,submit:t.draft?"Accept":"Save"});if(claim)act(t.draft?"rephraseDraft":"editTheory",{id,kind:"theory",claim});}}/><IconButton icon="trash" label="Retire theory" onClick={()=>void retireObject("theory",id)}/></div>
+        <div className="pn-theory-actions"><IconButton icon="plus" label="Add a relationship" onClick={async()=>{const choice=await ask({title:"Theory relationships",choices:[{id:"theme",label:"Theme",kind:"theme"},{id:"rival",label:"Rival",kind:"swap"},{id:"follows",label:"Follows from",kind:"chevronLeft"},{id:"prototype",label:"Prototype",kind:"prototype"}]});if(choice)void linkObject(choice as any,id);}}/><IconButton icon="trash" label="Retire theory" onClick={()=>void retireObject("theory",id)}/></div>
       </div>
       <Editable as="h1" className="pn-title" value={edit.claim} onChange={claim => set({ claim })} singleLine aria-label="Claim" data-draft={t.draft ? "" : undefined} />
       <RetirementNotice row={rowFor("theory",id)}/>
       <dl className="pn-meta">
         {t.draft
-          ? <div className="pn-meta-row"><dt className="ap-label">Draft</dt><dd><span className="ap-ghost-actions"><IconButton icon="check" label="Accept (A)" shortcut="a" onClick={()=>act("acceptDraft",{kind:"theory",id})} /><IconButton icon="x" label="Discard (X)" shortcut="x" onClick={()=>act("discardDraft",{kind:"theory",id})} /></span></dd></div>
+          ? <div className="pn-meta-row"><dt className="ap-label">Draft</dt><dd><span className="ap-ghost-actions"><IconButton icon="check" label="Accept (A)" shortcut="a" onClick={()=>void flushEdit("theory",id).catch(()=>{}).then(()=>act("acceptDraft",{kind:"theory",id}))} /><IconButton icon="x" label="Discard (X)" shortcut="x" onClick={()=>act("discardDraft",{kind:"theory",id})} /></span></dd></div>
           : <div className="pn-meta-row"><dt className="ap-label">Confidence</dt><dd>
               <ConfidenceControl value={conf} onChange={confidence => set({ confidence })} />
               <ConfidenceSpark stances={stancesFor(id, edit.log, edit.confidence)} variant={SPARK} />

@@ -47,8 +47,21 @@
 .ap .pn-rival { gap: 6px; height: auto; min-height: 24px; padding: 3px 8px; white-space: normal; overflow: visible; text-align: left; line-height: 18px; }
 .pn-rival svg { align-self: flex-start; margin-top: 3px; }
 
-/* Evidence */
-.pn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+/* Evidence: a structured table on its own surface. Sunk header row, hairline
+   rows and a hairline between the two columns. */
+.pn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; background: var(--ap-surface); border-radius: 8px; box-shadow: var(--ap-shadow-1); overflow: hidden; }
+.pn-grid > .pn-col { gap: 0; padding-bottom: 4px; }
+.pn-grid > .pn-col + .pn-col { box-shadow: inset 0.5px 0 0 var(--ap-line); }
+.pn-grid .pn-ev-head { min-height: 32px; padding: 0 6px 0 12px; background: var(--ap-sunk); box-shadow: inset 0 calc(-1 * 0.5px) 0 var(--ap-line); color: var(--ap-ink-2); }
+.pn-grid .pn-ev-head > .ap-label { font-weight: 500; }
+.pn-grid .pn-ev-head > .ap-num { color: var(--ap-ink-3); }
+.pn-grid .pn-sig { border-radius: 0; background: transparent; box-shadow: inset 0 calc(-1 * 0.5px) 0 var(--ap-line); }
+.pn-grid .pn-sig:last-child { box-shadow: none; }
+.pn-grid .pn-ev { border-radius: 0; padding: 8px 12px; }
+.pn-grid .pn-detail-inner { padding: 0 12px 10px; }
+.pn-grid .pn-sig[data-open] { background: var(--ap-sunk); box-shadow: none; }
+.pn-grid .pn-sig[data-current] { background: var(--ap-hover); box-shadow: none; }
+.pn-grid .pn-sig[data-suggested] { outline-offset: calc(-1 * 3px); }
 .pn-col { display: grid; gap: 4px; align-content: start; }
 .pn-ev-head { display: flex; align-items: center; gap: 6px; min-height: 24px; padding: 0 0 0 4px; font-size: 12px; color: var(--ap-ink-3); }
 .pn-ev-head .pn-step { margin-left: auto; }

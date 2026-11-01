@@ -61,8 +61,21 @@
 .ap .pn-rival { gap: var(--size-px-6); height: auto; min-height: var(--size-px-24); padding: var(--size-px-3) var(--size-px-8); white-space: normal; overflow: visible; text-align: left; line-height: var(--size-px-18); }
 .pn-rival svg { align-self: flex-start; margin-top: var(--size-px-3); }
 
-/* Evidence */
-.pn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--size-px-16); }
+/* Evidence: a structured table on its own surface. Sunk header row, hairline
+   rows and a hairline between the two columns. */
+.pn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; background: var(--ap-surface); border-radius: var(--size-px-8); box-shadow: var(--ap-shadow-1); overflow: hidden; }
+.pn-grid > .pn-col { gap: 0; padding-bottom: var(--size-px-4); }
+.pn-grid > .pn-col + .pn-col { box-shadow: inset var(--size-px-0-5) 0 0 var(--ap-line); }
+.pn-grid .pn-ev-head { min-height: var(--size-px-32); padding: 0 var(--size-px-6) 0 var(--size-px-12); background: var(--ap-sunk); box-shadow: inset 0 calc(-1 * var(--size-px-0-5)) 0 var(--ap-line); color: var(--ap-ink-2); }
+.pn-grid .pn-ev-head > .ap-label { font-weight: 500; }
+.pn-grid .pn-ev-head > .ap-num { color: var(--ap-ink-3); }
+.pn-grid .pn-sig { border-radius: 0; background: transparent; box-shadow: inset 0 calc(-1 * var(--size-px-0-5)) 0 var(--ap-line); }
+.pn-grid .pn-sig:last-child { box-shadow: none; }
+.pn-grid .pn-ev { border-radius: 0; padding: var(--size-px-8) var(--size-px-12); }
+.pn-grid .pn-detail-inner { padding: 0 var(--size-px-12) var(--size-px-10); }
+.pn-grid .pn-sig[data-open] { background: var(--ap-sunk); box-shadow: none; }
+.pn-grid .pn-sig[data-current] { background: var(--ap-hover); box-shadow: none; }
+.pn-grid .pn-sig[data-suggested] { outline-offset: calc(-1 * var(--size-px-3)); }
 .pn-col { display: grid; gap: var(--size-px-4); align-content: start; }
 .pn-ev-head { display: flex; align-items: center; gap: var(--size-px-6); min-height: var(--size-px-24); padding: 0 0 0 var(--size-px-4); font-size: var(--size-px-12); color: var(--ap-ink-3); }
 .pn-ev-head > .ap-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

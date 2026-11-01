@@ -8,6 +8,13 @@ function resolveKind(ctx:ToolContext,i:Row):string {
  for(const [kind,table] of [['theme','themes'],['theory','theories'],['prototype','prototypes']])if(ctx.db.prepare(`SELECT 1 FROM ${table} WHERE id=? AND owner_id=?`).get(i.id,ctx.ownerId))return kind;
  throw new Error('Draft not found');
 }
+/** Whether the person's edits left a draft theory's wording different from the agent's latest wording. */
+function personReworded(ctx:ToolContext,id:string,current:Row):boolean {
+ const versions=ctx.db.prepare('SELECT claim,body,actor FROM theory_versions WHERE theory_id=? AND owner_id=? ORDER BY at,rowid').all(id,ctx.ownerId) as Row[];
+ const agentWording=versions.filter(v=>!String(v.actor).startsWith('person:')).at(-1);
+ if(agentWording)return agentWording.claim!==current.claim||agentWording.body!==current.body;
+ return versions.some(v=>String(v.actor).startsWith('person:'));
+}
 function decideDraft(ctx:ToolContext,i:Row,rephrase=false,discard=false):Row {
  const kind=resolveKind(ctx,i);const value=target(ctx,kind,i.id);
  if(value.discarded_at)throw new Error('Draft was discarded');
@@ -17,7 +24,7 @@ function decideDraft(ctx:ToolContext,i:Row,rephrase=false,discard=false):Row {
  else {
   const patch:Row={seen_at:ctx.now};
   if(kind==='prototype')patch.draft=0;else patch.status=kind==='theory'?'held':'mine';
-  if(kind==='theory')patch.authorship=rephrase?'rephrased':'agent';
+  if(kind==='theory')patch.authorship=rephrase||personReworded(ctx,i.id,value)?'rephrased':'agent';
   if(rephrase){
    if(kind==='theory'){patch.claim=i.claim??i.text??value.claim;patch.body=i.body??value.body;}
    else patch.name=i.name??i.text??value.name;

@@ -40,7 +40,7 @@ export function CurrentHome({ host }: { host?: CurrentHost }) {
               <a key={t.id} href={`#cur-${t.id}`} data-active={active === t.id ? "" : undefined}
                 onClick={e => { e.preventDefault(); setActive(t.id); if (host?.compact) host.onOpen("theme", t.id); else jump(t.id); }}>
                 <span><ThemeName id={t.id} /></span>
-                <span className="ap-muted ap-num">{n || "open"}</span>
+                <span className="ap-muted ap-num">{n || null}</span>
               </a>
             );
           })}
