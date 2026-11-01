@@ -146,6 +146,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .row { --obj: var(--h-theme); display: flex; align-items: center; gap: var(--sp-3); height: 30px; padding: 0 var(--sp-3); border-radius: var(--r-2); text-align: left; width: 100%; color: var(--ink-2); }
 .row .lbl { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .row .cnt { font-size: var(--t-12); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.row .dot { margin-right: 6px; }   /* the dot's 3px halo ate the gap; this leaves about 11px of clear space before the count */
 .row[aria-current="true"], .row.is-sel { background: var(--sel-wash); color: var(--ink); box-shadow: var(--hi), var(--sel-lift); font-weight: 500; }
 .row .glyph { color: var(--h-theme); }
 .open-ring { width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.25px var(--ink-3); }
