@@ -39,6 +39,7 @@ npm run test:e2e
 npm run test:workflow
 npm run build
 npm run smoke:production
+npm run smoke:checkout
 npm run smoke:providers
 npm run eval -- --fake
 npm run eval -- --compare
@@ -46,7 +47,20 @@ npm run eval -- --compare
 
 Browser tests seed an isolated temporary database and explicitly use fake mode. Screenshots are in `app/test-results/parity/`; traces and failed-test screenshots are in `app/test-results/runs/`. The canonical-jig parity test requires the jig server on port 5181. Provider smoke tests and live evals make paid API requests; eval output identifies synthetic fixtures and records usage.
 
+`smoke:checkout` exports only committed app source into a temporary folder, reuses the installed dependencies, removes API keys from its child environment, then builds and runs the production smoke. It checks for missing committed files; it does not reinstall dependencies.
+
 `npm run backup` copies a consistent database snapshot and media into `app/backups/<timestamp>/`. This build has no deployment or remote access.
+
+## Optional richer demo
+
+Create the authored demo in a **new, separate directory**:
+
+```sh
+npm run seed:demo -- --dir /private/tmp/aber-demo
+AGENT_MODE=fake ABER_DATA_DIR=/private/tmp/aber-demo PORT=3001 npm start
+```
+
+Open [the demo](http://127.0.0.1:3001). It adds a Robotics draft theme, theory and prototype, a pending revision, two independent sources for one merged incident, a separate latency finding and a playable synthetic voice note. The original seed stays intact. No model calls or queued jobs run; repeat seeding leaves the demo unchanged. Existing directories without the matching demo manifest are refused. The main app on port 3000 keeps its own data.
 
 ## Capture from another local tool
 

@@ -1,0 +1,12 @@
+{
+  "directory": "backups/2026-11-01T08-34-05-318Z",
+  "integrity": [
+    {
+      "integrity_check": "ok"
+    }
+  ],
+  "foreignKeys": [],
+  "dumps": 8,
+  "mediaCount": 2,
+  "allMediaPresent": true
+}

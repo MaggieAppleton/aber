@@ -6,18 +6,20 @@
 
 | Check | Result |
 | --- | --- |
-| `npm test` | 140 tests passed across 35 files. |
+| `npm test` | 233 tests passed across 46 files. |
 | `npm run test:e2e` | 23 checks passed, including Chromium and WebKit phone layout. |
-| `npm run test:workflow` | 14 workflow checks and 20 action-review checks passed, each using an isolated fake database. |
-| `npm run eval -- --fake` | 31 synthetic fixtures passed: 10 processing, 13 evidence and 8 tripwire cases. |
+| `npm run test:workflow` | 16 workflow checks and 20 action-review checks passed, each using an isolated fake database. |
+| `npm run eval -- --fake` | 36 synthetic fixtures passed: 15 processing, 13 evidence and 8 tripwire cases. These exercise scripted plumbing and scoring, not model accuracy. |
 | `npm run typecheck` | Passed. |
 | `npm run build` | Passed. |
-| `npm run smoke:production` | Passed: bundled UI/assets, migrations, seed, API, SSE, worker processing and media ranges. |
+| `npm run smoke:production` | Passed: bundled UI/assets, migrations, seed, API, SSE, worker processing, media ranges and foreign-Host rejection over raw HTTP. |
+| `npm run smoke:checkout` | Passed for `1774073`: exported committed app source builds and passes production smoke without API keys or ignored source files. Uses existing installed dependencies. |
 | Final CSS corrections | 15 affected browser checks passed again: spatial gestures, pane/phone, recording, hit areas and context transitions. |
 | Actual built app | All five views and phone Briefing render without horizontal overflow or JavaScript errors. The server's HTML matches the latest build; its assets return 200. |
-| Backup | The online snapshot opens with integrity `ok`, contains the eight dumps, and has both referenced media files. |
+| Backup | Snapshot `app/backups/2026-11-01T08-34-05-318Z/` opens with integrity `ok`, contains the eight dumps, and has both referenced media files. |
+| Optional demo | Explicit creation and repeat no-op passed. Five desktop views, phone Briefing, draft pane, merge Undo control and real voice range serving checked on port 3001. |
 
-The 57 browser checks include reload persistence, API capture, normalised-link deduplication, voice upload, a real browser MediaRecorder supplied with synthetic audio, playback/seek, bin restoration, generative chat parts, all draft kinds, revision decisions, retired history, manual signal merge/Undo, pointer and keyboard pane resizing, Atlas disclosure/panning, Timeline drag/chain/levels, Columns rails, reduced motion, accessibility and 40px controls. Final targeted repetitions are additional verification, not extra unique test cases.
+The 59 browser checks include reload persistence, API capture, normalised-link deduplication, voice upload, a real browser MediaRecorder supplied with synthetic audio, playback/seek, bin restoration, generative chat parts, all draft kinds, revision decisions, retired history, manual signal merge/Undo, pointer and keyboard pane resizing, Atlas disclosure/panning, Timeline drag/chain/levels, Columns rails, reduced motion, accessibility and 40px controls. The two added recovery tests retain failed wording and prevent a duplicate confidence stance after a lost acknowledgement. Targeted repetitions are additional verification, not extra unique test cases.
 
 The desktop-to-phone context test initially caught an outgoing chip retaining its active button while shrinking. Exiting chips now become inert, and reduced motion uses opacity only. Ten consecutive fresh reproductions passed before the complete suite was rerun.
 
@@ -29,12 +31,17 @@ Separate real-provider pipelines successfully processed text, an 8.3-second synt
 
 The full provider comparison, targeted repair checks and six novel-evidence checks retain their original scores and fixtures. See [build notes](build-notes.md#live-quality-evidence), [targeted findings](../app/evals/targeted-findings.md) and [novel-evidence findings](../app/evals/novel-evidence-findings.md). Passing deterministic fixtures is not a claim of model accuracy on personal material.
 
+The five new processing-v2 cases completed once per provider: **OpenAI 5/5, Claude 5/5**, recorded cost **$1.00001974 against a $1.25 limit**. Inputs and expected labels remained unchanged. Manual trace review found no rubric false misses or behavioural failures in this batch; zero authority/tool errors and held-state preservation passed. The [review and unaltered raw report](../reports/overnight/live-eval-v2.md) include provider costs, actual outputs and limits. This small, explicit synthetic set does not establish general accuracy or a winning provider.
+
 ## Review evidence
 
 - [Design round 1](../reports/design-round1/report.md), [round 2](../reports/design-round2/report.md), [round 3](../reports/design-round3/report.md), and [final recheck](../reports/design-final/report.md): screenshot-based critiques and fixes against the canonical jig, desktop, phone and reduced motion. The final inspected scope has no material design findings.
 - [Action/specification audit](../reports/final-code-review.md): six missing paths repaired and verified through the real interface.
 - [Backend preservation review](../reports/final-backend-review.md): merge/bin/restore and suggestion Undo regressions reproduced, fixed and rechecked independently.
 - [Built-app screenshots and measurements](../reports/local-runtime/checks.json): five desktop views and phone Briefing, captured from the running production build.
+- [Latest built-app check](../reports/overnight/local-runtime/checks.json) and [richer demo](../reports/overnight/demo-runtime/checks.json): fresh screenshots after the hardening build; no JavaScript errors or horizontal overflow.
+- [Architecture round 1](../reports/overnight/architecture-round1.md) and [round 2](../reports/overnight/architecture-round2.md): tripwire transitions, durable chat completion, narrow reads, edit recovery, confidence command identities and source provenance after merging. Reproduced findings were repaired and checked independently.
+- [Security round 1](../reports/overnight/security-round1.md), [follow-up](../reports/overnight/security-followup.md), [media validation](../reports/overnight/media-validation.md) and [dependency audit](../reports/overnight/dependency-audit.json): local HTTP authority, complete article deadlines, bounded decoding and zero reported dependency vulnerabilities.
 - [Token preservation](../reports/design-check/token-preservation.json): mechanical extraction preserves 4,936 non-focus declarations at that stage. Four later usability corrections are explicitly listed; this is not a claim that every final declaration is byte-identical to the jig.
 
 ## Additional checker and boundaries
