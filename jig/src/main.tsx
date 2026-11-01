@@ -14,11 +14,13 @@ import { DevelopIconsJig } from "./develop-icons";
 import { DevelopDecideJig } from "./develop-decide";
 import { ReferenceJig } from "./reference";
 import { DevelopThemeContentsJig } from "./develop-theme-contents";
+import { Deck } from "./deck/deck";
 import "./jig.css";
 import "./minis/wf.css";
 
 const JIGS = {
   reference: { title: "Reference (start here)", view: ReferenceJig },
+  deck: { title: "Talk deck", view: Deck },
   app: { title: "App (canonical)", view: DevelopAppJig },
   decide: { title: "Decide", view: DevelopDecideJig },
   details: { title: "Pane details", view: DevelopDetailsJig },

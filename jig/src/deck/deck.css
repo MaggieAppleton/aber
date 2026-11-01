@@ -1,0 +1,77 @@
+/* Talk deck. Tokens copied from the Aber surface block at the top of homes/homes.css (Sage neutrals, Jade accent).
+   Three type sizes only: display (headlines), body (supporting lines), ui (the product pieces). */
+.dk-page {
+  --dk-shc: 26 33 30;
+  --dk-bg: color-mix(in oklab, #f7f9f8 55%, #eef1f0);
+  --dk-surface: #fff; --dk-sunk: #eef1f0;
+  --dk-ink: #1a211e; --dk-ink-2: #5f6563; --dk-ink-3: #868e8b;
+  --dk-line: rgb(var(--dk-shc) / 9%); --dk-line-2: rgb(var(--dk-shc) / 12%);
+  --dk-accent: #29a383; --dk-accent-text: #208368; --dk-accent-line: #8bceb6;
+  --dk-shadow-1: 0 0 0 0.5px rgb(var(--dk-shc) / 10%), 0 1px 2px rgb(var(--dk-shc) / 5%);
+  --dk-shadow-float: 0 0 0 0.5px rgb(var(--dk-shc) / 10%), 0 4px 8px -2px rgb(var(--dk-shc) / 6%), 0 12px 28px -6px rgb(var(--dk-shc) / 14%);
+  --dk-display: 600 64px/1.08 "Geist", "Inter", system-ui, sans-serif;
+  --dk-body: 400 28px/1.4 "Geist", "Inter", system-ui, sans-serif;
+  --dk-ui: 400 22px/1.35 "Geist", "Inter", system-ui, sans-serif;
+
+  position: fixed; inset: 0; overflow: hidden; background: #e4e8e6;
+  -webkit-font-smoothing: antialiased;
+}
+.dk-stage {
+  position: absolute; left: 50%; top: 50%; transform-origin: center; overflow: hidden;
+  background: var(--dk-bg); color: var(--dk-ink); font: var(--dk-ui);
+}
+.dk-stage p { margin: 0; }
+
+/* Progress: hairline ticks, bottom left, out of the way */
+.dk-progress { position: absolute; left: 120px; bottom: 56px; display: flex; gap: 6px; }
+.dk-progress i { width: 18px; height: 2px; border-radius: 1px; background: rgb(var(--dk-shc) / 12%); transition: background 200ms ease-out; }
+.dk-progress i[data-on] { background: var(--dk-ink-3); }
+
+/* Slide layout: copy on the left, the picture on the right, cropped by the stage */
+.dk-slide { position: absolute; inset: 0; }
+.dk-copy { position: absolute; left: 120px; top: 50%; transform: translateY(-50%); width: 600px; display: grid; gap: 28px; }
+.dk-headline { font: var(--dk-display); letter-spacing: -0.025em; text-wrap: balance; }
+.dk-support { font: var(--dk-body); color: var(--dk-ink-2); text-wrap: pretty; }
+.dk-visual { position: absolute; left: 820px; top: 0; right: 0; bottom: 0; }
+
+/* Title */
+.dk-title .dk-copy { width: 980px; }
+.dk-byline { font: var(--dk-body); color: var(--dk-ink-3); }
+
+/* Shared product pieces */
+.dk-card { position: absolute; background: var(--dk-surface); border-radius: 14px; box-shadow: var(--dk-shadow-float); padding: 22px 26px; }
+.dk-meta { color: var(--dk-ink-3); }
+.dk-strong { font-weight: 600; }
+.dk-bar { display: block; height: 10px; border-radius: 5px; background: rgb(var(--dk-shc) / 9%); }
+
+/* 2: the pile */
+.dk-pile { position: absolute; inset: 0; }
+.dk-pile .dk-card { width: 460px; display: grid; gap: 12px; }
+.dk-link { grid-template-columns: 44px 1fr; column-gap: 16px !important; align-items: start; }
+.dk-favicon { width: 44px; height: 44px; border-radius: 10px; background: var(--dk-sunk); }
+.dk-link > div { display: grid; gap: 8px; }
+.dk-memo { display: flex !important; align-items: center; gap: 18px !important; }
+.dk-play { width: 44px; height: 44px; flex: none; border-radius: 22px; background: var(--dk-ink); display: grid; place-items: center; }
+.dk-play::after { content: ""; margin-left: 4px; border-left: 13px solid #fff; border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+.dk-wave { flex: 1; display: flex; align-items: center; gap: 4px; height: 36px; }
+.dk-wave i { flex: 1; border-radius: 2px; background: rgb(var(--dk-shc) / 18%); }
+.dk-shot { height: 150px; border-radius: 8px; background: var(--dk-sunk); }
+
+/* 3: the hunch with its missing parts */
+.dk-hunch { left: 0; width: 900px; padding: 36px 40px; display: grid; gap: 28px; grid-template-columns: 640px; border-radius: 14px 0 0 14px; }
+.dk-hunch-claim { font-weight: 600; text-wrap: balance; }
+.dk-field { display: grid; gap: 10px; }
+.dk-slot { height: 64px; border-radius: 10px; outline: 1.5px dashed rgb(var(--dk-shc) / 22%); outline-offset: -1.5px; display: flex; align-items: center; padding: 0 20px; color: var(--dk-ink-3); }
+.dk-slot[data-key] { outline-color: var(--dk-accent-line); color: var(--dk-accent-text); }
+.dk-conf { display: flex; gap: 6px; }
+.dk-conf i { width: 40px; height: 10px; border-radius: 5px; outline: 1.5px dashed rgb(var(--dk-shc) / 22%); outline-offset: -1.5px; }
+.dk-row { display: flex; align-items: center; gap: 24px; }
+
+/* 4: the rewrite */
+.dk-note { left: 0; width: 900px; padding: 36px 40px; display: grid; gap: 24px; grid-template-columns: 660px; border-radius: 14px 0 0 14px; }
+.dk-mine { position: relative; color: var(--dk-ink); }
+.dk-agent { display: grid; gap: 14px; padding-top: 22px; border-top: 1px solid var(--dk-line); }
+.dk-who { display: flex; align-items: center; gap: 12px; color: var(--dk-ink-3); }
+.dk-who-mark { width: 28px; height: 28px; border-radius: 14px; background: var(--dk-sunk); box-shadow: inset 0 0 0 1px var(--dk-line-2); }
+.dk-agent-text { font-weight: 600; text-wrap: balance; }
+.dk-chip { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 18px; box-shadow: inset 0 0 0 1px var(--dk-line-2); color: var(--dk-ink-2); }
