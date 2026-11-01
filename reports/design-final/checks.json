@@ -1,0 +1,1059 @@
+{
+  "attemptedWrites": [],
+  "responses": [
+    {
+      "url": "http://127.0.0.1:5174/api/world",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/events/stream",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/world",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/world",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/events/stream",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/world",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/world",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/events/stream",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/world",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/world",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/events/stream",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/world",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/world",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/events/stream",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/world",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/world",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/events/stream",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/world",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5174/api/objects/theory/t3",
+      "status": 200
+    }
+  ],
+  "current": {
+    "overflow": {
+      "body": 1360,
+      "width": 1360
+    },
+    "headings": "Aber\nCost of intelligence\n5\nAI funding cycle\n2\nAgent identity\nopen\nNovel agent interfaces\nopen\nAgent memory\n2\nPersonal software\n2\nCode review after agents\n2\nPrototypes\n4\nCost of intelligence\n8 signals\nTokens become nearly free for routine work\n+2\n−1\n1\n1\nFrontier intelligence stays scarce and expensive\n+1\n−0\n1\nAgents run continuously in the background by default\n+0\n−0\nLocal models absorb most everyday agent work\n+1\n−0\n1\nSoftware is priced per outcome, not per seat\n+1\n−0\nAI funding cycle\n3 signals\nFrontier intelligence stays scarce and expensive\n+1\n−0\n1\nLabs face a funding correction before agents pay their way\n+1\n−0\nAgent identity\n1 signal\nNovel agent interfaces\n1 signal\nAgent memory\n2 signals\nAgents keep context across months, not sessions\n+1\n−0\n1\n2\nAgents run continuously in the background by default\n+0\n−0\nPersonal software\n2 signals\nMost software is made for an audience of one\n+1\n−0\n1\nSoftware is priced per outcome, not per seat\n+1\n−0\nCode review after agents\n3 signals\nCode review becomes the bottleneck, not writing\n+2\n−0\n1\n1\nReview shifts from diffs to intent\n+1\n−0\n1\nDump or ask\nTheme sections"
+  },
+  "columns": {
+    "overflow": {
+      "body": 1360,
+      "width": 1360
+    },
+    "headings": "Themes\nCost of intelligence\nAI funding cycle\nAgent identity\nNovel agent interfaces\nAgent memory\nPersonal software\nCode review after agents\nTheories\nLocal models absorb most everyday agent work\n1\nSoftware is priced per outcome, not per seat\nReview shifts from diffs to intent\nTokens become nearly free for routine work\n1\nFrontier intelligence stays scarce and expensive\n1\nAgents keep context across months, not sessions\n2\nCode review becomes the bottleneck, not writing\n1\nMost software is made for an audience of one\nLabs face a funding correction before agents pay their way\nAgents run continuously in the background by default\nPrototypes\nToken budget meter\nIntent review\nOne-person app kit\nMemory inspector\nDump or ask\nColumns"
+  },
+  "atlas": {
+    "overflow": {
+      "body": 1360,
+      "width": 1360
+    },
+    "headings": "Cost of intelligence\n8\nAI funding cycle\n3\nAgent identity\n1\nNovel agent interfaces\n1\nAgent memory\n2\nPersonal software\n2\nCode review after agents\n3\nLocal models absorb most everyday agent work\nSoftware is priced per outcome, not per seat\nReview shifts from diffs to intent\nTokens become nearly free for routine work\nFrontier intelligence stays scarce and expensive\nAgents keep context across months, not sessions\nCode review becomes the bottleneck, not writing\nMost software is made for an audience of one\nLabs face a funding correction before agents pay their way\nAgents run continuously in the background by default\nOpen-weight model matches last year's frontier on coding\nMaggie notices that small language models are getting cheaper.\nStartup sells agent hours instead of seats\nReviewers skim agent diffs and approve\nLab cuts API prices again for its small model tier\nOpen-weight model matches last year's frontier on coding\nFrontier training runs keep growing in cost\nFrontier training runs keep growing in cost\nData-centre power contracts are booked years ahead\nAgent recalls a codebase across a month of sessions\nMemory feature withdrawn after privacy complaints\nReviewers skim agent diffs and approve\nTeam reports agents opening 40 PRs a day\nFriend built a budgeting app just for her household\nFunding for model labs dips for a second quarter\nDump or ask\nAtlas"
+  },
+  "timeline": {
+    "overflow": {
+      "body": 1360,
+      "width": 1360
+    },
+    "headings": "2027\n2028\n2029\n2030\n2031\nLocal models absorb most everyday agent work\nSoftware is priced per outcome, not per seat\nReview shifts from diffs to intent\nTokens become nearly free for routine work\nFrontier intelligence stays scarce and expensive\nAgents keep context across months, not sessions\nCode review becomes the bottleneck, not writing\nMost software is made for an audience of one\nLabs face a funding correction before agents pay their way\nAgents run continuously in the background by default\nDump or ask\nTimeline"
+  },
+  "briefing": {
+    "overflow": {
+      "body": 1360,
+      "width": 1360
+    },
+    "headings": "Since you last looked\n14 left\nDumps\nChallenges\nAgents keep context across months, not sessions\nMemory feature withdrawn after privacy complaints\nA major assistant pulled memory after complaints\nAccept\nDrafts\nLocal models absorb most everyday agent work\nDrafted overnight from 3 signals about open-weight models.\nAccept\nSoftware is priced per outcome, not per seat\nExtrapolated from Tokens become nearly free, and from agents that run all the time.\nAccept\nReview shifts from diffs to intent\nDrafted from yesterday's voice note.\nAccept\nSuggestions\nFrontier intelligence stays scarce and expensive\nSupports: Data-centre power contracts are booked years ahead\nData-centre power contracts are booked years ahead\nEvidence note\nNo note\n\nData-centre power contracts are booked years ahead supports this theory\n\nAccept\nAgents keep context across months, not sessions\nUndermines: Memory feature withdrawn after privacy complaints\nMemory feature withdrawn after privacy complaints\nEvidence note\nNo note\n\nMemory feature withdrawn after privacy complaints undermines this theory\n\nAccept\nCode review becomes the bottleneck, not writing\nSupports: A small software studio reports that its senior engineers spend more time reviewing proposed changes than writing code.\n\nSynthetic evaluation observation only: the studio's reported review time is consistent with the theory, but does not establish that review is a bottleneck. Treat this as a hypothetical connection, not verified evidence.\n\nAccept\nTokens become nearly free for routine work\nSupports: Maggie notices that small language models are getting cheaper.\n\nMaggie's impression of falling small-model costs is directionally consistent with the theory, but has no pricing data or time frame and does not establish that routine work is nearly free.\n\nAccept\nLocal models absorb most everyday agent work\nSupports: Maggie notices that small language models are getting cheaper.\nMaggie\nEvidence note\nA friend's laptop-based coding agent replacing a hosted model is a concrete example of local models handling everyday agent work, though one anecdote does not show that they absorb most such work.\n\nThe observation directly describes a coding agent moving from hosted inference to a local laptop model, which bears on local models taking on agent workloads. Its single anecdotal instance provides only limited evidence for the claim's broad scope.\n\nAccept\nNew signals\nCost of intelligence\n6\nAI funding cycle\n1\nNovel agent interfaces\n1\nAgent memory\n1\nCode review after agents\n2\nDump or ask\nBriefing"
+  },
+  "pane": [],
+  "tripwire": [
+    {
+      "text": "1",
+      "label": "1 signal matches",
+      "tag": "BUTTON",
+      "cls": "tw-tc-flag",
+      "rect": {
+        "x": 872.453125,
+        "y": 427,
+        "width": 40,
+        "height": 40,
+        "top": 427,
+        "right": 912.453125,
+        "bottom": 467,
+        "left": 872.453125
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "font": [
+        "15px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "all",
+      "animation": "none"
+    }
+  ],
+  "tripwireExpandedText": "Aber\nCost of intelligence\n5\nAI funding cycle\n2\nAgent identity\nopen\nNovel agent interfaces\nopen\nAgent memory\n2\nPersonal software\n2\nCode review after agents\n2\nPrototypes\n4\nCost of intelligence\n8 signals\nTokens become nearly free for routine work\n+2\n−1\n1\n1\nFrontier intelligence stays scarce and expensive\n+1\n−0\n1\nAgents run continuously in the background by default\n+0\n−0\nLocal models absorb most everyday agent work\n+1\n−0\n1\nSoftware is priced per outcome, not per seat\n+1\n−0\nAI funding cycle\n3 signals\nFrontier intelligence stays scarce and expensive\n+1\n−0\n1\nLabs face a funding correction before agents pay their way\n+1\n−0\nAgent identity\n1 signal\nNovel agent interfaces\n1 signal\nAgent memory\n2 signals\nAgents keep context across months, not sessions\n+1\n−0\n1\n2\nAgents run continuously in the background by default\n+0\n−0\nPersonal software\n2 signals\nMost software is made for an audience of one\n+1\n−0\n1\nSoftware is priced per outcome, not per seat\n+1\n−0\nCode review after agents\n3 signals\nCode review becomes the bottleneck, not writing\n+2\n−0\n1\n1\nReview shifts from diffs to intent\n+1\n−0\n1\nAgent memory\nAgents keep context across months, not sessions\nConfidence\nHappens by\n2027\nMemory becomes a default feature: an agent knows my projects the way a colleague does.\nI'd change my mind if a major assistant withdraws its memory feature, or people switch memory off once they see what it keeps.\n1\nUndermines: Memory feature withdrawn after privacy complaints\nMemory feature withdrawn after privacy complaints\nEvidence note\nNo note\n\nMemory feature withdrawn after privacy complaints undermines this theory\n\nAccept\nSupports\n1\nAgent recalls a codebase across a month of sessions\nx.com\nUndermines\n0\nAgents run continuously in the background by default\nMemory inspector\nDump or ask\nAgents keep context across months, not sessions",
+  "confidence": [
+    {
+      "text": "",
+      "label": null,
+      "tag": "DIV",
+      "cls": "pn-conf-control",
+      "rect": {
+        "x": 660.609375,
+        "y": 168,
+        "width": 112,
+        "height": 40,
+        "top": 168,
+        "right": 772.609375,
+        "bottom": 208,
+        "left": 660.609375
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "all",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": null,
+      "tag": "I",
+      "cls": "",
+      "rect": {
+        "x": 660.609375,
+        "y": 185,
+        "width": 20,
+        "height": 6,
+        "top": 185,
+        "right": 680.609375,
+        "bottom": 191,
+        "left": 660.609375
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "background 0.15s",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": null,
+      "tag": "I",
+      "cls": "",
+      "rect": {
+        "x": 683.609375,
+        "y": 185,
+        "width": 20,
+        "height": 6,
+        "top": 185,
+        "right": 703.609375,
+        "bottom": 191,
+        "left": 683.609375
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "background 0.15s",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": null,
+      "tag": "I",
+      "cls": "",
+      "rect": {
+        "x": 706.609375,
+        "y": 185,
+        "width": 20,
+        "height": 6,
+        "top": 185,
+        "right": 726.609375,
+        "bottom": 191,
+        "left": 706.609375
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "background 0.15s",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": null,
+      "tag": "I",
+      "cls": "",
+      "rect": {
+        "x": 729.609375,
+        "y": 185,
+        "width": 20,
+        "height": 6,
+        "top": 185,
+        "right": 749.609375,
+        "bottom": 191,
+        "left": 729.609375
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "background 0.15s",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": null,
+      "tag": "I",
+      "cls": "",
+      "rect": {
+        "x": 752.609375,
+        "y": 185,
+        "width": 20,
+        "height": 6,
+        "top": 185,
+        "right": 772.609375,
+        "bottom": 191,
+        "left": 752.609375
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "background 0.15s",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": "Confidence",
+      "tag": "INPUT",
+      "cls": "",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1360,
+        "height": 820,
+        "top": 0,
+        "right": 1360,
+        "bottom": 820,
+        "left": 0
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(16, 16, 16)"
+      ],
+      "transform": "none",
+      "transition": "all",
+      "animation": "none"
+    }
+  ],
+  "confidenceHitTest": [
+    {
+      "hitTag": "DIV",
+      "hitClass": "pn-conf-control",
+      "inside": true
+    },
+    {
+      "hitTag": "DIV",
+      "hitClass": "pn-conf-control",
+      "inside": true
+    },
+    {
+      "hitTag": "DIV",
+      "hitClass": "pn-conf-control",
+      "inside": true
+    },
+    {
+      "hitTag": "DIV",
+      "hitClass": "pn-conf-control",
+      "inside": true
+    },
+    {
+      "hitTag": "DIV",
+      "hitClass": "pn-conf-control",
+      "inside": true
+    }
+  ],
+  "captureText": "Aber\nCost of intelligence\n5\nAI funding cycle\n2\nAgent identity\nopen\nNovel agent interfaces\nopen\nAgent memory\n2\nPersonal software\n2\nCode review after agents\n2\nPrototypes\n4\nCost of intelligence\n8 signals\nTokens become nearly free for routine work\n+2\n−1\n1\n1\nFrontier intelligence stays scarce and expensive\n+1\n−0\n1\nAgents run continuously in the background by default\n+0\n−0\nLocal models absorb most everyday agent work\n+1\n−0\n1\nSoftware is priced per outcome, not per seat\n+1\n−0\nAI funding cycle\n3 signals\nFrontier intelligence stays scarce and expensive\n+1\n−0\n1\nLabs face a funding correction before agents pay their way\n+1\n−0\nAgent identity\n1 signal\nNovel agent interfaces\n1 signal\nAgent memory\n2 signals\nAgents keep context across months, not sessions\n+1\n−0\n1\n2\nAgents run continuously in the background by default\n+0\n−0\nPersonal software\n2 signals\nMost software is made for an audience of one\n+1\n−0\n1\nSoftware is priced per outcome, not per seat\n+1\n−0\nCode review after agents\n3 signals\nCode review becomes the bottleneck, not writing\n+2\n−0\n1\n1\nReview shifts from diffs to intent\n+1\n−0\n1\nAgent memory\nAgents keep context across months, not sessions\nConfidence\nHappens by\n2027\nMemory becomes a default feature: an agent knows my projects the way a colleague does.\nI'd change my mind if a major assistant withdraws its memory feature, or people switch memory off once they see what it keeps.\n1\nMemory feature withdrawn after privacy complaints\nA major assistant pulled memory after complaints\ntheverge.com\nAccept\nUndermines: Memory feature withdrawn after privacy complaints\nMemory feature withdrawn after privacy complaints\nEvidence note\nNo note\n\nMemory feature withdrawn after privacy complaints undermines this theory\n\nAccept\nSupports\n1\nAgent recalls a codebase across a month of sessions\nx.com\nUndermines\n0\nAgents run continuously in the background by default\nMemory inspector\nWhat if review is about intent, not diffs?\n22:05\nAgents keep context across months, not sessions\nTheme sections",
+  "captureButtons": [
+    {
+      "text": "",
+      "label": "Stop sharing Agents keep context across months, not sessions",
+      "tag": "BUTTON",
+      "cls": "ps-chip-x",
+      "rect": {
+        "x": 1296,
+        "y": 658,
+        "width": 40,
+        "height": 40,
+        "top": 658,
+        "right": 1336,
+        "bottom": 698,
+        "left": 1296
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.1s, color 0.1s",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": "Stop sharing Theme sections",
+      "tag": "BUTTON",
+      "cls": "ps-chip-x",
+      "rect": {
+        "x": 1123.359375,
+        "y": 704,
+        "width": 40,
+        "height": 40,
+        "top": 704,
+        "right": 1163.359375,
+        "bottom": 744,
+        "left": 1123.359375
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.1s, color 0.1s",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": "Add something on screen",
+      "tag": "BUTTON",
+      "cls": "ps-add",
+      "rect": {
+        "x": 1173.359375,
+        "y": 704,
+        "width": 40,
+        "height": 40,
+        "top": 704,
+        "right": 1213.359375,
+        "bottom": 744,
+        "left": 1173.359375
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "background 0.12s, color 0.12s, box-shadow 0.12s",
+      "animation": "none"
+    }
+  ],
+  "context": [
+    {
+      "text": "Agents keep context across months, not sessionsTheme sectionsCost of intelligence",
+      "label": null,
+      "tag": "DIV",
+      "cls": "ps-ctxfloat",
+      "rect": {
+        "x": 1000,
+        "y": 610,
+        "width": 342,
+        "height": 136,
+        "top": 610,
+        "right": 1342,
+        "bottom": 746,
+        "left": 1000
+      },
+      "padding": [
+        "2px",
+        "2px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "all",
+      "animation": "none"
+    },
+    {
+      "text": "Agents keep context across months, not sessionsTheme sectionsCost of intelligence",
+      "label": null,
+      "tag": "DIV",
+      "cls": "ps-ctxrow",
+      "rect": {
+        "x": 1002,
+        "y": 612,
+        "width": 338,
+        "height": 132,
+        "top": 612,
+        "right": 1340,
+        "bottom": 744,
+        "left": 1002
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "all",
+      "animation": "none"
+    },
+    {
+      "text": "Agents keep context across months, not sessions",
+      "label": null,
+      "tag": "SPAN",
+      "cls": "ps-ctx",
+      "rect": {
+        "x": 1002,
+        "y": 612,
+        "width": 338,
+        "height": 40,
+        "top": 612,
+        "right": 1340,
+        "bottom": 652,
+        "left": 1002
+      },
+      "padding": [
+        "8px",
+        "4px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.12s ease-out",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": "Stop sharing Agents keep context across months, not sessions",
+      "tag": "BUTTON",
+      "cls": "ps-chip-x",
+      "rect": {
+        "x": 1296,
+        "y": 612,
+        "width": 40,
+        "height": 40,
+        "top": 612,
+        "right": 1336,
+        "bottom": 652,
+        "left": 1296
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.1s, color 0.1s",
+      "animation": "none"
+    },
+    {
+      "text": "Theme sections",
+      "label": null,
+      "tag": "SPAN",
+      "cls": "ps-ctx",
+      "rect": {
+        "x": 1002,
+        "y": 658,
+        "width": 165.359375,
+        "height": 40,
+        "top": 658,
+        "right": 1167.359375,
+        "bottom": 698,
+        "left": 1002
+      },
+      "padding": [
+        "8px",
+        "4px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.12s ease-out",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": "Stop sharing Theme sections",
+      "tag": "BUTTON",
+      "cls": "ps-chip-x",
+      "rect": {
+        "x": 1123.359375,
+        "y": 658,
+        "width": 40,
+        "height": 40,
+        "top": 658,
+        "right": 1163.359375,
+        "bottom": 698,
+        "left": 1123.359375
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.1s, color 0.1s",
+      "animation": "none"
+    },
+    {
+      "text": "Cost of intelligence",
+      "label": null,
+      "tag": "SPAN",
+      "cls": "ps-ctx",
+      "rect": {
+        "x": 1002,
+        "y": 704,
+        "width": 184.4375,
+        "height": 40,
+        "top": 704,
+        "right": 1186.4375,
+        "bottom": 744,
+        "left": 1002
+      },
+      "padding": [
+        "8px",
+        "4px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.12s ease-out",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": "Stop sharing Cost of intelligence",
+      "tag": "BUTTON",
+      "cls": "ps-chip-x",
+      "rect": {
+        "x": 1142.4375,
+        "y": 704,
+        "width": 40,
+        "height": 40,
+        "top": 704,
+        "right": 1182.4375,
+        "bottom": 744,
+        "left": 1142.4375
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.1s, color 0.1s",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": "Add something on screen",
+      "tag": "BUTTON",
+      "cls": "ps-add",
+      "rect": {
+        "x": 1192.4375,
+        "y": 704,
+        "width": 40,
+        "height": 40,
+        "top": 704,
+        "right": 1232.4375,
+        "bottom": 744,
+        "left": 1192.4375
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "background 0.12s, color 0.12s, box-shadow 0.12s",
+      "animation": "none"
+    }
+  ],
+  "phoneContext": [
+    {
+      "text": "Agents keep context across months, not sessionsBriefingCost of intelligence",
+      "label": null,
+      "tag": "DIV",
+      "cls": "ps-ctxfloat",
+      "rect": {
+        "x": 30,
+        "y": 634,
+        "width": 342,
+        "height": 136,
+        "top": 634,
+        "right": 372,
+        "bottom": 770,
+        "left": 30
+      },
+      "padding": [
+        "2px",
+        "2px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "all",
+      "animation": "none"
+    },
+    {
+      "text": "Agents keep context across months, not sessionsBriefingCost of intelligence",
+      "label": null,
+      "tag": "DIV",
+      "cls": "ps-ctxrow",
+      "rect": {
+        "x": 32,
+        "y": 636,
+        "width": 338,
+        "height": 132,
+        "top": 636,
+        "right": 370,
+        "bottom": 768,
+        "left": 32
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "all",
+      "animation": "none"
+    },
+    {
+      "text": "Agents keep context across months, not sessions",
+      "label": null,
+      "tag": "SPAN",
+      "cls": "ps-ctx",
+      "rect": {
+        "x": 32,
+        "y": 636,
+        "width": 338,
+        "height": 40,
+        "top": 636,
+        "right": 370,
+        "bottom": 676,
+        "left": 32
+      },
+      "padding": [
+        "8px",
+        "4px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.12s ease-out",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": "Stop sharing Agents keep context across months, not sessions",
+      "tag": "BUTTON",
+      "cls": "ps-chip-x",
+      "rect": {
+        "x": 326,
+        "y": 636,
+        "width": 40,
+        "height": 40,
+        "top": 636,
+        "right": 366,
+        "bottom": 676,
+        "left": 326
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.1s, color 0.1s",
+      "animation": "none"
+    },
+    {
+      "text": "Briefing",
+      "label": null,
+      "tag": "SPAN",
+      "cls": "ps-ctx",
+      "rect": {
+        "x": 32,
+        "y": 682,
+        "width": 119.1875,
+        "height": 40,
+        "top": 682,
+        "right": 151.1875,
+        "bottom": 722,
+        "left": 32
+      },
+      "padding": [
+        "8px",
+        "4px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.12s ease-out",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": "Stop sharing Briefing",
+      "tag": "BUTTON",
+      "cls": "ps-chip-x",
+      "rect": {
+        "x": 107.1875,
+        "y": 682,
+        "width": 40,
+        "height": 40,
+        "top": 682,
+        "right": 147.1875,
+        "bottom": 722,
+        "left": 107.1875
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.1s, color 0.1s",
+      "animation": "none"
+    },
+    {
+      "text": "Cost of intelligence",
+      "label": null,
+      "tag": "SPAN",
+      "cls": "ps-ctx",
+      "rect": {
+        "x": 157.1875,
+        "y": 682,
+        "width": 184.4375,
+        "height": 40,
+        "top": 682,
+        "right": 341.625,
+        "bottom": 722,
+        "left": 157.1875
+      },
+      "padding": [
+        "8px",
+        "4px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.12s ease-out",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": "Stop sharing Cost of intelligence",
+      "tag": "BUTTON",
+      "cls": "ps-chip-x",
+      "rect": {
+        "x": 297.625,
+        "y": 682,
+        "width": 40,
+        "height": 40,
+        "top": 682,
+        "right": 337.625,
+        "bottom": 722,
+        "left": 297.625
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "12px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "background 0.1s, color 0.1s",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": "Add something on screen",
+      "tag": "BUTTON",
+      "cls": "ps-add",
+      "rect": {
+        "x": 32,
+        "y": 728,
+        "width": 40,
+        "height": 40,
+        "top": 728,
+        "right": 72,
+        "bottom": 768,
+        "left": 32
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "background 0.12s, color 0.12s, box-shadow 0.12s",
+      "animation": "none"
+    }
+  ],
+  "contextRemoval": 1,
+  "phoneOverflow": {
+    "body": 390,
+    "width": 390
+  },
+  "phonePane": [
+    {
+      "text": "",
+      "label": "Close (Esc)",
+      "tag": "BUTTON",
+      "cls": "ap-iconbtn",
+      "rect": {
+        "x": 338,
+        "y": 10,
+        "width": 40,
+        "height": 40,
+        "top": 10,
+        "right": 378,
+        "bottom": 50,
+        "left": 338
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "background 0.1s ease-out, transform 0.1s ease-out",
+      "animation": "none"
+    },
+    {
+      "text": "",
+      "label": null,
+      "tag": "DIV",
+      "cls": "pn-conf-control",
+      "rect": {
+        "x": 104.609375,
+        "y": 198.375,
+        "width": 112,
+        "height": 40,
+        "top": 198.375,
+        "right": 216.609375,
+        "bottom": 238.375,
+        "left": 104.609375
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "font": [
+        "13px",
+        "400",
+        "rgb(23, 23, 23)"
+      ],
+      "transform": "none",
+      "transition": "all",
+      "animation": "none"
+    },
+    {
+      "text": "1",
+      "label": "1 signal matches",
+      "tag": "BUTTON",
+      "cls": "tw-tc-flag",
+      "rect": {
+        "x": 316.453125,
+        "y": 482.125,
+        "width": 40,
+        "height": 40,
+        "top": 482.125,
+        "right": 356.453125,
+        "bottom": 522.125,
+        "left": 316.453125
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "font": [
+        "15px",
+        "400",
+        "rgb(82, 82, 82)"
+      ],
+      "transform": "none",
+      "transition": "all",
+      "animation": "none"
+    }
+  ]
+}

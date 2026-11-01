@@ -1,0 +1,247 @@
+{
+  "signal": "1\nSignals\nStartup sells agent hours instead of seats\nx.com\nFunding for model labs dips for a second quarter\nbloomberg.com\nFriend built a budgeting app just for her household\nMy observation\nAgents get their own OAuth identities\ngithub.blog\nFrontier training runs keep growing in cost\narxiv.org\nAgent recalls a codebase across a month of sessions\nx.com\nAgent recalls a codebase across a month of sessions\nAgents keep context across months, not sessions\nAgent memory\nYesterday\nAgent recalls a codebase across a month of sessions\nReviewers skim agent diffs and approve\nMy observation\nDesign studio ships a canvas-style agent UI\nx.com\nTeam reports agents opening 40 PRs a day\nx.com\nMemory feature withdrawn after privacy complaints\ntheverge.com\nLab cuts API prices again for its small model tier\nx.com\nOpen-weight model matches last year's frontier on coding\nnews.ycombinator.com\nData-centre power contracts are booked years ahead\nft.com\nThemes\nCost of intelligence\nAI funding cycle\nAgent identity\nNovel agent interfaces\nAgent memory\nPersonal software\nCode review after agents\nTheories\nLocal models absorb most everyday agent work\nSoftware is priced per outcome, not per seat\nReview shifts from diffs to intent\nTokens become nearly free for routine work\nFrontier intelligence stays scarce and expensive\n1\nAgents keep context across months, not sessions\n2\nCode review becomes the bottleneck, not writing\nMost software is made for an audience of one\nLabs face a funding correction before agents pay their way\nAgents run continuously in the background by default\nPrototypes\nToken budget meter\nIntent review\nOne-person app kit\nMemory inspector\nDump or ask\nColumns",
+  "atlasBefore": [],
+  "atlasKeyboardAfter": [],
+  "timelineButtons": [
+    {
+      "name": "Theme",
+      "title": "Filter by theme",
+      "text": ""
+    },
+    {
+      "name": "Follow chain",
+      "title": "Follow chain (Esc to return)",
+      "text": ""
+    },
+    {
+      "name": "Local models absorb most everyday agent work",
+      "title": "",
+      "text": ""
+    },
+    {
+      "name": "Software is priced per outcome, not per seat",
+      "title": "",
+      "text": ""
+    },
+    {
+      "name": "Review shifts from diffs to intent",
+      "title": "",
+      "text": ""
+    },
+    {
+      "name": "Tokens become nearly free for routine work",
+      "title": "",
+      "text": ""
+    },
+    {
+      "name": "Frontier intelligence stays scarce and expensive",
+      "title": "",
+      "text": ""
+    },
+    {
+      "name": "Agents keep context across months, not sessions",
+      "title": "",
+      "text": ""
+    },
+    {
+      "name": "Code review becomes the bottleneck, not writing",
+      "title": "",
+      "text": ""
+    },
+    {
+      "name": "Most software is made for an audience of one",
+      "title": "",
+      "text": ""
+    },
+    {
+      "name": "Labs face a funding correction before agents pay their way",
+      "title": "",
+      "text": ""
+    },
+    {
+      "name": "Agents run continuously in the background by default",
+      "title": "",
+      "text": ""
+    },
+    {
+      "name": null,
+      "title": "",
+      "text": "Tokens become nearly free for routine work"
+    },
+    {
+      "name": null,
+      "title": "",
+      "text": "Frontier intelligence stays scarce and expensive"
+    },
+    {
+      "name": null,
+      "title": "",
+      "text": "Agents run continuously in the background by default"
+    },
+    {
+      "name": null,
+      "title": "",
+      "text": "Software is priced per outcome, not per seat"
+    },
+    {
+      "name": null,
+      "title": "",
+      "text": "Most software is made for an audience of one"
+    },
+    {
+      "name": "Full width (⌘[)",
+      "title": "Full width (⌘[)",
+      "text": ""
+    },
+    {
+      "name": "Close (Esc)",
+      "title": "Close (Esc)",
+      "text": ""
+    },
+    {
+      "name": null,
+      "title": "Theme",
+      "text": "Cost of intelligence"
+    },
+    {
+      "name": "1 of 5",
+      "title": "1 of 5",
+      "text": ""
+    },
+    {
+      "name": "2 of 5",
+      "title": "2 of 5",
+      "text": ""
+    },
+    {
+      "name": "3 of 5",
+      "title": "3 of 5",
+      "text": ""
+    },
+    {
+      "name": "4 of 5",
+      "title": "4 of 5",
+      "text": ""
+    },
+    {
+      "name": "5 of 5",
+      "title": "5 of 5",
+      "text": ""
+    },
+    {
+      "name": "Earlier",
+      "title": "Earlier",
+      "text": ""
+    },
+    {
+      "name": "Later",
+      "title": "Later",
+      "text": ""
+    },
+    {
+      "name": null,
+      "title": "",
+      "text": "Frontier intelligence stays scarce and expensive"
+    },
+    {
+      "name": "Add supporting evidence",
+      "title": "Add supporting evidence",
+      "text": ""
+    },
+    {
+      "name": null,
+      "title": "",
+      "text": "Lab cuts API prices again for its small model tierx.com"
+    },
+    {
+      "name": null,
+      "title": "",
+      "text": "Open-weight model matches last year's frontier on codingnews.ycombinator.com"
+    },
+    {
+      "name": "Add undermining evidence",
+      "title": "Add undermining evidence",
+      "text": ""
+    },
+    {
+      "name": null,
+      "title": "",
+      "text": "Frontier training runs keep growing in costarxiv.org"
+    },
+    {
+      "name": null,
+      "title": "Leads to",
+      "text": "Software is priced per outcome, not per seat"
+    },
+    {
+      "name": null,
+      "title": "Leads to",
+      "text": "Most software is made for an audience of one"
+    },
+    {
+      "name": null,
+      "title": "Leads to",
+      "text": "Agents run continuously in the background by default"
+    },
+    {
+      "name": null,
+      "title": "Prototype",
+      "text": "Token budget meter"
+    },
+    {
+      "name": "Add a relationship",
+      "title": "Add a relationship",
+      "text": ""
+    },
+    {
+      "name": "Rephrase and accept draft",
+      "title": "Rephrase and accept draft",
+      "text": ""
+    },
+    {
+      "name": "Retire theory",
+      "title": "Retire theory",
+      "text": ""
+    },
+    {
+      "name": "Theme sections (⌘1)",
+      "title": "Theme sections (⌘1)",
+      "text": ""
+    },
+    {
+      "name": "Columns (⌘2)",
+      "title": "Columns (⌘2)",
+      "text": ""
+    },
+    {
+      "name": "Atlas (⌘3)",
+      "title": "Atlas (⌘3)",
+      "text": ""
+    },
+    {
+      "name": "Timeline (⌘4)",
+      "title": "Timeline (⌘4)",
+      "text": ""
+    },
+    {
+      "name": "Briefing (⌘5)",
+      "title": "Briefing (⌘5)",
+      "text": ""
+    },
+    {
+      "name": "Dump log (⌘⇧L)",
+      "title": "Dump log (⌘⇧L)",
+      "text": ""
+    },
+    {
+      "name": "Dump or ask (⌘J)",
+      "title": "Dump or ask (⌘J)",
+      "text": "Dump or askTokens become nearly free for routine work"
+    },
+    {
+      "name": "Voice dump",
+      "title": "Voice dump",
+      "text": ""
+    }
+  ]
+}

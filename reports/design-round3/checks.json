@@ -1,0 +1,744 @@
+{
+  "pane": [
+    {
+      "text": "",
+      "label": "Full width (⌘[)",
+      "title": "Full width (⌘[)",
+      "w": 28,
+      "h": 28,
+      "pl": "6px",
+      "pr": "6px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "Close (Esc)",
+      "title": "Close (Esc)",
+      "w": 28,
+      "h": 28,
+      "pl": "6px",
+      "pr": "6px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "Agent memory",
+      "label": null,
+      "title": "Theme",
+      "w": 122.671875,
+      "h": 24,
+      "pl": "8px",
+      "pr": "8px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "1 of 5",
+      "title": "1 of 5",
+      "w": 20,
+      "h": 6,
+      "pl": "0px",
+      "pr": "0px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "2 of 5",
+      "title": "2 of 5",
+      "w": 20,
+      "h": 6,
+      "pl": "0px",
+      "pr": "0px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "3 of 5",
+      "title": "3 of 5",
+      "w": 20,
+      "h": 6,
+      "pl": "0px",
+      "pr": "0px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "4 of 5",
+      "title": "4 of 5",
+      "w": 20,
+      "h": 6,
+      "pl": "0px",
+      "pr": "0px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "5 of 5",
+      "title": "5 of 5",
+      "w": 20,
+      "h": 6,
+      "pl": "0px",
+      "pr": "0px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "Earlier",
+      "title": "Earlier",
+      "w": 20,
+      "h": 20,
+      "pl": "0px",
+      "pr": "0px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "Later",
+      "title": "Later",
+      "w": 20,
+      "h": 20,
+      "pl": "0px",
+      "pr": "0px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "1",
+      "label": "1 signal matches",
+      "title": "1 signal matches",
+      "w": 26,
+      "h": 22,
+      "pl": "4px",
+      "pr": "4px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "Accept",
+      "label": null,
+      "title": "Accept and lower confidence",
+      "w": 61.625,
+      "h": 24,
+      "pl": "9px",
+      "pr": "9px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "Dismiss",
+      "title": "Dismiss",
+      "w": 20,
+      "h": 20,
+      "pl": "0px",
+      "pr": "0px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "Accept",
+      "label": null,
+      "title": "",
+      "w": 63.625,
+      "h": 26,
+      "pl": "10px",
+      "pr": "10px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "Discard suggestion",
+      "title": "Discard suggestion",
+      "w": 28,
+      "h": 28,
+      "pl": "6px",
+      "pr": "6px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "Add supporting evidence",
+      "title": "Add supporting evidence",
+      "w": 20,
+      "h": 20,
+      "pl": "0px",
+      "pr": "0px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "Agent recalls a codebase across a month of sessions\nx.com",
+      "label": null,
+      "title": "",
+      "w": 360,
+      "h": 50.984375,
+      "pl": "10px",
+      "pr": "10px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "Add undermining evidence",
+      "title": "Add undermining evidence",
+      "w": 20,
+      "h": 20,
+      "pl": "0px",
+      "pr": "0px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "Agents run continuously in the background by default",
+      "label": null,
+      "title": "Leads to",
+      "w": 361.109375,
+      "h": 24,
+      "pl": "8px",
+      "pr": "8px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "Memory inspector",
+      "label": null,
+      "title": "Prototype",
+      "w": 146.046875,
+      "h": 24,
+      "pl": "8px",
+      "pr": "8px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "Add a relationship",
+      "title": "Add a relationship",
+      "w": 28,
+      "h": 28,
+      "pl": "6px",
+      "pr": "6px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "Rephrase and accept draft",
+      "title": "Rephrase and accept draft",
+      "w": 28,
+      "h": 28,
+      "pl": "6px",
+      "pr": "6px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "text": "",
+      "label": "Retire theory",
+      "title": "Retire theory",
+      "w": 28,
+      "h": 28,
+      "pl": "6px",
+      "pr": "6px",
+      "before": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    }
+  ],
+  "confidenceHoverDismissed": 0,
+  "confidenceEscape": 1,
+  "drop": [
+    {
+      "class": "ps-pill ps-pill-drop",
+      "transform": "none",
+      "text": "",
+      "rect": {
+        "x": 1225.52001953125,
+        "y": 753.5999755859375,
+        "width": 72.0799560546875,
+        "height": 42.4000244140625,
+        "top": 753.5999755859375,
+        "right": 1297.5999755859375,
+        "bottom": 796,
+        "left": 1225.52001953125
+      }
+    }
+  ],
+  "mobile": [
+    {
+      "label": "Full width (⌘[)",
+      "w": 0,
+      "h": 0,
+      "pl": "6px",
+      "pr": "6px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Close (Esc)",
+      "w": 40,
+      "h": 40,
+      "pl": "6px",
+      "pr": "6px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Agent memory",
+      "w": 122.671875,
+      "h": 40,
+      "pl": "8px",
+      "pr": "8px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "1 of 5",
+      "w": 40,
+      "h": 40,
+      "pl": "0px",
+      "pr": "0px",
+      "after": {
+        "content": "\"\"",
+        "w": "20px",
+        "h": "6px",
+        "inset": "17px 10px"
+      }
+    },
+    {
+      "label": "2 of 5",
+      "w": 40,
+      "h": 40,
+      "pl": "0px",
+      "pr": "0px",
+      "after": {
+        "content": "\"\"",
+        "w": "20px",
+        "h": "6px",
+        "inset": "17px 10px"
+      }
+    },
+    {
+      "label": "3 of 5",
+      "w": 40,
+      "h": 40,
+      "pl": "0px",
+      "pr": "0px",
+      "after": {
+        "content": "\"\"",
+        "w": "20px",
+        "h": "6px",
+        "inset": "17px 10px"
+      }
+    },
+    {
+      "label": "4 of 5",
+      "w": 40,
+      "h": 40,
+      "pl": "0px",
+      "pr": "0px",
+      "after": {
+        "content": "\"\"",
+        "w": "20px",
+        "h": "6px",
+        "inset": "17px 10px"
+      }
+    },
+    {
+      "label": "5 of 5",
+      "w": 40,
+      "h": 40,
+      "pl": "0px",
+      "pr": "0px",
+      "after": {
+        "content": "\"\"",
+        "w": "20px",
+        "h": "6px",
+        "inset": "17px 10px"
+      }
+    },
+    {
+      "label": "Earlier",
+      "w": 40,
+      "h": 40,
+      "pl": "0px",
+      "pr": "0px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Later",
+      "w": 40,
+      "h": 40,
+      "pl": "0px",
+      "pr": "0px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "1 signal matches",
+      "w": 40,
+      "h": 40,
+      "pl": "4px",
+      "pr": "4px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Accept",
+      "w": 61.625,
+      "h": 40,
+      "pl": "9px",
+      "pr": "9px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Dismiss",
+      "w": 40,
+      "h": 40,
+      "pl": "0px",
+      "pr": "0px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Accept",
+      "w": 63.625,
+      "h": 40,
+      "pl": "10px",
+      "pr": "10px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Discard suggestion",
+      "w": 40,
+      "h": 40,
+      "pl": "6px",
+      "pr": "6px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Add supporting evidence",
+      "w": 40,
+      "h": 40,
+      "pl": "0px",
+      "pr": "0px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Agent recalls a codebase across a month of sessions\nx.com",
+      "w": 361.109375,
+      "h": 50.984375,
+      "pl": "10px",
+      "pr": "10px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Add undermining evidence",
+      "w": 40,
+      "h": 40,
+      "pl": "0px",
+      "pr": "0px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Agents run continuously in the background by default",
+      "w": 361.109375,
+      "h": 40,
+      "pl": "8px",
+      "pr": "8px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Memory inspector",
+      "w": 146.046875,
+      "h": 40,
+      "pl": "8px",
+      "pr": "8px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Add a relationship",
+      "w": 40,
+      "h": 40,
+      "pl": "6px",
+      "pr": "6px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Rephrase and accept draft",
+      "w": 40,
+      "h": 40,
+      "pl": "6px",
+      "pr": "6px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    },
+    {
+      "label": "Retire theory",
+      "w": 40,
+      "h": 40,
+      "pl": "6px",
+      "pr": "6px",
+      "after": {
+        "content": "none",
+        "w": "auto",
+        "h": "auto",
+        "inset": "auto"
+      }
+    }
+  ],
+  "mobileWidth": {
+    "body": 390,
+    "viewport": 390
+  },
+  "mobileConfidenceOutside": 0,
+  "recording": {
+    "elapsed": "\n−0\n1\n0:12",
+    "writes": 0,
+    "discarded": 1
+  },
+  "blocked": [],
+  "voiceLog": {
+    "rowRole": null,
+    "rowTabIndex": null,
+    "rowText": "voice-note.m4a\n23:43\n2",
+    "audio": 0,
+    "sliders": 0
+  },
+  "voicePlayback": {
+    "duration": 8.295011,
+    "time": 0.785479,
+    "paused": false,
+    "ready": 4,
+    "afterKeyboardSeek": 1.187858
+  },
+  "confidenceClickedRetained": 0,
+  "confidenceClickedDismissed": 0,
+  "context": {
+    "chip": {
+      "x": 1324.359375,
+      "y": 726,
+      "width": 162.4375,
+      "height": 26,
+      "top": 726,
+      "right": 1486.796875,
+      "bottom": 752,
+      "left": 1324.359375
+    },
+    "row": {
+      "x": 1001,
+      "y": 726,
+      "width": 515.796875,
+      "height": 26,
+      "top": 726,
+      "right": 1516.796875,
+      "bottom": 752,
+      "left": 1001
+    },
+    "float": {
+      "x": 1001,
+      "y": 726,
+      "width": 515.796875,
+      "height": 26,
+      "top": 726,
+      "right": 1516.796875,
+      "bottom": 752,
+      "left": 1001
+    },
+    "overflow": "visible",
+    "container": {
+      "x": 987,
+      "y": 759,
+      "width": 360,
+      "height": 49,
+      "top": 759,
+      "right": 1347,
+      "bottom": 808,
+      "left": 987
+    },
+    "opacity": "1"
+  },
+  "exclusions": {
+    "voiceLog": "Status-only surface; playback verified in Columns DumpDetail",
+    "dynamicReduced": "Fresh reduced-motion context is authoritative"
+  }
+}

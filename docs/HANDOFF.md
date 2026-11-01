@@ -10,7 +10,7 @@ v1 is for her alone. **This build round runs locally on her MacBook only.** The 
 
 ## Where we are
 
-The design and the agent stack are settled for v1 (agent framework decided 1 Nov 2026: Vercel AI SDK 7 with an own SQLite job queue, on Node). Next, an overnight agent builds v1 from the build spec, to run locally.
+The local v1 app is implemented in `app/`: React/Vite, a Node API, SQLite and Vercel AI SDK 7 with its own job queue. The built app runs at `http://127.0.0.1:3000`. Start with [run instructions](../app/README.md), [verification](verification.md) and [build decisions](build-notes.md). The design context below remains the reference for future changes.
 
 ## Where things are
 
@@ -63,9 +63,9 @@ The full method is in `reference/interface-grammar.md`. The essentials:
 
 ## Next steps, in order
 
-1. **Run the overnight build** from [build-spec.md](build-spec.md), slice by slice, locally on Maggie's MacBook (Node, `npm`, SQLite in `app/data/`, `localhost` only). The build agent leaves ambiguities in `docs/build-notes.md` rather than inventing.
-2. **Evals on seeded examples:** the build agent writes ~15 generated example dumps with hand-written expected outputs in `app/evals/fixtures/` (build spec 5.5), and the OpenAI vs Claude comparison runs on them before locking models. Swap in Maggie's real dumps later.
-3. **Review in the morning:** parity screenshots in `test-results/parity/`, `docs/build-notes.md`, and the known gaps in section 12 of the spec (Atlas layout for real data, the delete confirmation, the building-status blue).
+1. **Review the working local app:** all v1 slices have been implemented. Evidence and deliberate exceptions are in [verification](verification.md); do not rebuild the app from scratch.
+2. **Personal-material evals:** 31 synthetic fixtures, the original provider comparison and targeted follow-ups are retained in `app/evals/`. Add Maggie's real dumps later without rewriting the historical scores.
+3. **Review in the morning:** screenshots in `app/test-results/parity/` and `reports/`, plus `docs/build-notes.md`. The optional full TypeSafe screenshot review awaits explicit export permission; local critiques and diagnostics have run.
 4. **Later:** deployment to the team Coolify server, backups to B2, auth and phone capture (build spec, section 13). Confirm with the server's owner how it joins Tailscale first.
 
 ## Things not to redo

@@ -1,0 +1,16 @@
+{
+  "blocked": [
+    {
+      "url": "http://127.0.0.1:5174/api/tools/markSeen",
+      "method": "POST"
+    }
+  ],
+  "widthBefore": "832",
+  "widthAfter": "1128",
+  "notes": [
+    "API writes aborted, one markSeen triggered by expanding signal",
+    "motion.json first pill-selector attempt has no samples; subsequent ps-surface sample records interrupted geometry",
+    "Saved question rendered after reload",
+    "Signal related names wrapped; related Agent memory/theory/prototype first"
+  ]
+}

@@ -1,0 +1,1078 @@
+{
+  "desktopTargets": [
+    {
+      "label": "Full width (⌘[)",
+      "rect": {
+        "x": 2289.721923828125,
+        "y": 10,
+        "width": 40,
+        "height": 40,
+        "top": 10,
+        "right": 2329.721923828125,
+        "bottom": 50,
+        "left": 2289.721923828125
+      }
+    },
+    {
+      "label": "Close (Esc)",
+      "rect": {
+        "x": 2331.721923828125,
+        "y": 10,
+        "width": 40,
+        "height": 40,
+        "top": 10,
+        "right": 2371.721923828125,
+        "bottom": 50,
+        "left": 2331.721923828125
+      }
+    },
+    {
+      "label": "Agent memory",
+      "rect": {
+        "x": 1597.721923828125,
+        "y": 64,
+        "width": 122.671875,
+        "height": 40,
+        "top": 64,
+        "right": 1720.393798828125,
+        "bottom": 104,
+        "left": 1597.721923828125
+      }
+    },
+    {
+      "label": "Earlier",
+      "rect": {
+        "x": 1682.331298828125,
+        "y": 212,
+        "width": 40,
+        "height": 40,
+        "top": 212,
+        "right": 1722.331298828125,
+        "bottom": 252,
+        "left": 1682.331298828125
+      }
+    },
+    {
+      "label": "Later",
+      "rect": {
+        "x": 1760.050048828125,
+        "y": 212,
+        "width": 40,
+        "height": 40,
+        "top": 212,
+        "right": 1800.050048828125,
+        "bottom": 252,
+        "left": 1760.050048828125
+      }
+    },
+    {
+      "label": "1 signal matches",
+      "rect": {
+        "x": 1894.175048828125,
+        "y": 428,
+        "width": 26,
+        "height": 22,
+        "top": 428,
+        "right": 1920.175048828125,
+        "bottom": 450,
+        "left": 1894.175048828125
+      }
+    },
+    {
+      "label": "Accept",
+      "rect": {
+        "x": 2184.096923828125,
+        "y": 470.75,
+        "width": 61.625,
+        "height": 40,
+        "top": 470.75,
+        "right": 2245.721923828125,
+        "bottom": 510.75,
+        "left": 2184.096923828125
+      }
+    },
+    {
+      "label": "Dismiss",
+      "rect": {
+        "x": 2249.721923828125,
+        "y": 470.75,
+        "width": 40,
+        "height": 40,
+        "top": 470.75,
+        "right": 2289.721923828125,
+        "bottom": 510.75,
+        "left": 2249.721923828125
+      }
+    },
+    {
+      "label": "Accept",
+      "rect": {
+        "x": 2082.300048828125,
+        "y": 543.75,
+        "width": 63.625,
+        "height": 40,
+        "top": 543.75,
+        "right": 2145.925048828125,
+        "bottom": 583.75,
+        "left": 2082.300048828125
+      }
+    },
+    {
+      "label": "Discard suggestion",
+      "rect": {
+        "x": 2149.925048828125,
+        "y": 543.75,
+        "width": 40,
+        "height": 40,
+        "top": 543.75,
+        "right": 2189.925048828125,
+        "bottom": 583.75,
+        "left": 2149.925048828125
+      }
+    },
+    {
+      "label": "Add supporting evidence",
+      "rect": {
+        "x": 1917.721923828125,
+        "y": 607.75,
+        "width": 40,
+        "height": 40,
+        "top": 607.75,
+        "right": 1957.721923828125,
+        "bottom": 647.75,
+        "left": 1917.721923828125
+      }
+    },
+    {
+      "label": "Agent recalls a codebase across a month of sessions\nx.com",
+      "rect": {
+        "x": 1597.721923828125,
+        "y": 651.75,
+        "width": 360,
+        "height": 50.984375,
+        "top": 651.75,
+        "right": 1957.721923828125,
+        "bottom": 702.734375,
+        "left": 1597.721923828125
+      }
+    },
+    {
+      "label": "Add undermining evidence",
+      "rect": {
+        "x": 2293.721923828125,
+        "y": 607.75,
+        "width": 40,
+        "height": 40,
+        "top": 607.75,
+        "right": 2333.721923828125,
+        "bottom": 647.75,
+        "left": 2293.721923828125
+      }
+    },
+    {
+      "label": "Agents run continuously in the background by default",
+      "rect": {
+        "x": 1597.721923828125,
+        "y": 731.734375,
+        "width": 361.109375,
+        "height": 40,
+        "top": 731.734375,
+        "right": 1958.831298828125,
+        "bottom": 771.734375,
+        "left": 1597.721923828125
+      }
+    },
+    {
+      "label": "Memory inspector",
+      "rect": {
+        "x": 1964.831298828125,
+        "y": 731.734375,
+        "width": 146.046875,
+        "height": 40,
+        "top": 731.734375,
+        "right": 2110.878173828125,
+        "bottom": 771.734375,
+        "left": 1964.831298828125
+      }
+    },
+    {
+      "label": "Add a relationship",
+      "rect": {
+        "x": 1597.721923828125,
+        "y": 795.734375,
+        "width": 40,
+        "height": 40,
+        "top": 795.734375,
+        "right": 1637.721923828125,
+        "bottom": 835.734375,
+        "left": 1597.721923828125
+      }
+    },
+    {
+      "label": "Rephrase and accept draft",
+      "rect": {
+        "x": 1641.721923828125,
+        "y": 795.734375,
+        "width": 40,
+        "height": 40,
+        "top": 795.734375,
+        "right": 1681.721923828125,
+        "bottom": 835.734375,
+        "left": 1641.721923828125
+      }
+    },
+    {
+      "label": "Retire theory",
+      "rect": {
+        "x": 1685.721923828125,
+        "y": 795.734375,
+        "width": 40,
+        "height": 40,
+        "top": 795.734375,
+        "right": 1725.721923828125,
+        "bottom": 835.734375,
+        "left": 1685.721923828125
+      }
+    },
+    {
+      "label": "Theme sections (⌘1)",
+      "rect": {
+        "x": 24,
+        "y": 752,
+        "width": 40,
+        "height": 40,
+        "top": 752,
+        "right": 64,
+        "bottom": 792,
+        "left": 24
+      }
+    },
+    {
+      "label": "Columns (⌘2)",
+      "rect": {
+        "x": 66,
+        "y": 752,
+        "width": 40,
+        "height": 40,
+        "top": 752,
+        "right": 106,
+        "bottom": 792,
+        "left": 66
+      }
+    },
+    {
+      "label": "Atlas (⌘3)",
+      "rect": {
+        "x": 108,
+        "y": 752,
+        "width": 40,
+        "height": 40,
+        "top": 752,
+        "right": 148,
+        "bottom": 792,
+        "left": 108
+      }
+    },
+    {
+      "label": "Timeline (⌘4)",
+      "rect": {
+        "x": 150,
+        "y": 752,
+        "width": 40,
+        "height": 40,
+        "top": 752,
+        "right": 190,
+        "bottom": 792,
+        "left": 150
+      }
+    },
+    {
+      "label": "Briefing (⌘5)",
+      "rect": {
+        "x": 192,
+        "y": 752,
+        "width": 40,
+        "height": 40,
+        "top": 752,
+        "right": 232,
+        "bottom": 792,
+        "left": 192
+      }
+    },
+    {
+      "label": "Dump log (⌘⇧L)",
+      "rect": {
+        "x": 976.734375,
+        "y": 756,
+        "width": 40,
+        "height": 40,
+        "top": 756,
+        "right": 1016.734375,
+        "bottom": 796,
+        "left": 976.734375
+      }
+    },
+    {
+      "label": "Dump or ask (⌘J)",
+      "rect": {
+        "x": 1016.734375,
+        "y": 756,
+        "width": 380.71875,
+        "height": 40,
+        "top": 756,
+        "right": 1397.453125,
+        "bottom": 796,
+        "left": 1016.734375
+      }
+    },
+    {
+      "label": "Voice dump",
+      "rect": {
+        "x": 1299.984375,
+        "y": 756,
+        "width": 40,
+        "height": 40,
+        "top": 756,
+        "right": 1339.984375,
+        "bottom": 796,
+        "left": 1299.984375
+      }
+    }
+  ],
+  "context": [
+    {
+      "class": "ps-ctxfloat",
+      "label": "Agents keep context across months, not sessions\nTheme sections\nCost of intelligence",
+      "rect": {
+        "x": 1000,
+        "y": 610,
+        "width": 342,
+        "height": 136,
+        "top": 610,
+        "right": 1342,
+        "bottom": 746,
+        "left": 1000
+      }
+    },
+    {
+      "class": "ps-ctxrow",
+      "label": "Agents keep context across months, not sessions\nTheme sections\nCost of intelligence",
+      "rect": {
+        "x": 1002,
+        "y": 612,
+        "width": 338,
+        "height": 132,
+        "top": 612,
+        "right": 1340,
+        "bottom": 744,
+        "left": 1002
+      }
+    },
+    {
+      "class": "ps-ctx",
+      "label": "Agents keep context across months, not sessions",
+      "rect": {
+        "x": 1002,
+        "y": 612,
+        "width": 338,
+        "height": 40,
+        "top": 612,
+        "right": 1340,
+        "bottom": 652,
+        "left": 1002
+      }
+    },
+    {
+      "class": "ps-chip-x",
+      "label": "Stop sharing Agents keep context across months, not sessions",
+      "rect": {
+        "x": 1296,
+        "y": 612,
+        "width": 40,
+        "height": 40,
+        "top": 612,
+        "right": 1336,
+        "bottom": 652,
+        "left": 1296
+      }
+    },
+    {
+      "class": "ps-ctx",
+      "label": "Theme sections",
+      "rect": {
+        "x": 1002,
+        "y": 658,
+        "width": 165.359375,
+        "height": 40,
+        "top": 658,
+        "right": 1167.359375,
+        "bottom": 698,
+        "left": 1002
+      }
+    },
+    {
+      "class": "ps-chip-x",
+      "label": "Stop sharing Theme sections",
+      "rect": {
+        "x": 1123.359375,
+        "y": 658,
+        "width": 40,
+        "height": 40,
+        "top": 658,
+        "right": 1163.359375,
+        "bottom": 698,
+        "left": 1123.359375
+      }
+    },
+    {
+      "class": "ps-ctx",
+      "label": "Cost of intelligence",
+      "rect": {
+        "x": 1002,
+        "y": 704,
+        "width": 184.4375,
+        "height": 40,
+        "top": 704,
+        "right": 1186.4375,
+        "bottom": 744,
+        "left": 1002
+      }
+    },
+    {
+      "class": "ps-chip-x",
+      "label": "Stop sharing Cost of intelligence",
+      "rect": {
+        "x": 1142.4375,
+        "y": 704,
+        "width": 40,
+        "height": 40,
+        "top": 704,
+        "right": 1182.4375,
+        "bottom": 744,
+        "left": 1142.4375
+      }
+    },
+    {
+      "class": "ps-add",
+      "label": "Add something on screen",
+      "rect": {
+        "x": 1192.4375,
+        "y": 704,
+        "width": 40,
+        "height": 40,
+        "top": 704,
+        "right": 1232.4375,
+        "bottom": 744,
+        "left": 1192.4375
+      }
+    }
+  ],
+  "contextRemoval": 1,
+  "keyboardFocus": {
+    "tag": "INPUT",
+    "label": "Confidence",
+    "type": "range"
+  },
+  "confidence": {
+    "rect": {
+      "x": 660.609375,
+      "y": 168,
+      "width": 112,
+      "height": 40,
+      "top": 168,
+      "right": 772.609375,
+      "bottom": 208,
+      "left": 660.609375
+    },
+    "marks": [
+      {
+        "tag": "I",
+        "class": "",
+        "rect": {
+          "x": 660.609375,
+          "y": 185,
+          "width": 20,
+          "height": 6,
+          "top": 185,
+          "right": 680.609375,
+          "bottom": 191,
+          "left": 660.609375
+        }
+      },
+      {
+        "tag": "I",
+        "class": "",
+        "rect": {
+          "x": 683.609375,
+          "y": 185,
+          "width": 20,
+          "height": 6,
+          "top": 185,
+          "right": 703.609375,
+          "bottom": 191,
+          "left": 683.609375
+        }
+      },
+      {
+        "tag": "I",
+        "class": "",
+        "rect": {
+          "x": 706.609375,
+          "y": 185,
+          "width": 20,
+          "height": 6,
+          "top": 185,
+          "right": 726.609375,
+          "bottom": 191,
+          "left": 706.609375
+        }
+      },
+      {
+        "tag": "I",
+        "class": "",
+        "rect": {
+          "x": 729.609375,
+          "y": 185,
+          "width": 20,
+          "height": 6,
+          "top": 185,
+          "right": 749.609375,
+          "bottom": 191,
+          "left": 729.609375
+        }
+      },
+      {
+        "tag": "I",
+        "class": "",
+        "rect": {
+          "x": 752.609375,
+          "y": 185,
+          "width": 20,
+          "height": 6,
+          "top": 185,
+          "right": 772.609375,
+          "bottom": 191,
+          "left": 752.609375
+        }
+      }
+    ],
+    "hits": [
+      {
+        "x": 670.609375,
+        "y": 188,
+        "tag": "DIV",
+        "cls": "pn-conf-control",
+        "inside": true
+      },
+      {
+        "x": 693.609375,
+        "y": 188,
+        "tag": "DIV",
+        "cls": "pn-conf-control",
+        "inside": true
+      },
+      {
+        "x": 716.609375,
+        "y": 188,
+        "tag": "DIV",
+        "cls": "pn-conf-control",
+        "inside": true
+      },
+      {
+        "x": 739.609375,
+        "y": 188,
+        "tag": "DIV",
+        "cls": "pn-conf-control",
+        "inside": true
+      },
+      {
+        "x": 762.609375,
+        "y": 188,
+        "tag": "DIV",
+        "cls": "pn-conf-control",
+        "inside": true
+      }
+    ]
+  },
+  "mobileTargets": [
+    {
+      "label": "Full width (⌘[)",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "label": "Close (Esc)",
+      "rect": {
+        "x": 737.56201171875,
+        "y": 10,
+        "width": 40,
+        "height": 40,
+        "top": 10,
+        "right": 777.56201171875,
+        "bottom": 50,
+        "left": 737.56201171875
+      }
+    },
+    {
+      "label": "Agent memory",
+      "rect": {
+        "x": 419.56201171875,
+        "y": 64,
+        "width": 122.671875,
+        "height": 40,
+        "top": 64,
+        "right": 542.23388671875,
+        "bottom": 104,
+        "left": 419.56201171875
+      }
+    },
+    {
+      "label": "Earlier",
+      "rect": {
+        "x": 504.17138671875,
+        "y": 242.375,
+        "width": 40,
+        "height": 40,
+        "top": 242.375,
+        "right": 544.17138671875,
+        "bottom": 282.375,
+        "left": 504.17138671875
+      }
+    },
+    {
+      "label": "Later",
+      "rect": {
+        "x": 581.89013671875,
+        "y": 242.375,
+        "width": 40,
+        "height": 40,
+        "top": 242.375,
+        "right": 621.89013671875,
+        "bottom": 282.375,
+        "left": 581.89013671875
+      }
+    },
+    {
+      "label": "1 signal matches",
+      "rect": {
+        "x": 716.01513671875,
+        "y": 482.125,
+        "width": 40,
+        "height": 40,
+        "top": 482.125,
+        "right": 756.01513671875,
+        "bottom": 522.125,
+        "left": 716.01513671875
+      }
+    },
+    {
+      "label": "Accept",
+      "rect": {
+        "x": 655.93701171875,
+        "y": 574.59375,
+        "width": 61.625,
+        "height": 40,
+        "top": 574.59375,
+        "right": 717.56201171875,
+        "bottom": 614.59375,
+        "left": 655.93701171875
+      }
+    },
+    {
+      "label": "Dismiss",
+      "rect": {
+        "x": 721.56201171875,
+        "y": 574.59375,
+        "width": 40,
+        "height": 40,
+        "top": 574.59375,
+        "right": 761.56201171875,
+        "bottom": 614.59375,
+        "left": 721.56201171875
+      }
+    },
+    {
+      "label": "Accept",
+      "rect": {
+        "x": 653.93701171875,
+        "y": 688.359375,
+        "width": 63.625,
+        "height": 40,
+        "top": 688.359375,
+        "right": 717.56201171875,
+        "bottom": 728.359375,
+        "left": 653.93701171875
+      }
+    },
+    {
+      "label": "Discard suggestion",
+      "rect": {
+        "x": 721.56201171875,
+        "y": 688.359375,
+        "width": 40,
+        "height": 40,
+        "top": 688.359375,
+        "right": 761.56201171875,
+        "bottom": 728.359375,
+        "left": 721.56201171875
+      }
+    },
+    {
+      "label": "Add supporting evidence",
+      "rect": {
+        "x": 729.56201171875,
+        "y": 759.640625,
+        "width": 40,
+        "height": 40,
+        "top": 759.640625,
+        "right": 769.56201171875,
+        "bottom": 799.640625,
+        "left": 729.56201171875
+      }
+    },
+    {
+      "label": "Agent recalls a codebase across a month of sessions\nx.com",
+      "rect": {
+        "x": 419.56201171875,
+        "y": 803.640625,
+        "width": 350,
+        "height": 50.984375,
+        "top": 803.640625,
+        "right": 769.56201171875,
+        "bottom": 854.625,
+        "left": 419.56201171875
+      }
+    },
+    {
+      "label": "Add undermining evidence",
+      "rect": {
+        "x": 729.56201171875,
+        "y": 870.625,
+        "width": 40,
+        "height": 40,
+        "top": 870.625,
+        "right": 769.56201171875,
+        "bottom": 910.625,
+        "left": 729.56201171875
+      }
+    },
+    {
+      "label": "Agents run continuously in the background by default",
+      "rect": {
+        "x": 419.56201171875,
+        "y": 939.625,
+        "width": 350,
+        "height": 50.375,
+        "top": 939.625,
+        "right": 769.56201171875,
+        "bottom": 990,
+        "left": 419.56201171875
+      }
+    },
+    {
+      "label": "Memory inspector",
+      "rect": {
+        "x": 419.56201171875,
+        "y": 996,
+        "width": 146.046875,
+        "height": 40,
+        "top": 996,
+        "right": 565.60888671875,
+        "bottom": 1036,
+        "left": 419.56201171875
+      }
+    },
+    {
+      "label": "Add a relationship",
+      "rect": {
+        "x": 419.56201171875,
+        "y": 1060,
+        "width": 40,
+        "height": 40,
+        "top": 1060,
+        "right": 459.56201171875,
+        "bottom": 1100,
+        "left": 419.56201171875
+      }
+    },
+    {
+      "label": "Rephrase and accept draft",
+      "rect": {
+        "x": 463.56201171875,
+        "y": 1060,
+        "width": 40,
+        "height": 40,
+        "top": 1060,
+        "right": 503.56201171875,
+        "bottom": 1100,
+        "left": 463.56201171875
+      }
+    },
+    {
+      "label": "Retire theory",
+      "rect": {
+        "x": 507.56201171875,
+        "y": 1060,
+        "width": 40,
+        "height": 40,
+        "top": 1060,
+        "right": 547.56201171875,
+        "bottom": 1100,
+        "left": 507.56201171875
+      }
+    }
+  ],
+  "mobileConfidence": {
+    "x": 104.609375,
+    "y": 198.375,
+    "width": 112,
+    "height": 40
+  },
+  "mobileWidth": {
+    "body": 390,
+    "viewport": 390
+  },
+  "mobileSliderFocus": {
+    "label": "Confidence",
+    "type": "range"
+  },
+  "mobileContext": [
+    {
+      "class": "ps-ctxfloat",
+      "label": "Agents keep context across months, not sessions\nBriefing\nCost of intelligence",
+      "rect": {
+        "x": 30,
+        "y": 634,
+        "width": 342,
+        "height": 136,
+        "top": 634,
+        "right": 372,
+        "bottom": 770,
+        "left": 30
+      }
+    },
+    {
+      "class": "ps-ctx",
+      "label": "Agents keep context across months, not sessions",
+      "rect": {
+        "x": 32,
+        "y": 636,
+        "width": 338,
+        "height": 40,
+        "top": 636,
+        "right": 370,
+        "bottom": 676,
+        "left": 32
+      }
+    },
+    {
+      "class": "ps-chip-x",
+      "label": "Stop sharing Agents keep context across months, not sessions",
+      "rect": {
+        "x": 326,
+        "y": 636,
+        "width": 40,
+        "height": 40,
+        "top": 636,
+        "right": 366,
+        "bottom": 676,
+        "left": 326
+      }
+    },
+    {
+      "class": "ps-ctx",
+      "label": "Briefing",
+      "rect": {
+        "x": 32,
+        "y": 682,
+        "width": 119.1875,
+        "height": 40,
+        "top": 682,
+        "right": 151.1875,
+        "bottom": 722,
+        "left": 32
+      }
+    },
+    {
+      "class": "ps-chip-x",
+      "label": "Stop sharing Briefing",
+      "rect": {
+        "x": 107.1875,
+        "y": 682,
+        "width": 40,
+        "height": 40,
+        "top": 682,
+        "right": 147.1875,
+        "bottom": 722,
+        "left": 107.1875
+      }
+    },
+    {
+      "class": "ps-ctx",
+      "label": "Cost of intelligence",
+      "rect": {
+        "x": 157.1875,
+        "y": 682,
+        "width": 184.4375,
+        "height": 40,
+        "top": 682,
+        "right": 341.625,
+        "bottom": 722,
+        "left": 157.1875
+      }
+    },
+    {
+      "class": "ps-chip-x",
+      "label": "Stop sharing Cost of intelligence",
+      "rect": {
+        "x": 297.625,
+        "y": 682,
+        "width": 40,
+        "height": 40,
+        "top": 682,
+        "right": 337.625,
+        "bottom": 722,
+        "left": 297.625
+      }
+    },
+    {
+      "class": "ps-add",
+      "label": "Add something on screen",
+      "rect": {
+        "x": 32,
+        "y": 728,
+        "width": 40,
+        "height": 40,
+        "top": 728,
+        "right": 72,
+        "bottom": 768,
+        "left": 32
+      }
+    }
+  ],
+  "mobileContextRemoval": 0,
+  "reduced": [
+    {
+      "kind": "paneReduced",
+      "transforms": [
+        "none"
+      ],
+      "bounds": [
+        "528,0,832,820"
+      ]
+    },
+    {
+      "kind": "pillReduced",
+      "transforms": [
+        "none"
+      ],
+      "bounds": [
+        "879,756,461,40",
+        "988,12,360,796"
+      ]
+    }
+  ],
+  "history": {
+    "rect": {
+      "x": 813.609375,
+      "y": 221,
+      "width": 262,
+      "height": 190.96875,
+      "top": 221,
+      "right": 1075.609375,
+      "bottom": 411.96875,
+      "left": 813.609375
+    },
+    "children": [
+      {
+        "class": "cs-row",
+        "rect": {
+          "x": 813.609375,
+          "y": 221,
+          "width": 262,
+          "height": 53.859375,
+          "top": 221,
+          "right": 1075.609375,
+          "bottom": 274.859375,
+          "left": 813.609375
+        },
+        "pl": "0px",
+        "pr": "0px"
+      },
+      {
+        "class": "cs-row",
+        "rect": {
+          "x": 813.609375,
+          "y": 278.859375,
+          "width": 262,
+          "height": 53.859375,
+          "top": 278.859375,
+          "right": 1075.609375,
+          "bottom": 332.71875,
+          "left": 813.609375
+        },
+        "pl": "0px",
+        "pr": "0px"
+      },
+      {
+        "class": "cs-row",
+        "rect": {
+          "x": 813.609375,
+          "y": 336.71875,
+          "width": 262,
+          "height": 36.46875,
+          "top": 336.71875,
+          "right": 1075.609375,
+          "bottom": 373.1875,
+          "left": 813.609375
+        },
+        "pl": "0px",
+        "pr": "0px"
+      },
+      {
+        "class": "cs-row",
+        "rect": {
+          "x": 813.609375,
+          "y": 377.1875,
+          "width": 262,
+          "height": 34.78125,
+          "top": 377.1875,
+          "right": 1075.609375,
+          "bottom": 411.96875,
+          "left": 813.609375
+        },
+        "pl": "0px",
+        "pr": "0px"
+      }
+    ]
+  },
+  "historyDismissed": 0,
+  "mobileHistory": {
+    "x": 107,
+    "y": 251.375,
+    "width": 262,
+    "height": 190.96875
+  },
+  "tripwireTarget": {
+    "rect": {
+      "x": 904.453125,
+      "y": 428,
+      "width": 26,
+      "height": 22,
+      "top": 428,
+      "right": 930.453125,
+      "bottom": 450,
+      "left": 904.453125
+    },
+    "before": "none",
+    "after": "none"
+  }
+}

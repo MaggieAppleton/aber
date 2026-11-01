@@ -1,0 +1,1225 @@
+{
+  "attemptedWrites": [],
+  "worldSchema": {
+    "keys": [
+      "signalPage",
+      "themes",
+      "theories",
+      "signals",
+      "dumps",
+      "prototypes",
+      "suggestions",
+      "merges",
+      "relationships",
+      "binCount"
+    ],
+    "firstSuggestion": {
+      "id": "challenge:t3:s7",
+      "owner_id": "maggie",
+      "kind": "challenge",
+      "target_kind": "theory",
+      "target_id": "t3",
+      "payload_json": "{\"signal_id\":\"s7\",\"gist\":\"Memory feature withdrawn after privacy complaints\",\"source\":\"theverge.com\",\"day\":\"Today\",\"why\":\"A major assistant pulled memory after complaints\",\"tripwire_version\":1}",
+      "reasoning": "A major assistant pulled memory after complaints",
+      "status": "pending",
+      "run_id": "seed-run",
+      "dump_id": "D2",
+      "decided_at": null,
+      "seen_at": null,
+      "created_at": "2026-11-01T06:29:51.971Z",
+      "created_by": "agent:process_dump:seed-run",
+      "updated_at": "2026-11-01T06:29:51.971Z",
+      "updated_by": "agent:process_dump:seed-run",
+      "decision_json": null,
+      "ownerId": "maggie",
+      "targetKind": "theory",
+      "targetId": "t3",
+      "payloadJson": "{\"signal_id\":\"s7\",\"gist\":\"Memory feature withdrawn after privacy complaints\",\"source\":\"theverge.com\",\"day\":\"Today\",\"why\":\"A major assistant pulled memory after complaints\",\"tripwire_version\":1}",
+      "runId": "seed-run",
+      "dumpId": "D2",
+      "decidedAt": null,
+      "seenAt": null,
+      "createdAt": "2026-11-01T06:29:51.971Z",
+      "createdBy": "agent:process_dump:seed-run",
+      "updatedAt": "2026-11-01T06:29:51.971Z",
+      "updatedBy": "agent:process_dump:seed-run",
+      "decisionJson": null,
+      "payload": {
+        "signal_id": "s7",
+        "gist": "Memory feature withdrawn after privacy complaints",
+        "source": "theverge.com",
+        "day": "Today",
+        "why": "A major assistant pulled memory after complaints",
+        "tripwire_version": 1
+      },
+      "reason": "A major assistant pulled memory after complaints",
+      "gist": "Memory feature withdrawn after privacy complaints",
+      "decisionDetails": null
+    },
+    "firstTheme": {
+      "id": "cost",
+      "owner_id": "maggie",
+      "name": "Cost of intelligence",
+      "status": "mine",
+      "retire_reason": null,
+      "merged_into_id": null,
+      "seen_at": "2026-11-01T06:29:51.971Z",
+      "created_at": "2026-11-01T06:29:51.971Z",
+      "created_by": "person:maggie",
+      "updated_at": "2026-11-01T06:29:51.971Z",
+      "updated_by": "person:maggie",
+      "run_id": null,
+      "discarded_at": null,
+      "ownerId": "maggie",
+      "retireReason": null,
+      "mergedIntoId": null,
+      "seenAt": "2026-11-01T06:29:51.971Z",
+      "createdAt": "2026-11-01T06:29:51.971Z",
+      "createdBy": "person:maggie",
+      "updatedAt": "2026-11-01T06:29:51.971Z",
+      "updatedBy": "person:maggie",
+      "runId": null,
+      "discardedAt": null,
+      "draft": false,
+      "signals": 8,
+      "signalIds": [
+        "01M6AXDPN3QYHKN023E7TVJR0T",
+        "01M6AXK2ET10V1W38TN7ZAB0TQ",
+        "01M6AXK2PEC6TJ26J7V2RH4MRH",
+        "s1",
+        "s10",
+        "s2",
+        "s3",
+        "s4"
+      ],
+      "theories": [
+        "d1",
+        "d2",
+        "t1",
+        "t2",
+        "t7"
+      ],
+      "fresh": 6,
+      "open": false
+    }
+  },
+  "fixtureBriefingText": "Since you last looked\n15 left\nDumps\nChallenges\nAgents keep context across months, not sessions\nMemory feature withdrawn after privacy complaints\nA major assistant pulled memory after complaints\nAccept\nDrafts\nLocal models absorb most everyday agent work\nDrafted overnight from 3 signals about open-weight models.\nAccept\nSoftware is priced per outcome, not per seat\nExtrapolated from Tokens become nearly free, and from agents that run all the time.\nAccept\nReview shifts from diffs to intent\nDrafted from yesterday's voice note.\nAccept\nSuggestions\nTokens become nearly free for routine work\nProposed claim\nRoutine intelligence becomes cheap enough for everyday tools\nReplacement body\nFirst proposed paragraph.\n\nA second proposed paragraph with the supporting observation.\n\nA more precise claim based on the linked observation\n\nAccept\nFrontier intelligence stays scarce and expensive\nSupports: Data-centre power contracts are booked years ahead\nData-centre power contracts are booked years ahead\nEvidence note\nNo note\n\nData-centre power contracts are booked years ahead supports this theory\n\nAccept\nAgents keep context across months, not sessions\nUndermines: Memory feature withdrawn after privacy complaints\nMemory feature withdrawn after privacy complaints\nEvidence note\nNo note\n\nMemory feature withdrawn after privacy complaints undermines this theory\n\nAccept\nCode review becomes the bottleneck, not writing\nSupports: A small software studio reports that its senior engineers spend more time reviewing proposed changes than writing code.\n\nSynthetic evaluation observation only: the studio's reported review time is consistent with the theory, but does not establish that review is a bottleneck. Treat this as a hypothetical connection, not verified evidence.\n\nAccept\nTokens become nearly free for routine work\nSupports: Maggie notices that small language models are getting cheaper.\n\nMaggie's impression of falling small-model costs is directionally consistent with the theory, but has no pricing data or time frame and does not establish that routine work is nearly free.\n\nAccept\nLocal models absorb most everyday agent work\nSupports: Maggie notices that small language models are getting cheaper.\nMaggie\nEvidence note\nA friend's laptop-based coding agent replacing a hosted model is a concrete example of local models handling everyday agent work, though one anecdote does not show that they absorb most such work.\n\nThe observation directly describes a coding agent moving from hosted inference to a local laptop model, which bears on local models taking on agent workloads. Its single anecdotal instance provides only limited evidence for the claim's broad scope.\n\nAccept\nNew signals\nCost of intelligence\n6\nAI funding cycle\n1\nNovel agent interfaces\n1\nAgent memory\n1\nCode review after agents\n2\nDump or ask\nBriefing",
+  "fixtureDOM": [
+    {
+      "tag": "DD",
+      "cls": "",
+      "html": "<dd>Routine intelligence becomes cheap enough for everyday tools</dd>"
+    },
+    {
+      "tag": "DIV",
+      "cls": "",
+      "html": "<div><dt class=\"ap-label\">Proposed claim</dt><dd>Routine intelligence becomes cheap enough for everyday tools</dd></div>"
+    },
+    {
+      "tag": "DL",
+      "cls": "ab-proposal-fields",
+      "html": "<dl class=\"ab-proposal-fields\"><div><dt class=\"ap-label\">Proposed claim</dt><dd>Routine intelligence becomes cheap enough for everyday tools</dd></div><div><dt class=\"ap-label\">Replacement body</dt><dd>First proposed paragraph.\n\nA second proposed paragraph with the supporting observation.</dd></div></dl>"
+    },
+    {
+      "tag": "DIV",
+      "cls": "ab-proposal",
+      "html": "<div class=\"ab-proposal\" data-suggestion-id=\"design-final-revision-fixture\" data-suggestion-kind=\"revision\" aria-busy=\"false\"><dl class=\"ab-proposal-fields\"><div><dt class=\"ap-label\">Proposed claim</dt><dd>Routine intelligence becomes cheap enough for everyday tools</dd></div><div><dt class=\"ap-label\">Replacement body</dt><dd>First proposed paragraph.\n\nA second proposed paragraph with the supporting observation.</dd></div></dl><p class=\"ap-muted\">A more precise claim based on the linked observation</p><div class=\"pn-chips\"><button class=\"ap-btn\">Accept</button><button type=\"button\" class=\"ap-iconbtn\" aria-label=\"Rephrase and accept\" title=\"Rephrase and accept\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z\"></path></svg></button><button type=\"button\" class=\"ap-iconbtn\" aria-label=\"Discard suggestion\" title=\"Discard suggestion\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z\"></path></svg></button></div></div>"
+    },
+    {
+      "tag": "DIV",
+      "cls": "br-detail",
+      "html": "<div class=\"br-detail\"><div class=\"ab-proposal\" data-suggestion-id=\"design-final-revision-fixture\" data-suggestion-kind=\"revision\" aria-busy=\"false\"><dl class=\"ab-proposal-fields\"><div><dt class=\"ap-label\">Proposed claim</dt><dd>Routine intelligence becomes cheap enough for everyday tools</dd></div><div><dt class=\"ap-label\">Replacement body</dt><dd>First proposed paragraph.\n\nA second proposed paragraph with the supporting observation.</dd></div></dl><p class=\"ap-muted\">A more precise claim based on the linked observation</p><div class=\"pn-chips\"><button class=\"ap-btn\">Accept</button><button type=\"button\" class=\"ap-iconbtn\" aria-label=\"Rephrase and accept\" title=\"Rephrase and accept\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z\"></path></svg></button><button type=\"button\" class=\"ap-iconbtn\" aria-label=\"Discard suggestion\" title=\"Discard suggestion\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z\"></path></svg></button></div></div></div>"
+    },
+    {
+      "tag": "DIV",
+      "cls": "br-main",
+      "html": "<div class=\"br-main\"><div class=\"br-title\"><button class=\"br-open\">Tokens become nearly free for routine work</button></div><div class=\"br-detail\"><div class=\"ab-proposal\" data-suggestion-id=\"design-final-revision-fixture\" data-suggestion-kind=\"revision\" aria-busy=\"false\"><dl class=\"ab-proposal-fields\"><div><dt class=\"ap-label\">Proposed claim</dt><dd>Routine intelligence becomes cheap enough for everyday tools</dd></div><div><dt class=\"ap-label\">Replacement body</dt><dd>First proposed paragraph.\n\nA second proposed paragraph with the supporting observation.</dd></div></dl><p class=\"ap-muted\">A more precise claim based on the linked observation</p><div class=\"pn-chips\"><button class=\"ap-btn\">Accept</button><button type=\"button\" class=\"ap-iconbtn\" aria-label=\"Rephrase and accept\" title=\"Rephrase and accept\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z\"></path></svg></button><button type=\"button\" class=\"ap-iconbtn\" aria-label=\"Discard suggestion\" title=\"Discard suggestion\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" viewBox=\"0 0 256 256\" aria-hidden=\"true\"><path d=\"M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z\"></path></svg></button></div></div></div></div>"
+    }
+  ],
+  "fixturePaneText": "Since you last looked\n15 left\nDumps\nChallenges\nAgents keep context across months, not sessions\nMemory feature withdrawn after privacy complaints\nA major assistant pulled memory after complaints\nAccept\nDrafts\nLocal models absorb most everyday agent work\nDrafted overnight from 3 signals about open-weight models.\nAccept\nSoftware is priced per outcome, not per seat\nExtrapolated from Tokens become nearly free, and from agents that run all the time.\nAccept\nReview shifts from diffs to intent\nDrafted from yesterday's voice note.\nAccept\nSuggestions\nTokens become nearly free for routine work\nProposed claim\nRoutine intelligence becomes cheap enough for everyday tools\nReplacement body\nFirst proposed paragraph.\n\nA second proposed paragraph with the supporting observation.\n\nA more precise claim based on the linked observation\n\nAccept\nFrontier intelligence stays scarce and expensive\nSupports: Data-centre power contracts are booked years ahead\nData-centre power contracts are booked years ahead\nEvidence note\nNo note\n\nData-centre power contracts are booked years ahead supports this theory\n\nAccept\nAgents keep context across months, not sessions\nUndermines: Memory feature withdrawn after privacy complaints\nMemory feature withdrawn after privacy complaints\nEvidence note\nNo note\n\nMemory feature withdrawn after privacy complaints undermines this theory\n\nAccept\nCode review becomes the bottleneck, not writing\nSupports: A small software studio reports that its senior engineers spend more time reviewing proposed changes than writing code.\n\nSynthetic evaluation observation only: the studio's reported review time is consistent with the theory, but does not establish that review is a bottleneck. Treat this as a hypothetical connection, not verified evidence.\n\nAccept\nTokens become nearly free for routine work\nSupports: Maggie notices that small language models are getting cheaper.\n\nMaggie's impression of falling small-model costs is directionally consistent with the theory, but has no pricing data or time frame and does not establish that routine work is nearly free.\n\nAccept\nLocal models absorb most everyday agent work\nSupports: Maggie notices that small language models are getting cheaper.\nMaggie\nEvidence note\nA friend's laptop-based coding agent replacing a hosted model is a concrete example of local models handling everyday agent work, though one anecdote does not show that they absorb most such work.\n\nThe observation directly describes a coding agent moving from hosted inference to a local laptop model, which bears on local models taking on agent workloads. Its single anecdotal instance provides only limited evidence for the claim's broad scope.\n\nAccept\nNew signals\nCost of intelligence\n6\nAI funding cycle\n1\nNovel agent interfaces\n1\nAgent memory\n1\nCode review after agents\n2\nCost of intelligence\nTokens become nearly free for routine work\nConfidence\nHappens by\n2028\nRival\nFrontier intelligence stays scarce and expensive\nSmall models keep getting cheaper faster than demand grows. Routine agent work stops being metered in any way I notice.\nI'd change my mind if \nProposed claim\nRoutine intelligence becomes cheap enough for everyday tools\nReplacement body\nFirst proposed paragraph.\n\nA second proposed paragraph with the supporting observation.\n\nA more precise claim based on the linked observation\n\nAccept\nSupports: Maggie notices that small language models are getting cheaper.\n\nMaggie's impression of falling small-model costs is directionally consistent with the theory, but has no pricing data or time frame and does not establish that routine work is nearly free.\n\nAccept\nSupports\n2\nLab cuts API prices again for its small model tier\nx.com\nOpen-weight model matches last year's frontier on coding\nnews.ycombinator.com\nUndermines\n1\nFrontier training runs keep growing in cost\narxiv.org\nSoftware is priced per outcome, not per seat\nMost software is made for an audience of one\nAgents run continuously in the background by default\nToken budget meter\nDump or ask\nTokens become nearly free for routine work",
+  "ancestorClasses": [
+    {
+      "tag": "INPUT",
+      "cls": "",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 1360,
+        "height": 820,
+        "top": 0,
+        "right": 1360,
+        "bottom": 820,
+        "left": 0
+      }
+    },
+    {
+      "tag": "DIV",
+      "cls": "pn-conf-thumb",
+      "rect": {
+        "x": 692.609375,
+        "y": 44,
+        "width": 112,
+        "height": 40,
+        "top": 44,
+        "right": 804.609375,
+        "bottom": 84,
+        "left": 692.609375
+      }
+    },
+    {
+      "tag": "DIV",
+      "cls": "pn-conf-control",
+      "rect": {
+        "x": 692.609375,
+        "y": 44,
+        "width": 112,
+        "height": 40,
+        "top": 44,
+        "right": 804.609375,
+        "bottom": 84,
+        "left": 692.609375
+      }
+    },
+    {
+      "tag": "DIV",
+      "cls": "pn-conf",
+      "rect": {
+        "x": 692.609375,
+        "y": 44,
+        "width": 112,
+        "height": 40,
+        "top": 44,
+        "right": 804.609375,
+        "bottom": 84,
+        "left": 692.609375
+      }
+    },
+    {
+      "tag": "DD",
+      "cls": "",
+      "rect": {
+        "x": 692.609375,
+        "y": 44,
+        "width": 615.390625,
+        "height": 40,
+        "top": 44,
+        "right": 1308,
+        "bottom": 84,
+        "left": 692.609375
+      }
+    },
+    {
+      "tag": "DIV",
+      "cls": "pn-meta-row",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "tag": "DL",
+      "cls": "pn-meta",
+      "rect": {
+        "x": 608,
+        "y": 44,
+        "width": 700,
+        "height": 128,
+        "top": 44,
+        "right": 1308,
+        "bottom": 172,
+        "left": 608
+      }
+    }
+  ],
+  "fixturePhoneText": "Since you last looked\nDumps\nChallenges\nAgents keep context across months, not sessions\nDrafts\nLocal models absorb most everyday agent work\nSoftware is priced per outcome, not per seat\nReview shifts from diffs to intent\nSuggestions\nTokens become nearly free for routine work\nFrontier intelligence stays scarce and expensive\nAgents keep context across months, not sessions\nCode review becomes the bottleneck, not writing\nTokens become nearly free for routine work\nLocal models absorb most everyday agent work\nNew signals\nCost of intelligence\n6\nAI funding cycle\n1\nNovel agent interfaces\n1\nAgent memory\n1\nCode review after agents\n2\nCost of intelligence\nTokens become nearly free for routine work\nConfidence\nHappens by\n2028\nRival\nFrontier intelligence stays scarce and expensive\nSmall models keep getting cheaper faster than demand grows. Routine agent work stops being metered in any way I notice.\nI'd change my mind if \nProposed claim\nRoutine intelligence becomes cheap enough for everyday tools\nReplacement body\nFirst proposed paragraph.\n\nA second proposed paragraph with the supporting observation.\n\nA more precise claim based on the linked observation\n\nAccept\nSupports: Maggie notices that small language models are getting cheaper.\n\nMaggie's impression of falling small-model costs is directionally consistent with the theory, but has no pricing data or time frame and does not establish that routine work is nearly free.\n\nAccept\nSupports\n2\nLab cuts API prices again for its small model tier\nx.com\nOpen-weight model matches last year's frontier on coding\nnews.ycombinator.com\nUndermines\n1\nFrontier training runs keep growing in cost\narxiv.org\nSoftware is priced per outcome, not per seat\nMost software is made for an audience of one\nAgents run continuously in the background by default\nToken budget meter\nDump or ask\nTokens become nearly free for routine work",
+  "proposalMetrics": [
+    {
+      "cls": "br-open",
+      "text": "Agents keep context across months, not sessions",
+      "label": null,
+      "rect": {
+        "x": 62,
+        "y": -184.203125,
+        "width": 319.703125,
+        "height": 40,
+        "top": -184.203125,
+        "right": 381.703125,
+        "bottom": -144.203125,
+        "left": 62
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "nowrap"
+    },
+    {
+      "cls": "br-open",
+      "text": "Local models absorb most everyday agent work",
+      "label": null,
+      "rect": {
+        "x": 48,
+        "y": -85.40625,
+        "width": 308.453125,
+        "height": 40,
+        "top": -85.40625,
+        "right": 356.453125,
+        "bottom": -45.40625,
+        "left": 48
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "nowrap"
+    },
+    {
+      "cls": "br-open",
+      "text": "Software is priced per outcome, not per seat",
+      "label": null,
+      "rect": {
+        "x": 48,
+        "y": -21.40625,
+        "width": 286.78125,
+        "height": 40,
+        "top": -21.40625,
+        "right": 334.78125,
+        "bottom": 18.59375,
+        "left": 48
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "nowrap"
+    },
+    {
+      "cls": "br-open",
+      "text": "Review shifts from diffs to intent",
+      "label": null,
+      "rect": {
+        "x": 48,
+        "y": 42.59375,
+        "width": 210.21875,
+        "height": 40,
+        "top": 42.59375,
+        "right": 258.21875,
+        "bottom": 82.59375,
+        "left": 48
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "nowrap"
+    },
+    {
+      "cls": "br-open",
+      "text": "Tokens become nearly free for routine work",
+      "label": null,
+      "rect": {
+        "x": 48,
+        "y": 141.390625,
+        "width": 282.375,
+        "height": 40,
+        "top": 141.390625,
+        "right": 330.375,
+        "bottom": 181.390625,
+        "left": 48
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "nowrap"
+    },
+    {
+      "cls": "",
+      "text": "Routine intelligence becomes cheap enough for everyday tools",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "pre-wrap"
+    },
+    {
+      "cls": "",
+      "text": "First proposed paragraph.\n\nA second proposed paragraph with the supporting observation.",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "pre-wrap"
+    },
+    {
+      "cls": "ap-btn",
+      "text": "Accept",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "10px",
+        "10px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-iconbtn",
+      "text": "",
+      "label": "Rephrase and accept",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-iconbtn",
+      "text": "",
+      "label": "Discard suggestion",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "br-open",
+      "text": "Frontier intelligence stays scarce and expensive",
+      "label": null,
+      "rect": {
+        "x": 48,
+        "y": 205.390625,
+        "width": 310.078125,
+        "height": 40,
+        "top": 205.390625,
+        "right": 358.078125,
+        "bottom": 245.390625,
+        "left": 48
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "nowrap"
+    },
+    {
+      "cls": "pn-link",
+      "text": "Supports: Data-centre power contracts are booked years ahead",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "",
+      "text": "No note",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "pre-wrap"
+    },
+    {
+      "cls": "ap-btn",
+      "text": "Accept",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "10px",
+        "10px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-iconbtn",
+      "text": "",
+      "label": "Rephrase and accept",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-iconbtn",
+      "text": "",
+      "label": "Discard suggestion",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "br-open",
+      "text": "Agents keep context across months, not sessions",
+      "label": null,
+      "rect": {
+        "x": 48,
+        "y": 269.390625,
+        "width": 312,
+        "height": 40,
+        "top": 269.390625,
+        "right": 360,
+        "bottom": 309.390625,
+        "left": 48
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "nowrap"
+    },
+    {
+      "cls": "pn-link",
+      "text": "Undermines: Memory feature withdrawn after privacy complaints",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "",
+      "text": "No note",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "pre-wrap"
+    },
+    {
+      "cls": "ap-btn",
+      "text": "Accept",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "10px",
+        "10px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-iconbtn",
+      "text": "",
+      "label": "Rephrase and accept",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-iconbtn",
+      "text": "",
+      "label": "Discard suggestion",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "br-open",
+      "text": "Code review becomes the bottleneck, not writing",
+      "label": null,
+      "rect": {
+        "x": 48,
+        "y": 333.390625,
+        "width": 312,
+        "height": 40,
+        "top": 333.390625,
+        "right": 360,
+        "bottom": 373.390625,
+        "left": 48
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "nowrap"
+    },
+    {
+      "cls": "pn-link",
+      "text": "Supports: A small software studio reports that its senior engineers spend more time reviewing proposed changes than writing code.",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-btn",
+      "text": "Accept",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "10px",
+        "10px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-iconbtn",
+      "text": "",
+      "label": "Discard suggestion",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "br-open",
+      "text": "Tokens become nearly free for routine work",
+      "label": null,
+      "rect": {
+        "x": 48,
+        "y": 397.390625,
+        "width": 282.375,
+        "height": 40,
+        "top": 397.390625,
+        "right": 330.375,
+        "bottom": 437.390625,
+        "left": 48
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "nowrap"
+    },
+    {
+      "cls": "pn-link",
+      "text": "Supports: Maggie notices that small language models are getting cheaper.",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-btn",
+      "text": "Accept",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "10px",
+        "10px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-iconbtn",
+      "text": "",
+      "label": "Discard suggestion",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "br-open",
+      "text": "Local models absorb most everyday agent work",
+      "label": null,
+      "rect": {
+        "x": 48,
+        "y": 461.390625,
+        "width": 308.453125,
+        "height": 40,
+        "top": 461.390625,
+        "right": 356.453125,
+        "bottom": 501.390625,
+        "left": 48
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "nowrap"
+    },
+    {
+      "cls": "pn-link",
+      "text": "Supports: Maggie notices that small language models are getting cheaper.",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "",
+      "text": "A friend's laptop-based coding agent replacing a hosted model is a concrete example of local models handling everyday agent work, though one anecdote does not show that they absorb most such work.",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "pre-wrap"
+    },
+    {
+      "cls": "ap-btn",
+      "text": "Accept",
+      "label": null,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "10px",
+        "10px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-iconbtn",
+      "text": "",
+      "label": "Rephrase and accept",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-iconbtn",
+      "text": "",
+      "label": "Discard suggestion",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "",
+      "text": "Routine intelligence becomes cheap enough for everyday tools",
+      "label": null,
+      "rect": {
+        "x": 30,
+        "y": 403.421875,
+        "width": 330,
+        "height": 36.375,
+        "top": 403.421875,
+        "right": 360,
+        "bottom": 439.796875,
+        "left": 30
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "pre-wrap"
+    },
+    {
+      "cls": "",
+      "text": "First proposed paragraph.\n\nA second proposed paragraph with the supporting observation.",
+      "label": null,
+      "rect": {
+        "x": 30,
+        "y": 470.59375,
+        "width": 330,
+        "height": 72.75,
+        "top": 470.59375,
+        "right": 360,
+        "bottom": 543.34375,
+        "left": 30
+      },
+      "padding": [
+        "0px",
+        "0px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "pre-wrap"
+    },
+    {
+      "cls": "ap-btn",
+      "text": "Accept",
+      "label": null,
+      "rect": {
+        "x": 30,
+        "y": 581.53125,
+        "width": 63.625,
+        "height": 40,
+        "top": 581.53125,
+        "right": 93.625,
+        "bottom": 621.53125,
+        "left": 30
+      },
+      "padding": [
+        "10px",
+        "10px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-iconbtn",
+      "text": "",
+      "label": "Rephrase and accept",
+      "rect": {
+        "x": 97.625,
+        "y": 581.53125,
+        "width": 40,
+        "height": 40,
+        "top": 581.53125,
+        "right": 137.625,
+        "bottom": 621.53125,
+        "left": 97.625
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-iconbtn",
+      "text": "",
+      "label": "Discard suggestion",
+      "rect": {
+        "x": 141.625,
+        "y": 581.53125,
+        "width": 40,
+        "height": 40,
+        "top": 581.53125,
+        "right": 181.625,
+        "bottom": 621.53125,
+        "left": 141.625
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "pn-link",
+      "text": "Supports: Maggie notices that small language models are getting cheaper.",
+      "label": null,
+      "rect": {
+        "x": 30,
+        "y": 657.53125,
+        "width": 330,
+        "height": 42.375,
+        "top": 657.53125,
+        "right": 360,
+        "bottom": 699.90625,
+        "left": 30
+      },
+      "padding": [
+        "4px",
+        "4px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-btn",
+      "text": "Accept",
+      "label": null,
+      "rect": {
+        "x": 30,
+        "y": 792.65625,
+        "width": 63.625,
+        "height": 40,
+        "top": 792.65625,
+        "right": 93.625,
+        "bottom": 832.65625,
+        "left": 30
+      },
+      "padding": [
+        "10px",
+        "10px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    },
+    {
+      "cls": "ap-iconbtn",
+      "text": "",
+      "label": "Discard suggestion",
+      "rect": {
+        "x": 97.625,
+        "y": 792.65625,
+        "width": 40,
+        "height": 40,
+        "top": 792.65625,
+        "right": 137.625,
+        "bottom": 832.65625,
+        "left": 97.625
+      },
+      "padding": [
+        "6px",
+        "6px"
+      ],
+      "fontSize": "13px",
+      "whiteSpace": "normal"
+    }
+  ],
+  "paneClasses": [
+    {
+      "cls": "as-pane",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "top": 0,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    },
+    {
+      "cls": "as-pane-edge",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "cls": "as-pane-close",
+      "rect": {
+        "x": 338,
+        "y": 10,
+        "width": 40,
+        "height": 40,
+        "top": 10,
+        "right": 378,
+        "bottom": 50,
+        "left": 338
+      }
+    },
+    {
+      "cls": "as-pane-scroll ap-scroll",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "top": 0,
+        "right": 390,
+        "bottom": 844,
+        "left": 0
+      }
+    }
+  ],
+  "fixturePhoneOverflow": {
+    "body": 390,
+    "width": 390
+  }
+}

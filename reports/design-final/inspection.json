@@ -1,0 +1,738 @@
+{
+  "themes": {
+    "title": "Aber",
+    "body": "Aber\nCost of intelligence\n5\nAI funding cycle\n2\nAgent identity\nopen\nNovel agent interfaces\nopen\nAgent memory\n2\nPersonal software\n2\nCode review after agents\n2\nPrototypes\n4\nCost of intelligence\n8 signals\nTokens become nearly free for routine work\n+2\n−1\n1\n1\nFrontier intelligence stays scarce and expensive\n+1\n−0\n1\nAgents run continuously in the background by default\n+0\n−0\nLocal models absorb most everyday agent work\n+1\n−0\n1\nSoftware is priced per outcome, not per seat\n+1\n−0\nAI funding cycle\n3 signals\nFrontier intelligence stays scarce and expensive\n+1\n−0\n1\nLabs face a funding correction before agents pay their way\n+1\n−0\nAgent identity\n1 signal\nNovel agent interfaces\n1 signal\nAgent memory\n2 signals\nAgents keep context across months, not sessions\n+1\n−0\n1\n2\nAgents run continuously in the background by default\n+0\n−0\nPersonal software\n2 signals\nMost software is made for an audience of one\n+1\n−0\n1\nSoftware is priced per outcome, not per seat\n+1\n−0\nCode review after agents\n3 signals\nCode review becomes the bottleneck, not writing\n+2\n−0\n1\n1\nReview shifts from diffs to intent\n+1\n−0\n1\nDump or ask\nTheme sections",
+    "buttons": [
+      {
+        "text": "",
+        "label": "Find (⌘K)",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "Cost of intelligence",
+        "label": null,
+        "cls": "ap-h cur-theme-name cur-theme-btn"
+      },
+      {
+        "text": "AI funding cycle",
+        "label": null,
+        "cls": "ap-h cur-theme-name cur-theme-btn"
+      },
+      {
+        "text": "Agent identity",
+        "label": null,
+        "cls": "ap-h cur-theme-name cur-theme-btn"
+      },
+      {
+        "text": "",
+        "label": "State a theory",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "Novel agent interfaces",
+        "label": null,
+        "cls": "ap-h cur-theme-name cur-theme-btn"
+      },
+      {
+        "text": "",
+        "label": "State a theory",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "Agent memory",
+        "label": null,
+        "cls": "ap-h cur-theme-name cur-theme-btn"
+      },
+      {
+        "text": "Personal software",
+        "label": null,
+        "cls": "ap-h cur-theme-name cur-theme-btn"
+      },
+      {
+        "text": "Code review after agents",
+        "label": null,
+        "cls": "ap-h cur-theme-name cur-theme-btn"
+      },
+      {
+        "text": "",
+        "label": "New theme",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "",
+        "label": "State a theory",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "",
+        "label": "Theme sections (⌘1)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Columns (⌘2)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Atlas (⌘3)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Timeline (⌘4)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Briefing (⌘5)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Dump log (⌘⇧L)",
+        "cls": "ps-logseg"
+      },
+      {
+        "text": "Dump or askTheme sections",
+        "label": "Dump or ask (⌘J)",
+        "cls": "ps-pill"
+      },
+      {
+        "text": "",
+        "label": "Voice dump",
+        "cls": "ps-micseg"
+      }
+    ],
+    "overflow": {
+      "body": 1360,
+      "width": 1360
+    }
+  },
+  "columns": {
+    "title": "Aber",
+    "body": "Loading Aber…",
+    "buttons": [],
+    "overflow": {
+      "body": 1360,
+      "width": 1360
+    }
+  },
+  "atlas": {
+    "title": "Aber",
+    "body": "Cost of intelligence\n8\nAI funding cycle\n3\nAgent identity\n1\nNovel agent interfaces\n1\nAgent memory\n2\nPersonal software\n2\nCode review after agents\n3\nLocal models absorb most everyday agent work\nSoftware is priced per outcome, not per seat\nReview shifts from diffs to intent\nTokens become nearly free for routine work\nFrontier intelligence stays scarce and expensive\nAgents keep context across months, not sessions\nCode review becomes the bottleneck, not writing\nMost software is made for an audience of one\nLabs face a funding correction before agents pay their way\nAgents run continuously in the background by default\nOpen-weight model matches last year's frontier on coding\nMaggie notices that small language models are getting cheaper.\nStartup sells agent hours instead of seats\nReviewers skim agent diffs and approve\nLab cuts API prices again for its small model tier\nOpen-weight model matches last year's frontier on coding\nFrontier training runs keep growing in cost\nFrontier training runs keep growing in cost\nData-centre power contracts are booked years ahead\nAgent recalls a codebase across a month of sessions\nMemory feature withdrawn after privacy complaints\nReviewers skim agent diffs and approve\nTeam reports agents opening 40 PRs a day\nFriend built a budgeting app just for her household\nFunding for model labs dips for a second quarter\nDump or ask\nAtlas",
+    "buttons": [
+      {
+        "text": "",
+        "label": "Cost of intelligence, 8 signals",
+        "cls": "a2-region"
+      },
+      {
+        "text": "",
+        "label": "AI funding cycle, 3 signals",
+        "cls": "a2-region"
+      },
+      {
+        "text": "",
+        "label": "Agent identity, 1 signal",
+        "cls": "a2-region"
+      },
+      {
+        "text": "",
+        "label": "Novel agent interfaces, 1 signal",
+        "cls": "a2-region"
+      },
+      {
+        "text": "",
+        "label": "Agent memory, 2 signals",
+        "cls": "a2-region"
+      },
+      {
+        "text": "",
+        "label": "Personal software, 2 signals",
+        "cls": "a2-region"
+      },
+      {
+        "text": "",
+        "label": "Code review after agents, 3 signals",
+        "cls": "a2-region"
+      },
+      {
+        "text": "",
+        "label": "Open-weight model matches last year's frontier on coding. Supports “Local models absorb most everyday agent work”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Maggie notices that small language models are getting cheaper.. Suggested: Supports “Local models absorb most everyday agent work”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Startup sells agent hours instead of seats. Supports “Software is priced per outcome, not per seat”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Reviewers skim agent diffs and approve. Supports “Review shifts from diffs to intent”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Lab cuts API prices again for its small model tier. Supports “Tokens become nearly free for routine work”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Open-weight model matches last year's frontier on coding. Supports “Tokens become nearly free for routine work”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Frontier training runs keep growing in cost. Undermines “Tokens become nearly free for routine work”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Frontier training runs keep growing in cost. Supports “Frontier intelligence stays scarce and expensive”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Data-centre power contracts are booked years ahead. Suggested: Supports “Frontier intelligence stays scarce and expensive”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Agent recalls a codebase across a month of sessions. Supports “Agents keep context across months, not sessions”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Memory feature withdrawn after privacy complaints. Suggested: Undermines “Agents keep context across months, not sessions”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Reviewers skim agent diffs and approve. Supports “Code review becomes the bottleneck, not writing”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Team reports agents opening 40 PRs a day. Supports “Code review becomes the bottleneck, not writing”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Friend built a budgeting app just for her household. Supports “Most software is made for an audience of one”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Funding for model labs dips for a second quarter. Supports “Labs face a funding correction before agents pay their way”",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Agents get their own OAuth identities. Not evidence for a theory yet",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Design studio ships a canvas-style agent UI. Not evidence for a theory yet",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "A small software studio reports that local coding models complete routine refactors without a hosted model.. Not evidence for a theory yet",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Maggie says a friend now runs a coding agent on her laptop instead of paying for a hosted model.. Not evidence for a theory yet",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "A small software studio reports that its senior engineers spend more time reviewing proposed changes than writing code.. Not evidence for a theory yet",
+        "cls": "a2-tick"
+      },
+      {
+        "text": "",
+        "label": "Local models absorb most everyday agent work",
+        "cls": "a2-pin"
+      },
+      {
+        "text": "",
+        "label": "Software is priced per outcome, not per seat",
+        "cls": "a2-pin"
+      },
+      {
+        "text": "",
+        "label": "Review shifts from diffs to intent",
+        "cls": "a2-pin"
+      },
+      {
+        "text": "",
+        "label": "Tokens become nearly free for routine work",
+        "cls": "a2-pin"
+      },
+      {
+        "text": "",
+        "label": "Frontier intelligence stays scarce and expensive",
+        "cls": "a2-pin"
+      },
+      {
+        "text": "",
+        "label": "Agents keep context across months, not sessions",
+        "cls": "a2-pin"
+      },
+      {
+        "text": "",
+        "label": "Code review becomes the bottleneck, not writing",
+        "cls": "a2-pin"
+      },
+      {
+        "text": "",
+        "label": "Most software is made for an audience of one",
+        "cls": "a2-pin"
+      },
+      {
+        "text": "",
+        "label": "Labs face a funding correction before agents pay their way",
+        "cls": "a2-pin"
+      },
+      {
+        "text": "",
+        "label": "Agents run continuously in the background by default",
+        "cls": "a2-pin"
+      },
+      {
+        "text": "",
+        "label": "Zoom in (+)",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "",
+        "label": "Zoom out (−)",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "",
+        "label": "Fit map (0)",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "",
+        "label": "Theme sections (⌘1)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Columns (⌘2)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Atlas (⌘3)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Timeline (⌘4)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Briefing (⌘5)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Dump log (⌘⇧L)",
+        "cls": "ps-logseg"
+      },
+      {
+        "text": "Dump or askAtlas",
+        "label": "Dump or ask (⌘J)",
+        "cls": "ps-pill"
+      },
+      {
+        "text": "",
+        "label": "Voice dump",
+        "cls": "ps-micseg"
+      }
+    ],
+    "overflow": {
+      "body": 1360,
+      "width": 1360
+    }
+  },
+  "timeline": {
+    "title": "Aber",
+    "body": "2027\n2028\n2029\n2030\n2031\nLocal models absorb most everyday agent work\nSoftware is priced per outcome, not per seat\nReview shifts from diffs to intent\nTokens become nearly free for routine work\nFrontier intelligence stays scarce and expensive\nAgents keep context across months, not sessions\nCode review becomes the bottleneck, not writing\nMost software is made for an audience of one\nLabs face a funding correction before agents pay their way\nAgents run continuously in the background by default\nDump or ask\nTimeline",
+    "buttons": [
+      {
+        "text": "",
+        "label": "Theme",
+        "cls": "t2-tool"
+      },
+      {
+        "text": "Local models absorb most everyday agent work",
+        "label": "Local models absorb most everyday agent work",
+        "cls": "t2a-item"
+      },
+      {
+        "text": "Software is priced per outcome, not per seat",
+        "label": "Software is priced per outcome, not per seat",
+        "cls": "t2a-item"
+      },
+      {
+        "text": "Review shifts from diffs to intent",
+        "label": "Review shifts from diffs to intent",
+        "cls": "t2a-item"
+      },
+      {
+        "text": "Tokens become nearly free for routine work",
+        "label": "Tokens become nearly free for routine work",
+        "cls": "t2a-item"
+      },
+      {
+        "text": "Frontier intelligence stays scarce and expensive",
+        "label": "Frontier intelligence stays scarce and expensive",
+        "cls": "t2a-item"
+      },
+      {
+        "text": "Agents keep context across months, not sessions",
+        "label": "Agents keep context across months, not sessions",
+        "cls": "t2a-item"
+      },
+      {
+        "text": "Code review becomes the bottleneck, not writing",
+        "label": "Code review becomes the bottleneck, not writing",
+        "cls": "t2a-item"
+      },
+      {
+        "text": "Most software is made for an audience of one",
+        "label": "Most software is made for an audience of one",
+        "cls": "t2a-item"
+      },
+      {
+        "text": "Labs face a funding correction before agents pay their way",
+        "label": "Labs face a funding correction before agents pay their way",
+        "cls": "t2a-item"
+      },
+      {
+        "text": "Agents run continuously in the background by default",
+        "label": "Agents run continuously in the background by default",
+        "cls": "t2a-item"
+      },
+      {
+        "text": "",
+        "label": "Theme sections (⌘1)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Columns (⌘2)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Atlas (⌘3)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Timeline (⌘4)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Briefing (⌘5)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Dump log (⌘⇧L)",
+        "cls": "ps-logseg"
+      },
+      {
+        "text": "Dump or askTimeline",
+        "label": "Dump or ask (⌘J)",
+        "cls": "ps-pill"
+      },
+      {
+        "text": "",
+        "label": "Voice dump",
+        "cls": "ps-micseg"
+      }
+    ],
+    "overflow": {
+      "body": 1360,
+      "width": 1360
+    }
+  },
+  "briefing": {
+    "title": "Aber",
+    "body": "Since you last looked\n14 left\nDumps\nChallenges\nAgents keep context across months, not sessions\nMemory feature withdrawn after privacy complaints\nA major assistant pulled memory after complaints\nAccept\nDrafts\nLocal models absorb most everyday agent work\nDrafted overnight from 3 signals about open-weight models.\nAccept\nSoftware is priced per outcome, not per seat\nExtrapolated from Tokens become nearly free, and from agents that run all the time.\nAccept\nReview shifts from diffs to intent\nDrafted from yesterday's voice note.\nAccept\nSuggestions\nFrontier intelligence stays scarce and expensive\nSupports: Data-centre power contracts are booked years ahead\nData-centre power contracts are booked years ahead\nEvidence note\nNo note\n\nData-centre power contracts are booked years ahead supports this theory\n\nAccept\nAgents keep context across months, not sessions\nUndermines: Memory feature withdrawn after privacy complaints\nMemory feature withdrawn after privacy complaints\nEvidence note\nNo note\n\nMemory feature withdrawn after privacy complaints undermines this theory\n\nAccept\nCode review becomes the bottleneck, not writing\nSupports: A small software studio reports that its senior engineers spend more time reviewing proposed changes than writing code.\n\nSynthetic evaluation observation only: the studio's reported review time is consistent with the theory, but does not establish that review is a bottleneck. Treat this as a hypothetical connection, not verified evidence.\n\nAccept\nTokens become nearly free for routine work\nSupports: Maggie notices that small language models are getting cheaper.\n\nMaggie's impression of falling small-model costs is directionally consistent with the theory, but has no pricing data or time frame and does not establish that routine work is nearly free.\n\nAccept\nLocal models absorb most everyday agent work\nSupports: Maggie notices that small language models are getting cheaper.\nMaggie\nEvidence note\nA friend's laptop-based coding agent replacing a hosted model is a concrete example of local models handling everyday agent work, though one anecdote does not show that they absorb most such work.\n\nThe observation directly describes a coding agent moving from hosted inference to a local laptop model, which bears on local models taking on agent workloads. Its single anecdotal instance provides only limited evidence for the claim's broad scope.\n\nAccept\nNew signals\nCost of intelligence\n6\nAI funding cycle\n1\nNovel agent interfaces\n1\nAgent memory\n1\nCode review after agents\n2\nDump or ask\nBriefing",
+    "buttons": [
+      {
+        "text": "Dumps",
+        "label": null,
+        "cls": "br-overnight"
+      },
+      {
+        "text": "Agents keep context across months, not sessions",
+        "label": null,
+        "cls": "br-open"
+      },
+      {
+        "text": "Accept",
+        "label": null,
+        "cls": "ap-btn"
+      },
+      {
+        "text": "",
+        "label": "Dismiss (X)",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "Local models absorb most everyday agent work",
+        "label": null,
+        "cls": "br-open"
+      },
+      {
+        "text": "Accept",
+        "label": null,
+        "cls": "ap-btn"
+      },
+      {
+        "text": "",
+        "label": "Discard (X)",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "Software is priced per outcome, not per seat",
+        "label": null,
+        "cls": "br-open"
+      },
+      {
+        "text": "Accept",
+        "label": null,
+        "cls": "ap-btn"
+      },
+      {
+        "text": "",
+        "label": "Discard (X)",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "Review shifts from diffs to intent",
+        "label": null,
+        "cls": "br-open"
+      },
+      {
+        "text": "Accept",
+        "label": null,
+        "cls": "ap-btn"
+      },
+      {
+        "text": "",
+        "label": "Discard (X)",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "Frontier intelligence stays scarce and expensive",
+        "label": null,
+        "cls": "br-open"
+      },
+      {
+        "text": "Supports: Data-centre power contracts are booked years ahead",
+        "label": null,
+        "cls": "pn-link"
+      },
+      {
+        "text": "Accept",
+        "label": null,
+        "cls": "ap-btn"
+      },
+      {
+        "text": "",
+        "label": "Rephrase and accept",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "",
+        "label": "Discard suggestion",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "Agents keep context across months, not sessions",
+        "label": null,
+        "cls": "br-open"
+      },
+      {
+        "text": "Undermines: Memory feature withdrawn after privacy complaints",
+        "label": null,
+        "cls": "pn-link"
+      },
+      {
+        "text": "Accept",
+        "label": null,
+        "cls": "ap-btn"
+      },
+      {
+        "text": "",
+        "label": "Rephrase and accept",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "",
+        "label": "Discard suggestion",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "Code review becomes the bottleneck, not writing",
+        "label": null,
+        "cls": "br-open"
+      },
+      {
+        "text": "Supports: A small software studio reports that its senior engineers spend more time reviewing proposed changes than writing code.",
+        "label": null,
+        "cls": "pn-link"
+      },
+      {
+        "text": "Accept",
+        "label": null,
+        "cls": "ap-btn"
+      },
+      {
+        "text": "",
+        "label": "Discard suggestion",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "Tokens become nearly free for routine work",
+        "label": null,
+        "cls": "br-open"
+      },
+      {
+        "text": "Supports: Maggie notices that small language models are getting cheaper.",
+        "label": null,
+        "cls": "pn-link"
+      },
+      {
+        "text": "Accept",
+        "label": null,
+        "cls": "ap-btn"
+      },
+      {
+        "text": "",
+        "label": "Discard suggestion",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "Local models absorb most everyday agent work",
+        "label": null,
+        "cls": "br-open"
+      },
+      {
+        "text": "Supports: Maggie notices that small language models are getting cheaper.",
+        "label": null,
+        "cls": "pn-link"
+      },
+      {
+        "text": "Accept",
+        "label": null,
+        "cls": "ap-btn"
+      },
+      {
+        "text": "",
+        "label": "Rephrase and accept",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "",
+        "label": "Discard suggestion",
+        "cls": "ap-iconbtn"
+      },
+      {
+        "text": "Cost of intelligence6",
+        "label": null,
+        "cls": "br-row ab-disclosure"
+      },
+      {
+        "text": "AI funding cycle1",
+        "label": null,
+        "cls": "br-row ab-disclosure"
+      },
+      {
+        "text": "Novel agent interfaces1",
+        "label": null,
+        "cls": "br-row ab-disclosure"
+      },
+      {
+        "text": "Agent memory1",
+        "label": null,
+        "cls": "br-row ab-disclosure"
+      },
+      {
+        "text": "Code review after agents2",
+        "label": null,
+        "cls": "br-row ab-disclosure"
+      },
+      {
+        "text": "",
+        "label": "Theme sections (⌘1)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Columns (⌘2)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Atlas (⌘3)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Timeline (⌘4)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Briefing (⌘5)",
+        "cls": "as-switch-btn"
+      },
+      {
+        "text": "",
+        "label": "Dump log (⌘⇧L)",
+        "cls": "ps-logseg"
+      },
+      {
+        "text": "Dump or askBriefing",
+        "label": "Dump or ask (⌘J)",
+        "cls": "ps-pill"
+      },
+      {
+        "text": "",
+        "label": "Voice dump",
+        "cls": "ps-micseg"
+      }
+    ],
+    "overflow": {
+      "body": 1360,
+      "width": 1360
+    }
+  },
+  "jig": {
+    "body": "Jigs\nApp\n\nCanonical. Every v1 surface, as decided; see /reference for the constants.\n\nThe five views, one shared object pane, the dump-or-ask pill with its log, and the edits store, in one window.\n\nAber\nCost of intelligence\n5\nAgent memory\n2\nCode review after agents\n2\nPersonal software\n2\nAI funding cycle\n2\nNovel agent interfaces\nopen\nAgent identity\nopen\nPrototypes\n4\nCost of intelligence\n23 signals\nTokens become nearly free for routine work\n+5\n−2\n1\n2\nFrontier intelligence stays scarce and expensive\n+3\n−4\n1\nAgents run continuously in the background by default\n+3\n−0\nLocal models absorb most everyday agent work\n+3\n−0\nSoftware is priced per outcome, not per seat\n+1\n−0\nAgent memory\n31 signals\nAgents keep context across months, not sessions\n+8\n−1\n1\n1\nAgents run continuously in the background by default\n+3\n−0\nCode review after agents\n18 signals\nCode review becomes the bottleneck, not writing\n+6\n−1\n1\nReview shifts from diffs to intent\n+2\n−0\n1\nPersonal software\n27 signals\nMost software is made for an audience of one\n+4\n−2\n1\nSoftware is priced per outcome, not per seat\n+1\n−0\nAI funding cycle\n9 signals\nFrontier intelligence stays scarce and expensive\n+3\n−4\n1\nLabs face a funding correction before agents pay their way\n+2\n−2\nNovel agent interfaces\n14 signals\nAgent identity\n6 signals\nDump or ask\nTheme sections\nViews\tFive views of the same material. Theme sections opens first; Columns, Atlas (circles, Paper, signals revealed on zoom) and Timeline (the Field) are the same theories arranged differently; Briefing is what changed since you last looked.\nSwitch views\tIcon control bottom-left, opposite the pill, or ⌘1 to ⌘5 in that order. Short cross-fade with a slight scale; whatever is open stays open.\nOpen an object\tClick a theory, theme heading, territory, pin or Briefing item. It opens in one shared pane docked on the right that slides in from the edge and pushes the view.\nPane widths\tCompact, half, wide (the view's default) and full; drag the left edge or ⌘[ ⌘]. When half lands within 40px of compact, half is kept and compact drops out.\nBriefing\tChallenges, drafts, suggestions, auto-merged near-duplicates (one click to unmerge) and new signals by theme. J and K move, A accepts, X discards, U unmerges, O opens.\nDump or ask\tPill and mic bottom-right on every view. Its chip names what you are looking at: the view, or the open object first. Click or ⌘J grows the docked column up from the corner.\nDump log\tThe history segment at the pill's left end, or ⌘⇧L: recent dumps with processing status and what each produced, and a bin that keeps deleted dumps for 30 days. Esc sinks it back into the pill.\nBoth open\tBoth stay docked. The dump column owns the far-right edge because it grows from the corner pill; the pane narrows and moves left of it, and the view compresses (Timeline scrolls sideways).\nEsc\tOne stack: closes whichever of the log, the pane and the column opened last, then the next. Picking and recording are cancelled first.\nPhone\n\nCapture is the Apple Shortcut. On the phone the app is only the Briefing, the pane and the pill, at 390 wide. Tap an item to open it; the back arrow returns.\n\nSince you last looked\nYesterday 22:40\n11 left\n4\n10\n3\nChallenges\n1\nAgents keep context across months, not sessions\nMemory feature withdrawn after privacy complaints theverge.com\nA major assistant pulled memory after complaints\nAccept\nDrafts\n3\nLocal models absorb most everyday agent work\n+3\n−0\nCost of intelligence\nAccept\nAgent payments\nFrom 4 signals with no theme yet\nStartup sells agent hours instead of seats; Card network pilots agent-initiated payments\nAccept\nDiff-free review mode\nReview a change by its stated intent and tests, not its diff\nReview shifts from diffs to intent\nAccept\nSuggestions\n3\nFrontier intelligence stays scarce and expensive\nData-centre power contracts are booked years ahead ft.com\nAccept\nTokens become nearly free for routine work\nTokens become nearly free for routine work, not for frontier reasoning\nAccept\nMerge AI funding cycle into Cost of intelligence\n3 signals and 1 theory in both\nMerge\nMerged\n1\nLab cuts API prices again for its small model tier\nOne signal, 2 sources: x.com and theverge.com\nUnmerge\nNew signals\n3\nCost of intelligence\n4 new\nCode review after agents\n2 new\nAgent memory\n2 new\nDump or ask\nSince you last looked\nYesterday 22:40\n11 left\n4\n10\n3\nChallenges\n1\nAgents keep context across months, not sessions\nMemory feature withdrawn after privacy complaints theverge.com\nA major assistant pulled memory after complaints\nAccept\nDrafts\n3\nLocal models absorb most everyday agent work\n+3\n−0\nCost of intelligence\nAccept\nAgent payments\nFrom 4 signals with no theme yet\nStartup sells agent hours instead of seats; Card network pilots agent-initiated payments\nAccept\nDiff-free review mode\nReview a change by its stated intent and tests, not its diff\nReview shifts from diffs to intent\nAccept\nSuggestions\n3\nFrontier intelligence stays scarce and expensive\nData-centre power contracts are booked years ahead ft.com\nAccept\nTokens become nearly free for routine work\nTokens become nearly free for routine work, not for frontier reasoning\nAccept\nMerge AI funding cycle into Cost of intelligence\n3 signals and 1 theory in both\nMerge\nMerged\n1\nLab cuts API prices again for its small model tier\nOne signal, 2 sources: x.com and theverge.com\nUnmerge\nNew signals\n3\nCost of intelligence\n4 new\nCode review after agents\n2 new\nAgent memory\n2 new\nAgent memory\nAgents keep context across months, not sessions\nConfidence\nHappens by\n2027\nMemory becomes a default feature: an agent knows my projects the way a colleague does.\nI'd change my mind if a major assistant withdraws its memory feature, or people switch memory off once they see what it keeps.\n1\nMemory feature withdrawn after privacy complaints\nA major assistant pulled memory after complaints\ntheverge.com\nAccept\nSupports\n1\nAgent recalls a codebase across a month of sessions\nx.com\nUndermines\n0\nAgents run continuously in the background by default\nMemory inspector\nDump or ask",
+    "frames": [
+      "http://127.0.0.1:5181/app"
+    ]
+  },
+  "attemptedWrites": []
+}
