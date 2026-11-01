@@ -1,0 +1,174 @@
+/*
+ * Approved component patterns from the surface study (design/surface-study/index.html, "Stages" and "Rules").
+ * Colours come from the shared token layer (--ap-accent, --ap-focus-ring, --ap-new, --ap-sel, --ap-press, --ap-shc);
+ * each has a fallback so a pattern still reads correctly where a token is not defined yet.
+ * Red means a tripped tripwire, and nothing else.
+ */
+:root {
+  --ab-shc: var(--ap-shc, 26 33 30);
+  --ab-accent: var(--ap-accent, #29a383);
+  --ab-focus: var(--ap-focus-ring, #29a383);
+  --ab-new: var(--ap-new, var(--ab-accent));
+  --ab-press: var(--ap-press, 0.98);
+  --ab-ink: #1a211e; --ab-ink-2: #5f6563; --ab-ink-3: #868e8b;   /* sage 12, 11, 9 */
+  --ab-sage-3: #eef1f0;
+  --ab-tripped: #ce2c31; --ab-tripped-line: #e5484d;             /* red 11 (signpost), red 9 (wavy underline) */
+  --ab-draft-line: rgb(var(--ab-shc) / 12%); --ab-draft-fill: rgb(255 255 255 / 45%);
+  --ab-spring: cubic-bezier(0.16, 1, 0.3, 1); --ab-spring-dur: 380ms;
+  --ab-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ── 1. Draft cards act from their edge ──
+   Dashed means not yet mine. The dash is drawn on a layer so accepting can fade it out while the card settles. */
+.ab-edge-host { position: relative; display: grid; min-width: 0; border-radius: var(--size-px-8); }
+.ab-edge-host > .ap-card { position: relative; min-width: 0; }
+.ap .ab-edge-host > .ap-card[data-draft] { outline-color: transparent; box-shadow: none; }   /* drafts sit on the plane: no shadow, even when hot */
+.ap .ab-edge-host:is(:hover, :focus-within) > .ap-card[data-draft] { background: color-mix(in oklab, var(--ab-draft-fill) 60%, #fff); }
+.ap .ab-edge-host > .ap-card[data-draft] .ap-card-claim { padding-right: var(--size-px-18); }
+.ab-edge-host > .ap-card::after, .ap .cd-item:has(> [data-edge-card])::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; border: var(--size-px-1) dashed var(--ab-draft-line);
+  opacity: 0; pointer-events: none; transition: opacity 260ms var(--ab-ease);
+}
+.ab-edge-host > .ap-card[data-draft]::after, .ap .cd-item[data-draft]:has(> [data-edge-card])::after { opacity: 1; }
+.ap .cd-item:has(> [data-edge-card]) { position: relative; }
+.ap .cd-item[data-draft]:has(> [data-edge-card]) { outline-color: transparent; }
+.ap .cd-item[data-draft] > .cd-item-btn { padding-right: var(--size-px-30); }
+
+.ab-edge-acts { display: contents; }
+.ab-mini {
+  position: absolute; right: var(--size-px-6); z-index: 2; display: inline-grid; place-items: center; width: var(--size-px-24); height: var(--size-px-24);
+  padding: 0; border: 0; border-radius: 999px; background: var(--ap-surface, #fff); color: var(--ap-ink-2, var(--ab-ink-2)); cursor: pointer;
+  box-shadow: 0 0 0 0.5px rgb(var(--ab-shc) / 9%), 0 1px 2px rgb(var(--ab-shc) / 8%);
+  opacity: 0; pointer-events: none;
+  transition: opacity 160ms var(--ab-ease), transform 160ms var(--ab-ease), color 90ms var(--ab-ease);
+}
+.ab-mini[data-edge="no"] { top: var(--size-px-6); transform: translateY(-2px); }
+.ab-mini[data-edge="yes"] { bottom: var(--size-px-6); transform: translateY(2px); }
+:is(.ab-edge-host, .cd-item):is(:hover, :focus-within) .ab-mini { opacity: 1; transform: none; pointer-events: auto; }
+.ab-mini:hover { color: var(--ap-ink, var(--ab-ink)); }   /* no red: discarding a draft is not a challenge */
+.ab-mini:active { transform: scale(var(--ab-press)); }
+.ab-mini:focus-visible { outline: var(--size-px-2) solid var(--ab-focus); outline-offset: var(--size-px-2); }
+
+/* Accepting solidifies in place; discarding slides out to the right. */
+.ab-edge-host[data-settling] > .ap-card, .ap .cd-item[data-settling] { animation: ab-solidify var(--ab-spring-dur) var(--ab-spring); }
+@keyframes ab-solidify { 0% { transform: scale(0.97); } 60% { transform: scale(1.012); } 100% { transform: none; } }
+.ab-edge-host[data-leaving] > .ap-card, .ap .cd-item[data-leaving] { opacity: 0; transform: translateX(16px) scale(0.98); pointer-events: none;
+  transition: opacity 160ms var(--ab-ease), transform 160ms var(--ab-ease); }
+.ab-edge-host[data-leaving] .ab-mini { opacity: 0; }
+
+/* ── 2. Tripwire sentence states ──
+   Empty: placeholder and a grey signpost. Watching: a grey dot trailing the sentence by 10px, breathing slowly.
+   Tripped: red signpost, red wavy underline and the dashed count. */
+.ap .tw-tc-blank:empty::before { color: var(--ap-ink-3); }
+.ap .tw-tc-icon { color: var(--ap-ink-3); }
+.ap .tw-tc-icon[data-tripped] { color: var(--ab-tripped); }
+.ap .tw-tc-phrase[data-tripped] { text-decoration: underline wavy var(--ab-tripped-line); text-decoration-thickness: var(--size-px-1); text-underline-offset: var(--size-px-5); }
+.ap .tw-tc-after { margin-left: var(--size-px-10); vertical-align: 0; }
+.ap .tw-tc-flag:not(.tw-tc-done) { margin-left: var(--size-px-6); }   /* 6px + its 4px inset puts the count 10px after the sentence */
+.ap .tw-watch { animation: ab-breathe 2.4s ease-in-out infinite; }
+.ap .tw-watch::after { content: none; }
+@keyframes ab-breathe { 50% { opacity: 0.3; } }
+
+/* ── 3. Trailing marks ──
+   A status dot after a title sits 10px after the last word, its centre on the text's x-height centre.
+   In index rows the new dot (with its 3px halo) keeps exactly 8px of clear space before the count. */
+.ap-mark[data-kind="fresh"], .ap-mark[data-kind="challenge"] { box-shadow: 0 0 0 3px color-mix(in oklab, var(--ab-new) 18%, transparent); }
+.br-open > .ap-mark { margin-left: var(--size-px-10); vertical-align: 0; }
+.cur-index a > span:first-child { flex: 1; }
+.cur-index a > .ap-mark { margin-right: var(--size-px-3); }   /* 8px gap − 3px halo + 3px = 8px clear before the count */
+
+/* ── 4. Confidence control ──
+   Hovering a step previews the steps up to it in a jade tint; setting pops the set steps. */
+.ap .pn-conf-marks i { transition: background-color 90ms var(--ab-ease), transform var(--ab-spring-dur) var(--ab-spring); }
+.ap .pn-conf-marks i:hover { transform: none; }
+.ap .pn-conf-marks i[data-pre] { background: color-mix(in oklab, var(--ab-accent) 55%, rgb(var(--ab-shc) / 9%)); }
+.ap .pn-conf-marks i[data-pop] { animation: ab-pop var(--ab-spring-dur) var(--ab-spring); }
+@keyframes ab-pop { 0% { transform: scaleY(1); } 35% { transform: scaleY(1.9); } 100% { transform: scaleY(1); } }
+
+/* ── 5. Menus and their triggers ──
+   Disabled items sit at 40% with no hover. A trigger keeps its pressed look (styled as hover) while what it opens
+   is open, and destructive items never turn red. */
+.ap :is(.ap-iconbtn, .pn-step, .ab-option, .ap-btn):disabled { opacity: 0.4; pointer-events: none; }
+.ap :is(.ap-iconbtn, .t2-tool, .tw-tc-flag, .pn-step)[aria-expanded="true"],
+.ap :is(.ap-iconbtn, .t2-tool, .tw-tc-flag, .pn-step)[data-open] { background-color: var(--ap-hover); color: var(--ap-ink); }
+
+/* ── 6. Delete-dump confirmation ──
+   The only modal: the world dims, the consequence is spelled out, Cancel is a ghost and the action is solid ink. */
+.ab-backdrop { background: rgb(var(--ab-shc) / 22%); }
+.ab-dialog.ap[data-confirm] { width: min(var(--size-px-320), calc(100vw - var(--size-px-32))); padding: var(--size-px-16); border-radius: var(--size-px-14);
+  box-shadow: 0 0 0 0.5px rgb(var(--ab-shc) / 12%), 0 24px 64px -12px rgb(var(--ab-shc) / 30%); }
+.ab-dialog[data-confirm] .ab-description { font-size: var(--size-px-12); color: var(--ap-ink-2); margin-top: var(--size-px-8); }
+.ab-dialog[data-confirm] .ab-dialog-actions { gap: var(--size-px-6); margin-top: var(--size-px-14); }
+.ap .ab-dialog-actions .ab-btn-ghost { height: var(--size-px-28); padding: 0 var(--size-px-12); background: var(--ap-surface, #fff); color: var(--ap-ink); font-weight: 500;
+  box-shadow: 0 0 0 0.5px rgb(var(--ab-shc) / 9%), 0 1px 2px rgb(var(--ab-shc) / 8%); }
+.ap .ab-dialog-actions .ab-btn-ghost:hover { background: color-mix(in oklab, #fff 94%, var(--ab-ink)); }
+.ap .ab-dialog-actions .ab-btn-ink, .ap .ab-dialog-actions [data-destructive] { height: var(--size-px-28); padding: 0 var(--size-px-12); background: var(--ab-ink); color: #fff; font-weight: 500; box-shadow: none; }
+.ap .ab-dialog-actions .ab-btn-ink:hover { background: color-mix(in oklab, var(--ab-ink) 86%, white); }
+.ap .ab-dialog-actions :is(.ab-btn-ghost, .ab-btn-ink):active { transform: scale(var(--ab-press)); }
+
+/* ── 7. Recording pill ──
+   The take: a jade pulsing dot (discard on approach), the waveform, the time in mono and a round ink stop. No red. */
+.ps-recdot-btn { position: relative; }
+.ps-recdot { width: var(--size-px-8); height: var(--size-px-8); border-radius: 50%; background: var(--ab-accent); animation: ab-breathe 1.2s ease-in-out infinite; transition: opacity 90ms var(--ab-ease); }
+.ps-recdot-x { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; transition: opacity 90ms var(--ab-ease); }
+.ps-recdot-btn:is(:hover, :focus-visible) .ps-recdot { opacity: 0; }
+.ps-recdot-btn:is(:hover, :focus-visible) .ps-recdot-x { opacity: 1; }
+.ap .ps-rec-time { font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--size-px-12); color: var(--ap-ink-2); }
+.ap .ps-micseg[data-rec] .ps-micseg-in { background: var(--ap-ink); color: #fff; }
+
+/* ── 8. Tooltips ──
+   Grow from their trigger (scale 0.96 with a 3px offset towards it) and show the name, then the shortcut in mono. */
+.ab-tooltip { display: flex; align-items: center; gap: var(--size-px-8); font-weight: 500;
+  transition: opacity 90ms var(--ab-ease), transform 160ms var(--ab-spring); }
+.ab-tooltip[data-starting-style], .ab-tooltip[data-ending-style] { opacity: 0; transform: translateY(var(--ab-tip-from, 3px)) scale(0.96); }
+.ab-tooltip[data-side="bottom"] { --ab-tip-from: -3px; }
+.ab-tooltip[data-side="left"], .ab-tooltip[data-side="right"] { --ab-tip-from: 0px; }
+.ab-tooltip-arrow { display: none; }   /* the study's tooltips have no arrow; the 3px grow shows where they came from */
+.ab-tooltip-key { font: 400 var(--size-px-11)/1 "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace; opacity: 0.6; }
+.ab-tooltip-bracket { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ── 9. Toast ──
+   Just above the pill (or the open composer); holds while hovered; never takes focus; Undo is also ⌘Z. */
+.ps-toast-text { color: #fff; font-size: var(--size-px-12); }
+.ps-toast-undo { display: inline-flex; align-items: center; gap: var(--size-px-4); }
+.ps-toast-undo kbd { font: 400 var(--size-px-11)/1 "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace; opacity: 0.6; }
+
+/* ── 10. A signal inside a suggestion or challenge: the mini signal card (option D) ──
+   Its own small card, dashed because it is proposed. Icon, text and tag share a top edge. */
+.ab-sigcard { display: flex; align-items: flex-start; gap: var(--size-px-10); min-width: 0; padding: var(--size-px-8) var(--size-px-10); border-radius: var(--size-px-7);
+  background: var(--ab-draft-fill); outline: var(--size-px-1) dashed var(--ab-draft-line); outline-offset: var(--size-px-neg-1); text-align: left; font-weight: 400; }
+.ab-sigcard[data-decided] { outline-color: transparent; background: var(--ap-sunk, var(--ab-sage-3)); }
+.ab-sigcard-well { display: grid; place-items: center; flex: none; width: var(--size-px-24); height: var(--size-px-24); border-radius: 50%; background: var(--ab-sage-3); color: var(--ap-ink-3, var(--ab-ink-3)); }
+.ab-sigcard-text { display: grid; gap: var(--size-px-1); flex: 1; min-width: 0; padding-top: var(--size-px-2); }
+.ab-sigcard-gist { font-size: var(--size-px-13); line-height: 1.4; color: var(--ab-ink); text-wrap: pretty; overflow-wrap: anywhere; }
+.ab-sigcard[data-decided] .ab-sigcard-gist { color: var(--ab-ink-2); }
+.ab-sigcard-src { font-size: var(--size-px-12); color: var(--ab-ink-2); overflow-wrap: anywhere; }
+.ab-sigcard-side { display: flex; flex-direction: column; align-items: flex-end; gap: var(--size-px-6); margin-left: auto; flex: none; }
+.ab-sigcard-tag { display: inline-flex; align-items: center; gap: var(--size-px-4); height: var(--size-px-20); padding: 0 var(--size-px-7); border-radius: 999px;
+  background: var(--ab-sage-3); color: var(--ab-ink-2); font-size: var(--size-px-11); font-weight: 500; white-space: nowrap; }
+/* The agent's reasoning under a suggestion. */
+.br-why, .pn-proposal[data-signal] .pn-proposal-reason, .tw-hit-why { font-size: var(--size-px-13); line-height: 1.45; color: var(--ab-ink-2); font-weight: 400; }
+.br-detail > .ab-sigcard { justify-self: stretch; }
+/* Briefing: the signal card replaces the arrow-only dashed box. */
+.pn-proposal[data-signal] { outline: none; }
+.pn-proposal[data-signal] .pn-proposal-toggle { grid-template-columns: minmax(0, 1fr) var(--size-px-12); padding: 0; }
+.pn-proposal[data-signal] .pn-proposal-toggle:hover { background: transparent; }
+.pn-proposal[data-signal] .pn-proposal-toggle:hover .ab-sigcard { background: rgb(var(--ab-shc) / 3%); }
+.pn-proposal[data-signal] .pn-proposal-copy { gap: var(--size-px-6); }
+.pn-proposal[data-signal] .pn-proposal-chevron { margin-top: var(--size-px-14); }
+.pn-proposal[data-signal] .pn-proposal-panel > .ab-proposal { padding-left: 0; padding-right: 0; }
+/* Tripwire hits: the card is the hit; the decision or reason sits under the source, actions bottom right. */
+.ap .tw-hit { display: block; padding: 0; outline: none; background: transparent; border-radius: var(--size-px-7); }
+.ap .tw-hit[data-decided] { background: transparent; }
+.tw-hit .ab-sigcard { width: 100%; }
+.tw-hit .ab-sigcard-side { align-self: stretch; justify-content: space-between; }
+.tw-hit-why { margin-top: var(--size-px-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ab-edge-host[data-settling] > .ap-card, .ap .cd-item[data-settling], .ap .pn-conf-marks i[data-pop] { animation: none; }
+  .ab-edge-host[data-leaving] > .ap-card, .ap .cd-item[data-leaving] { transform: none; }
+  .ab-mini, .ab-mini[data-edge] { transform: none; }
+  .ap .tw-watch, .ps-recdot { animation: none; }
+  .ab-tooltip { transition: none; }
+  .ab-tooltip[data-starting-style], .ab-tooltip[data-ending-style] { transform: none; }
+}

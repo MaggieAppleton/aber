@@ -63,7 +63,8 @@ export type Msg =
   | { id: string; who: "me"; text: string; atts: Att[]; voice?: number; time: string }
   | { id: string; who: "agent"; thinking: boolean; filed: Filed[]; draft?: Draft; say?: string; parts?: any[] };
 export type ToastPart = { icon: IconName; n: number; one: string; many: string };
-export type ToastT = { id: string; parts: ToastPart[] };
+/** A toast: capture results (`parts`), or a notice from elsewhere (`text`, with Undo when `undoable`). */
+export type ToastT = { id: string; parts: ToastPart[]; text?: string; undoable?: boolean };
 export type DumpState = {
   open: boolean; text: string; atts: Att[]; ctx: Ctx[]; thread: Msg[];
   rec: number | null; busy: boolean; incoming: Att | null; toast: ToastT | null;
@@ -465,12 +466,10 @@ export type Force = { approach?: boolean; hover?: boolean; pressed?: boolean; fo
 const OPEN_T: Transition = { type: "spring", duration: 0.5, bounce: 0.12 };
 const CLOSE_T: Transition = { type: "spring", duration: 0.38, bounce: 0 };
 const SHADOW = {
-  pill: "0px 0px 0px 0.5px rgba(26, 33, 30, 0.1), 0px 4px 8px -2px rgba(26, 33, 30, 0.06), 0px 12px 28px -6px rgba(26, 33, 30, 0.14)",
-  lift: "0px 0px 0px 0.5px rgba(26, 33, 30, 0.1), 0px 6px 10px -2px rgba(26, 33, 30, 0.07), 0px 16px 32px -6px rgba(26, 33, 30, 0.16)",
-  sheet: "0px 0px 0px 0.5px rgba(26, 33, 30, 0.1), 0px 8px 16px -4px rgba(26, 33, 30, 0.08), 0px 20px 44px -10px rgba(26, 33, 30, 0.18)",
+  pill: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 4px 14px 0px rgba(0, 0, 0, 0.1)",
+  lift: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 6px 18px 0px rgba(0, 0, 0, 0.12)",
+  sheet: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 8px 24px 0px rgba(0, 0, 0, 0.14)",
 };
-/** --ap-press: press shrinks, it never darkens. */
-const PRESS = 0.98;
 let activeStage: string | null = null;
 /** Whether the last input was the keyboard, so closing by key hands focus back to the pill (and by pointer doesn't). */
 let keyInput = false;
@@ -574,6 +573,17 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
   } else if (voiceSheet) {
     panelW = w - 16; box = { left: 8, bottom: 8, width: w - 16, height: 252, r: 40 };
   } else box = { left: closedLeft, bottom: pillBottom, width: closedW, height: ph, r: ph / 2 };
+
+  // The open composer's height, so a toast can sit just above it.
+  const [composerH, setComposerH] = useState(120);
+  useLayoutEffect(() => {
+    const el = panelRef.current?.querySelector<HTMLElement>(".ps-composer");
+    if (!s.open || !el) return;
+    const ro = new ResizeObserver(() => setComposerH(el.offsetHeight + 12));
+    ro.observe(el);
+    setComposerH(el.offsetHeight + 12);
+    return () => ro.disconnect();
+  }, [s.open]);
 
   // Panel height follows its content.
   useLayoutEffect(() => {
@@ -686,8 +696,8 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
     },
   };
 
-  // Nothing lifts on hover; press keeps the tint and shrinks to the shared press scale (0.98).
-  const scale = !s.open && pr ? PRESS : !s.open && s.drag ? 1.06 : 1;
+  const lifted = !s.open && !s.rec && !s.drag && hv;
+  const scale = !s.open && pr ? 0.96 : !s.open && s.drag ? 1.06 : 1;
   const recClosed = !s.open && s.rec != null && !phone;
 
   return (
@@ -714,23 +724,32 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
         );
       })()}
 
-      {/* Toast: tier 6, rises from the pill and sinks back into it */}
-      <div className="ps-toast-slot" style={{ left: Math.min(pillCx - 200, w - 412), bottom: pillBottom + ph + 10, justifyContent: corner ? "flex-end" : "center" }}>
+      {/* Toast: tier 6, rises just above the pill (or above the open composer) and sinks back into it.
+          It holds while hovered and never takes focus; Undo is also ⌘Z. */}
+      {(() => {
+        const above = s.open && docked && !phone;
+        const slotLeft = above ? box.left + panelW / 2 - 200 : Math.min(pillCx - 200, w - 412);
+        const slotBottom = above ? box.bottom + composerH + 10 : pillBottom + ph + 10;
+        return (
+      <div className="ps-toast-slot" style={{ left: slotLeft, bottom: slotBottom, justifyContent: corner && !above ? "flex-end" : "center" }}>
         <AnimatePresence>
-          {s.toast && !s.open && (
+          {s.toast && (!s.open || above) && (
             <motion.div key={s.toast.id} className="ps-toast" role="status" style={{ transformOrigin: "50% 100%" }} initial={{ opacity: 0, y: 16, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 14, scale: 0.9, transition: { duration: 0.2, ease: [0.4, 0, 1, 1] } }}
               transition={{ type: "spring", duration: 0.45, bounce: 0.2 }}
               onPointerEnter={() => api.holdToast(true)} onPointerLeave={() => api.holdToast(false)} onFocusCapture={()=>api.holdToast(true)} onBlurCapture={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node))api.holdToast(false);}}>
+              {s.toast.text && <span className="ps-toast-text">{s.toast.text}</span>}
               {s.toast.parts.map((p, i) => (
                 <motion.span key={p.icon} className="ps-toast-part" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 + i * 0.07, duration: 0.25 }}>
                   <I n={p.icon} size={14} /><b className="ap-num">{p.n}</b>{" "}{p.n === 1 ? p.one : p.many}
                 </motion.span>
               ))}
-              <button type="button" className="ps-toast-undo" onClick={api.undo} title="Undo (⌘Z)" data-target="undo">Undo</button>
+              {(s.toast.parts.length > 0 || s.toast.undoable) && <button type="button" className="ps-toast-undo" onClick={api.undo} aria-label="Undo" aria-keyshortcuts="Meta+Z" data-target="undo">Undo<kbd aria-hidden>⌘Z</kbd></button>}
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+        );
+      })()}
 
       {/* What the agent sees: a thumbnail after a deliberate hover on the screen name */}
       <AnimatePresence>
@@ -757,7 +776,7 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
       {/* The surface: pill when closed, panel when open */}
       <motion.div ref={surfaceRef} className="ps-surface" data-variant={variant} data-open={s.open || voiceSheet ? "" : undefined} data-focus={fc && !s.open ? "" : undefined} data-drag={s.drag && !s.open ? "" : undefined}
         initial={false}
-        animate={{ left: box.left, bottom: box.bottom, width: box.width, height: box.height, borderRadius: box.r, scale, boxShadow: s.open || voiceSheet ? SHADOW.sheet : s.drag ? SHADOW.lift : SHADOW.pill }}
+        animate={{ left: box.left, bottom: box.bottom, width: box.width, height: box.height, borderRadius: box.r, y: lifted ? -1 : 0, scale, boxShadow: s.open || voiceSheet ? SHADOW.sheet : lifted || s.drag ? SHADOW.lift : SHADOW.pill }}
         transition={reduced ? { duration: 0 } : { default: s.open || voiceSheet ? OPEN_T : CLOSE_T, y: { duration: 0.15, ease: "easeOut" }, scale: { type: "spring", duration: 0.3, bounce: s.drag ? 0.35 : 0 }, boxShadow: { duration: 0.2 } }}
         style={{ transformOrigin: corner ? "100% 100%" : "50% 100%" }}
         {...dnd}>
@@ -819,7 +838,10 @@ function PillRows({ s, api, recClosed, restWidth, onWidth, hitRef, onHover, onPr
         )}
         {mode === "rec" && (
           <div className="ps-pill ps-pill-rec">
-            <IconBtn n="x" label="Discard (Esc)" onClick={api.cancelRec} size={28} />
+            {/* The take: a jade pulsing dot (it turns into discard on approach), the waveform, the time and, in the mic slot, a round ink stop. */}
+            <TooltipButton type="button" className="ps-ib ps-recdot-btn" style={{ width: 28, height: 28 }} aria-label="Discard (Esc)" tooltip="Discard (Esc)" onClick={api.cancelRec}>
+              <span className="ps-recdot" aria-hidden /><span className="ps-recdot-x" aria-hidden><I n="x" size={14} /></span>
+            </TooltipButton>
             <LiveWave bars={30} height={18} />
             <span className="ps-rec-time ap-num">{time ?? mmss(s.rec ? (now - s.rec) / 1000 : 0)}</span>
           </div>

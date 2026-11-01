@@ -8,6 +8,7 @@ import { AnimatePresence, motion, LayoutGroup } from "motion/react";
 import { DUMPS, SIGNALS, THEMES, THEORIES, PROTOTYPES, theoriesIn, signal } from "./data";
 import { Icon, IconButton, DumpIcon, Mark, Pill, type IconName } from "./atoms";
 import { lineage, key, type Kind } from "./graph";
+import { DraftEdgeFor } from "./draft-edge";
 import { ObjectPane, SignalDetail, Claim, ThemeName, ProtoName, ProtoStatus, TheoryConf, type ObjKind, type PaneNav } from "./panes";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -213,10 +214,14 @@ function ColumnList({ kind, icon, name, related, open, unfolded, fold, scrollOff
           const isOpen = open?.kind === kind && open.id === i.id;
           const isUnfolded = unfolded === i.id;
           const dim = related && !related.has(key(kind, i.id));
+          // A draft theory acts from its edge, as it does in Theme sections.
           return (
-            <motion.div layout="position" transition={SPRING} key={i.id} data-id={i.id} data-pick={kind==="dump"?undefined:i.id} data-kind={kind} data-label={labelFor(kind,i.id)} data-region={i.id}
-              className="cd-item" data-stock={stock ? "" : undefined} data-open={isOpen || isUnfolded ? "" : undefined} data-dim={dim ? "" : undefined} data-draft={i.draft ? "" : undefined}>
-              <button className="cd-item-btn" draggable={kind!=="dump"} onDragStart={event=>{if(kind!=="dump")beginObjectDrag(event,{kind,id:i.id,label:labelFor(kind,i.id)});}} onDragEnd={endObjectDrag} onClick={() => stock ? onOpen(kind, i.id) : onUnfold(kind, i.id)}>{i.body}</button>
+            <DraftEdgeFor key={i.id} kind="theory" id={i.id} draft={kind === "theory" && !!i.draft}>{({ draft, hidden, edge }) => hidden ? null : (
+            <motion.div layout="position" transition={SPRING} data-id={i.id} data-pick={kind==="dump"?undefined:i.id} data-kind={kind} data-label={labelFor(kind,i.id)} data-region={i.id}
+              className="cd-item" data-stock={stock ? "" : undefined} data-open={isOpen || isUnfolded ? "" : undefined} data-dim={dim ? "" : undefined} data-draft={draft ? "" : undefined}
+              data-settling={edge?.settling ? "" : undefined} data-leaving={edge?.leaving ? "" : undefined} onKeyDown={edge?.onKeyDown}>
+              <button className="cd-item-btn" data-edge-card={kind === "theory" ? "" : undefined} aria-keyshortcuts={edge?.shortcuts} draggable={kind!=="dump"} onDragStart={event=>{if(kind!=="dump")beginObjectDrag(event,{kind,id:i.id,label:labelFor(kind,i.id)});}} onDragEnd={endObjectDrag} onClick={() => stock ? onOpen(kind, i.id) : onUnfold(kind, i.id)}>{i.body}</button>
+              {edge?.actions}
               <AnimatePresence initial={false}>
                 {isUnfolded && i.detail && (
                   <motion.div className="cd-detail" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.3, ease: EASE }}>
@@ -225,6 +230,7 @@ function ColumnList({ kind, icon, name, related, open, unfolded, fold, scrollOff
                 )}
               </AnimatePresence>
             </motion.div>
+            )}</DraftEdgeFor>
           );
         })}
       </div>

@@ -3,17 +3,16 @@
   max-width: min(var(--available-width), 320px);
   padding: var(--size-px-6) var(--size-px-8);
   border-radius: var(--size-px-6);
-  background: var(--ap-ink);
-  box-shadow: var(--ap-shadow-tip);
+  background: var(--color-gray-0);
   color: var(--color-gray-255);
-  font: 400 var(--size-px-12)/1.4 var(--ap-font);
+  font: 400 var(--size-px-12)/1.4 "Inter", system-ui, sans-serif;
   overflow-wrap: anywhere;
   transform-origin: var(--transform-origin);
   transition: opacity 100ms ease-out, transform 100ms ease-out;
 }
-.ab-tooltip[data-starting-style], .ab-tooltip[data-ending-style] { opacity: 0; transform: scale(var(--ap-press)); }
+.ab-tooltip[data-starting-style], .ab-tooltip[data-ending-style] { opacity: 0; transform: scale(.96); }
 .ab-tooltip[data-instant] { transition: none; }
-.ab-tooltip-arrow { width: var(--size-px-8); height: var(--size-px-8); background: var(--ap-ink); transform: rotate(45deg); }
+.ab-tooltip-arrow { width: var(--size-px-8); height: var(--size-px-8); background: var(--color-gray-0); transform: rotate(45deg); }
 .ab-tooltip-arrow[data-side="top"] { bottom: var(--size-px-neg-4); }
 .ab-tooltip-arrow[data-side="bottom"] { top: var(--size-px-neg-4); }
 .ab-tooltip-arrow[data-side="left"] { right: var(--size-px-neg-4); }

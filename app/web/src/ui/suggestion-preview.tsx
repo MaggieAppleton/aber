@@ -3,6 +3,7 @@ import { field, json, rowFor, type Row } from "../data/live";
 import { Icon, type IconName } from "./atoms";
 import { suggestionFields } from "./suggestion-fields";
 import { SuggestionReview } from "./suggestion-review";
+import { SignalCard } from "./signal-card";
 import "./suggestion-preview.css";
 
 function sourceName(source: Row): string {
@@ -29,10 +30,16 @@ export function SuggestionPreview({ suggestion: s }: { suggestion: Row }) {
     : s.kind === "merge" ? "merge" : kind === "theme" ? "theme" : kind === "prototype" ? "prototype" : "theory";
   const sources = signal ? [...new Set(json<Row[]>(signal.sources, []).map(sourceName))].join(", ") : "";
 
-  return <Accordion.Root className="pn-proposal" data-pane-suggestion-id={s.id}>
+  // Proposed evidence shows its signal as a mini signal card, which carries its own dashes and stance.
+  const card = s.kind === "evidence" && (signal || payload.gist);
+  return <Accordion.Root className="pn-proposal" data-pane-suggestion-id={s.id} data-signal={card ? "" : undefined}>
     <Accordion.Item value={s.id}>
       <Accordion.Header className="pn-proposal-heading">
         <Accordion.Trigger className="pn-proposal-toggle" aria-label={`Review proposal: ${words}`}>
+          {card ? <span className="pn-proposal-copy">
+            <SignalCard gist={signal?.gist ?? payload.gist} source={sources || undefined} stance={payload.stance === "supports" ? "supports" : "undermines"} />
+            {s.reasoning && <span className="pn-proposal-reason">{s.reasoning}</span>}
+          </span> : <>
           <span className="pn-proposal-icon"><Icon name={icon} size={12} /></span>
           <span className="pn-proposal-copy">
             <span className="pn-proposal-words">{words}</span>
@@ -40,7 +47,7 @@ export function SuggestionPreview({ suggestion: s }: { suggestion: Row }) {
               {sources && <span className="pn-proposal-source">{sources}</span>}
               {s.reasoning && <span className="pn-proposal-reason">{s.reasoning}</span>}
             </span>}
-          </span>
+          </span></>}
           <span className="pn-proposal-chevron"><Icon name="chevron" size={12} /></span>
         </Accordion.Trigger>
       </Accordion.Header>

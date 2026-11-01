@@ -3,8 +3,23 @@ import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import "./tooltip.css";
 
 // The shadcn Base UI pattern, using Aber's existing tokens and native controls.
-export function TooltipProvider({ delay = 400, ...props }: TooltipPrimitive.Provider.Props) {
-  return <TooltipPrimitive.Provider delay={delay} closeDelay={0} {...props} />;
+// Warm-up: about 450ms the first time, then instant for any tooltip opened within 400ms of the last one closing.
+export function TooltipProvider({ delay = 450, timeout = 400, ...props }: TooltipPrimitive.Provider.Props) {
+  return <TooltipPrimitive.Provider delay={delay} closeDelay={0} timeout={timeout} {...props} />;
+}
+
+/** A label's keyboard shortcut, written as a trailing "(⌘K)", "(A)" or "(Esc)". Counts such as "(3)" are not shortcuts. */
+export function splitShortcut(label: string): { name: string; key?: string } {
+  const m = /^(.*\S) \(((?:[⌘⇧⌥⌃]+.{1,3})|[A-Z]|Esc|Enter|Tab|Space|↵)\)$/.exec(label);
+  return m ? { name: m[1], key: m[2] } : { name: label };
+}
+
+/** The name, then its shortcut in mono. The brackets stay in the text for assistive tech and tests, but are not shown. */
+function TipLabel({ label }: { label: ReactNode }) {
+  if (typeof label !== "string") return <>{label}</>;
+  const { name, key } = splitShortcut(label);
+  if (!key) return <>{label}</>;
+  return <>{name}<kbd className="ab-tooltip-key"><span className="ab-tooltip-bracket"> (</span>{key}<span className="ab-tooltip-bracket">)</span></kbd></>;
 }
 
 export function Tooltip({ onOpenChange, ...props }: TooltipPrimitive.Root.Props) {
@@ -36,7 +51,7 @@ export function IconTooltip({ label, children }: { label: ReactNode; children: R
   const description = [children.props["aria-describedby"], open ? id : undefined].filter(Boolean).join(" ") || undefined;
   return <Tooltip open={open} onOpenChange={setOpen}>
     <TooltipTrigger render={children} aria-describedby={description} />
-    <TooltipContent id={id} aria-hidden={!open || undefined}>{label}</TooltipContent>
+    <TooltipContent id={id} aria-hidden={!open || undefined}><TipLabel label={label} /></TooltipContent>
   </Tooltip>;
 }
 

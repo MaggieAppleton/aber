@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Accordion } from "@base-ui/react/accordion";
 import { createObject, findObjects } from "../app/dialogs";
 import { THEMES, PROTOTYPES, theoriesIn } from "./data";
-import { Icon, IconButton } from "./atoms";
+import { Icon, IconButton, Mark } from "./atoms";
 import { ThemeName, ProtoName, type OnOpen } from "./panes";
 import { TooltipButton } from "./tooltip";
 import "./current-sidebar.css";
@@ -82,7 +82,7 @@ export function CurrentSidebar({ active, onTheme, onOpen, onCollapsedChange }: {
       <div className="cur-sidebar-scroll ap-scroll">
         <nav className="cur-index" aria-label="Themes">
           {THEMES.map(theme => <a key={theme.id} href={`#cur-${theme.id}`} data-active={active === theme.id ? "" : undefined} onClick={event => { event.preventDefault(); onTheme(theme.id); if (overlay) closeOverlay(true); }}>
-            <span><ThemeName id={theme.id} /></span><span className="ap-muted ap-num">{theoriesIn(theme.id).length || "open"}</span>
+            <span><ThemeName id={theme.id} /></span>{theme.fresh > 0 && <Mark kind="fresh" />}<span className="ap-muted ap-num">{theoriesIn(theme.id).length || "open"}</span>
           </a>)}
         </nav>
         <Accordion.Root className="cur-prototype-section" value={prototypesOpen ? ["prototypes"] : []} onValueChange={value => setPrototypesOpen(value.length > 0)}>

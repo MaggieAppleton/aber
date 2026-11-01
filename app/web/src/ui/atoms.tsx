@@ -1,6 +1,6 @@
 import { TooltipButton } from "./tooltip";
 import { beginObjectDrag, endObjectDrag } from "../data/object-drag";
-import type { ReactNode } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 import type { Theory, Dump } from "./data";
 import { prototypesFor } from "./data";
 
@@ -112,12 +112,16 @@ export const Kbd = ({ children }: { children: ReactNode }) => <kbd className="ap
 
 export const DumpIcon = ({ d }: { d: Dump }) => <Icon name={d.kind === "voice" ? "wave" : d.kind === "link" ? "link" : "text"} size={14} />;
 
-export function TheoryCard({ t, onEnter, onLeave, dim, hot, onClick, compact }: {
-  t: Theory; onEnter?: () => void; onLeave?: () => void; dim?: boolean; hot?: boolean; onClick?: () => void; compact?: boolean;
+/** A draft card's edge: its actions, its key handler and its settle and leave states (see ./draft-edge). */
+export type CardEdge = { actions: ReactNode; onKeyDown: (e: KeyboardEvent<HTMLElement>) => void; settling?: boolean; leaving?: boolean; shortcuts?: string };
+
+export function TheoryCard({ t, onEnter, onLeave, dim, hot, onClick, compact, edge }: {
+  t: Theory; onEnter?: () => void; onLeave?: () => void; dim?: boolean; hot?: boolean; onClick?: () => void; compact?: boolean; edge?: CardEdge;
 }) {
   const protos = prototypesFor(t.id);
-  return (
+  const card = (
     <div className="ap-card" draggable onDragStart={event=>beginObjectDrag(event,{kind:"theory",id:t.id,label:t.claim})} onDragEnd={endObjectDrag} data-draft={t.draft ? "" : undefined} data-dim={dim ? "" : undefined} data-hot={hot ? "" : undefined}
+      data-edge-card={edge ? "" : undefined} aria-keyshortcuts={edge?.shortcuts}
       onPointerEnter={onEnter} onPointerLeave={onLeave} onClick={onClick} onKeyDown={e=>{if(onClick&&(e.key==="Enter"||e.key===" ")){e.preventDefault();onClick();}}} role={onClick ? "button" : undefined} tabIndex={onClick ? 0 : undefined}>
       <div className="ap-card-claim">{t.claim}</div>
       {!compact && (
@@ -131,6 +135,11 @@ export function TheoryCard({ t, onEnter, onLeave, dim, hot, onClick, compact }: 
       )}
     </div>
   );
+  // A draft's edge actions sit over the card as its siblings, never inside it, so no button nests in another.
+  if (!edge) return card;
+  return <div className="ab-edge-host" data-draft={t.draft ? "" : undefined} data-settling={edge.settling ? "" : undefined} data-leaving={edge.leaving ? "" : undefined} onKeyDown={edge.onKeyDown}>
+    {card}{edge.actions}
+  </div>;
 }
 
 /** The floating dump-or-ask pill, bottom centre of the content area. */
@@ -149,7 +158,7 @@ export const Mark = ({ kind, n }: { kind: MarkKind | "pending"; n?: number }) =>
   return <span className="ap-mark" role="img" data-kind={kind} title={label} aria-label={label} />;
 };
 
-export const STATUS_COLOUR: Record<string, string> = { idea: "#cbcfcd", building: "#0090ff", built: "#46a758", shelved: "transparent" };  // sage 7, blue 9, grass 9
+export const STATUS_COLOUR: Record<string, string> = { idea: "#c9c9c9", building: "#2f6fed", built: "#1f7a4d", shelved: "transparent" };
 export const ProtoGlyph = ({ status, selected }: { status: string; selected?: boolean }) => (
   <span className="ap-proto" role="img" data-status={status} title={status} aria-label={status}><Icon name="prototype" size={14} weight={selected ? "fill" : "regular"} /></span>
 );

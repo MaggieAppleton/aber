@@ -8,12 +8,14 @@ import { SignalRow, ThemeName, type ObjKind, type OnOpen } from "./panes";
 import { field, json, markRead, mutate, useWorld, world, type Row } from "../data/live";
 import "./briefing-app.css";
 import { SuggestionReview } from "./suggestion-review";
+import { SignalCard } from "./signal-card";
+import { draftDecision, useDraftDecisions } from "../data/draft-decisions";
 export type BriefingHost = {open?:{kind:ObjKind;id:string};onOpen:OnOpen;compact?:boolean;onLog?:()=>void};
 type Item={id:string;group:string;kind:string;target:string;targetKind:ObjKind;row:Row};
 function itemsNow(): Item[] {
   const items: Item[]=[];
   for(const suggestion of world.suggestions) if(suggestion.status==="pending" && currentSuggestion(suggestion) && field(suggestion,"seenAt")==null) items.push({id:suggestion.id,group:suggestion.kind==="challenge"?"Challenges":"Suggestions",kind:suggestion.kind,target:field(suggestion,"targetId"),targetKind:field(suggestion,"targetKind")??"theory",row:suggestion});
-  for(const [kind,rows] of [["theory",world.theories],["theme",world.themes],["prototype",world.prototypes]] as const) for(const row of rows) if((row.status==="draft"||row.draft) && field(row,"seenAt")==null) items.push({id:row.id,group:"Drafts",kind:"draft",target:row.id,targetKind:kind,row});
+  for(const [kind,rows] of [["theory",world.theories],["theme",world.themes],["prototype",world.prototypes]] as const) for(const row of rows) if((row.status==="draft"||row.draft) && field(row,"seenAt")==null && !draftDecision(row.id)) items.push({id:row.id,group:"Drafts",kind:"draft",target:row.id,targetKind:kind,row});
   for(const merge of world.merges) if(!field(merge,"undoneAt") && field(merge,"seenAt")==null)items.push({id:merge.id,group:"Merged",kind:"near-dup",target:field(merge,"survivorId"),targetKind:"theme",row:merge});
   for(const theme of THEMES) {const signals=SIGNALS.filter(s=>s.themes.includes(theme.id)&&field(s,"seenAt")==null);if(signals.length)items.push({id:`signals:${theme.id}`,group:"New signals",kind:"signals",target:theme.id,targetKind:"theme",row:{...theme,signals}});}
   return items;
@@ -21,7 +23,7 @@ function itemsNow(): Item[] {
 const GROUPS=["Challenges","Drafts","Suggestions","Merged","New signals"];
 const typing=(target:EventTarget|null)=>target instanceof HTMLElement&&(target.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
 export function BriefingView({host,phone}:{host:BriefingHost;phone?:boolean}) {
-  useWorld();
+  useWorld(); useDraftDecisions();
   const items=itemsNow();
   const processing=world.dumps.filter(d=>["processing","received","transcribing"].includes(d.status)).length;
   const [cursor,setCursor]=useState<string>();
@@ -88,10 +90,10 @@ function BriefingItem({item,host,onOpen,onDecide}:{item:Item;host:BriefingHost;o
   const actions=<span className="br-acts">{item.kind==="near-dup"?<><button className="ap-btn" title="Undo merge (U)" onClick={()=>onDecide("discarded")}><Icon name="split" size={12}/>Undo merge</button><IconButton icon="check" label="Keep merge (A)" onClick={()=>onDecide("accepted")}/></>:<><button className="ap-btn" onClick={()=>onDecide("accepted")}>Accept</button><IconButton icon="x" label={item.kind==="challenge"?"Dismiss (X)":"Discard (X)"} onClick={()=>onDecide("discarded")}/></>}</span>;
   if(item.kind==="signals") return <NewSignals item={item} host={host} onOpen={onOpen} onSeen={()=>onDecide("accepted")}/>;
   const glyph=item.kind==="near-dup"||item.kind==="merge"?"merge":item.kind==="revision"?"edit":item.targetKind;
-  return <div className="br-row" data-draft={item.kind==="draft"?"":undefined}><span className="br-glyph"><Icon name={glyph} size={14}/>{review&&!reviewing&&<span className="br-rephrase"><IconButton icon="edit" label="Review suggestion" onClick={()=>setReviewing(true)}/></span>}</span><div className="br-main"><div className="br-title"><button className="br-open" onClick={onOpen}>{item.kind==="revision"?<s className="br-was">{title}</s>:title}</button>{item.kind==="challenge"&&<Mark kind="challenge"/>}</div><div className="br-detail">
-    {reviewing?<><SuggestionReview suggestion={item.row}/><button className="br-link" onClick={()=>setReviewing(false)}>Close review</button></>:<>{signal&&<span className="br-ghost br-sig"><Icon name={payload.stance==="supports"?"arrowUp":"arrowDown"} size={12}/><span>{signal.gist} <span className="ap-muted">{signal.source}</span></span></span>}
+  return <div className="br-row" data-draft={item.kind==="draft"?"":undefined}><span className="br-glyph"><Icon name={glyph} size={14}/>{review&&!reviewing&&<span className="br-rephrase"><IconButton icon="edit" label="Review suggestion" onClick={()=>setReviewing(true)}/></span>}</span><div className="br-main"><div className="br-title"><button className="br-open" onClick={onOpen}>{item.kind==="revision"?<s className="br-was">{title}</s>:title}{item.kind==="challenge"&&<Mark kind="challenge"/>}</button></div><div className="br-detail">
+    {reviewing?<><SuggestionReview suggestion={item.row}/><button className="br-link" onClick={()=>setReviewing(false)}>Close review</button></>:<>{signal&&<SignalCard gist={signal.gist} source={signal.source} stance={payload.stance==="supports"?"supports":"undermines"}/>}
     {(payload.claim||payload.bodyInsert||payload.body_insert)&&<span className="br-ghost">{payload.claim??payload.bodyInsert??payload.body_insert}</span>}
-    {item.row.reasoning&&!review&&<span className="ap-muted">{item.row.reasoning}</span>}
+    {item.row.reasoning&&!review&&<span className="br-why">{item.row.reasoning}</span>}
     {item.kind==="evidence"&&payload.note&&<span className="br-ghost">{payload.note}</span>}
     {item.kind==="draft"&&(theory?<span className="br-meta"><Balance s={theory.supports} u={theory.undermines}/>{theory.themes[0]&&<span className="ap-muted ap-inline"><Icon name="theme" size={12}/><ThemeName id={theory.themes[0]}/></span>}</span>:item.row.body&&<span className="br-ghost">{item.row.body}</span>)}</>}
   </div></div>{!reviewing&&actions}</div>;
@@ -102,7 +104,7 @@ function NewSignals({item,host,onOpen,onSeen}:{item:Item;host:BriefingHost;onOpe
   const [signalOpen,setSignalOpen]=useState<string>();
   return <Accordion.Root className="br-new" value={expanded?[item.id]:[]} onValueChange={value=>setExpanded(value.length>0)}><Accordion.Item className="br-row" value={item.id}>
     <span className="br-glyph"><Icon name="theme" size={14}/></span>
-    <div className="br-main"><div className="br-title"><button className="br-open" onClick={onOpen}>{item.row.name}</button><Mark kind="fresh"/></div>
+    <div className="br-main"><div className="br-title"><button className="br-open" onClick={onOpen}>{item.row.name}<Mark kind="fresh"/></button></div>
       <Accordion.Panel className="ab-accordion-panel"><div className="br-siglist">
         {item.row.signals.map((s:any)=>signalOpen===s.id?<SignalRow key={s.id} s={s} open onToggle={()=>setSignalOpen(undefined)} onOpen={host.onOpen}/>:<button key={s.id} className="br-siglist-row br-siglist-button" onClick={()=>{setSignalOpen(s.id);markRead("signal",s.id);}}><Icon name="signal" size={12}/><span>{s.gist} <span className="ap-muted">{s.source}</span></span></button>)}
       </div></Accordion.Panel>

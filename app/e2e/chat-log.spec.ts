@@ -38,8 +38,8 @@ test('the dump log previews deletion consequences and restores from its bin', as
   await expect(dumps).toBeFocused(); await dumps.click();
   const row = log.locator('.dl-row').filter({ hasText: text });
   await row.getByRole('button', { name: /^Delete/ }).click();
-  const confirmation = page.getByRole('dialog', { name: 'Move dump to the bin?', exact: true });
-  await expect(confirmation).toContainText(/Removes \d+ signals and \d+ evidence links/);
+  const confirmation = page.getByRole('dialog', { name: 'Delete this dump?', exact: true });
+  await expect(confirmation).toContainText(/Removes \d+ signals? and \d+ evidence links?\. It stays in the bin for 30 days\./);
   await confirmation.getByRole('button', { name: 'Move to bin', exact: true }).click();
   await expect(row).toHaveCount(0);
   await log.getByRole('button', { name: /^Bin,/ }).click();

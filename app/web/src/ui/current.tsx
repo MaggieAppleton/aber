@@ -9,6 +9,8 @@ import { TheoryCard, Pill, Icon, IconButton } from "./atoms";
 import { useEdit } from "./edits";
 import { tripFor } from "./trips";
 import { ThemeName, type ObjKind, type OnOpen } from "./panes";
+import { useDraftEdge } from "./draft-edge";
+import { useDraftDecisions } from "../data/draft-decisions";
 
 /** A host (the app shell) can open themes and theories from here into its own pane. */
 export type CurrentHost = { open?: { kind: ObjKind; id: string }; onOpen: OnOpen; compact?: boolean };
@@ -19,7 +21,9 @@ function LiveCard({ t, hot, onEnter, onLeave, onClick }: { t: Theory; hot?: bool
   // Challenged while a tripwire hit is still undecided.
   const hits = tripFor(t.id).hits;
   const challenge = hits.length ? hits.some(h => !e.decisions[h.id]) : t.challenge;
-  return <TheoryCard t={{ ...t, claim: e.claim, confidence: e.confidence, challenge }} hot={hot} onEnter={onEnter} onLeave={onLeave} onClick={onClick} />;
+  const { draft, hidden, edge } = useDraftEdge("theory", t.id, !!t.draft);
+  if (hidden) return null;
+  return <TheoryCard t={{ ...t, claim: e.claim, confidence: e.confidence, challenge, draft }} hot={hot} onEnter={onEnter} onLeave={onLeave} onClick={onClick} edge={edge} />;
 }
 
 /** Baseline: the space-and-motion boards. Docked theme index, theme sections, floating pill. */
@@ -30,6 +34,8 @@ export function CurrentHome({ host }: { host?: CurrentHost }) {
   const [active, setActive] = useState(THEMES[0]?.id ?? "");
   const main = useRef<HTMLElement>(null);
   const open = host?.open;
+  // A draft discarded from its edge leaves its section at once; Undo brings it back.
+  const decided = useDraftDecisions();
   // Scroll the sections themselves, never the page.
   const jump = (id: string) => {
     const m = main.current, el = document.getElementById(`cur-${id}`);
@@ -41,7 +47,7 @@ export function CurrentHome({ host }: { host?: CurrentHost }) {
       <CurrentSidebar active={active} onCollapsedChange={setRailCollapsed} onOpen={host?.onOpen} onTheme={id => { setActive(id); if (host?.compact) host.onOpen("theme", id); else jump(id); }} />
       <main className="cur-main ap-scroll" ref={main} inert={!!host?.compact && !railCollapsed}>
         {THEMES.map(t => {
-          const ts = theoriesIn(t.id);
+          const ts = theoriesIn(t.id).filter(theory => !(theory.draft && decided(theory.id) === "discarded"));
           const drafts=ts.filter(theory=>theory.draft);
           const stacked=drafts.length>3;
           const visible=stacked?ts.filter(theory=>!theory.draft):ts;

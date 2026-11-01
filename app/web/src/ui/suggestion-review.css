@@ -1,4 +1,4 @@
-.ab-proposal { min-width:0; width:100%; display:grid; gap:var(--size-px-10); padding:var(--size-px-10); border-radius:var(--size-px-7); outline:var(--size-px-1) dashed rgb(var(--ap-shc) / 12%); outline-offset:var(--size-px-neg-1); }
+.ab-proposal { min-width:0; width:100%; display:grid; gap:var(--size-px-10); padding:var(--size-px-10); border-radius:var(--size-px-7); outline:var(--size-px-1) dashed var(--color-gray-0-a-28); outline-offset:var(--size-px-neg-1); }
 .ab-proposal-fields,.ab-proposal-form { display:grid; gap:var(--size-px-10); margin:0; min-width:0; }
 .ab-proposal-fields>div { display:grid; gap:var(--size-px-4); }
 .ab-proposal-fields dd { white-space:pre-wrap; overflow-wrap:anywhere; color:var(--ap-ink-2); }

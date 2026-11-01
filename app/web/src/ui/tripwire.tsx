@@ -3,6 +3,7 @@ import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Icon } from "./atoms";
 import { Editable } from "./editable";
+import { SignalCard } from "./signal-card";
 import "./tripwire.css";
 
 /*
@@ -31,25 +32,23 @@ export function Unfold({ show, children }: { show: boolean; children: ReactNode 
   );
 }
 
-/* ── A signal the tripwire agent matched: dashed until decided ── */
+/* ── A signal the tripwire agent matched: a mini signal card, dashed until decided. It undermines the theory;
+   the agent's reason (or the decision) sits under the source, and the actions sit bottom right. ── */
 export function HitRow({ hit, decision, onDecide, conf, compact }: { hit: Hit; decision?: Decision; onDecide: (d?: Decision) => void; conf: number; compact?: boolean }) {
   const reduce = useReducedMotion();
   return (
     <motion.div layout={reduce ? false : "position"} className="tw-hit" data-decided={decision ? "" : undefined} data-compact={compact ? "" : undefined}
       initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4, transition: { duration: 0.12 } }} transition={{ duration: 0.3, ease: EASE }}>
-      <div className="tw-hit-text">
-        <span className="tw-hit-gist">{hit.gist}</span>
-        <span className="ap-muted">{decision ? (decision === "accepted" ? <>Accepted{hit.loweredTo!=null?`, lowered to ${hit.loweredTo}`:""}</> : <>Dismissed</>) : <>{hit.why}</>}</span>
-      </div>
-      <span className="ap-muted tw-hit-src">{hit.source}</span>
-      <span className="tw-hit-acts">
+      <SignalCard gist={hit.gist} source={compact ? undefined : hit.source || undefined} stance="undermines" decided={!!decision} aside={<span className="tw-hit-acts">
         {decision
           ? <TooltipButton className="pn-step" aria-label="Undo" tooltip="Undo" onClick={() => onDecide(undefined)}><Icon name="undo" size={12} /></TooltipButton>
           : <>
               <button className="ap-btn tw-accept" onClick={() => onDecide("accepted")} title="Accept and lower confidence">Accept</button>
               <TooltipButton className="pn-step tw-dismiss" aria-label="Dismiss" tooltip="Dismiss" onClick={() => onDecide("dismissed")}><Icon name="x" size={12} /></TooltipButton>
             </>}
-      </span>
+      </span>}>
+        <span className="tw-hit-why">{decision ? (decision === "accepted" ? <>Accepted{hit.loweredTo!=null?`, lowered to ${hit.loweredTo}`:""}</> : <>Dismissed</>) : <>{hit.why}</>}</span>
+      </SignalCard>
     </motion.div>
   );
 }
@@ -96,7 +95,7 @@ export function Tripwire(p: TripwireProps) {
     <div className="tw-tc" role="group" aria-label={NAME} ref={box}>
       <div className="tw-tc-line tw-tc-blankline">
         {lead}
-        <Editable className="tw-tc-blank" value={p.text} onChange={p.setText} onFocus={p.begin} onBlur={p.commit} aria-label={NAME} />
+        <Editable className="tw-tc-blank" value={p.text} onChange={p.setText} onFocus={p.begin} onBlur={p.commit} aria-label={NAME} placeholder="When would you doubt this?" />
       </div>
     </div>
   );

@@ -39,8 +39,7 @@ for (const reducedMotion of ['reduce', 'no-preference'] as const) test(`pane con
   });
   expect(paint.pointerEvents).toBe('none');
   expect(paint.shadows.every(shadow => shadow === 'none' || shadow.includes('inset'))).toBe(true);
-  // The glow is the jade accent (#29a383): green leads, then blue, then red.
-  expect(paint.rgba[1]).toBeGreaterThan(paint.rgba[2]); expect(paint.rgba[2]).toBeGreaterThan(paint.rgba[0]);
+  expect(paint.rgba[2]).toBeGreaterThan(paint.rgba[0]); expect(paint.rgba[2]).toBeGreaterThan(paint.rgba[1]);
   expect(paint.rgba[3]).toBeGreaterThan(0); expect(paint.rgba[3]).toBeLessThan(40);
   for (const viewport of [{ width: 1130, height: 900 }, { width: 820, height: 760 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport); await context.hover(); await expectInsideSource(page, 'pane');

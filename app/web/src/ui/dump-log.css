@@ -15,7 +15,7 @@
 
 /* A dump: kind glyph, first words, time; status underneath; actions over the time on hover */
 .dl-row { display: grid; grid-template-columns: var(--size-px-16) minmax(0, 1fr) auto; grid-template-areas: "k f t" ". s a"; align-items: center; gap: var(--size-px-2) var(--size-px-10); padding: var(--size-px-7) var(--size-px-8); border-radius: var(--size-px-8); transition: background 100ms ease-out; }
-.dl-row:hover { background: var(--ap-hover); }
+.dl-row:hover { background: var(--ap-sunk); }
 .dl-kind { grid-area: k; display: grid; place-items: center; color: var(--ap-ink-3); }
 .dl-first { grid-area: f; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dl-time { grid-area: t; font-size: var(--size-px-12); }
@@ -34,8 +34,8 @@
 
 .dl-made { display: inline-flex; align-items: center; gap: var(--size-px-6); }
 .dl-tok { display: inline-flex; align-items: center; gap: var(--size-px-3); height: var(--size-px-20); padding: 0 var(--size-px-6); border-radius: var(--size-px-10); background: var(--ap-sunk); color: var(--ap-ink-2); font-size: var(--size-px-12); }
-.dl-tok[data-draft] { background: transparent; outline: var(--size-px-1) dashed rgb(var(--ap-shc) / 12%); outline-offset: var(--size-px-neg-1); }
+.dl-tok[data-draft] { background: transparent; outline: var(--size-px-1) dashed var(--color-gray-0-a-30); outline-offset: var(--size-px-neg-1); }
 
 /* The slot DumpOrAsk positions over the pill when the log opens elsewhere. */
 .ps-log-slot { position: absolute; z-index: 6; }
-.ps-log { position: absolute; inset: 0; background: var(--ap-surface); border-radius: var(--size-px-14); box-shadow: 0 0 0 var(--size-px-0-5) rgb(var(--ap-shc) / 10%), 0 var(--size-px-12) var(--size-px-32) rgb(var(--ap-shc) / 14%); overflow: hidden; }
+.ps-log { position: absolute; inset: 0; background: var(--ap-surface); border-radius: var(--size-px-14); box-shadow: 0 0 0 var(--size-px-0-5) var(--color-gray-0-a-10), 0 var(--size-px-12) var(--size-px-32) var(--color-gray-0-a-14); overflow: hidden; }

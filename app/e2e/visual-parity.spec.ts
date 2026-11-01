@@ -19,9 +19,6 @@ test('shared controls and theory pane retain the rendered canonical jig geometry
   await jig.setViewportSize({ width: 1560, height: 1100 });
   await page.setViewportSize({ width: 1360, height: 820 });
   await jig.goto('http://127.0.0.1:5181/app'); await page.goto('/?view=current');
-  // The approved type is Geist 13/1.4 (surface study, 1 Nov 2026). The jig's .as shell rule still names Inter, so its
-  // docked pane renders in Inter; compare geometry in the approved face rather than in that leftover.
-  await jig.addStyleTag({ content: '.as { font-family: "Geist", "Inter", system-ui, sans-serif; }' });
   await Promise.all([jig.locator('.as .cur-card[data-pick=t1]').waitFor(), page.locator('.cur-card[data-pick=t1]').waitFor()]);
   await Promise.all([jig.evaluate(() => document.fonts.ready), page.evaluate(() => document.fonts.ready)]);
   for (const selector of ['.as-switch', '.as-switch-btn', '.as-switch-btn svg', '.cur-index a', '.cur-theme', '.cur-card[data-pick=t1]']) {

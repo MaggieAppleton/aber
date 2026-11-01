@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { field, mutate, useWorld, world, type Row } from "../data/live";
 import type { ToastPart, ToastT } from "../ui/pill-study";
+import { onNotice, type Notice } from "../ui/notices";
 
 export function producedParts(dumps: Row[]): ToastPart[] {
   const signals = new Set<string>();
@@ -38,6 +39,8 @@ export function useCaptureResults(open: boolean) {
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const latestUndo = useRef<string[]>(savedUndo());
   const undoing = useRef(false);
+  // The notice (a toast from elsewhere in the app) currently showing, if any.
+  const notice = useRef<Notice | undefined>(undefined);
   const column = useRef(new Set<string>());
   const queue = useRef<{ ids: string[]; direct: boolean }[]>([]);
   const session = useRef(0);
@@ -50,20 +53,34 @@ export function useCaptureResults(open: boolean) {
       latestUndo.current = ids;
       try { sessionStorage.setItem(undoKey, JSON.stringify(ids)); } catch {}
     };
-    const show = (parts: ToastPart[], ids: string[] = []) => {
+    // A notice that leaves without Undo settles; one replaced by another toast settles too.
+    const settleNotice = () => { const n = notice.current; notice.current = undefined; n?.settle?.(); };
+    const present = (toast: Omit<ToastT, "id">, next?: Notice) => {
       clearTimeout(timer.current);
-      if (ids.length) remember(ids);
+      settleNotice();
+      notice.current = next;
       const id = crypto.randomUUID();
-      setToast({ id, parts });
+      setToast({ id, ...toast });
       const dismiss = () => {
         timer.current = setTimeout(() => {
           if (held.current) dismiss();
-          else setToast(value => value?.id === id ? null : value);
+          else { if (notice.current === next) settleNotice(); setToast(value => value?.id === id ? null : value); }
         }, held.current ? 1500 : 5000);
       };
       dismiss();
     };
+    const show = (parts: ToastPart[], ids: string[] = []) => {
+      if (ids.length) remember(ids);
+      present({ parts });
+    };
+    const announce = (n: Notice) => present({ parts: [], text: n.text, undoable: !!n.undo }, n);
     const undo = () => {
+      if (notice.current) {
+        const n = notice.current; notice.current = undefined;
+        clearTimeout(timer.current); setToast(null);
+        if (n.undo) n.undo(); else n.settle?.();
+        return !!n.undo;
+      }
       const ids = latestUndo.current.filter(id => {
         const dump = world.dumps.find(dump => dump.id === id);
         return dump && !field(dump, "deletedAt");
@@ -104,15 +121,20 @@ export function useCaptureResults(open: boolean) {
       },
       flush,
       show,
+      announce,
       undo,
-      dismiss: () => { held.current=false;clearTimeout(timer.current); setToast(null); },
+      dismiss: () => { held.current=false;clearTimeout(timer.current); settleNotice(); setToast(null); },
       hold: (value: boolean) => { held.current = value; },
     };
   }, []);
 
+  useEffect(() => onNotice(api.announce), [api]);
+  // A notice still waiting when the host goes away settles rather than vanishing.
+  useEffect(() => () => { const n = notice.current; notice.current = undefined; n?.settle?.(); }, []);
   useEffect(() => {
     if (open !== previousOpen.current) {
-      if (open) { session.current++; api.dismiss(); }
+      // Opening the column clears capture results; a notice stays, above the composer.
+      if (open) { session.current++; if (!notice.current) api.dismiss(); }
       else if (column.current.size) {
         queue.current.push({ ids: [...column.current], direct: false });
         column.current.clear();

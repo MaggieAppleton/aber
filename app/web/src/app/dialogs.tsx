@@ -29,7 +29,7 @@ export function DialogHost() {
   const matches=prompt?.search?found:prompt?.choices?.filter(choice=>choice.label.toLowerCase().includes(query.toLowerCase()));
   const submit = (e: FormEvent) => { e.preventDefault(); if(query.trim() || !prompt?.field) close(query.trim()); };
   return <Dialog.Root open={!!prompt} onOpenChange={open => { if(!open) close(); }}>
-    <Dialog.Portal><Dialog.Backdrop className="ab-backdrop"/><Dialog.Popup className="ap ab-dialog" onKeyDown={e=>e.stopPropagation()}>
+    <Dialog.Portal><Dialog.Backdrop className="ab-backdrop"/><Dialog.Popup className="ap ab-dialog" data-confirm={prompt?.destructive || undefined} onKeyDown={e=>e.stopPropagation()}>
       <Dialog.Title className="ap-h">{prompt?.title}</Dialog.Title>
       <Dialog.Description className="ab-description">{prompt?.description ?? ""}</Dialog.Description>
       {prompt?.content}
@@ -38,7 +38,10 @@ export function DialogHost() {
           {choice.kind && <Icon name={choice.kind as any} size={14}/>}<span>{choice.label}{choice.detail && <small>{choice.detail}</small>}</span><Icon name="chevron" size={12}/>
         </button>)}{searching&&<p className="ap-muted" role="status">Searching…</p>}{searchError&&<p role="alert">{searchError}</p>}{!searching&&!searchError&&!matches?.length&&<p className="ap-muted" role="status">No matches</p>}</div></> : <form onSubmit={submit}>
         {prompt?.field && <label className="ab-field">{prompt.field}<input autoFocus required className="ab-input" value={query} onChange={e=>setQuery(e.target.value)}/></label>}
-        <div className="ab-dialog-actions">{!prompt?.readOnly&&<IconTooltip label="Cancel"><Dialog.Close type="button" className="ap-iconbtn" aria-label="Cancel"><Icon name="x"/></Dialog.Close></IconTooltip>}<button autoFocus={!prompt?.field} className="ap-btn" data-destructive={prompt?.destructive || undefined}>{prompt?.submit ?? "Save"}</button></div>
+        <div className="ab-dialog-actions">{prompt?.destructive
+          /* A destructive confirmation: Cancel is a ghost button and the action is solid ink, never red (red means a tripped tripwire). */
+          ? <><Dialog.Close type="button" className="ap-btn ab-btn-ghost">Cancel</Dialog.Close><button className="ap-btn ab-btn-ink" data-destructive>{prompt.submit ?? "Save"}</button></>
+          : <>{!prompt?.readOnly&&<IconTooltip label="Cancel"><Dialog.Close type="button" className="ap-iconbtn" aria-label="Cancel"><Icon name="x"/></Dialog.Close></IconTooltip>}<button autoFocus={!prompt?.field} className="ap-btn">{prompt?.submit ?? "Save"}</button></>}</div>
       </form>}
     </Dialog.Popup></Dialog.Portal>
   </Dialog.Root>;
@@ -78,12 +81,17 @@ export async function retireObject(kind: string,id: string) {
   const reason = await ask({title:`Retire ${kind}`,choices:[{id:"disproven",label:"Disproven"},{id:"superseded",label:"Superseded"},{id:"abandoned",label:"Abandoned"}]});
   if(reason) try { await mutate(kind === "theory" ? "retireTheory" : "retireTheme",{id,reason}); window.dispatchEvent(new CustomEvent("aber:close")); } catch {}
 }
+/** What deleting a dump does, spelled out from the real counts. */
+export function deleteConsequence(signals: number, evidence: number) {
+  const count = (n: number, one: string) => `${n} ${n === 1 ? one : `${one}s`}`;
+  return `Removes ${count(signals,"signal")} and ${count(evidence,"evidence link")}. It stays in the bin for 30 days.`;
+}
 export async function deleteDump(id: string) {
   try {
     const preview = await mutate("previewDeleteDump",{id});
     const signals = preview.signals ?? preview.signalCount ?? preview.removedSignals ?? 0;
     const evidence = preview.evidence ?? preview.evidenceLinks ?? preview.evidenceCount ?? 0;
-    const confirmed = await ask({title:"Move dump to the bin?",description:`Removes ${signals} signals and ${evidence} evidence links. You can restore this dump for 30 days.`,submit:"Move to bin",destructive:true});
+    const confirmed = await ask({title:"Delete this dump?",description:deleteConsequence(signals,evidence),submit:"Move to bin",destructive:true});
     if(confirmed !== undefined) await mutate("deleteDump",{id});
   } catch(cause) { reportError(cause); }
 }

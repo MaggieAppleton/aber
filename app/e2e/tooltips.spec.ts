@@ -41,7 +41,7 @@ test('File in a theme has a delayed, portaled tooltip without moving its button;
   expect(await tip.evaluate(element => {
     const style = getComputedStyle(element);
     return { background: style.backgroundColor, color: style.color, radius: style.borderRadius, insidePane: !!element.closest('.as-pane') };
-  })).toEqual({ background: 'rgb(26, 33, 30)', color: 'rgb(255, 255, 255)', radius: '6px', insidePane: false });   // ink is sage 12
+  })).toEqual({ background: 'rgb(0, 0, 0)', color: 'rgb(255, 255, 255)', radius: '6px', insidePane: false });
   await page.screenshot({ path: 'test-results/parity/tooltip-file-hover.png' });
 
   await page.mouse.move(20, 20);

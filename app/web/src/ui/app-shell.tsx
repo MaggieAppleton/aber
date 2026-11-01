@@ -24,6 +24,7 @@ import { flushEdit, failedEditsCount, retryFailedEdits } from "./edits";
 import { DialogHost, findObjects, createObject } from "../app/dialogs";
 import "../app/production.css";
 import "../app/hit-areas.css";
+import "./surface-patterns.css";
 
 export const APP_W = 1360, APP_H = 820;
 const EASE = [0.16, 1, 0.3, 1] as const;
