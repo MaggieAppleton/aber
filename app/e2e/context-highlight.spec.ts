@@ -105,7 +105,7 @@ test('context paint never overlaps chat during intermediate pane docking frames'
   await page.getByRole('button', { name: 'Dump or ask (⌘J)', exact: true }).click();
   // Let the composer's delayed autofocus finish before assigning pane keyboard ownership.
   await expect(page.getByPlaceholder('Dump anything, or ask')).toBeFocused();
-  await expect(page.locator('.ps-surface[data-open]')).toHaveCSS('height', `${page.viewportSize()!.height}px`);
+  await expect(page.locator('.ps-surface[data-open]')).toHaveCSS('height', `${page.viewportSize()!.height - 24}px`);
   await page.locator('.ps-ctx').filter({ hasText: 'Agents keep context across months, not sessions' }).hover();
   await expectInsideSource(page, 'pane');
   const separator = page.locator('.as-pane-edge');

@@ -3,7 +3,8 @@
 .br-scroll { position: absolute; inset: 0; }
 .br-col { max-width: var(--size-px-600); margin: 0 auto; padding: var(--size-px-28) var(--size-px-28) var(--size-px-120); display: flex; flex-direction: column; gap: var(--size-px-8); }
 .br-head { display: flex; align-items: baseline; gap: var(--size-px-10); min-height: var(--size-px-28); }
-.br-left { margin-left: auto; }
+.br-head > .ap-h { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.br-left { margin-left: auto; flex-shrink: 0; white-space: nowrap; }
 
 /* Overnight: dumps → signals and drafts, one line; opens the dump log */
 .br-flow { align-self: flex-start; display: inline-flex; align-items: center; gap: var(--size-px-5); height: var(--size-px-26); padding: 0 var(--size-px-8); margin: 0 var(--size-px-neg-8) var(--size-px-8); border: 0; border-radius: var(--size-px-13); background: transparent; color: var(--ap-ink-3); cursor: pointer; transition: background 120ms ease-out, color 120ms ease-out; }
@@ -13,12 +14,12 @@
 .br-flow:focus-visible { outline: var(--size-px-2) solid var(--color-rgb-47-111-237-a-55); }
 
 .br-group { display: grid; gap: var(--size-px-6); margin-top: var(--size-px-10); }
-.br-group-name { display: flex; gap: var(--size-px-6); padding: 0 var(--size-px-2); margin: 0; }
-.br-group-name .ap-num { color: var(--ap-ink-3); font-weight: 400; }
+.br-group-name { display: flex; gap: var(--size-px-6); padding: 0 var(--size-px-2); margin: 0; white-space: nowrap; }
+.br-group-name .ap-num { color: var(--ap-ink-3); font-weight: 400; flex-shrink: 0; }
 
 /* An item: a card. The cursor is a ring, not a fill. */
 .br-item { border-radius: var(--size-px-8); transition: box-shadow 150ms ease-out; }
-.br-item[data-cursor] { box-shadow: 0 0 0 var(--size-px-1-5) var(--ap-ink); }
+.br-item[data-cursor] { box-shadow: var(--ap-shadow-selected); }
 .br-row { display: grid; grid-template-columns: var(--size-px-16) minmax(0, 1fr) auto; align-items: start; gap: var(--size-px-4) var(--size-px-10); padding: var(--size-px-10) var(--size-px-10) var(--size-px-10) var(--size-px-12); border-radius: var(--size-px-8); background: var(--ap-surface); box-shadow: var(--ap-shadow-1); }
 .br-row[data-draft] { background: var(--color-gray-255-a-50); box-shadow: none; outline: var(--size-px-1) dashed var(--color-gray-0-a-28); outline-offset: var(--size-px-neg-1); }
 .br-glyph { position: relative; height: var(--size-px-20); display: grid; place-items: center; color: var(--ap-ink-3); }

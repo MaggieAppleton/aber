@@ -1,6 +1,8 @@
 /* The dump log: a tier-3 surface over the pill. Tokens from .ap (homes.css). */
 .dl { display: flex; flex-direction: column; max-height: inherit; height: 100%; outline: none; font-size: var(--size-px-13); }
 .dl-head { display: flex; align-items: center; gap: var(--size-px-8); padding: var(--size-px-8) var(--size-px-8) var(--size-px-6) var(--size-px-14); min-height: var(--size-px-44); }
+.dl-head > .ap-h { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dl-head > .ap-muted, .dl-head-acts, .dl-head > .ap-iconbtn { flex-shrink: 0; white-space: nowrap; }
 .dl-head .ap-iconbtn:first-child { margin-left: var(--size-px-neg-8); }
 .dl-head-acts { margin-left: auto; display: inline-flex; align-items: center; gap: var(--size-px-2); }
 .dl-bin { display: inline-flex; align-items: center; gap: var(--size-px-4); height: var(--size-px-28); padding: 0 var(--size-px-7); border: 0; border-radius: var(--size-px-6); background: transparent; color: var(--ap-ink-2); cursor: pointer; transition: background 100ms ease-out; }

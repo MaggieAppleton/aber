@@ -3,7 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 
-const artifacts = fileURLToPath(new URL('../../reports/parity-repair/chat-docking/', import.meta.url));
+const artifacts = fileURLToPath(new URL('../../reports/parity-repair/chat-floating-backdrop/', import.meta.url));
 const phase = process.env.CHAT_DOCKING_CAPTURE_PHASE ?? 'after';
 const surface = (page: Page) => page.locator('.ps-surface');
 const rect = (locator: Locator) => locator.evaluate(node => {
@@ -16,7 +16,7 @@ async function closedPill(page: Page, width: number, height: number) {
 async function capture(page: Page, label: string) {
   await mkdir(artifacts, { recursive: true });
   await page.mouse.move(0, 0); await page.waitForTimeout(650);
-  const measurements = { surface: await rect(surface(page)), panel: await rect(page.locator('.ps-panel')), pane: await rect(page.locator('.as-pane')), main: await rect(page.locator('.as-content')) };
+  const measurements = { surface: await rect(surface(page)), panel: await rect(page.locator('.ps-panel')), pane: await rect(page.locator('.as-pane')), main: await rect(page.locator('.as-content')), backing: await rect(page.locator('.as')) };
   await page.screenshot({ path: resolve(artifacts, `${phase}-${label}.png`) });
   await writeFile(resolve(artifacts, `${phase}-${label}.json`), JSON.stringify(measurements, null, 2));
   return measurements;
@@ -33,7 +33,7 @@ test.beforeEach(async ({ page, request }) => {
   await page.route('**/api/world', route => route.fulfill({ json: { ...world, dumps } }));
 });
 
-for (const width of [1360, 852]) test(`desktop chat docks flush beside its object pane at ${width}px`, async ({ page }) => {
+for (const width of [1360, 852]) test(`desktop chat floats inset over the same backing as its object pane at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 820 });
   await page.goto('/?view=current&open=theory:t1');
   await expect(page.locator('.as-pane .pn-title')).toBeVisible();
@@ -42,12 +42,14 @@ for (const width of [1360, 852]) test(`desktop chat docks flush beside its objec
   await page.getByRole('button', { name: 'Dump or ask (⌘J)', exact: true }).click();
   await expect(page.locator('.ps-panel')).toBeVisible();
   const actual = await capture(page, `desktop-${width}`);
-  expect(actual.surface).toMatchObject({ x: width - 372, y: 0, width: 372, height: 820, right: width, bottom: 820, radius: '0px' });
+  expect(actual.surface).toMatchObject({ x: width - 372, y: 12, width: 360, height: 796, right: width - 12, bottom: 808, radius: '14px' });
   const shadowColors = [...actual.surface.shadow.matchAll(/rgba?\(([^)]+)\)/g)].map(match => match[1].split(',').map(Number));
-  expect(shadowColors.some(channels => channels.length === 3 || channels[3] > 0)).toBe(false);
+  expect(shadowColors.some(channels => channels.length === 3 || channels[3] > 0)).toBe(true);
+  expect(actual.surface.shadow).toContain('0.5px');
+  expect(actual.backing.background).toBe(actual.pane.background);
   expect(actual.surface.background).toBe(actual.pane.background);
   expect(actual.surface.border).toContain('none');
-  expect(actual.panel.width).toBe(372); expect(actual.panel.height).toBe(820);
+  expect(actual.panel.width).toBe(360); expect(actual.panel.height).toBe(796);
   expect(actual.pane.right).toBe(actual.surface.x);
   expect(actual.main.right).toBeLessThanOrEqual(actual.pane.x);
   expect(actual.pane.right).toBeLessThan(paneBefore.right);
@@ -78,7 +80,8 @@ test('opening chat gives the main view space and closes with reduced motion', as
   await closedPill(page, 1360, 820);
   await page.keyboard.press('ControlOrMeta+j');
   await expect.poll(() => page.locator('.as-content').evaluate(node => node.getBoundingClientRect().width)).toBe(988);
-  await expect.poll(() => surface(page).evaluate(node => node.getBoundingClientRect().width)).toBe(372);
+  await expect.poll(() => surface(page).evaluate(node => node.getBoundingClientRect().width)).toBe(360);
+  expect((await rect(page.locator('.as'))).background).toBe((await rect(page.locator('.as-view > .ap'))).background);
   await expect(page.getByRole('textbox', { name: 'Dump or ask', exact: true })).toBeFocused();
   await page.keyboard.press('Escape');
   await closedPill(page, 1360, 820);
@@ -95,6 +98,8 @@ test('phone retains its fitted sheet, scrolling and composer controls', async ({
   const actual = await capture(page, 'phone');
   expect(actual.surface).toMatchObject({ x: 18, width: 360, right: 378, bottom: 832, radius: '14px' });
   expect(actual.surface.height).toBe(820);
+  expect(actual.surface.shadow).toContain('0.5px');
+  expect(actual.backing.background).toBe(actual.pane.background);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(await page.locator('.ps-thread').evaluate(node => node.scrollHeight > node.clientHeight)).toBe(true);
   await expect(page.getByRole('textbox', { name: 'Dump or ask', exact: true })).toBeVisible();

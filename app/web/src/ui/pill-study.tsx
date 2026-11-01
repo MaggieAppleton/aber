@@ -551,7 +551,6 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
   const cx = cxProp ?? (phone ? w / 2 : SIDEBAR + (w - SIDEBAR) / 2);
   const ph = phone ? 44 : 40, micW = ph, bottom = 12;
   const corner = (variant === "B2" && !centred) || !!cornerProp, docked = variant === "B2";
-  const flushDock = docked && w >= 640;
   const ap = force.approach ?? approach, hv = force.hover ?? hover, pr = force.pressed ?? pressed, fc = force.focus ?? focus;
   void ap;
   const voiceSheet = phone && !s.open && s.rec != null;
@@ -566,8 +565,8 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
   let panelW = 600;
   if (s.open) {
     if (docked) {
-      panelW = flushDock ? DOCK_W : DOCK_W - 12;
-      box = { left: w - DOCK_W, bottom: flushDock ? 0 : 12, width: panelW, height: flushDock ? h : h - 24, r: flushDock ? 0 : 14 };
+      panelW = DOCK_W - 12;
+      box = { left: w - DOCK_W, bottom: 12, width: panelW, height: h - 24, r: 14 };
     }
     else { panelW = w - 16; box = { left: 8, bottom: 8, width: w - 16, height: Math.min(panelH, maxH), r: 40 }; }
   } else if (voiceSheet) {
@@ -756,7 +755,7 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
       {/* The surface: pill when closed, panel when open */}
       <motion.div ref={surfaceRef} className="ps-surface" data-variant={variant} data-open={s.open || voiceSheet ? "" : undefined} data-focus={fc && !s.open ? "" : undefined} data-drag={s.drag && !s.open ? "" : undefined}
         initial={false}
-        animate={{ left: box.left, bottom: box.bottom, width: box.width, height: box.height, borderRadius: box.r, y: lifted ? -1 : 0, scale, boxShadow: s.open && flushDock ? "none" : s.open || voiceSheet ? SHADOW.sheet : lifted || s.drag ? SHADOW.lift : SHADOW.pill }}
+        animate={{ left: box.left, bottom: box.bottom, width: box.width, height: box.height, borderRadius: box.r, y: lifted ? -1 : 0, scale, boxShadow: s.open || voiceSheet ? SHADOW.sheet : lifted || s.drag ? SHADOW.lift : SHADOW.pill }}
         transition={reduced ? { duration: 0 } : { default: s.open || voiceSheet ? OPEN_T : CLOSE_T, y: { duration: 0.15, ease: "easeOut" }, scale: { type: "spring", duration: 0.3, bounce: s.drag ? 0.35 : 0 }, boxShadow: { duration: 0.2 } }}
         style={{ transformOrigin: corner ? "100% 100%" : "50% 100%" }}
         {...dnd}>
@@ -775,7 +774,7 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
           )}
           {s.open && (
             <motion.div key="panel" className="ps-panel-layer" style={{ width: panelW }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: reduced ? 0 : 0.07, duration: 0.22 } }} exit={{ opacity: 0, transition: { duration: 0.1 } }}>
-              <div ref={panelRef} className="ps-panel" data-variant={variant} style={{ maxHeight: docked ? undefined : maxH, height: docked ? (flushDock ? h : h - 24) : undefined }}>
+              <div ref={panelRef} className="ps-panel" data-variant={variant} style={{ maxHeight: docked ? undefined : maxH, height: docked ? h - 24 : undefined }}>
                 <TooltipButton type="button" className="ps-grab" aria-label="Close (Esc)" tooltip="Close (Esc)" onClick={api.close} data-target="close"><i /></TooltipButton>
                 <Thread s={s} api={api} grow={docked} />
                 <Composer s={s} api={api} screen={phone ? "phone" : screen} inputRef={inputRef} big={phone} />

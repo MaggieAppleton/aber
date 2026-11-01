@@ -6,6 +6,8 @@
 
 /* Object pane: a docked peer, a hairline seam on its left, no shadow */
 .as-pane { position: absolute; top: 0; bottom: 0; z-index: 3; background: var(--ap-surface); box-shadow: var(--size-px-neg-0-5) 0 0 var(--ap-line); }
+/* The floating chat card and open object rest on one continuous backing. */
+.as[data-dump]:has(> .as-pane) { background: var(--ap-surface); }
 .as[data-dump] .as-pane { box-shadow: var(--size-px-neg-0-5) 0 0 var(--ap-line), var(--size-px-0-5) 0 0 var(--ap-line); }
 .as-pane-scroll { position: absolute; inset: 0; }
 .as-pane-close { position: absolute; top: var(--size-px-10); right: var(--size-px-10); z-index: 2; display: flex; gap: var(--size-px-2); }
@@ -49,7 +51,7 @@
 .cur[data-compact] .cur-main { opacity: 0; }
 .cur-theme-btn { border: 0; background: transparent; padding: var(--size-px-2) var(--size-px-6); margin: 0 var(--size-px-neg-6); border-radius: var(--size-px-6); cursor: pointer; text-align: left; transition: background 100ms ease-out; }
 .cur-theme-btn:hover { background: var(--ap-hover); }
-.cur-theme-btn[data-open] { box-shadow: 0 0 0 var(--size-px-1-5) var(--ap-ink); }
+.cur-theme-btn[data-open] { box-shadow: var(--ap-shadow-selected); }
 
 /* Folded to a strip beside a full-width pane: drop what can't fit a strip */
 .as[data-compact] .a2-claim { display: none; }
