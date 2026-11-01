@@ -53,14 +53,17 @@ export const TheoryConf = ({ id }: { id: string }) => <Conf n={useEdit("theory",
 export const ProtoStatus = ({ id }: { id: string }) => <ProtoGlyph status={useEdit("prototype", id)[0].status} />;
 
 /* ── A signal: a row that unfolds in place ── */
-export function SignalRow({ s, open, current, onToggle, onOpen, suggested, context }: {
-  s: Signal; open: boolean; current?: boolean; onToggle: () => void; onOpen: OnOpen; suggested?: boolean; context?: string;
+/** A signal row. `feed`: the theme pane's dated feed, with a source glyph and the theories it moves. */
+export function SignalRow({ s, open, current, onToggle, onOpen, suggested, context, feed }: {
+  s: Signal; open: boolean; current?: boolean; onToggle: () => void; onOpen: OnOpen; suggested?: boolean; context?: string; feed?: boolean;
 }) {
   return (
     <div className="pn-sig" data-open={open ? "" : undefined} data-current={current ? "" : undefined} data-suggested={suggested ? "" : undefined}>
       <button className="pn-ev" aria-expanded={open} onClick={onToggle}>
-        <span className="pn-line">{s.day === "Today" && <Mark kind="fresh" />}<span>{s.gist}</span></span>
-        <span className="ap-muted">{s.source}</span>
+        {feed ? <FeedLine s={s} context={context} /> : <>
+          <span className="pn-line">{s.day === "Today" && <Mark kind="fresh" />}<span>{s.gist}</span></span>
+          <span className="ap-muted">{s.source}</span>
+        </>}
       </button>
       <AnimatePresence initial={false}>
         {open && (
@@ -74,6 +77,16 @@ export function SignalRow({ s, open, current, onToggle, onOpen, suggested, conte
 }
 
 /** What an unfolded signal shows: a note, the theories it bears on, its themes and its dump. */
+/** A feed row's face: source glyph (new dot on its corner), gist over source, and the theme's theories it moves. */
+function FeedLine({ s, context }: { s: Signal; context?: string }) {
+  const moves = s.evidence.filter(e => !context || theory(e.theory).themes?.includes(context));
+  return <>
+    <span className="pn-feed-glyph"><Icon name={/\./.test(s.source) ? "link" : "text"} size={14} />{s.day === "Today" && <Mark kind="fresh" />}</span>
+    <span className="pn-feed-text"><span>{s.gist}</span><span className="ap-muted">{s.source}</span></span>
+    {moves.length > 0 && <span className="pn-feed-to">{moves.map(e => <span key={e.theory} className="pn-feed-chip" data-suggested={e.suggested ? "" : undefined} title={e.stance === "supports" ? "Supports" : "Undermines"}><Icon name={e.stance === "supports" ? "arrowUp" : "arrowDown"} size={12} /><span><Claim id={e.theory} /></span></span>)}</span>}
+  </>;
+}
+
 export function SignalDetail({ s, onOpen, onDump, context }: { s: Signal; onOpen: OnOpen; onDump?: (id: string) => void; context?: string }) {
   const d = DUMPS.find(x => x.id === s.dump)!;
   const [edit, set] = useEdit("signal", s.id);
@@ -173,12 +186,19 @@ export function ThemePane({ id, nav }: { id: string; nav: PaneNav }) {
   return (
     <div className="pn-doc">
       <ThemeHead id={id} />
-      <div className="pn-cards">
-        {theoriesIn(id).map(t => <TheoryTile key={t.id} id={t.id} onClick={() => nav.onOpen("theory", t.id)} />)}
+      <div className="pn-cards pn-deck">
+        {theoriesIn(id).map(t => <TheoryTile key={t.id} id={t.id} deck onClick={() => nav.onOpen("theory", t.id)} />)}
         <button className="pn-tile pn-add" aria-label="State a theory" title="State a theory"><Icon name="plus" /></button>
       </div>
-      <div className="pn-col">
-        {ss.map(s => <SignalRow key={s.id} s={s} context={id} open={inline && unfolded === s.id} current={!inline && unfolded === s.id} onToggle={() => toggle(s.id)} onOpen={nav.onOpen} />)}
+      <div className="pn-feed">
+        {[...new Set(ss.map(s => s.day))].map(day => (
+          <div key={day} className="pn-feed-day">
+            <div className="ap-label pn-feed-date">{day}</div>
+            <div className="pn-col">
+              {ss.filter(s => s.day === day).map(s => <SignalRow key={s.id} s={s} feed context={id} open={inline && unfolded === s.id} current={!inline && unfolded === s.id} onToggle={() => toggle(s.id)} onOpen={nav.onOpen} />)}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -201,23 +221,42 @@ export function ThemeHead({ id }: { id: string }) {
 }
 
 /** A theory as a readable tile. Morphs into the theory document when given a layoutId. */
-export function TheoryTile({ id, onClick, layoutId, hidden, large }: { id: string; onClick: () => void; layoutId?: string; hidden?: boolean; large?: boolean }) {
+/** `deck`: the theme pane's tall card, with the confidence history and an evidence bar in its foot. */
+export function TheoryTile({ id, onClick, layoutId, hidden, large, deck }: { id: string; onClick: () => void; layoutId?: string; hidden?: boolean; large?: boolean; deck?: boolean }) {
   const t = theory(id);
   const [edit] = useEdit("theory", id);
   return (
-    <motion.button layoutId={layoutId} className="pn-tile" data-large={large ? "" : undefined} data-draft={t.draft ? "" : undefined}
+    <motion.button layoutId={layoutId} className="pn-tile" data-large={large ? "" : undefined} data-deck={deck ? "" : undefined} data-draft={t.draft ? "" : undefined}
       style={{ visibility: hidden ? "hidden" : undefined, borderRadius: 8 }} onClick={onClick} transition={{ duration: 0.45, ease: EASE }}>
       <motion.span layout="position" className="pn-tile-inner">
         <span className="pn-claim">{edit.claim}</span>
         {large && <span className="pn-tile-body">{edit.body}</span>}
-        <span className="pn-line">
+        {deck ? <DeckFoot id={id} /> : <span className="pn-line">
           {!t.draft && <Conf n={edit.confidence} />}
           {large && <span className="ap-muted ap-num">+{t.supports} −{t.undermines}</span>}
           {t.challenge && <Mark kind="challenge" />}
           {t.pending > 0 && <Mark kind="pending" n={t.pending} />}
-        </span>
+        </span>}
       </motion.span>
     </motion.button>
+  );
+}
+
+/** A deck card's foot: confidence history (a draft has none), the support/undermine split as a bar, the counts and marks. */
+function DeckFoot({ id }: { id: string }) {
+  const t = theory(id);
+  const [edit] = useEdit("theory", id);
+  const total = Math.max(1, t.supports + t.undermines);
+  return (
+    <span className="pn-deck-foot">
+      <span className="pn-deck-spark">{t.draft ? <span className="ap-muted">Draft</span> : <ConfidenceSpark stances={stancesFor(id, edit.log, edit.confidence)} variant="D" />}</span>
+      <span className="pn-deck-bar" aria-hidden><i style={{ flexGrow: t.supports / total }} /><i data-down="" style={{ flexGrow: t.undermines / total }} /></span>
+      <span className="pn-line ap-num pn-deck-bal" aria-label={`${t.supports} support, ${t.undermines} undermine`}>
+        <span>+{t.supports}</span><span className="ap-muted">−{t.undermines}</span>
+        {t.challenge && <Mark kind="challenge" />}
+        {t.pending > 0 && <Mark kind="pending" n={t.pending} />}
+      </span>
+    </span>
   );
 }
 
