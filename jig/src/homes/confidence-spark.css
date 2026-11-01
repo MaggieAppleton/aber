@@ -13,7 +13,7 @@
 .cs-stop { stop-color: var(--t); }
 .cs-end { fill: var(--t); stroke: var(--ap-bg); stroke-width: 1; }
 .cs-pt { fill: var(--t); }
-.cs-base { stroke: rgb(0 0 0 / 14%); stroke-width: 1; stroke-dasharray: 1.5 2; }
+.cs-base { stroke: rgb(var(--ap-shc) / 14%); stroke-width: 1; stroke-dasharray: 1.5 2; }
 .cs-tip { position: absolute; top: calc(100% + 6px); z-index: 4; pointer-events: none; display: grid; gap: 3px; padding: 7px 9px; border-radius: 8px; background: var(--ap-surface); box-shadow: var(--ap-shadow-float); font-size: 12px; line-height: 1.45; color: var(--ap-ink-2); text-wrap: pretty; }
 .cs-log { display: grid; gap: 4px; }
 .cs-row { display: grid; grid-template-columns: 44px 30px minmax(0, 1fr); gap: 8px; align-items: baseline; }

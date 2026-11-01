@@ -640,9 +640,9 @@ export type Force = { approach?: boolean; hover?: boolean; pressed?: boolean; fo
 const OPEN_T: Transition = { type: "spring", duration: 0.5, bounce: 0.12 };
 const CLOSE_T: Transition = { type: "spring", duration: 0.38, bounce: 0 };
 const SHADOW = {
-  pill: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 4px 14px 0px rgba(0, 0, 0, 0.1)",
-  lift: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 6px 18px 0px rgba(0, 0, 0, 0.12)",
-  sheet: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 8px 24px 0px rgba(0, 0, 0, 0.14)",
+  pill: "0px 0px 0px 0.5px rgba(26, 33, 30, 0.1), 0px 4px 8px -2px rgba(26, 33, 30, 0.06), 0px 12px 28px -6px rgba(26, 33, 30, 0.14)",
+  lift: "0px 0px 0px 0.5px rgba(26, 33, 30, 0.1), 0px 6px 10px -2px rgba(26, 33, 30, 0.07), 0px 16px 32px -6px rgba(26, 33, 30, 0.16)",
+  sheet: "0px 0px 0px 0.5px rgba(26, 33, 30, 0.1), 0px 8px 16px -4px rgba(26, 33, 30, 0.08), 0px 20px 44px -10px rgba(26, 33, 30, 0.18)",
 };
 let activeStage: string | null = null;
 /** Whether the last input was the keyboard, so closing by key hands focus back to the pill (and by pointer doesn't). */

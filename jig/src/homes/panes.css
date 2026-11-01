@@ -1,5 +1,5 @@
 /* Object panes: theme, theory, prototype. Shared by Columns and Atlas; uses the .ap tokens from homes.css. */
-.ap { --pn-edit-hover: rgb(0 0 0 / 2.5%); --pn-edit-bg: rgb(0 0 0 / 3.5%); --pn-edit-ring: rgb(0 0 0 / 14%); }
+.ap { --pn-edit-hover: rgb(var(--ap-shc) / 2.5%); --pn-edit-bg: rgb(var(--ap-shc) / 3.5%); --pn-edit-ring: rgb(var(--ap-shc) / 14%); }
 
 .pn-doc { max-width: 680px; padding: 40px 48px 120px; display: grid; gap: 16px; }
 /* Meta: a label/value list under the title. Labels are quiet and fixed; nothing moves on hover. */
@@ -17,14 +17,14 @@
 [data-placeholder]:empty::before { content: attr(data-placeholder); color: var(--ap-ink-3); pointer-events: none; }
 
 .pn-title { margin: -4px -8px; padding: 4px 8px; font-size: 26px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; text-wrap: balance; }
-.pn-title[data-draft] { color: var(--ap-ink-2); outline: 1px dashed rgb(0 0 0 / 28%); outline-offset: -1px; }
-.pn-title[data-draft]:focus, .pn-title[data-draft]:focus-visible { outline: 1px dashed rgb(0 0 0 / 40%); outline-offset: -1px; box-shadow: none; }
+.pn-title[data-draft] { color: var(--ap-ink-2); outline: 1px dashed rgb(var(--ap-shc) / 12%); outline-offset: -1px; }
+.pn-title[data-draft]:focus, .pn-title[data-draft]:focus-visible { outline: 1px dashed rgb(var(--ap-shc) / 12%); outline-offset: -1px; box-shadow: none; }
 /* The body: the document's main prose. A faint paper tint and generous inset set it apart from the meta above and the
    tripwire and evidence below (the doc's 16px gap plus 8px each side); the negative margin keeps its text aligned with
    everything else. Empty, it stays a three-line writing area. */
 .ap .pn-doc > .pn-body.pn-edit { margin: 8px -14px; padding: 14px; max-width: calc(68ch + 28px); font-size: 15px; line-height: 1.65; color: var(--ap-ink-2);
-  min-height: calc(3lh + 28px); border-radius: 8px; background: rgb(0 0 0 / 2%); }
-.ap .pn-doc > .pn-body.pn-edit:hover { background: rgb(0 0 0 / 3%); }
+  min-height: calc(3lh + 28px); border-radius: 8px; background: rgb(var(--ap-shc) / 2%); }
+.ap .pn-doc > .pn-body.pn-edit:hover { background: rgb(var(--ap-shc) / 3%); }
 .ap .pn-doc > .pn-body.pn-edit:focus, .ap .pn-doc > .pn-body.pn-edit:focus-visible { background: var(--pn-edit-bg); box-shadow: inset 0 0 0 1px var(--pn-edit-ring); }
 
 .pn-field-val { color: var(--ap-ink-2); }
@@ -34,11 +34,11 @@
 .pn-reveal-in { display: inline-flex; align-items: center; padding-left: 6px; }
 .pn-step { width: 20px; height: 20px; padding: 0; border: 0; border-radius: 5px; background: transparent; display: grid; place-items: center; color: var(--ap-ink-3); flex-shrink: 0; cursor: pointer; transition: background 100ms, transform 100ms; }
 .pn-step:hover { background: var(--ap-hover); color: var(--ap-ink); }
-.pn-step:active { transform: scale(0.92); }
-.pn-step:focus-visible { outline: 1.5px solid var(--ap-ink-3); outline-offset: -1.5px; }
+.pn-step:active { transform: scale(var(--ap-press)); }
+.pn-step:focus-visible { outline: 2px solid var(--ap-focus-ring); outline-offset: -1.5px; }
 
 .pn-conf { display: inline-flex; gap: 3px; }
-.pn-conf button { width: 20px; height: 6px; padding: 0; border: 0; border-radius: 3px; background: rgb(0 0 0 / 10%); cursor: pointer; transition: background 150ms, transform 100ms; }
+.pn-conf button { width: 20px; height: 6px; padding: 0; border: 0; border-radius: 3px; background: rgb(var(--ap-shc) / 10%); cursor: pointer; transition: background 150ms, transform 100ms; }
 .pn-conf button[data-on] { background: var(--ap-ink); }
 .pn-conf button:hover { transform: scaleY(1.5); }
 
@@ -56,10 +56,10 @@
 /* A signal, unfolding in place */
 .pn-sig { border-radius: 7px; background: var(--ap-sunk); transition: background 100ms, box-shadow 150ms; }
 .pn-sig[data-open] { background: var(--ap-surface); box-shadow: var(--ap-shadow-1); }
-.pn-sig[data-current] { box-shadow: inset 0 0 0 1.5px var(--ap-ink); }
-.pn-sig[data-suggested] { background: transparent; outline: 1px dashed rgb(0 0 0 / 28%); outline-offset: -1px; }
+.pn-sig[data-current] { box-shadow: var(--ap-sel); }
+.pn-sig[data-suggested] { background: transparent; outline: 1px dashed rgb(var(--ap-shc) / 12%); outline-offset: -1px; }
 .pn-ev { display: grid; gap: 2px; width: 100%; text-align: left; padding: 7px 10px; border: 0; border-radius: 7px; background: transparent; color: var(--ap-ink-2); cursor: pointer; transition: background 100ms; }
-.pn-ev:focus-visible { outline: 1.5px solid var(--ap-ink-3); outline-offset: -1.5px; }
+.pn-ev:focus-visible { outline: 2px solid var(--ap-focus-ring); outline-offset: -1.5px; }
 .pn-sig:not([data-open]) .pn-ev:hover { background: var(--ap-hover); }
 .pn-sig[data-open] .pn-ev { color: var(--ap-ink); }
 .pn-ev .ap-muted { font-size: 12px; }
@@ -73,19 +73,19 @@
 .pn-link { display: flex; align-items: flex-start; gap: 6px; text-align: left; border: 0; background: transparent; padding: 3px 4px; border-radius: 5px; cursor: pointer; color: var(--ap-ink-2); font-size: 12px; }
 .pn-link svg { flex-shrink: 0; margin-top: 2px; }
 .pn-link:hover { background: var(--ap-hover); color: var(--ap-ink); }
-.pn-link[data-suggested] { outline: 1px dashed rgb(0 0 0 / 28%); outline-offset: -1px; }
-.pn-link:focus-visible { outline: 1.5px solid var(--ap-ink-3); outline-offset: -1.5px; }
+.pn-link[data-suggested] { outline: 1px dashed rgb(var(--ap-shc) / 12%); outline-offset: -1px; }
+.pn-link:focus-visible { outline: 2px solid var(--ap-focus-ring); outline-offset: -1.5px; }
 
 /* Chips */
 .pn-chips { display: flex; flex-wrap: wrap; gap: 4px; }
 .pn-chip { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border: 0; border-radius: 6px; background: var(--ap-surface); box-shadow: inset 0 0 0 0.5px var(--ap-line); font-size: 12px; color: var(--ap-ink-2); cursor: pointer; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background 100ms, transform 100ms; }
 .pn-chip svg, .pn-chip .ap-proto { flex-shrink: 0; }
 .pn-chip:hover { background: var(--ap-hover); color: var(--ap-ink); }
-.pn-chip:active { transform: scale(0.96); }
-.pn-chip:focus-visible { outline: 1.5px solid var(--ap-ink-3); outline-offset: -1.5px; }
+.pn-chip:active { transform: scale(var(--ap-press)); }
+.pn-chip:focus-visible { outline: 2px solid var(--ap-focus-ring); outline-offset: -1.5px; }
 .pn-chip.pn-static { cursor: default; background: transparent; }
 .pn-chip.pn-static:active { transform: none; }
-.pn-chip[data-draft] { box-shadow: none; outline: 1px dashed rgb(0 0 0 / 28%); outline-offset: -1px; background: transparent; }
+.pn-chip[data-draft] { box-shadow: none; outline: 1px dashed rgb(var(--ap-shc) / 12%); outline-offset: -1px; background: transparent; }
 .pn-links { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 12px; border-top: 0.5px solid var(--ap-line-2); }
 
 /* Theme: theory tiles */
@@ -94,7 +94,7 @@
 .pn-tile-inner { display: grid; gap: 8px; align-content: start; padding: 10px 12px; }
 .pn-tile[data-large] .pn-tile-inner { padding: 14px 16px; gap: 10px; }
 .pn-tile-body { color: var(--ap-ink-2); text-wrap: pretty; }
-.pn-tile[data-draft] { box-shadow: none; outline: 1px dashed rgb(0 0 0 / 28%); outline-offset: -1px; background: transparent; color: var(--ap-ink-2); }
+.pn-tile[data-draft] { box-shadow: none; outline: 1px dashed rgb(var(--ap-shc) / 12%); outline-offset: -1px; background: transparent; color: var(--ap-ink-2); }
 .pn-add { display: grid; place-items: center; color: var(--ap-ink-3); box-shadow: inset 0 0 0 0.5px var(--ap-line); background: transparent; min-height: 56px; border-radius: 8px; }
 
 /* Prototype */
@@ -104,5 +104,5 @@
 .pn-status button[aria-checked="true"] { background: var(--ap-surface); box-shadow: var(--ap-shadow-1); }
 .pn-status-glyph { display: inline-grid; place-items: center; }
 .pn-status-name { font-size: 12px; color: var(--ap-ink-2); }
-.pn-media { aspect-ratio: 16 / 9; border-radius: 10px; background: linear-gradient(135deg, #eee, #e2e2e2); display: grid; place-items: center; box-shadow: inset 0 0 0 0.5px rgb(0 0 0 / 8%); }
+.pn-media { aspect-ratio: 16 / 9; border-radius: 10px; background: linear-gradient(135deg, #eee, #e2e2e2); display: grid; place-items: center; box-shadow: inset 0 0 0 0.5px rgb(var(--ap-shc) / 8%); }
 .pn-play { width: 44px; height: 44px; border: 0; border-radius: 22px; background: var(--ap-ink); color: #fff; display: grid; place-items: center; cursor: pointer; }

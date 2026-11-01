@@ -1,5 +1,5 @@
 /* The tripwire, written as a sentence under the theory body (variant C), and the signals it matches. Tokens from .ap (homes.css). */
-.ap .ap-btn.tw-accept:focus-visible { outline: 1.5px solid var(--ap-ink-3); outline-offset: 1px; }
+.ap .ap-btn.tw-accept:focus-visible { outline: 2px solid var(--ap-focus-ring); outline-offset: 1px; }
 /* Watching: a dot that breathes slowly */
 .tw-watch { position: relative; width: 7px; height: 7px; border-radius: 50%; background: var(--ap-ink-3); flex-shrink: 0; display: inline-block; }
 .tw-watch::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--ap-ink-3); animation: tw-breathe 2.8s ease-out infinite; }
@@ -7,7 +7,7 @@
 @media (prefers-reduced-motion: reduce) { .tw-watch::after { animation: none; opacity: 0; } }
 /* A matched signal: dashed until decided */
 .tw-hits { display: grid; gap: 4px; }
-.tw-hit { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 4px 10px; padding: 7px 8px 7px 10px; border-radius: 7px; outline: 1px dashed rgb(0 0 0 / 28%); outline-offset: -1px; background: transparent; }
+.tw-hit { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 4px 10px; padding: 7px 8px 7px 10px; border-radius: 7px; outline: 1px dashed rgb(var(--ap-shc) / 12%); outline-offset: -1px; background: transparent; }
 .tw-hit[data-decided] { outline: 0; background: var(--ap-sunk); }
 .tw-hit-text { display: grid; gap: 2px; min-width: 0; }
 .tw-hit-text .ap-muted { font-size: 12px; }
@@ -34,7 +34,7 @@
 .tw-tc-after, .tw-tc-flag { display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; vertical-align: 1px; }
 .tw-tc-flag { border: 0; background: transparent; padding: 2px 4px; border-radius: 6px; cursor: pointer; font: inherit; }
 .tw-tc-flag:hover { background: var(--ap-hover); }
-.tw-tc-flag:focus-visible { outline: 1.5px solid var(--ap-ink-3); outline-offset: -1.5px; }
+.tw-tc-flag:focus-visible { outline: 2px solid var(--ap-focus-ring); outline-offset: -1.5px; }
 .tw-tc-done { margin-left: 4px; padding: 0 6px; font-size: 12px; line-height: 22px; color: var(--ap-ink-3); vertical-align: 0; }
 .tw-tc-end { white-space: nowrap; }
 .tw-unfold > .tw-tc-hits { padding: 6px 0 2px; }
@@ -43,7 +43,7 @@
 .ap .tw-tc-blank { display: block; margin: -4px -8px; padding: 4px 8px; min-height: calc(2lh + 8px); color: var(--ap-ink); }
 .tw-tc-blankline:hover .tw-tc-blank { background-color: var(--pn-edit-hover); }
 .ap .tw-tc-blank:empty {
-  --rule: repeating-linear-gradient(to right, rgb(0 0 0 / 22%) 0 2px, transparent 2px 5px);
+  --rule: repeating-linear-gradient(to right, rgb(var(--ap-shc) / 22%) 0 2px, transparent 2px 5px);
   background-image: var(--rule), var(--rule);
   background-size: calc(100% - var(--tc-lead, 0px)) 1px, 100% 1px;
   background-repeat: no-repeat;

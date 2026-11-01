@@ -411,12 +411,12 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .bitem-wrap { display: grid; grid-template-rows: 1fr; transition: grid-template-rows var(--dur-3) var(--ease); }
 .bitem-wrap.gone { grid-template-rows: 0fr; }
 .bitem-wrap > div { overflow: hidden; }
-.bitem { --obj: var(--h-theory); display: grid; grid-template-columns: auto 1fr auto; gap: var(--sp-1) var(--sp-3); padding: var(--sp-4); border-radius: var(--r-3); background: var(--surface); box-shadow: var(--hi), var(--sh-card);
+.bitem { --obj: var(--h-theory); display: grid; grid-template-columns: auto 1fr; gap: var(--sp-1) var(--sp-3); padding: var(--sp-4); border-radius: var(--r-3); background: var(--surface); box-shadow: var(--hi), var(--sh-card);
   transition: transform var(--dur-2) var(--ease), opacity var(--dur-2) var(--ease); margin: 2px; }
 .bitem .glyph { color: var(--h-theory); margin-top: 1px; }
-.bitem .t { font-weight: 600; line-height: 1.4; text-wrap: pretty; }
+.bitem .t { grid-column: 2; font-weight: 600; line-height: 1.4; text-wrap: pretty; }
 .bitem .t .dot { margin-left: var(--sp-2); vertical-align: 0.12em; }   /* trails the last word, centred on the x-height */
-.bitem .acts { display: flex; gap: var(--sp-1); align-items: start; }
+.bitem .acts { grid-column: 2; grid-row: 4; justify-self: end; display: flex; gap: var(--sp-1); align-items: center; margin-top: var(--sp-1); }   /* actions always sit bottom right, after the content they act on */
 .bitem .ev-row { grid-column: 2; display: flex; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); border-radius: var(--r-2); box-shadow: inset 0 0 0 1px var(--draft-line); background: var(--draft-fill); color: var(--ink-2); font-size: var(--t-12); }
 .bitem .ev-row svg { color: var(--h-signal); }
 .bitem .why { grid-column: 2; font-size: var(--t-12); color: var(--ink-3); }

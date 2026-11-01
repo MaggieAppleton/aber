@@ -32,17 +32,17 @@
 
 .dl-made { display: inline-flex; align-items: center; gap: 6px; }
 .dl-tok { display: inline-flex; align-items: center; gap: 3px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--ap-sunk); color: var(--ap-ink-2); font-size: 12px; }
-.dl-tok[data-draft] { background: transparent; outline: 1px dashed rgb(0 0 0 / 30%); outline-offset: -1px; }
+.dl-tok[data-draft] { background: transparent; outline: 1px dashed rgb(var(--ap-shc) / 12%); outline-offset: -1px; }
 
 /* The slot DumpOrAsk positions over the pill, and the pill's log segment */
 .ps-log-slot { position: absolute; z-index: 6; }
-.ps-log { position: absolute; inset: 0; background: var(--ap-surface); border-radius: 14px; box-shadow: 0 0 0 0.5px rgb(0 0 0 / 10%), 0 12px 32px rgb(0 0 0 / 14%); overflow: hidden; }
+.ps-log { position: absolute; inset: 0; background: var(--ap-surface); border-radius: 14px; box-shadow: 0 0 0 0.5px rgb(var(--ap-shc) / 10%), 0 12px 32px rgb(var(--ap-shc) / 14%); overflow: hidden; }
 .ps-logseg { position: absolute; left: 0; top: 0; bottom: 0; display: grid; place-items: center start; padding: 0 0 0 4px; border: 0; background: transparent; cursor: pointer; z-index: 2; border-radius: 999px 0 0 999px; }
 .ps-logseg-in { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: var(--ap-ink-3); transition: background 150ms ease-out, color 150ms ease-out, transform 100ms ease-out; }
 .ps-logseg:hover .ps-logseg-in, .ps-logseg[aria-expanded="true"] .ps-logseg-in { background: var(--ap-sunk); color: var(--ap-ink); }
-.ps-logseg:active .ps-logseg-in { transform: scale(0.94); }
+.ps-logseg:active .ps-logseg-in { transform: scale(var(--ap-press)); }
 .ps-logseg:focus-visible { outline: none; }
-.ps-logseg:focus-visible .ps-logseg-in { outline: 2px solid rgb(47 111 237 / 55%); outline-offset: 2px; }
+.ps-logseg:focus-visible .ps-logseg-in { outline: 2px solid var(--ap-focus-ring); outline-offset: 2px; }
 .ps-logseg-dot { position: absolute; top: 9px; left: 26px; width: 6px; height: 6px; border-radius: 3px; background: var(--ap-ink-3); box-shadow: 0 0 0 1.5px var(--ap-surface); }
 .ps-logseg-dot[data-failed] { background: var(--ap-neg); }
 .ps-pill-layer[data-log] .ps-pill-row { left: 36px; }

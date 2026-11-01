@@ -178,7 +178,7 @@ function Decide({ accept = "Accept", onAccept, onDiscard, discard = "Discard" }:
   );
 }
 
-/** One row: a kind glyph, a title that opens its object, the detail below, actions at the top right. */
+/** One row: a kind glyph, a title that opens its object (any mark trails it), the detail below, actions at the bottom right. */
 function Row({ icon, iconTitle, title, onOpen, draft, acts, children, mark }: {
   icon: IconName; iconTitle: string; title: ReactNode; onOpen?: () => void; draft?: boolean; acts: ReactNode; children?: ReactNode; mark?: ReactNode;
 }) {
@@ -187,8 +187,8 @@ function Row({ icon, iconTitle, title, onOpen, draft, acts, children, mark }: {
       <span className="br-glyph" title={iconTitle} aria-label={iconTitle}><Icon name={icon} size={14} /></span>
       <div className="br-main">
         <div className="br-title">
-          {mark}
           {onOpen ? <button className="br-open" onClick={onOpen}>{title}</button> : <span className="br-static">{title}</span>}
+          {mark}
         </div>
         {children && <div className="br-detail">{children}</div>}
       </div>
