@@ -34,6 +34,7 @@
     "@hono/node-server": "^2.1.5",
     "@mozilla/readability": "^0.6.0",
     "@phosphor-icons/react": "^2.1.10",
+    "agentation": "^3.1.2",
     "ai": "^7.0.159",
     "better-sqlite3": "^13.0.3",
     "drizzle-orm": "^0.45.4",
