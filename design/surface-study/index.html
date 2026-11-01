@@ -38,7 +38,7 @@
   --accent: #29a383; --accent-hover: #26997b; --accent-text: #208368; --accent-ink: #ffffff; --accent-wash: #e6f7ed; --accent-line: #8bceb6;
   --focus: #29a383;
   /* Semantics */
-  --new: #0090ff;                                                    /* blue 9 */
+  --new: var(--accent);                                              /* activity dots: new and challenged share the jade accent */
   --challenge: #e5484d; --challenge-text: #ce2c31; --challenge-wash: #feebec;   /* red 9, 11, 3 */
   --rose: #46a758; --fell: #ab6400;                                  /* grass 9, amber 11 */
   --draft-line: rgb(var(--shc) / 12%); --draft-fill: rgb(255 255 255 / 45%);
@@ -176,7 +176,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .badge-dash { display: inline-grid; place-items: center; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; font-size: var(--t-11); box-shadow: inset 0 0 0 1px var(--draft-line); border: 0; color: var(--ink-2); }
 .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex: none; }
 .dot.new { background: var(--new); box-shadow: 0 0 0 3px color-mix(in oklab, var(--new) 18%, transparent); }
-.dot.chal { background: var(--challenge); box-shadow: 0 0 0 3px color-mix(in oklab, var(--challenge) 16%, transparent); }
+.dot.chal { background: var(--new); box-shadow: 0 0 0 3px color-mix(in oklab, var(--new) 18%, transparent); }
 
 /* Draft material: not yet mine. Dashed, translucent, no shadow, same plane */
 .card.draft { background: var(--draft-fill); box-shadow: none; }
@@ -916,7 +916,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
         <tr><td>Neutrals</td><td>Nothing; greys with a trace of green so they look chosen</td><td>Radix Sage. Ground between steps 2 and 3, sunk 3, ink 12, 11 and 9. Every line and shadow is tinted with sage 12</td></tr>
         <tr><td>Accent</td><td>You are acting here: focus ring, primary action, current view, recording</td><td>Radix Jade: 9 for fills, 10 for hover, 11 for text, 3 for washes, 7 for rings</td></tr>
         <tr><td>Object colour</td><td>Off</td><td>The glyph's shape carries object type, so jade never competes with a theme colour</td></tr>
-        <tr><td>Blue, red, green, amber</td><td>New, challenge, confidence rose, confidence fell</td><td>Blue 9, red 9 (11 for text), grass 9, amber 11. Dots and marks only; never a tinted card</td></tr>
+        <tr><td>Activity dots</td><td>Something happened here: new since I last looked, or challenged</td><td>Jade 9, the accent, for every activity dot. Placement and context tell new from challenged</td></tr>
+        <tr><td>Red, green, amber</td><td>A tripped tripwire, confidence rose, confidence fell</td><td>Red 9 (11 for text) on the signpost and wavy underline only; grass 9 and amber 11 in the sparkline</td></tr>
         <tr><td>Selected</td><td>Selected or open</td><td>One style: white surface, 12% hairline, small lift. Never coloured, never darker</td></tr>
         <tr><td>Hover</td><td>Approach</td><td>A 4.5% sage layer. Nothing lifts on hover</td></tr>
         <tr><td>Press</td><td>"I felt that"</td><td>Keeps the hover tint and shrinks to 0.98. Never darker</td></tr>

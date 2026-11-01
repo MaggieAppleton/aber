@@ -68,7 +68,7 @@
 .t2a-item[data-sel] .t2a-dot { box-shadow: 0 0 0 2px var(--ap-bg), 0 0 0 3.5px var(--ap-ink); }
 .t2a-label { min-width: 0; font-weight: 500; line-height: 17px; color: var(--ap-ink); text-shadow: 0 0 2px var(--ap-bg), 0 0 2px var(--ap-bg), 0 0 4px var(--ap-bg); }
 .t2a-dot[data-challenge] { position: relative; }
-.t2a-dot[data-challenge]::after { content: ""; position: absolute; right: -3px; top: -3px; width: 6px; height: 6px; border-radius: 50%; background: var(--ap-neg); box-shadow: 0 0 0 1.5px var(--ap-bg); }
+.t2a-dot[data-challenge]::after { content: ""; position: absolute; right: -3px; top: -3px; width: 6px; height: 6px; border-radius: 50%; background: var(--ap-new); box-shadow: 0 0 0 1.5px var(--ap-bg); }
 .t2a-item[data-draft] .t2a-label { color: var(--ap-ink-2); font-weight: 400; }
 .t2a-item[data-sel] .t2a-label { font-weight: 600; }
 .t2a-item[data-mode="line"] .t2a-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
