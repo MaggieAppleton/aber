@@ -1,14 +1,13 @@
 import { useEffect, useLayoutEffect, useState, type ComponentType } from "react";
 import { MotionConfig } from "motion/react";
 import * as Title from "./slides/01-title";
-import * as Pile from "./slides/02-pile";
-import * as Hunch from "./slides/03-hunch";
-import * as Rewrite from "./slides/04-rewrite";
+import { SLIDES as ACT12 } from "./slides/act12";
+import { SLIDES as ACT3 } from "./slides/act3";
 import "./deck.css";
 
-type Slide = { default: ComponentType; notes: string };
+export type Slide = { default: ComponentType; notes: string };
 
-export const SLIDES: Slide[] = [Title, Pile, Hunch, Rewrite];
+export const SLIDES: Slide[] = [Title, ...ACT12, ...ACT3];
 
 const W = 1600, H = 900;
 

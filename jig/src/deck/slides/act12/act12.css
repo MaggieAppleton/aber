@@ -1,0 +1,129 @@
+/* Acts 1 and 2 (slides 2–11). Tokens and type sizes from deck.css: 64 display, 28 body, 22 ui.
+   Colour comes from Aber's semantic palette, in small doses: jade = mine / new, red = challenged or wrong,
+   amber = confidence fell, blue = prototypes. */
+.dk-slide {
+  --a12-wash: #e6f6eb; --a12-wash-2: #c4e8d1; --a12-red: #e5484d; --a12-red-text: #ce2c31; --a12-red-wash: #feebec;
+  --a12-amber: #ab6400; --a12-blue: #0090ff; --a12-blue-wash: #e6f4fe;
+  /* for the real confidence sparkline outside an .ap surface */
+  --cs-up: #1f7a4d; --cs-down: #b7791f; --ap-neg: #ce2c31; --ap-ink-3: #868e8b; --ap-bg: #fff;
+}
+.a12-inline { display: inline-flex; align-items: center; gap: 10px; }
+.a12-dot { width: 9px; height: 9px; flex: none; border-radius: 50%; background: var(--dk-accent); box-shadow: 0 0 0 4px color-mix(in oklab, var(--dk-accent) 18%, transparent); }
+.a12-dot[data-tone="red"] { background: var(--a12-red); box-shadow: 0 0 0 4px color-mix(in oklab, var(--a12-red) 18%, transparent); }
+.a12-dot[data-tone="none"] { visibility: hidden; }
+.a12-well { flex: none; width: 36px; height: 36px; border-radius: 9px; display: inline-grid; place-items: center; background: var(--dk-sunk); color: var(--dk-ink-2); }
+.a12-well-jade, .a12-well[data-kind="theory"] { background: var(--a12-wash); color: var(--dk-accent-text); }
+.a12-well[data-kind="prototype"] { background: var(--a12-blue-wash); color: var(--a12-blue); }
+.a12-mark { background: var(--a12-wash); color: inherit; padding: 0 4px; margin: 0 -2px; border-radius: 5px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.a12-spark svg { width: 104px; height: 40px; }
+.a12-spark .cs { pointer-events: none; }
+
+/* Copy across the top, the picture below */
+.a12-top .dk-copy { top: 96px; transform: none; width: 1100px; gap: 20px; }
+.a12-jade { color: var(--dk-accent-text); font-weight: 600; }
+
+/* 2: bets and what they assume */
+.a12-road { position: absolute; left: 20px; top: 120px; width: 1000px; height: 840px; background: var(--dk-surface); border-radius: 14px; box-shadow: var(--dk-shadow-float); overflow: hidden; }
+.a12-road-head { position: relative; height: 112px; border-bottom: 1px solid var(--dk-line); }
+.a12-road-head .dk-strong { position: absolute; left: 28px; top: 20px; }
+.a12-road-head .dk-meta { position: absolute; top: 66px; }
+.a12-road-rule { position: absolute; top: 56px; bottom: 0; width: 1px; background: var(--dk-line); }
+.a12-road-fill { position: absolute; height: 56px; margin-top: 40px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--dk-line); background: #f6f8f7; }
+.a12-road-item { position: absolute; margin-top: 40px; display: grid; grid-template-columns: 100%; gap: 10px; justify-items: start; }
+.a12-road-item .a12-assumes { width: max-content; background: var(--dk-surface); }
+.a12-road-bet { width: 100%; box-sizing: border-box; padding: 14px 18px; border-radius: 10px; background: var(--dk-surface); box-shadow: var(--dk-shadow-1), inset 0 0 0 1px var(--dk-line-2); white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.a12-assumes { display: flex; align-items: center; gap: 12px; padding: 6px 14px 6px 6px; white-space: nowrap; border-radius: 10px; outline: 1.5px dashed var(--a12-wash-2); outline-offset: -1.5px; color: var(--dk-ink-2); justify-self: start; }
+
+/* 4: hunch, and 5: drift. Every dashed slot is neutral */
+.dk-slide .dk-slot[data-key] { outline-color: rgb(var(--dk-shc) / 22%); color: var(--dk-ink-3); }
+.a12-drift { left: 0; width: 900px; padding: 36px 40px; display: grid; gap: 28px; grid-template-columns: 640px; border-radius: 14px 0 0 14px; }
+.a12-drift-rows { display: grid; gap: 14px; }
+.a12-drift-head { margin-bottom: 2px !important; }
+.a12-drift-row { display: grid; grid-template-columns: 180px auto; align-items: center; }
+.a12-drift-row[data-now] { padding-top: 14px; border-top: 1px solid var(--dk-line); font-weight: 600; }
+.a12-steps { display: flex; gap: 6px; }
+.a12-steps i { position: relative; width: 40px; height: 10px; border-radius: 5px; outline: 1.5px dashed rgb(var(--dk-shc) / 22%); outline-offset: -1.5px; overflow: hidden; }
+.a12-steps b { position: absolute; inset: 0; border-radius: 5px; background: var(--dk-ink); transform-origin: left; }
+.a12-steps b[data-ghost] { background: color-mix(in oklab, var(--a12-red) 45%, white); }
+.a12-old { width: 460px; display: grid; gap: 10px; }
+.a12-drift { z-index: 1; }
+
+/* 6: the digest satellite */
+.a12-digest { width: 380px; display: grid; gap: 6px; padding: 18px 24px; }
+.a12-digest-under { width: 340px; height: 60px; padding: 0; }
+.a12-digest::after { left: 20px; right: 20px; bottom: -16px; }
+/* 3: the pile's count card, 4: the scrap the hunch came from */
+.dk-pile .a12-count { width: 320px; gap: 6px; }
+.a12-scrap { width: 440px; display: grid; gap: 8px; padding: 20px 24px 90px; background: #fbfcfb; }
+.a12-slot { gap: 14px; padding-left: 12px !important; }
+.a12-slot .a12-well { width: 32px; height: 32px; background: transparent; box-shadow: inset 0 0 0 1px var(--dk-line-2); color: var(--dk-ink-3); }
+
+/* 7: four habits */
+.a12-habits { display: grid; align-content: center; padding-right: 100px; }
+.a12-habit { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 0; border-top: 1px solid var(--dk-line-2); }
+.a12-habit-text { display: grid; gap: 4px; }
+.a12-bit { display: inline-flex; align-items: center; gap: 12px; padding: 10px 16px 10px 10px; border-radius: 12px; background: var(--dk-surface); box-shadow: var(--dk-shadow-1); white-space: nowrap; }
+.a12-bit.dk-meta { padding-left: 16px; }
+.a12-bit.a12-spark { padding: 6px 16px; }
+.a12-pos { color: var(--dk-accent-text); font-weight: 600; }
+.a12-dotted { border-bottom: 1.5px dotted var(--dk-ink-3); }
+.a12-habit:last-child { border-bottom: 1px solid var(--dk-line-2); }
+.a12-habit-word { font: var(--dk-body); font-weight: 600; }
+
+/* 8: seen and claimed */
+.a12-half { position: absolute; top: 340px; display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 18px; }
+.a12-seen { left: 120px; width: 640px; }
+.a12-claimed { left: 840px; width: 640px; }
+.a12-sigs { background: var(--dk-surface); border-radius: 14px; box-shadow: var(--dk-shadow-1); padding: 6px 26px; }
+.a12-sig { display: flex; justify-content: space-between; gap: 24px; padding: 14px 0; border-top: 1px solid var(--dk-line); }
+.a12-sig:first-child { border-top: 0; }
+.a12-sig > span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.a12-sig > span:last-child { flex: none; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.a12-claims { display: grid; gap: 20px; }
+.a12-claim { background: var(--dk-surface); border-radius: 14px; box-shadow: var(--dk-shadow-float); padding: 24px 28px; display: grid; gap: 14px; }
+.a12-claim-meta { display: flex; align-items: center; gap: 18px; }
+.a12-sig .a12-inline { min-width: 0; }
+.a12-conf .ap-conf { display: inline-flex; gap: 4px; }
+.a12-conf .ap-conf i { width: 24px; height: 6px; border-radius: 3px; background: rgb(var(--dk-shc) / 12%); }
+.a12-conf .ap-conf i[data-on] { background: var(--dk-ink); }
+
+/* 9: the ladder */
+.a12-ladder { position: absolute; left: 120px; right: 120px; top: 340px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; align-items: start; }
+.a12-rung { display: grid; gap: 14px; }
+.a12-rung-label { display: flex; align-items: center; gap: 12px; }
+.a12-rung-card { background: var(--dk-surface); border-radius: 14px; box-shadow: var(--dk-shadow-1); padding: 20px 22px; display: grid; gap: 10px; height: 200px; align-content: start; }
+.a12-rung .a12-conf .ap-conf i { width: 16px; }
+.a12-rung-card[data-key] { box-shadow: var(--dk-shadow-float); }
+.a12-spans { position: absolute; left: 120px; right: 120px; top: 760px; display: grid; grid-template-columns: repeat(5, 1fr); column-gap: 24px; }
+.a12-spans > span { padding-top: 12px; border-top: 1px solid var(--dk-line-2); }
+
+/* 10: anatomy */
+.a12-anat .dk-copy { width: 440px; }
+.a12-pane { position: absolute; left: 387px; top: 84px; zoom: 1.5; }
+.a12-pane .ap-mark[data-kind="fresh"] { display: none; }
+.a12-pane .ap { box-shadow: var(--ap-shadow-float); border-radius: 12px; }
+.a12-pane .pn-meta-row:nth-child(3) { display: none; }
+.a12-pane .pn-edit:hover { background: none; }
+.a12-callout { position: absolute; display: flex; align-items: center; gap: 14px; margin-top: -15px; color: var(--dk-ink-2); white-space: nowrap; }
+.a12-callout i { width: 40px; height: 1px; background: var(--dk-ink-3); }
+.a12-callout[data-key] { color: var(--dk-accent-text); font-weight: 600; }
+.a12-callout[data-key] i { background: var(--dk-accent); }
+
+/* 11: who does what */
+.a12-groups { position: absolute; left: 120px; right: 120px; top: 330px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; align-items: start; }
+.a12-group { display: grid; gap: 16px; align-content: start; }
+.a12-frag { background: var(--dk-surface); border-radius: 14px; box-shadow: var(--dk-shadow-float); padding: 22px 24px; display: grid; gap: 14px; justify-items: start; }
+.a12-frag .a12-inline svg { color: var(--dk-ink-3); flex: none; }
+.a12-undo { margin-left: 6px; width: 30px; height: 30px; border-radius: 8px; display: inline-grid; place-items: center; box-shadow: inset 0 0 0 1px var(--dk-line-2); }
+.a12-sugg { background: transparent; box-shadow: none; outline: 1.5px dashed rgb(var(--dk-shc) / 24%); outline-offset: -1.5px; }
+.a12-neg, .a12-frag .a12-neg svg { color: var(--a12-red-text); font-weight: 600; }
+.a12-acts { display: flex; gap: 10px; margin-top: 4px; }
+.a12-btn { height: 40px; padding: 0 16px; border-radius: 9px; display: inline-flex; align-items: center; background: var(--dk-surface); box-shadow: var(--dk-shadow-1); color: var(--dk-ink); font-weight: 500; }
+.a12-btn-quiet { background: transparent; box-shadow: none; color: var(--dk-ink-2); }
+.a12-steps-ctl { display: flex; gap: 6px; }
+.a12-steps-ctl i { width: 48px; height: 14px; border-radius: 7px; background: rgb(var(--dk-shc) / 12%); }
+.a12-steps-ctl i[data-on] { background: var(--dk-ink); }
+.a12-steps-ctl i[data-focus] { box-shadow: 0 0 0 3px var(--dk-bg), 0 0 0 5px var(--dk-accent); }
+.a12-fell { display: inline-flex; align-items: center; gap: 2px; color: var(--a12-amber); font-weight: 600; }
+.a12-frag .a12-fell svg { color: var(--a12-amber); }
+.a12-never { padding: 0 4px; }

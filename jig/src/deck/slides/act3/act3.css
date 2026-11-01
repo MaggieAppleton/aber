@@ -1,0 +1,50 @@
+/* Act 3: the interface. The real app sits on the slide at a zoom; the stage crops it. */
+.a3-crop { position: absolute; inset: 0; pointer-events: none; }
+.a3-layer { position: absolute; transform-origin: 0 0; }
+.a3-layer .as { position: absolute; left: 0; top: 0; }
+.a3-cursor { position: absolute; left: 0; top: 0; z-index: 50; margin: -2px 0 0 -2px; pointer-events: none; transform-origin: 2px 2px; filter: drop-shadow(0 1px 1.5px rgb(26 33 30 / 25%)); }
+
+/* Copy sits in a narrower column on act 3 slides, so the product gets the room */
+.a3 .dk-copy { width: 540px; }
+.a3-cursor[data-touch] { margin: -22px 0 0 -22px; transform-origin: 22px 22px; filter: none; }
+.a3-touch { display: block; width: 44px; height: 44px; border-radius: 22px; background: rgb(26 33 30 / 16%); box-shadow: 0 0 0 1.5px rgb(255 255 255 / 85%), 0 2px 8px rgb(26 33 30 / 18%); }
+
+
+/* 10: the phone Briefing. The jig's phone rows put the actions in row 1 and squeeze the text into an implicit column;
+   place them explicitly here (the same fix belongs in briefing-app.css). */
+.a3-phone .br[data-phone] .br-main { grid-column: 2; grid-row: 1; }
+.a3-phone .br[data-phone] .br-acts { grid-column: 2; grid-row: 2; }
+.a3-trip .dk-copy { width: 480px; }
+
+/* Satellites: a second real surface straddling the hero's edge */
+.a3-satpos { position: absolute; z-index: 20; }
+.a3-sat { position: relative; transform-origin: 0 0; background: var(--ap-surface); border-radius: 14px; box-shadow: var(--dk-shadow-float), 0 24px 48px -12px rgb(26 33 30 / 16%); overflow: hidden; pointer-events: none; font-family: "Inter", sans-serif; color: var(--ap-ink); }
+
+/* 10: the dump log, cropped to its newest dumps and faded at its foot; the new note gets a jade well */
+.a3-log { height: 190px; mask-image: linear-gradient(to bottom, #000 120px, transparent 186px); -webkit-mask-image: linear-gradient(to bottom, #000 120px, transparent 186px); }
+.a3-log .dl-head-acts { display: none; }
+.a3-log .dl-day:first-child .dl-row:first-of-type { background: #e6f6eb; }
+.a3-log .dl-day:first-child .dl-row:first-of-type .dl-kind { color: #208368; }
+.a3-log .dl-day:first-child .dl-row:first-of-type .dl-tok { background: #c4e8d1; color: #1a211e; }
+.a3-log .dl-day:first-child .dl-row:first-of-type .dl-tok[data-draft] { background: transparent; outline-color: #8bceb6; }
+
+/* Jade: the touch is me acting */
+.a3-touch { background: rgb(41 163 131 / 22%); box-shadow: 0 0 0 1.5px rgb(255 255 255 / 90%), 0 0 0 7px rgb(41 163 131 / 12%); }
+
+/* 11: what the agents did overnight, straddling the Briefing window's faded edge */
+.a3-jobs.ap { height: auto; background: var(--ap-surface); }
+.a3-jobs { width: 256px; align-content: start; padding: 10px 8px 8px; display: grid; gap: 2px; font-size: 13px; }
+.a3-jobs-head { margin: 0 8px 4px; }
+.a3-job { display: grid; grid-template-columns: 24px minmax(0, 1fr) 10px auto; align-items: center; gap: 10px; padding: 5px 8px; border-radius: 8px; }
+.a3-job-well { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--ap-sunk); color: var(--ap-ink-3); }
+.a3-job-well[data-mark="fresh"] { background: #e6f6eb; color: #208368; }
+.a3-job-well[data-mark="challenge"] { background: #feebec; color: #ce2c31; }
+
+/* 12: the confidence history, zoomed, straddling the pane's edge */
+.a3-hist.ap { height: auto; width: 320px; padding: 12px 14px 12px; display: grid; gap: 10px; font-size: 12px; line-height: 1.45; color: var(--ap-ink-2); background: var(--ap-surface); }
+.a3-hist-head { display: flex; align-items: center; justify-content: space-between; }
+.a3-hist-spark .cs { transform: scale(1.6); transform-origin: 100% 50%; }
+.a3-hist .cs-row { grid-template-columns: 44px 30px minmax(0, 1fr); }
+.a3-hist .cs [data-tone="challenge"], .a3-hist .cs-d[data-tone="challenge"] { --t: #e5484d; }
+
+/* 13 */ .a3-handoff .ps-logseg-dot { display: none; }
