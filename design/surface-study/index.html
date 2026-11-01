@@ -48,8 +48,9 @@
   --fell: #ab6400;                                  /* amber 11: confidence fell */
   --draft-line: rgb(var(--shc) / 26%); --draft-fill: rgb(255 255 255 / 45%);
   --h-signal: var(--ink-3); --h-theme: var(--ink-3); --h-theory: var(--ink-3); --h-proto: var(--ink-3);
-  /* Selection is always neutral: a grey wash, a hairline ring, and lift for cards. Colour never means "selected" */
-  --sel-wash: rgb(var(--shc) / 6%); --sel-ring: inset 0 0 0 1px rgb(var(--shc) / 18%);
+  /* Selection is always neutral, light and raised: white surface, hairline ring, small lift. Colour never means "selected" */
+  --sel-wash: var(--surface); --sel-ring: inset 0 0 0 0.5px rgb(var(--shc) / 16%);
+  --sel-lift: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 1px 2px rgb(var(--shc) / 6%), 0 3px 8px -2px rgb(var(--shc) / 10%);
 }
 
 /* ---------- Material · Crisp ---------- */
@@ -196,7 +197,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .row { --obj: var(--h-theme); display: flex; align-items: center; gap: var(--sp-3); height: 30px; padding: 0 var(--sp-3); border-radius: var(--r-2); text-align: left; width: 100%; color: var(--ink-2); }
 .row .lbl { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .row .cnt { font-size: var(--t-12); color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.row[aria-current="true"], .row.is-sel { background: var(--sel-wash); color: var(--ink); box-shadow: var(--sel-ring); font-weight: 500; }
+.row[aria-current="true"], .row.is-sel { background: var(--sel-wash); color: var(--ink); box-shadow: var(--hi), var(--sel-lift); font-weight: 500; }
 .row .glyph { color: var(--h-theme); }
 .open-ring { width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.25px var(--ink-3); }
 .side-foot { margin-top: auto; margin-bottom: 52px; }
@@ -255,7 +256,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   background: var(--surface); color: var(--ink-2); box-shadow: var(--hi), 0 0 0 0.5px var(--line), 0 1px 1px var(--line-2); }
 .chip .glyph { color: var(--h-theme); }
 .chip:hover, .chip.is-hover { background: color-mix(in oklab, var(--surface) 94%, var(--ink)); color: var(--ink); }
-.chip.is-sel, .chip[aria-current="true"] { background: var(--sel-wash); box-shadow: var(--sel-ring); color: var(--ink); }
+.chip.is-sel, .chip[aria-current="true"] { background: var(--sel-wash); box-shadow: var(--hi), 0 0 0 1px rgb(var(--shc) / 22%), 0 2px 6px -1px rgb(var(--shc) / 14%); color: var(--ink); }
+:is(.row, .chip, .card):is([aria-current="true"], .is-sel) :is(.glyph, .claim-icon) { color: var(--ink-2); }
 .pane h3 { margin: 0; font-size: var(--t-20); line-height: 1.25; letter-spacing: -0.015em; font-weight: 600; text-wrap: balance; }
 .fields { display: grid; grid-template-columns: auto 1fr; gap: var(--sp-3) var(--sp-5); align-items: center; font-size: var(--t-12); }
 .fields .k { color: var(--ink-3); }
@@ -512,7 +514,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
         <tr><td>Blue, red, green, amber</td><td>Unchanged: new, challenge, confidence rose, confidence fell</td><td>Moved to Radix: blue 9, red 9 (11 for text), grass 9, amber 11. Each dot gets a soft halo so it reads at a glance</td></tr>
         <tr><td>Shadow</td><td>Height above the base plane, and nothing else</td><td>Crisp: three thin layers. Paper: hard 1 px foot plus soft drop. Soft: wide and diffuse, with a white highlight along the top edge</td></tr>
         <tr><td>Dashed outline</td><td>Not yet mine (drafts, suggestions)</td><td>Unchanged. Accepting animates the dash away so the object solidifies in place</td></tr>
-        <tr><td>Wash plus 1 px ring</td><td>Selected or open</td><td>Neutral in every combination: a grey wash and hairline ring on rows and chips; cards stay white, gain the ring and lift one tier</td></tr>
+        <tr><td>Wash plus 1 px ring</td><td>Selected or open</td><td>Neutral, light and raised in every combination: white surface, hairline ring, a small lift (cards lift one tier). Glyphs lose their object colour while selected</td></tr>
         <tr><td>Press</td><td>"I felt that": scale plus deeper state layer</td><td>0.97 crisp, 0.975 paper, 0.95 soft</td></tr>
       </tbody>
     </table>
