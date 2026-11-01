@@ -81,7 +81,7 @@ export function SignalDetail({ s, onOpen, onDump, context }: { s: Signal; onOpen
   return (
     <div className="pn-detail-inner">
       <Editable className="pn-note" value={edit.gist} onChange={gist=>set({gist})} aria-label="Signal gist" />
-      <Editable className="pn-note" value={edit.note} onChange={note => set({ note })} placeholder="Note" aria-label="Note" />
+      <Editable className="pn-note" value={edit.note} onChange={note => set({ note })} placeholder="Add a note" aria-label="Note" />
       {s.evidence.filter(e => e.theory !== context).map(e => (
         <button key={e.theory} className="pn-link" data-suggested={e.suggested ? "" : undefined} onClick={() => onOpen("theory", e.theory)}
           title={e.stance === "supports" ? "Supports" : "Undermines"}>

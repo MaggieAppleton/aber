@@ -11,7 +11,7 @@
 .br-flow:hover { background: var(--ap-hover); color: var(--ap-ink-2); }
 .br-flow > .ap-num:not(:first-child) { margin-left: var(--size-px-4); }
 .br-flow-draft { display: inline-grid; place-items: center; width: var(--size-px-18); height: var(--size-px-18); border-radius: var(--size-px-5); outline: var(--size-px-1) dashed var(--color-gray-0-a-30); outline-offset: var(--size-px-neg-1); }
-.br-flow:focus-visible { outline: var(--size-px-2) solid var(--color-rgb-47-111-237-a-55); }
+.br-flow:focus-visible { outline: var(--size-px-2) solid var(--ab-focus); }
 
 .br-group { display: grid; gap: var(--size-px-6); margin-top: var(--size-px-10); }
 .br-group-name { display: flex; gap: var(--size-px-6); padding: 0 var(--size-px-2); margin: 0; white-space: nowrap; }
@@ -31,7 +31,7 @@
 .br-title { display: flex; align-items: center; gap: var(--size-px-7); min-height: var(--size-px-20); font-weight: 600; }
 .br-open { border: 0; background: transparent; padding: var(--size-px-1) var(--size-px-4); margin: var(--size-px-neg-1) var(--size-px-neg-4); border-radius: var(--size-px-5); text-align: left; font-weight: 600 !important; cursor: pointer; text-wrap: pretty; transition: background 100ms ease-out; }
 .br-open:hover { background: var(--ap-hover); }
-.br-open:focus-visible { outline: var(--size-px-2) solid var(--color-rgb-47-111-237-a-55); }
+.br-open:focus-visible { outline: var(--size-px-2) solid var(--ab-focus); }
 .br-static { text-wrap: pretty; }
 .br-was { color: var(--ap-ink-3); font-weight: 400; }
 .br-detail { display: grid; gap: var(--size-px-6); justify-items: start; }

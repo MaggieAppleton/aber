@@ -22,7 +22,7 @@
 /* Zoomed far out, only the open territory keeps its name; the rest would pile up */
 .a2-name { transition: opacity 200ms ease-out; }
 .a2-map[data-far] .a2-name:not([data-sel]) { opacity: 0; }
-.a2-dot[data-fresh] { background: var(--color-rgb-47-111-237); }
+.a2-dot[data-fresh] { background: var(--ab-new); }
 .a2-name { position: absolute; transform: translateX(-50%) scale(calc(1 / var(--z))); transform-origin: top center; font-weight: 600; color: var(--ap-ink-2); white-space: nowrap; pointer-events: none; display: inline-flex; align-items: center; gap: var(--size-px-6); }
 /* A landmark is anchored on its centre; its glyph and challenge mark hang off that point */
 .a2-pin { position: absolute; width: 0; height: 0; border: 0; padding: 0; background: none; transform: scale(calc(min(1, 0.55 + 0.45 * var(--z)) / var(--z))); transform-origin: 0 0; cursor: pointer; outline: none; }
@@ -46,7 +46,7 @@
 
 /* Signal counts beside a territory's name (when signals are not drawn): total, then new in blue */
 .a2-count { display: inline-flex; align-items: center; gap: var(--size-px-6); margin-left: var(--size-px-2); font-weight: 400; color: var(--ap-ink-3); }
-.a2-count-new { display: inline-flex; align-items: center; gap: var(--size-px-3); color: var(--color-rgb-47-111-237); }
+.a2-count-new { display: inline-flex; align-items: center; gap: var(--size-px-3); color: var(--ab-new); }
 
 /* Signals as evidence: one tick per link, around the landmark it bears on (counter-scaled with the landmarks) */
 .a2-halo, .a2-loose { position: absolute; width: 0; height: 0; transform-origin: 0 0; transition: opacity 250ms ease-out, visibility 250ms; }
@@ -57,7 +57,7 @@
 .a2-tick { position: absolute; left: 0; top: var(--size-px-neg-3); width: var(--size-px-12); height: var(--size-px-6); border: 0; padding: 0 var(--size-px-1); background: none; transform-origin: 0 50%; cursor: pointer; outline: none; }
 .a2-tick i { display: block; width: var(--size-px-8); height: var(--size-px-2); margin-top: var(--size-px-2); --tc: var(--color-gray-0-a-46); background: var(--tc); transition: background 120ms ease-out, height 120ms ease-out, margin 120ms ease-out; }
 .a2-loose .a2-tick i { --tc: var(--color-gray-0-a-32); }
-.a2-tick[data-fresh] i { --tc: var(--color-rgb-47-111-237); }
+.a2-tick[data-fresh] i { --tc: var(--ab-new); }
 /* Suggested links are not yet yours: dashed, like a draft */
 .a2-tick[data-sug] i { background: repeating-linear-gradient(to right, var(--tc) 0 var(--size-px-2-5), transparent var(--size-px-2-5) var(--size-px-4)); }
 .a2-tick[data-hot] i, .a2-tick[data-sel] i, .a2-tick:focus-visible i { height: var(--size-px-3); margin-top: var(--size-px-1-5); }

@@ -9,6 +9,7 @@
   --ab-accent: var(--ap-accent, #29a383);
   --ab-focus: var(--ap-focus-ring, #29a383);
   --ab-new: var(--ap-new, var(--ab-accent));
+  --ab-red-dot: #e5484d;                       /* Radix red 9: challenge dots, brighter than the --ap-neg text red */
   --ab-press: var(--ap-press, 0.98);
   --ab-ink: #1a211e; --ab-ink-2: #5f6563; --ab-ink-3: #868e8b;   /* sage 12, 11, 9 */
   --ab-sage-3: #eef1f0;
@@ -71,7 +72,8 @@
 /* ── 3. Trailing marks ──
    A status dot after a title sits 10px after the last word, its centre on the text's x-height centre.
    In index rows the new dot (with its 3px halo) keeps exactly 8px of clear space before the count. */
-.ap-mark[data-kind="fresh"], .ap-mark[data-kind="challenge"] { box-shadow: 0 0 0 3px color-mix(in oklab, var(--ab-new) 18%, transparent); }
+.ap-mark[data-kind="fresh"] { box-shadow: 0 0 0 3px color-mix(in oklab, var(--ab-new) 18%, transparent); }
+.ap-mark[data-kind="challenge"] { box-shadow: 0 0 0 3px color-mix(in oklab, var(--ab-red-dot) 18%, transparent); }
 .br-open > .ap-mark { margin-left: var(--size-px-10); vertical-align: 0; }
 .cur-index a > span:first-child { flex: 1; }
 .cur-index a > .ap-mark { margin-right: var(--size-px-3); }   /* 8px gap − 3px halo + 3px = 8px clear before the count */
@@ -171,3 +173,6 @@
   .ab-tooltip { transition: none; }
   .ab-tooltip[data-starting-style], .ab-tooltip[data-ending-style] { transform: none; }
 }
+
+/* A leading dot centres on the first line of text, even when the text wraps. */
+:is(.pn-line, .col-row, .cd-line, .brf-row) > .ap-mark:first-child { align-self: flex-start; margin-top: calc((1lh - 7px) / 2); }
