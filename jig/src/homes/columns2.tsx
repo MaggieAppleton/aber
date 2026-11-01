@@ -17,6 +17,11 @@ const COLS: { kind: Kind; icon: IconName; name: string; width: number }[] = [
   { kind: "prototype", icon: "prototype", name: "Prototypes", width: 220 },
 ];
 const RAIL = 44;
+
+/** The width the columns need beside an open stock: its own column (and any unfolded flow's) wide, the rest rails. */
+export function columnsWidth(openKind?: Kind, unfoldedKind?: Kind, compact?: boolean) {
+  return COLS.reduce((w, c) => w + (!compact && (c.kind === openKind || c.kind === unfoldedKind) ? c.width : RAIL), 0);
+}
 const STOCKS: Kind[] = ["theme", "theory", "prototype"];
 
 /**
@@ -27,6 +32,8 @@ const STOCKS: Kind[] = ["theme", "theory", "prototype"];
 export type ColumnsHost = {
   open?: { kind: Kind; id: string }; onOpen: (kind: Kind, id: string) => void; onClose: () => void;
   unfolded?: string; onUnfold: (id: string | undefined) => void;
+  /** The pane has taken the frame: every column folds to its rail; a rail brings the columns back. */
+  compact?: boolean; onRestore?: () => void;
 };
 
 export function ColumnsDeveloped({ fold, host }: { fold: Fold; host?: ColumnsHost }) {
@@ -47,7 +54,8 @@ export function ColumnsDeveloped({ fold, host }: { fold: Fold; host?: ColumnsHos
   const show = (k: Kind) => setVisible(v => v.includes(k) ? v : [...v, k]);
 
   // When something is open, only its own column stays wide, plus the column of any item unfolded from it.
-  const isWide = (k: Kind) => open ? k === open.kind || k === unfoldedKind : visible.includes(k);
+  const compact = !!(host?.compact && open);
+  const isWide = (k: Kind) => compact ? false : open ? k === open.kind || k === unfoldedKind : visible.includes(k);
 
   const openObj = (kind: Kind, id: string) => { if (!host) setUnfolded(undefined); setOpen({ kind, id }); };
   const unfold = (kind: Kind, id: string) => { show(kind); setUnfolded(u => u === id ? undefined : id); };
@@ -82,7 +90,7 @@ export function ColumnsDeveloped({ fold, host }: { fold: Fold; host?: ColumnsHos
                   <ColumnList kind={c.kind} icon={c.icon} name={c.name} related={related} open={open} unfolded={unfolded} fold={fold}
                     onOpen={openObj} onUnfold={unfold} onFold={() => { if (open) setOpen(undefined); toggle(c.kind); }} />
                 ) : fold === "rails" ? (
-                  <button className="cd-rail" aria-label={`Show ${c.name}`} title={c.name} onClick={() => { if (open) setOpen(undefined); show(c.kind); }}>
+                  <button className="cd-rail" aria-label={`Show ${c.name}`} title={c.name} onClick={() => { if (compact) { host!.onRestore?.(); return; } if (open) setOpen(undefined); show(c.kind); }}>
                     <Icon name={c.icon} size={16} />
                     {related && countRelated(c.kind, related) > 0 && <span className="cd-rail-n">{countRelated(c.kind, related)}</span>}
                   </button>

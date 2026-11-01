@@ -5,7 +5,7 @@ import { useEdit } from "./edits";
 import { ThemeName, type ObjKind, type OnOpen } from "./panes";
 
 /** A host (the app shell) can open themes and theories from here into its own pane. */
-export type CurrentHost = { open?: { kind: ObjKind; id: string }; onOpen: OnOpen };
+export type CurrentHost = { open?: { kind: ObjKind; id: string }; onOpen: OnOpen; compact?: boolean };
 
 /** A theory card that shows the live (edited) claim and confidence. */
 function LiveCard({ t, hot, onEnter, onLeave, onClick }: { t: Theory; hot?: boolean; onEnter: () => void; onLeave: () => void; onClick?: () => void }) {
@@ -26,7 +26,7 @@ export function CurrentHome({ host }: { host?: CurrentHost }) {
     m.scrollTo({ top: m.scrollTop + el.getBoundingClientRect().top - m.getBoundingClientRect().top - 16, behavior: "smooth" });
   };
   return (
-    <div className="ap cur" data-hosted={host ? "" : undefined}>
+    <div className="ap cur" data-hosted={host ? "" : undefined} data-compact={host?.compact ? "" : undefined}>
       <aside className="cur-rail">
         <div className="cur-brand">Aber<IconButton icon="search" label="Find (⌘K)" /></div>
         <nav className="cur-index">
@@ -34,7 +34,7 @@ export function CurrentHome({ host }: { host?: CurrentHost }) {
             const n = theoriesIn(t.id).length;
             return (
               <a key={t.id} href={`#cur-${t.id}`} data-active={active === t.id ? "" : undefined}
-                onClick={e => { e.preventDefault(); setActive(t.id); jump(t.id); }}>
+                onClick={e => { e.preventDefault(); setActive(t.id); if (host?.compact) host.onOpen("theme", t.id); else jump(t.id); }}>
                 <span><ThemeName id={t.id} /></span>
                 <span className="ap-muted ap-num">{n || "open"}</span>
               </a>
@@ -43,7 +43,7 @@ export function CurrentHome({ host }: { host?: CurrentHost }) {
         </nav>
         <a className="cur-protos"><Icon name="prototype" />Prototypes<span className="ap-muted ap-num">{PROTOTYPES.length}</span></a>
       </aside>
-      <main className="cur-main ap-scroll" ref={main}>
+      <main className="cur-main ap-scroll" ref={main} inert={host?.compact}>
         {THEMES.map(t => {
           const ts = theoriesIn(t.id);
           const themeOpen = open?.kind === "theme" && open.id === t.id;

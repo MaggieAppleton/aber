@@ -6,7 +6,7 @@ import {
   MagnifyingGlass, Plus, Minus, Microphone, Cube, TrayArrowDown, Check, X, CaretRight, CaretLeft, CaretDown, Broadcast, Link,
   Waveform, TextAlignLeft, Sun, Lightbulb, MapTrifold, Table, Stack, Clock, ArrowUp, ArrowDown, SidebarSimple, Signpost,
   ArrowsLeftRight, Paperclip, Stop, Play, Pause, ArrowCounterClockwise, ArrowClockwise, Monitor, Image,
-  PencilSimple, Globe, Question, PushPin, QuestionMark, Crosshair, Rows, Columns, ChartScatter, type Icon as PhosphorIcon, type IconWeight,
+  PencilSimple, Globe, Question, PushPin, QuestionMark, Crosshair, Rows, Columns, ChartScatter, ArrowsOutSimple, ArrowsInSimple, type Icon as PhosphorIcon, type IconWeight,
 } from "@phosphor-icons/react";
 
 /** Every glyph in the jigs. One icon per object type: dump, signal, theme, theory, prototype. */
@@ -55,6 +55,8 @@ const ICONS = {
   pin: PushPin,
   questionMark: QuestionMark,
   crosshair: Crosshair,
+  expand: ArrowsOutSimple,
+  collapse: ArrowsInSimple,
   // surfaces
   sections: Rows,
   columns: Columns,
