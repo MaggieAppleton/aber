@@ -64,7 +64,7 @@ The full method is in `reference/interface-grammar.md`. The essentials:
 ## Next steps, in order
 
 1. **Run the overnight build** from [build-spec.md](build-spec.md), slice by slice, locally on Maggie's MacBook (Node, `npm`, SQLite in `app/data/`, `localhost` only). The build agent leaves ambiguities in `docs/build-notes.md` rather than inventing.
-2. **Supply 10–20 real dumps** for the evals, and run the OpenAI vs Claude comparison before locking models.
+2. **Evals on seeded examples:** the build agent writes ~15 generated example dumps with hand-written expected outputs in `app/evals/fixtures/` (build spec 5.5), and the OpenAI vs Claude comparison runs on them before locking models. Swap in Maggie's real dumps later.
 3. **Review in the morning:** parity screenshots in `test-results/parity/`, `docs/build-notes.md`, and the known gaps in section 12 of the spec (Atlas layout for real data, the delete confirmation, the building-status blue).
 4. **Later:** deployment to the team Coolify server, backups to B2, auth and phone capture (build spec, section 13). Confirm with the server's owner how it joins Tailscale first.
 

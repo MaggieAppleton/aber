@@ -100,7 +100,7 @@ app/
     src/chat/             useChat wiring; tool-part → component map
     src/app/              shell, routes
   e2e/                    Playwright specs, one per slice
-  evals/                  fixtures/ (Maggie's real dumps) and *.eval.ts (Vitest)
+  evals/                  fixtures/ (~15 generated example dumps with expected outputs; Maggie's real dumps later) and *.eval.ts (Vitest)
 scripts/backup.sh       optional: copies data/aber.db (via SQLite's backup API) and data/media/ to a dated folder
 ```
 
@@ -526,7 +526,7 @@ The runner clearing a failed run's writes is not an agent deleting anything: it 
 | Jobs | Own `jobs` table and worker loop (4.10); `agent_runs` records every run |
 | Durability | A crashed job restarts from the beginning; `runId` on every write plus clean-up before retry makes that safe |
 | Chat | `streamText` with display tools, rendered by `useChat` (6.9) |
-| Evals | Vitest fixture tests on Maggie's real dumps (5.5) |
+| Evals | Vitest fixture tests on ~15 generated example dumps; Maggie's real dumps later (5.5) |
 | Article content | Fetch the full article text and send it to the model for processing and evidence linking. Store it on the signal as best effort (`fetched_json`); a signal never depends on it |
 
 ### 5.1 Model per job
@@ -613,13 +613,26 @@ Vitest fixture tests in `app/evals/`, run with `npm run eval` against live model
 
 | Order | Eval | Checks |
 | --- | --- | --- |
-| 1, first | **OpenAI vs Claude on 10–20 of Maggie's own dumps**, before locking models | Same checks as below, run once per configured model per job; prints a side-by-side table of pass rates, tokens and cost. promptfoo is optional for a richer side-by-side |
+| 1, first | **OpenAI vs Claude on the seeded example dumps in `evals/fixtures/`**, before locking models | Same checks as below, run once per configured model per job; prints a side-by-side table of pass rates, tokens and cost. promptfoo is optional for a richer side-by-side |
 | 2 | Dumps with expected outcomes in `evals/fixtures/` | Signal count within a range; each filed to an expected theme; repeat links attach instead of duplicating; tombstoned links never return; planted near-duplicates merge and decoys (same topic, different finding) don't |
 | 3 | 10 theory + signal pairs | Evidence stance matches the label |
 | 4 | 8 tripwires with planted hits and decoys | Hits trip; decoys don't |
 | Every run | | Zero `AuthorityError`s in traces |
 
-Maggie supplies the real dumps; until she does, the build agent writes the harness with a handful of synthetic fixtures from the jig world and notes it.
+**Seed examples.** The build agent writes ~15 realistic example dumps as fixtures in `evals/fixtures/`, set in the jig world (`jig/src/homes/data.ts`: Cost of intelligence, Agent memory, Code review after agents, Personal software, AI funding cycle, Novel agent interfaces, Agent identity). The mix:
+
+- X/Twitter links with short commentary
+- Article links
+- A long, rambling voice-note transcript (3–5 minutes' worth of text)
+- A text dump with a speculative claim
+- One that repeats an earlier link
+- One near-duplicate observation from a different source
+- One describing something to build
+- One question-style chat message
+
+Each fixture has hand-written expected outputs beside it: signals with gists, theme filings, drafts, evidence and revision suggestions, and de-dup behaviour (attach, merge, or keep apart). The first eval compares OpenAI (the configured default per job) with the Claude alternative on these fixtures.
+
+Follow-up: Maggie's real dumps replace or extend the seeded examples later; the harness and expected-output format stay the same.
 
 ## 6. Interface spec by surface
 
@@ -985,7 +998,7 @@ Keep the jigs running beside it (`cd jig && bun run dev`, port 5181) to compare.
 
 | Gap | Where it bites | What the spec does meanwhile |
 | --- | --- | --- |
-| Real dumps for evals | Slice 2 | Harness with synthetic fixtures until Maggie supplies 10–20 dumps |
+| Real dumps for evals | Slice 2 | ~15 generated example dumps with hand-written expected outputs (5.5); swap in Maggie's real dumps later |
 | Deleting a dump: the jig has no confirmation; the model shows consequences first | Slice 1 | Build the confirmation with counts, flagged |
 | Atlas layout for arbitrary data | Slice 7 | Deterministic circle packing, flagged |
 | Building-status blue equals the "new" blue | Everywhere prototypes show | Built as the jig shows; flagged in the encoding map |
