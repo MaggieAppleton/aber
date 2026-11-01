@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { Icon } from "../ui/atoms";
+import { IconTooltip } from "../ui/tooltip";
 import { THEMES, THEORIES, SIGNALS, PROTOTYPES } from "../ui/data";
 import { mutate, reportError, rowFor, json, field, type Row } from "../data/live";
 import { callTool } from "../data/api";
@@ -37,7 +38,7 @@ export function DialogHost() {
           {choice.kind && <Icon name={choice.kind as any} size={14}/>}<span>{choice.label}{choice.detail && <small>{choice.detail}</small>}</span><Icon name="chevron" size={12}/>
         </button>)}{searching&&<p className="ap-muted" role="status">Searching…</p>}{searchError&&<p role="alert">{searchError}</p>}{!searching&&!searchError&&!matches?.length&&<p className="ap-muted" role="status">No matches</p>}</div></> : <form onSubmit={submit}>
         {prompt?.field && <label className="ab-field">{prompt.field}<input autoFocus required className="ab-input" value={query} onChange={e=>setQuery(e.target.value)}/></label>}
-        <div className="ab-dialog-actions">{!prompt?.readOnly&&<Dialog.Close type="button" className="ap-iconbtn" aria-label="Cancel" title="Cancel"><Icon name="x"/></Dialog.Close>}<button autoFocus={!prompt?.field} className="ap-btn" data-destructive={prompt?.destructive || undefined}>{prompt?.submit ?? "Save"}</button></div>
+        <div className="ab-dialog-actions">{!prompt?.readOnly&&<IconTooltip label="Cancel"><Dialog.Close type="button" className="ap-iconbtn" aria-label="Cancel"><Icon name="x"/></Dialog.Close></IconTooltip>}<button autoFocus={!prompt?.field} className="ap-btn" data-destructive={prompt?.destructive || undefined}>{prompt?.submit ?? "Save"}</button></div>
       </form>}
     </Dialog.Popup></Dialog.Portal>
   </Dialog.Root>;

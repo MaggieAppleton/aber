@@ -1,3 +1,4 @@
+import { TooltipButton } from "./tooltip";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Icon } from "./atoms";
@@ -43,10 +44,10 @@ export function HitRow({ hit, decision, onDecide, conf, compact }: { hit: Hit; d
       <span className="ap-muted tw-hit-src">{hit.source}</span>
       <span className="tw-hit-acts">
         {decision
-          ? <button className="pn-step" aria-label="Undo" title="Undo" onClick={() => onDecide(undefined)}><Icon name="undo" size={12} /></button>
+          ? <TooltipButton className="pn-step" aria-label="Undo" tooltip="Undo" onClick={() => onDecide(undefined)}><Icon name="undo" size={12} /></TooltipButton>
           : <>
               <button className="ap-btn tw-accept" onClick={() => onDecide("accepted")} title="Accept and lower confidence">Accept</button>
-              <button className="pn-step tw-dismiss" aria-label="Dismiss" title="Dismiss" onClick={() => onDecide("dismissed")}><Icon name="x" size={12} /></button>
+              <TooltipButton className="pn-step tw-dismiss" aria-label="Dismiss" tooltip="Dismiss" onClick={() => onDecide("dismissed")}><Icon name="x" size={12} /></TooltipButton>
             </>}
       </span>
     </motion.div>
@@ -109,16 +110,16 @@ export function Tripwire(p: TripwireProps) {
         <span className="tw-tc-end">.
           {p.state === "watching" && <span className="tw-tc-after"><Watch /></span>}
           {tripped && (
-            <button className="tw-tc-flag" aria-expanded={open} onClick={() => setOpen(o => !o)} title={live.length === 1 ? "1 signal matches" : `${live.length} signals match`} aria-label={live.length === 1 ? "1 signal matches" : `${live.length} signals match`}>
+            <TooltipButton className="tw-tc-flag" aria-expanded={open} onClick={() => setOpen(o => !o)} tooltip={live.length === 1 ? "1 signal matches" : `${live.length} signals match`} aria-label={live.length === 1 ? "1 signal matches" : `${live.length} signals match`}>
               <span className="ap-ghost-badge">{live.length}</span>
-            </button>
+            </TooltipButton>
           )}
         </span>
         {p.state === "resolved" && done.length > 0 && (
-          <button className="tw-tc-flag tw-tc-done" aria-expanded={logOpen} onClick={() => setLogOpen(o => !o)} title={p.date ? `Tripped ${p.date}` : "Tripped"}>
+          <TooltipButton className="tw-tc-flag tw-tc-done" aria-expanded={logOpen} onClick={() => setLogOpen(o => !o)} tooltip={p.date ? `Tripped ${p.date}` : "Tripped"}>
             <Icon name="check" size={12} />
             <span>{[acc && `${acc} accepted`, dis && `${dis} dismissed`].filter(Boolean).join(", ")}</span>
-          </button>
+          </TooltipButton>
         )}
       </div>
       <Unfold show={(p.state === "tripped" && open) || (p.state === "resolved" && logOpen)}>

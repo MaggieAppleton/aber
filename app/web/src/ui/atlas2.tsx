@@ -1,3 +1,4 @@
+import { TooltipButton } from "./tooltip";
 import { currentSuggestion } from "../data/challenge-target";
 import { SURFACE_RADII } from "./metrics";
 import { onWorld,world,field,json } from "../data/live";
@@ -279,7 +280,7 @@ function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, in
 /** Floating map chrome: zoom out, zoom in, fit. Sits above the map it acts on and never starts a pan. */
 function ZoomControl({ cam }: { cam: Camera }) {
   const btn = (label: string, onClick: () => void, glyph: ReactNode, disabled?: boolean) => (
-    <button className="ap-iconbtn" aria-label={label} title={label} onClick={onClick} disabled={disabled}>{glyph}</button>
+    <TooltipButton className="ap-iconbtn" aria-label={label} tooltip={label} onClick={onClick} disabled={disabled}>{glyph}</TooltipButton>
   );
   return (
     <div className="a2-zoom" data-cam-ignore="" onKeyDown={e => e.stopPropagation()}>
@@ -420,7 +421,7 @@ function DeepZoom() {
                     </motion.div>
                   );
                 })}
-                <button className="pn-tile pn-add" aria-label="State a theory" title="State a theory"><Icon name="plus" /></button>
+                <TooltipButton className="pn-tile pn-add" aria-label="State a theory" tooltip="State a theory"><Icon name="plus" /></TooltipButton>
               </div>
               <div className="a2-ground">
                 {SIGNALS.filter(s => s.themes.includes(th.id)).map(s => (
@@ -451,8 +452,8 @@ function DeepZoom() {
 
       <nav className="a2-crumbs" aria-label="Depth">
         {crumbs.map(c => (
-          <button key={c.l} aria-label={c.label} title={c.label} aria-current={c.l === level ? "true" : undefined}
-            data-on={c.l <= level ? "" : undefined} disabled={c.l >= level} onClick={() => go(c.l)}><i /></button>
+          <TooltipButton key={c.l} aria-label={c.label} tooltip={c.label} aria-current={c.l === level ? "true" : undefined}
+            data-on={c.l <= level ? "" : undefined} disabled={c.l >= level} onClick={() => go(c.l)}><i /></TooltipButton>
         ))}
       </nav>
       <Pill sees={level === 4 ? (doc?.kind === "prototype" ? "Prototype" : "Theory") : th && level > 1 ? th.name : "Atlas"} />

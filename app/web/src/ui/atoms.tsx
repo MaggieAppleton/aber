@@ -1,3 +1,4 @@
+import { TooltipButton } from "./tooltip";
 import { beginObjectDrag, endObjectDrag } from "../data/object-drag";
 import type { ReactNode } from "react";
 import type { Theory, Dump } from "./data";
@@ -90,7 +91,7 @@ export const Icon = ({ name, size = 16, weight = "regular" }: { name: IconName; 
 };
 
 export const IconButton = ({ icon, label, onClick, pressed, shortcut, disabled }: { icon: IconName; label: string; onClick?: () => void; pressed?: boolean; shortcut?:string; disabled?:boolean }) => (
-  <button type="button" className="ap-iconbtn" disabled={disabled} aria-keyshortcuts={shortcut} aria-label={label} title={label} onClick={onClick} aria-pressed={pressed}><Icon name={icon} weight={pressed ? "fill" : "regular"} /></button>
+  <TooltipButton type="button" className="ap-iconbtn" disabled={disabled} aria-keyshortcuts={shortcut} aria-label={label} tooltip={label} onClick={onClick} aria-pressed={pressed}><Icon name={icon} weight={pressed ? "fill" : "regular"} /></TooltipButton>
 );
 
 /** Confidence, mine only: five steps. A draft has none. */
@@ -136,7 +137,7 @@ export function TheoryCard({ t, onEnter, onLeave, dim, hot, onClick, compact }: 
 export const Pill = ({ sees }: { sees: string }) => (
   <div className="ap-pill-wrap">
     <button className="ap-pill"><Icon name="dump" />Dump or ask<span className="ap-muted">sees {sees}</span><Kbd>⌘J</Kbd></button>
-    <button className="ap-mic" aria-label="Voice dump" title="Voice dump"><Icon name="mic" /></button>
+    <TooltipButton className="ap-mic" aria-label="Voice dump" tooltip="Voice dump"><Icon name="mic" /></TooltipButton>
   </div>
 );
 

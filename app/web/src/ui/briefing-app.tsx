@@ -71,10 +71,10 @@ function Overnight({onLog,processing}:{onLog?:()=>void;processing:number}) {
   const signals=SIGNALS.filter(s=>produced.has(s.id)).length;
   const since=new Date();since.setHours(0,0,0,0);since.setDate(since.getDate()-1);
   const drafts=[...THEORIES.filter(t=>t.draft),...world.themes.filter(t=>t.status==="draft"),...world.prototypes.filter(p=>p.draft)].filter(row=>new Date(field(row,"createdAt")??0)>=since).length;
-  return <button className="br-flow" onClick={onLog} title={processing?`${processing} processing. Dump log (⌘⇧L)`:"Dump log (⌘⇧L)"} aria-label={`${dumps.length} dumps became ${signals} signals and ${drafts} drafts. Open the dump log`}>
+  return <TooltipButton className="br-flow" onClick={onLog} tooltip={processing?`${processing} processing. Dump log (⌘⇧L)`:"Dump log (⌘⇧L)"} aria-label={`${dumps.length} dumps became ${signals} signals and ${drafts} drafts. Open the dump log`}>
     <span className="ap-num">{dumps.length}</span><Icon name="dump" size={14}/><Icon name="arrowRight" size={12}/>
     <span className="ap-num">{signals}</span><Icon name="signal" size={14}/><span className="ap-num">{drafts}</span><span className="br-flow-draft"><Icon name="theory" size={14}/></span>
-  </button>;
+  </TooltipButton>;
 }
 function BriefingItem({item,host,onOpen,onDecide}:{item:Item;host:BriefingHost;onOpen:()=>void;onDecide:(decision:"accepted"|"discarded")=>void}) {
   const [reviewing,setReviewing]=useState(false);
@@ -110,3 +110,4 @@ function NewSignals({item,host,onOpen,onSeen}:{item:Item;host:BriefingHost;onOpe
     <span className="br-acts"><Accordion.Header render={<span/>} className="br-count-head"><Accordion.Trigger className="br-count ap-num" title={expanded?"Fold":"Show the new signals"}>{item.row.signals.length} new<span className="br-caret" data-open={expanded?"":undefined}><Icon name="chevron" size={12}/></span></Accordion.Trigger></Accordion.Header><IconButton icon="check" label="Seen (A)" onClick={onSeen}/></span>
   </Accordion.Item></Accordion.Root>;
 }
+import { TooltipButton } from "./tooltip";

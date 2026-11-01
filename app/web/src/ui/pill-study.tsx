@@ -1,3 +1,5 @@
+import { IconTooltip, TooltipButton } from "./tooltip";
+import { ContextHighlight } from "./context-highlight";
 import { NoteWave } from "../chat/audio-waveform";
 import { SURFACE_RADII } from "./metrics";
 import { VoicePlayback } from "../chat/voice-playback";
@@ -21,9 +23,9 @@ export const I = ({ n, size = 16, weight }: { n: IconName; size?: number; weight
 const StopGlyph = ({ size = 12 }: { size?: number }) => <Icon name="stop" size={size} weight="fill" />;
 
 export const IconBtn = ({ n, label, onClick, target, className, size = 28, pressed }: { n: IconName; label: string; onClick?: () => void; target?: string; className?: string; size?: number; pressed?: boolean }) => (
-  <button type="button" className={`ps-ib ${className ?? ""}`} style={{ width: size, height: size }} aria-label={label} title={label} onClick={onClick} data-target={target} aria-pressed={pressed}>
+  <TooltipButton type="button" className={`ps-ib ${className ?? ""}`} style={{ width: size, height: size }} aria-label={label} tooltip={label} onClick={onClick} data-target={target} aria-pressed={pressed}>
     <I n={n} weight={pressed ? "fill" : "regular"} />
-  </button>
+  </TooltipButton>
 );
 
 /** Swaps an icon with the scale + blur cross-fade (one slot, both icons share it). */
@@ -113,24 +115,24 @@ const Spinner = ({ size = 14 }: { size?: number }) => (
 
 /* ── Chips ── */
 export function LinkChip({ a, onRemove, big }: { a: Att; onRemove?: () => void; big?: boolean }) {
-  if(a.object)return <span className="ps-link"><I n={a.object.kind} size={14}/><span className="ps-link-title">{a.object.label}</span>{onRemove&&<button className="ps-chip-x" aria-label={`Remove ${a.object.label}`} onClick={onRemove}><I n="x" size={12}/></button>}</span>;
+  if(a.object)return <span className="ps-link"><I n={a.object.kind} size={14}/><span className="ps-link-title">{a.object.label}</span>{onRemove&&<TooltipButton className="ps-chip-x" aria-label={`Remove ${a.object.label}`} onClick={onRemove}><I n="x" size={12}/></TooltipButton>}</span>;
   if (a.kind === "image") return (
-    <span className="ps-thumb" data-big={big ? "" : undefined} title={a.host}>
-      <span className="ps-thumb-img" aria-hidden>{a.url?<img src={a.url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<I n="image"/>}</span>
-      {onRemove && <button type="button" className="ps-thumb-x" aria-label="Remove" title="Remove" onClick={onRemove}><I n="x" size={10} /></button>}
+    <span className="ps-thumb" data-big={big ? "" : undefined}>
+      <span className="ps-thumb-img" title={a.host} aria-hidden>{a.url?<img src={a.url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<I n="image"/>}</span>
+      {onRemove && <TooltipButton type="button" className="ps-thumb-x" aria-label="Remove" tooltip="Remove" onClick={onRemove}><I n="x" size={10} /></TooltipButton>}
     </span>
   );
   return (
-    <span className="ps-link" title={a.title ? `${a.title}\n${a.host}` : a.host}>
+    <span className="ps-link">
       <Favicon host={a.host} />
-      <span className="ps-link-text">
+      <span className="ps-link-text" title={a.title ? `${a.title}\n${a.host}` : a.host}>
         <AnimatePresence initial={false} mode="popLayout">
           {a.title
             ? <motion.span key="t" className="ps-link-title" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}>{a.title}</motion.span>
             : <motion.span key="h" className="ps-link-host" exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }}>{a.host}<i className="ps-shimmer" /></motion.span>}
         </AnimatePresence>
       </span>
-      {onRemove && <button type="button" className="ps-chip-x" aria-label="Remove link" title="Remove link" onClick={onRemove}><I n="x" size={12} /></button>}
+      {onRemove && <TooltipButton type="button" className="ps-chip-x" aria-label="Remove link" tooltip="Remove link" onClick={onRemove}><I n="x" size={12} /></TooltipButton>}
     </span>
   );
 }
@@ -138,13 +140,13 @@ export function LinkChip({ a, onRemove, big }: { a: Att; onRemove?: () => void; 
 export function CtxChip({ c, onRemove, onHot }: { c: Ctx; onRemove?: () => void; onHot?: (r: string | null) => void }) {
   const present = useIsPresent(), reduced = useReducedMotion();
   return (
-    <motion.span layout className="ps-ctx" title={`The agent sees ${c.label}`} inert={!present} aria-hidden={present?undefined:true}
+    <motion.span layout className="ps-ctx" inert={!present} aria-hidden={present?undefined:true}
       initial={{ opacity: 0, scale: reduced?1:0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: reduced?1:0.8, transition: { duration: 0.15 } }}
       transition={{ type: "spring", duration: 0.35, bounce: 0.15 }}
       onPointerEnter={() => onHot?.(c.region)} onPointerLeave={() => onHot?.(null)}>
       <I n={c.kind} size={13} />
-      <span className="ps-ctx-label">{c.label}</span>
-      {onRemove && <button type="button" className="ps-chip-x" aria-label={`Stop sharing ${c.label}`} title="Remove" onClick={onRemove}><I n="x" size={12} /></button>}
+      <span className="ps-ctx-label" title={`The agent sees ${c.label}`}>{c.label}</span>
+      {onRemove && <TooltipButton type="button" className="ps-chip-x" aria-label={`Stop sharing ${c.label}`} tooltip="Remove" onClick={onRemove}><I n="x" size={12} /></TooltipButton>}
     </motion.span>
   );
 }
@@ -165,11 +167,11 @@ export function CtxRow({ s, api }: { s: DumpState; api: DumpApi }) {
     <div ref={row} className="ps-ctxrow">
       <AnimatePresence mode="popLayout" initial={false}>
         {s.ctx.map(c => <CtxChip key={c.id} c={c} onRemove={() => api.removeCtx(c.id)} onHot={api.setHot} />)}
-        <motion.button layout key="add" type="button" className="ps-add" data-on={s.picking ? "" : undefined} data-target="add-ctx"
-          aria-label={s.picking ? "Stop picking" : "Add something on screen"} title={s.picking ? "Stop picking (Esc)" : "Add something on screen"}
+        <IconTooltip key="add" label={s.picking ? "Stop picking (Esc)" : "Add something on screen"}><motion.button layout type="button" className="ps-add" data-on={s.picking ? "" : undefined} data-target="add-ctx"
+          aria-label={s.picking ? "Stop picking" : "Add something on screen"}
           onClick={() => api.setPicking(!s.picking)} transition={{ type: "spring", duration: 0.35, bounce: 0.15 }}>
           <SwapIcon k={s.picking ? "on" : "off"}><I n="crosshair" size={14} weight={s.picking ? "fill" : "regular"} /></SwapIcon>
-        </motion.button>
+        </motion.button></IconTooltip>
       </AnimatePresence>
     </div>
   );
@@ -372,10 +374,10 @@ export const isAsk = (t: string) => t.includes("?");
 export function SendBtn({ text, ready, onSend, size = 32 }: { text: string; ready: boolean; onSend: () => void; size?: number }) {
   const ask = isAsk(text);
   return (
-    <button type="button" className="ps-send" style={{ width: size, height: size }} data-ready={ready ? "" : undefined} data-ask={ask ? "" : undefined} disabled={!ready}
-      aria-label={ask ? "Ask (Return)" : "Dump (Return)"} title={ask ? "Ask (Return)" : "Dump (Return)"} onClick={onSend} data-target="send">
+    <TooltipButton type="button" className="ps-send" style={{ width: size, height: size }} data-ready={ready ? "" : undefined} data-ask={ask ? "" : undefined} disabled={!ready}
+      aria-label={ask ? "Ask (Return)" : "Dump (Return)"} tooltip={ask ? "Ask (Return)" : "Dump (Return)"} onClick={onSend} data-target="send">
       <SwapIcon k={ask ? "ask" : "send"}><I n={ask ? "questionMark" : "send"} weight="bold" /></SwapIcon>
-    </button>
+    </TooltipButton>
   );
 }
 
@@ -386,7 +388,7 @@ export function Recorder({ s, api, onStop, time }: { s: DumpState; api: DumpApi;
       <IconBtn n="x" label="Discard recording" onClick={api.cancelRec} />
       <LiveWave bars={40} height={20} />
       <span className="ps-rec-time ap-num">{time ?? mmss(s.rec ? (now - s.rec) / 1000 : 0)}</span>
-      <button type="button" className="ps-stop" aria-label="Stop and dump" title="Stop and dump" onClick={onStop}><StopGlyph /></button>
+      <TooltipButton type="button" className="ps-stop" aria-label="Stop and dump" tooltip="Stop and dump" onClick={onStop}><StopGlyph /></TooltipButton>
     </div>
   );
 }
@@ -441,8 +443,8 @@ export function Composer({ s, api, screen, inputRef, big, sees = true }: { s: Du
               onPaste={onPaste} onChange={e => onChange(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); api.send(); } }} />
             {sees && s.ctx.length === 0 && addCtx}
-            <IconBtn n="plus" label="Attach" onClick={api.addImage} />
-            <IconBtn n="mic" label="Record a voice note" onClick={api.startRec} target="composer-mic" />
+            <IconBtn n="plus" label="Attach" className="ps-composer-action" onClick={api.addImage} />
+            <IconBtn n="mic" label="Record a voice note" className="ps-composer-action" onClick={api.startRec} target="composer-mic" />
             <SendBtn text={s.text} ready={ready} onSend={api.send} />
           </div>
         )}
@@ -473,7 +475,7 @@ if (typeof window !== "undefined") {
   window.addEventListener("keydown", () => { keyInput = true; }, true);
   window.addEventListener("pointerdown", () => { keyInput = false; }, true);
 }
-/** Width the docked B2 column takes from the right edge of its host (column plus its margins). */
+/** Width reserved for the desktop B2 column at its host's right edge. */
 export const DOCK_W = 372;
 
 /** One thing the agent sees: shown as a context chip, and the first one names the closed pill. */
@@ -521,7 +523,6 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
   const [pressed, setPressed] = useState(false);
   const [approach, setApproach] = useState(false);
   const [focus, setFocus] = useState(false);
-  const [hl, setHl] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const [pickHover, setPickHover] = useState<string | null>(null);
   const primary = sees[0];
   const screen = primary?.label ?? "";
@@ -549,6 +550,7 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
   const cx = cxProp ?? (phone ? w / 2 : SIDEBAR + (w - SIDEBAR) / 2);
   const ph = phone ? 44 : 40, micW = ph, bottom = 12;
   const corner = (variant === "B2" && !centred) || !!cornerProp, docked = variant === "B2";
+  const flushDock = docked && w >= 640;
   const ap = force.approach ?? approach, hv = force.hover ?? hover, pr = force.pressed ?? pressed, fc = force.focus ?? focus;
   void ap;
   const voiceSheet = phone && !s.open && s.rec != null;
@@ -562,7 +564,10 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
   let box: { left: number; bottom: number; width: number; height: number; r: number };
   let panelW = 600;
   if (s.open) {
-    if (docked) { panelW = DOCK_W - 12; box = { left: w - DOCK_W, bottom: 12, width: DOCK_W - 12, height: h - 24, r: 14 }; }
+    if (docked) {
+      panelW = flushDock ? DOCK_W : DOCK_W - 12;
+      box = { left: w - DOCK_W, bottom: flushDock ? 0 : 12, width: panelW, height: flushDock ? h : h - 24, r: flushDock ? 0 : 14 };
+    }
     else { panelW = w - 16; box = { left: 8, bottom: 8, width: w - 16, height: Math.min(panelH, maxH), r: 40 }; }
   } else if (voiceSheet) {
     panelW = w - 16; box = { left: 8, bottom: 8, width: w - 16, height: 252, r: 40 };
@@ -589,26 +594,8 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
     wasOpen.current = s.open;
   }, [s.open, live]);
 
-  // The region the agent sees, outlined on the screen behind. It follows the region while it moves or resizes.
-  const region = s.picking ? pickHover : s.hot;
-  useLayoutEffect(() => {
-    const f = frameRef.current;
-    if (!f || !region) return setHl(null);
-    let raf = 0;
-    const measure = () => {
-      const el = f.querySelector<HTMLElement>(`[data-region="${region}"]`);
-      if (!el) { setHl(null); return; }
-      const a = f.getBoundingClientRect(), b = el.getBoundingClientRect();
-      // Outline 6px outside the region, but never past the host's own edge (a full-frame region gets an inset outline).
-      const l = Math.max(b.left - a.left - 6, 2), t = Math.max(b.top - a.top - 6, 2);
-      const r = Math.min(b.right - a.left + 6, a.width - 2), btm = Math.min(b.bottom - a.top + 6, a.height - 2);
-      const next = { x: l + 6, y: t + 6, w: r - l - 12, h: btm - t - 12 };
-      setHl(h => (h && h.x === next.x && h.y === next.y && h.w === next.w && h.h === next.h ? h : next));
-      raf = requestAnimationFrame(measure);
-    };
-    measure();
-    return () => cancelAnimationFrame(raf);
-  }, [region, s.open]);
+  // Removing a chip immediately removes its preview, even while the departing chip is still animating.
+  const region = s.picking ? pickHover : s.ctx.some(context => context.region === s.hot) ? s.hot : null;
 
   // ⌘J and Esc for whichever stage the pointer was last in.
   const sRef = useRef(s);
@@ -703,12 +690,7 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
 
   return (
     <>
-      <AnimatePresence>
-        {hl && (
-          <motion.div key="hl" className="ps-hl" initial={{ opacity: 0 }} animate={{ opacity: 1, left: hl.x - 6, top: hl.y - 6, width: hl.w + 12, height: hl.h + 12 }} exit={{ opacity: 0 }}
-            transition={{ opacity: { duration: 0.15 }, default: { type: "spring", duration: 0.3, bounce: 0 } }} style={{ left: hl.x - 6, top: hl.y - 6, width: hl.w + 12, height: hl.h + 12 }} />
-        )}
-      </AnimatePresence>
+      <ContextHighlight frameRef={frameRef} chatRef={surfaceRef} region={region} />
 
       {/* Dump log: tier 3, grows up out of the pill's log segment and sinks back into it */}
       {log && (() => {
@@ -773,7 +755,7 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
       {/* The surface: pill when closed, panel when open */}
       <motion.div ref={surfaceRef} className="ps-surface" data-variant={variant} data-open={s.open || voiceSheet ? "" : undefined} data-focus={fc && !s.open ? "" : undefined} data-drag={s.drag && !s.open ? "" : undefined}
         initial={false}
-        animate={{ left: box.left, bottom: box.bottom, width: box.width, height: box.height, borderRadius: box.r, y: lifted ? -1 : 0, scale, boxShadow: s.open || voiceSheet ? SHADOW.sheet : lifted || s.drag ? SHADOW.lift : SHADOW.pill }}
+        animate={{ left: box.left, bottom: box.bottom, width: box.width, height: box.height, borderRadius: box.r, y: lifted ? -1 : 0, scale, boxShadow: s.open && flushDock ? "none" : s.open || voiceSheet ? SHADOW.sheet : lifted || s.drag ? SHADOW.lift : SHADOW.pill }}
         transition={reduced ? { duration: 0 } : { default: s.open || voiceSheet ? OPEN_T : CLOSE_T, y: { duration: 0.15, ease: "easeOut" }, scale: { type: "spring", duration: 0.3, bounce: s.drag ? 0.35 : 0 }, boxShadow: { duration: 0.2 } }}
         style={{ transformOrigin: corner ? "100% 100%" : "50% 100%" }}
         {...dnd}>
@@ -783,17 +765,17 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
             <motion.div key="pill" className="ps-pill-layer" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: reduced ? 0 : 0.14, duration: 0.18 } }} exit={{ opacity: 0, transition: { duration: 0.08 } }}>
               <PillRows s={s} api={api} recClosed={recClosed} restWidth={250 - micW} onWidth={setPillW} hitRef={hitRef} time={force.time}
                 onHover={setHover} onPress={setPressed} onFocus={setFocus} />
-              <button type="button" className="ps-micseg" data-rec={recClosed ? "" : undefined} data-phone={phone ? "" : undefined} data-target="mic" style={{ width: micW }}
-                aria-label={recClosed ? "Stop and dump" : "Voice dump"} title={recClosed ? "Stop and dump" : "Voice dump"}
+              <TooltipButton type="button" className="ps-micseg" data-rec={recClosed ? "" : undefined} data-phone={phone ? "" : undefined} data-target="mic" style={{ width: micW }}
+                aria-label={recClosed ? "Stop and dump" : "Voice dump"} tooltip={recClosed ? "Stop and dump" : "Voice dump"}
                 onClick={() => (recClosed ? api.stopRec() : api.startRec())}>
                 <span className="ps-micseg-in"><SwapIcon k={recClosed ? "stop" : "mic"}>{recClosed ? <StopGlyph /> : <I n="mic" size={phone ? 18 : 16} />}</SwapIcon></span>
-              </button>
+              </TooltipButton>
             </motion.div>
           )}
           {s.open && (
             <motion.div key="panel" className="ps-panel-layer" style={{ width: panelW }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: reduced ? 0 : 0.07, duration: 0.22 } }} exit={{ opacity: 0, transition: { duration: 0.1 } }}>
-              <div ref={panelRef} className="ps-panel" data-variant={variant} style={{ maxHeight: docked ? undefined : maxH, height: docked ? h - 24 : undefined }}>
-                <button type="button" className="ps-grab" aria-label="Close (Esc)" title="Close (Esc)" onClick={api.close} data-target="close"><i /></button>
+              <div ref={panelRef} className="ps-panel" data-variant={variant} style={{ maxHeight: docked ? undefined : maxH, height: docked ? (flushDock ? h : h - 24) : undefined }}>
+                <TooltipButton type="button" className="ps-grab" aria-label="Close (Esc)" tooltip="Close (Esc)" onClick={api.close} data-target="close"><i /></TooltipButton>
                 <Thread s={s} api={api} grow={docked} />
                 <Composer s={s} api={api} screen={phone ? "phone" : screen} inputRef={inputRef} big={phone} />
               </div>
@@ -880,7 +862,7 @@ function VoiceSheet({ s, api, time }: { s: DumpState; api: DumpApi; time?: strin
       <div className="ps-vsheet-row">
         <IconBtn n="x" label="Discard" onClick={api.cancelRec} size={44} />
         <span className="ps-rec-time ap-num">{time ?? mmss(secs)}</span>
-        <button type="button" className="ps-stop ps-stop-big" aria-label="Stop and dump" title="Stop and dump" onClick={api.stopRecInto} data-target="stop"><StopGlyph size={16} /></button>
+        <TooltipButton type="button" className="ps-stop ps-stop-big" aria-label="Stop and dump" tooltip="Stop and dump" onClick={api.stopRecInto} data-target="stop"><StopGlyph size={16} /></TooltipButton>
       </div>
     </div>
   );

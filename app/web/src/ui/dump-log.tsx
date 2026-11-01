@@ -1,3 +1,4 @@
+import { TooltipButton } from "./tooltip";
 import { act, field, useWorld, world } from "../data/live";
 import { deleteDump } from "../app/dialogs";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -50,9 +51,9 @@ export function DumpLog({ entries, bin, api, onClose }: { entries: Entry[]; bin:
         <span className="ap-h">{tab === "log" ? "Dumps" : "Bin"}</span>
         {tab === "bin" && <span className="ap-muted">Kept 30 days</span>}
         <span className="dl-head-acts">
-          {tab === "log" && <button className="dl-bin" onClick={() => setTab("bin")} title="Bin: deleted dumps, kept 30 days" aria-label={`Bin, ${bin.length} deleted`}>
+          {tab === "log" && <TooltipButton className="dl-bin" onClick={() => setTab("bin")} tooltip="Bin: deleted dumps, kept 30 days" aria-label={`Bin, ${bin.length} deleted`}>
             <Icon name="trash" size={14} />{bin.length > 0 && <span className="ap-num">{bin.length}</span>}
-          </button>}
+          </TooltipButton>}
           <IconButton icon="x" label="Close (Esc)" onClick={onClose} />
         </span>
       </header>

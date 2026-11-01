@@ -1,3 +1,4 @@
+import { TooltipButton } from "./tooltip";
 /* The app: one frame holding the four views, the shared object pane, and the dump-or-ask pill.
    Space: the views are the base plane; the object pane and the dump column are both docked peers on the right.
    The dump column owns the far-right edge (it grows out of the corner pill); the pane sits just left of it, and the view compresses. */
@@ -272,15 +273,15 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
               const on = v.id === view;
               const label = `${v.name} (⌘${i + 1})`;
               return (
-                <button key={v.id} className="as-switch-btn" aria-label={label} title={label} aria-pressed={on} onClick={() => setView(v.id)}>
+                <TooltipButton key={v.id} className="as-switch-btn" aria-label={label} tooltip={label} aria-pressed={on} onClick={() => setView(v.id)}>
                   {on && <motion.span layoutId="as-switch-on" className="as-switch-on" transition={{ type: "spring", duration: 0.3, bounce: 0.1 }} />}
                   <Icon name={v.icon} size={16} weight={on ? "fill" : "regular"} />
-                </button>
+                </TooltipButton>
               );
             })}
           </LayoutGroup>
         </nav>}
-        {error && <div role="alert" className="ab-error">{error}<button onClick={()=>{clearError();void (failedEditsCount()?retryFailedEdits():refresh());}}>{failedEditsCount()?"Retry saving":"Retry"}</button><button onClick={clearError} aria-label="Dismiss error"><Icon name="x" size={14}/></button></div>}
+        {error && <div role="alert" className="ab-error">{error}<button onClick={()=>{clearError();void (failedEditsCount()?retryFailedEdits():refresh());}}>{failedEditsCount()?"Retry saving":"Retry"}</button><TooltipButton onClick={clearError} aria-label="Dismiss error"><Icon name="x" size={14}/></TooltipButton></div>}
         {loading && <div className="ab-loading" role="status">Loading Aber…</div>}
         <DialogHost/>
         <DumpOrAsk s={s} api={api} w={APP_W} h={APP_H} frameRef={frame} sees={sees} keys={false} closeOnClickAway={false}

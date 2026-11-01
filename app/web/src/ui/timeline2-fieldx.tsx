@@ -1,3 +1,4 @@
+import { TooltipButton } from "./tooltip";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as RPointerEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Icon, Conf } from "./atoms";
@@ -297,9 +298,9 @@ export function FieldPlot({ scale, width, height = H, bottom = BOTTOM, variant, 
         <ThemePicker scale={scale} live={live} value={filter} onChange={setFilter} />
         {demo && <DemoButton open={demo} onReset={() => { setChainOn(false); ex.reset(); }} />}
         {variant === "morph" && selected && (
-          <button className="t2-tool" aria-label="Follow chain" title="Follow chain (Esc to return)" aria-pressed={chainOn} onClick={() => setChainOn(c => !c)}>
+          <TooltipButton className="t2-tool" aria-label="Follow chain" tooltip="Follow chain (Esc to return)" aria-pressed={chainOn} onClick={() => setChainOn(c => !c)}>
             <Icon name="chain" size={15} weight={chainOn ? "fill" : "regular"} />
-          </button>
+          </TooltipButton>
         )}
         {variant !== "bundle" && !away && <Trail g={g} exp={ex.exp} vis={ex.vis} onCollapse={ex.toggle} />}
       </div>
@@ -385,7 +386,7 @@ export function Badge({ n, dir, open, act, onClick, axis = "x" }: { n: number; d
   const label = act ? `${open ? "Hide" : "Show"} ${n} ${dir === 1 ? "further" : "earlier"} ${what}` : `${n} further ${what}`;
   const body = <><span className="ap-num">{open ? "−" : "+"}{n}</span><Icon name={icon} size={11} /></>;
   return act
-    ? <button className="t2x-badge" aria-pressed={!!open} aria-label={label} title={label} onClick={e => { e.stopPropagation(); onClick?.(); }}>{body}</button>
+    ? <TooltipButton className="t2x-badge" aria-pressed={!!open} aria-label={label} tooltip={label} onClick={e => { e.stopPropagation(); onClick?.(); }}>{body}</TooltipButton>
     : <span className="t2x-badge" role="img" data-static="" title={label} aria-label={label}>{body}</span>;
 }
 

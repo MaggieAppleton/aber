@@ -1,3 +1,4 @@
+import { IconTooltip, TooltipButton } from "./tooltip";
 import { beginObjectDrag,endObjectDrag } from "../data/object-drag";
 import { SURFACE_RADII } from "./metrics";
 import { rowFor, field, json, labelFor, act, markRead } from "../data/live";
@@ -77,11 +78,11 @@ export function ColumnsDeveloped({ fold, host }: { fold: Fold; host?: ColumnsHos
             {COLS.map(c => {
               const n = related ? countRelated(c.kind, related) : 0;
               return (
-                <button key={c.kind} className="cd-dot" aria-pressed={isWide(c.kind)} aria-label={c.name} title={c.name}
+                <TooltipButton key={c.kind} className="cd-dot" aria-pressed={isWide(c.kind)} aria-label={c.name} tooltip={c.name}
                   onClick={() => { if (open) setOpen(undefined); toggle(c.kind); }}>
                   <Icon name={c.icon} size={14} weight={isWide(c.kind) ? "fill" : "regular"} />
                   {n > 0 && !isWide(c.kind) && <span className="cd-dot-n">{n}</span>}
-                </button>
+                </TooltipButton>
               );
             })}
           </div>
@@ -97,10 +98,10 @@ export function ColumnsDeveloped({ fold, host }: { fold: Fold; host?: ColumnsHos
                   <ColumnList kind={c.kind} icon={c.icon} name={c.name} related={related} open={open} unfolded={unfolded} fold={fold}
                     scrollOffsets={scrollOffsets} onOpen={openObj} onUnfold={unfold} onFold={() => { if (open) setOpen(undefined); toggle(c.kind); }} />
                 ) : fold === "rails" ? (
-                  <button className="cd-rail" aria-label={`Show ${c.name}`} title={c.name} onClick={() => { if (compact) { host!.onRestore?.(); return; } if (open) setOpen(undefined); show(c.kind); }}>
+                  <TooltipButton className="cd-rail" aria-label={`Show ${c.name}`} tooltip={c.name} onClick={() => { if (compact) { host!.onRestore?.(); return; } if (open) setOpen(undefined); show(c.kind); }}>
                     <Icon name={c.icon} size={16} />
                     {related && countRelated(c.kind, related) > 0 && <span className="cd-rail-n">{countRelated(c.kind, related)}</span>}
-                  </button>
+                  </TooltipButton>
                 ) : null}
               </motion.section>
             );
@@ -240,13 +241,13 @@ function ColumnList({ kind, icon, name, related, open, unfolded, fold, scrollOff
 function OffMarker({ dir, n, lift, onClick }: { dir: "up" | "down"; n: number; lift?: boolean; onClick: () => void }) {
   const label = `${n} related ${dir === "up" ? "above" : "below"}`;
   return (
-    <motion.button className="cd-off" data-dir={dir} data-lift={lift ? "" : undefined} aria-label={label} title={label} onClick={onClick}
+    <IconTooltip label={label}><motion.button className="cd-off" data-dir={dir} data-lift={lift ? "" : undefined} aria-label={label} onClick={onClick}
       initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }} transition={{ duration: 0.15, ease: "easeOut" }}>
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.span key={n} className="ap-num" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }}>{n}</motion.span>
       </AnimatePresence>
       <Icon name={dir === "up" ? "arrowUp" : "arrowDown"} size={12} />
-    </motion.button>
+    </motion.button></IconTooltip>
   );
 }
 

@@ -22,7 +22,10 @@
 .ps-frame[data-picking] .ps-wash { opacity: 0; }
 .ps-frame[data-picking] [data-pick] { cursor: crosshair; }
 .ps-sig[draggable] { cursor: grab; }
-.ps-hl { position: absolute; border-radius: var(--size-px-12); box-shadow: 0 0 0 var(--size-px-1-5) var(--color-gray-23-a-60); background: var(--color-gray-23-a-3); pointer-events: none; z-index: 1; }
+.ps-hl-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 4; }
+.as[data-phone] .ps-hl-layer { z-index: 6; }
+.ps-hl-clip { position: absolute; overflow: hidden; isolation: isolate; pointer-events: none; }
+.ps-hl { position: absolute; border-radius: var(--size-px-12); background: color-mix(in srgb, var(--color-rgb-47-111-237) 5%, transparent); box-shadow: inset 0 0 var(--size-px-20) color-mix(in srgb, var(--color-rgb-47-111-237) 14%, transparent); pointer-events: none; }
 
 /* Surface: one element that is the pill and the panel */
 .ps-surface { position: absolute; z-index: 5; background: var(--ap-surface); overflow: hidden; }
@@ -58,6 +61,7 @@
 .ps-ib::after { content: ""; position: absolute; inset: var(--size-px-neg-6); }
 .ps-ib:hover { background: var(--ap-hover); color: var(--ap-ink); }
 .ps-ib:active { transform: scale(0.96); }
+.ps-inputrow .ps-composer-action { border-radius: 50%; }
 
 /* Panel */
 .ps-panel-layer { position: absolute; left: 0; bottom: 0; }
@@ -71,7 +75,7 @@
 .ps-chip-x { width: var(--size-px-18); height: var(--size-px-18); border: 0; padding: 0; border-radius: var(--size-px-9); display: inline-grid; place-items: center; background: transparent; color: var(--ap-ink-3); cursor: pointer; flex-shrink: 0; position: relative; transition: background 100ms, color 100ms; }
 .ps-chip-x::after { content: ""; position: absolute; inset: var(--size-px-neg-4); }
 .ps-chip-x:hover { background: var(--color-gray-0-a-7); color: var(--ap-ink); }
-.ps-add { width: var(--size-px-26); height: var(--size-px-26); border: 0; border-radius: var(--size-px-13); display: inline-grid; place-items: center; background: transparent; box-shadow: inset 0 0 0 var(--size-px-0-5) var(--color-gray-0-a-18); color: var(--ap-ink-2); cursor: pointer; flex-shrink: 0; transition: background 120ms, color 120ms, box-shadow 120ms; }
+.ps-add { width: var(--size-px-26); height: var(--size-px-26); border: 0; padding: 0; border-radius: var(--size-px-13); display: inline-grid; place-items: center; background: transparent; box-shadow: inset 0 0 0 var(--size-px-0-5) var(--color-gray-0-a-18); color: var(--ap-ink-2); cursor: pointer; flex-shrink: 0; transition: background 120ms, color 120ms, box-shadow 120ms; }
 .ps-add:hover { background: var(--ap-hover); color: var(--ap-ink); }
 .ps-add[data-on] { background: var(--ap-ink); color: var(--color-gray-255); box-shadow: none; }
 

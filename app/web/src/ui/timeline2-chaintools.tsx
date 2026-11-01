@@ -1,3 +1,4 @@
+import { TooltipButton } from "./tooltip";
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Icon } from "./atoms";
@@ -22,9 +23,9 @@ export function DemoButton({ open, onReset }: { open: ReturnType<typeof useDemoO
   const busy = !!open.obj;
   const label = busy ? "Return to rest" : "Replay demo selection";
   return (
-    <button className="t2-tool" aria-label={label} title={label} onClick={() => { onReset(); if (busy) open.close(); else open.onOpen("theory", DEMO); }}>
+    <TooltipButton className="t2-tool" aria-label={label} tooltip={label} onClick={() => { onReset(); if (busy) open.close(); else open.onOpen("theory", DEMO); }}>
       <Icon name={busy ? "undo" : "replay"} size={15} />
-    </button>
+    </TooltipButton>
   );
 }
 

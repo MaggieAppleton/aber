@@ -1,3 +1,4 @@
+import { TooltipButton } from "./tooltip";
 import { currentChallenge } from "../data/challenge-target";
 import { SURFACE_RADII } from "./metrics";
 import { beginObjectDrag,endObjectDrag } from "../data/object-drag";
@@ -126,9 +127,9 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
               {(trip.hits.length ? tripped : t.challenge) && <Mark kind="challenge" />}
             </dd></div>}
         <div className="pn-meta-row"><dt className="ap-label">Happens by</dt><dd className="pn-year">
-          <button className="pn-step" aria-label="Earlier" title="Earlier" onClick={() => set({ horizon: edit.horizon - 1 })}><Icon name="minus" size={12} /></button>
+          <TooltipButton className="pn-step" aria-label="Earlier" tooltip="Earlier" onClick={() => set({ horizon: edit.horizon - 1 })}><Icon name="minus" size={12} /></TooltipButton>
           <span className="ap-num pn-field-val">{edit.horizon}</span>
-          <button className="pn-step" aria-label="Later" title="Later" onClick={() => set({ horizon: edit.horizon + 1 })}><Icon name="plus" size={12} /></button>
+          <TooltipButton className="pn-step" aria-label="Later" tooltip="Later" onClick={() => set({ horizon: edit.horizon + 1 })}><Icon name="plus" size={12} /></TooltipButton>
         </dd></div>
         {t.rivals.length > 0 && <div className="pn-meta-row"><dt className="ap-label">Rival</dt><dd className="pn-rivals">
           {t.rivals.map(r => <button key={r} className="pn-chip pn-rival" onClick={() => onOpen("theory", r)}><Swap /><span><Claim id={r} /></span></button>)}
@@ -147,7 +148,7 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
                 <Icon name={st === "supports" ? "arrowUp" : "arrowDown"} size={12} />
                 <span className="ap-label">{name}</span>
                 <span className="ap-num pn-field-val">{items.length}</span>
-                <button className="pn-step" aria-label={st === "supports" ? "Add supporting evidence" : "Add undermining evidence"} title={st === "supports" ? "Add supporting evidence" : "Add undermining evidence"} onClick={() => void linkObject("evidence",id,st)}><Icon name="plus" size={12} /></button>
+                <TooltipButton className="pn-step" aria-label={st === "supports" ? "Add supporting evidence" : "Add undermining evidence"} tooltip={st === "supports" ? "Add supporting evidence" : "Add undermining evidence"} onClick={() => void linkObject("evidence",id,st)}><Icon name="plus" size={12} /></TooltipButton>
               </div>
               {items.map(s => (
                 <SignalRow key={s.id} s={s} context={id} open={inline && unfolded === s.id} current={!inline && unfolded === s.id}
@@ -181,7 +182,7 @@ export function ThemePane({ id, nav }: { id: string; nav: PaneNav }) {
       <div className="pn-chips">{rowFor("theme",id)?.status==="draft"&&<><button className="ap-btn" aria-keyshortcuts="a" title="Accept draft theme (A)" onClick={()=>act("acceptDraft",{kind:"theme",id})}>Accept</button><IconButton icon="x" label="Discard draft theme (X)" shortcut="x" onClick={()=>act("discardDraft",{kind:"theme",id})}/></>}<IconButton icon="trash" label="Retire theme" onClick={()=>void retireObject("theme",id)}/></div>
       <div className="pn-cards">
         {theoriesIn(id).map(t => <TheoryTile key={t.id} id={t.id} onClick={() => nav.onOpen("theory", t.id)} />)}
-        <button className="pn-tile pn-add" aria-label="State a theory" title="State a theory" onClick={()=>void createObject("theory",id)}><Icon name="plus" /></button>
+        <TooltipButton className="pn-tile pn-add" aria-label="State a theory" tooltip="State a theory" onClick={()=>void createObject("theory",id)}><Icon name="plus" /></TooltipButton>
       </div>
       <div className="pn-col">
         {ss.map(s => <SignalRow key={s.id} s={s} context={id} open={inline && unfolded === s.id} current={!inline && unfolded === s.id} onToggle={() => toggle(s.id)} onOpen={nav.onOpen} />)}
@@ -260,11 +261,11 @@ export function PrototypePane({ id, nav }: { id: string; nav: PaneNav }) {
 function StatusButton({ s, on, onClick }: { s: string; on: boolean; onClick: () => void }) {
   const [focus, setFocus] = useState(false);
   return (
-    <button role="radio" aria-checked={on} aria-label={s} title={s} onClick={onClick}
+    <TooltipButton role="radio" aria-checked={on} aria-label={s} tooltip={s} onClick={onClick}
       onFocus={e => { if (e.currentTarget.matches(":focus-visible")) setFocus(true); }} onBlur={() => setFocus(false)}>
       <span className="pn-status-glyph" aria-hidden><ProtoGlyph status={s} selected={on} /></span>
       <Reveal show={on || focus}><span className="pn-status-name">{s}</span></Reveal>
-    </button>
+    </TooltipButton>
   );
 }
 

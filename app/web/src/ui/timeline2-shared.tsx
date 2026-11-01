@@ -1,3 +1,4 @@
+import { TooltipButton } from "./tooltip";
 import { useWorld } from "../data/live";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -106,9 +107,9 @@ export function ThemePicker({ scale, live, value, onChange, mode = "filter", fol
   };
   return (
     <div className="t2-picker" ref={box}>
-      <button className="t2-tool" aria-label={mode === "lanes" ? "Lanes" : "Theme"} title={mode === "lanes" ? "Lanes" : "Filter by theme"} aria-expanded={open} aria-pressed={open || !!value} onClick={() => setOpen(o => !o)}>
+      <TooltipButton className="t2-tool" aria-label={mode === "lanes" ? "Lanes" : "Theme"} tooltip={mode === "lanes" ? "Lanes" : "Filter by theme"} aria-expanded={open} aria-pressed={open || !!value} onClick={() => setOpen(o => !o)}>
         <Icon name="theme" size={15} weight={value ? "fill" : "regular"} />
-      </button>
+      </TooltipButton>
       <AnimatePresence initial={false}>
         {value && mode === "filter" && (
           <motion.button key="chip" className="t2-active" onClick={() => onChange?.(undefined)} title="Show every theme" aria-label="Clear theme filter"
