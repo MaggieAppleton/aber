@@ -8,11 +8,13 @@ import { DevelopColumnsJig } from "./develop-columns";
 import { DevelopAtlasJig } from "./develop-atlas";
 import { DevelopPillJig } from "./develop-pill";
 import { DevelopAppJig } from "./develop-app";
+import { DevelopTimelineJig } from "./develop-timeline";
 import "./jig.css";
 import "./minis/wf.css";
 
 const JIGS = {
   app: { title: "App", view: DevelopAppJig },
+  timeline: { title: "Timeline", view: DevelopTimelineJig },
   pill: { title: "Dump or ask", view: DevelopPillJig },
   atlas: { title: "Atlas, developed", view: DevelopAtlasJig },
   columns: { title: "Columns, developed", view: DevelopColumnsJig },
