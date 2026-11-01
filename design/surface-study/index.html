@@ -214,7 +214,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   border-radius: var(--r-3); background: var(--surface); box-shadow: var(--hi), var(--sh-card); }
 .card:hover, .card.is-hover { background: var(--surface); box-shadow: var(--hi), var(--sh-card-hover); }
 .card:hover .claim-icon, .card.is-hover .claim-icon { color: var(--h-theory); opacity: 1; }
-.card[aria-current="true"], .card.is-sel { background: var(--surface); box-shadow: var(--hi), var(--sh-raised), var(--sel-ring); }
+.card[aria-current="true"], .card.is-sel { background: var(--sel-wash); box-shadow: var(--hi), var(--sel-lift); }
 .card .claim { font-weight: 600; text-wrap: pretty; padding-right: 18px; }
 .claim-icon { position: absolute; top: var(--sp-4); right: var(--sp-3); color: var(--h-theory); opacity: 0.7; transition: color var(--dur-1), opacity var(--dur-1); }
 #study[data-hue="off"] .claim-icon { opacity: 0; }
@@ -256,7 +256,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   background: var(--surface); color: var(--ink-2); box-shadow: var(--hi), 0 0 0 0.5px var(--line), 0 1px 1px var(--line-2); }
 .chip .glyph { color: var(--h-theme); }
 .chip:hover, .chip.is-hover { background: color-mix(in oklab, var(--surface) 94%, var(--ink)); color: var(--ink); }
-.chip.is-sel, .chip[aria-current="true"] { background: var(--sel-wash); box-shadow: var(--hi), 0 0 0 1px rgb(var(--shc) / 22%), 0 2px 6px -1px rgb(var(--shc) / 14%); color: var(--ink); }
+.chip.is-sel, .chip[aria-current="true"] { background: var(--sel-wash); box-shadow: var(--hi), var(--sel-lift); color: var(--ink); }
 :is(.row, .chip, .card):is([aria-current="true"], .is-sel) :is(.glyph, .claim-icon) { color: var(--ink-2); }
 .pane h3 { margin: 0; font-size: var(--t-20); line-height: 1.25; letter-spacing: -0.015em; font-weight: 600; text-wrap: balance; }
 .fields { display: grid; grid-template-columns: auto 1fr; gap: var(--sp-3) var(--sp-5); align-items: center; font-size: var(--t-12); }
@@ -514,7 +514,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
         <tr><td>Blue, red, green, amber</td><td>Unchanged: new, challenge, confidence rose, confidence fell</td><td>Moved to Radix: blue 9, red 9 (11 for text), grass 9, amber 11. Each dot gets a soft halo so it reads at a glance</td></tr>
         <tr><td>Shadow</td><td>Height above the base plane, and nothing else</td><td>Crisp: three thin layers. Paper: hard 1 px foot plus soft drop. Soft: wide and diffuse, with a white highlight along the top edge</td></tr>
         <tr><td>Dashed outline</td><td>Not yet mine (drafts, suggestions)</td><td>Unchanged. Accepting animates the dash away so the object solidifies in place</td></tr>
-        <tr><td>Wash plus 1 px ring</td><td>Selected or open</td><td>Neutral, light and raised in every combination: white surface, hairline ring, a small lift (cards lift one tier). Glyphs lose their object colour while selected</td></tr>
+        <tr><td>Wash plus 1 px ring</td><td>Selected or open</td><td>One selected style for rows, chips and cards in every combination: white surface, light hairline ring, small lift. Glyphs lose their object colour while selected</td></tr>
         <tr><td>Press</td><td>"I felt that": scale plus deeper state layer</td><td>0.97 crisp, 0.975 paper, 0.95 soft</td></tr>
       </tbody>
     </table>
