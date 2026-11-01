@@ -11,10 +11,12 @@ import { DevelopAppJig } from "./develop-app";
 import { DevelopTimelineJig } from "./develop-timeline";
 import { DevelopDetailsJig } from "./develop-details";
 import { DevelopIconsJig } from "./develop-icons";
+import { DevelopDecideJig } from "./develop-decide";
 import "./jig.css";
 import "./minis/wf.css";
 
 const JIGS = {
+  decide: { title: "Decide", view: DevelopDecideJig },
   app: { title: "App", view: DevelopAppJig },
   details: { title: "Pane details", view: DevelopDetailsJig },
   icons: { title: "Icons", view: DevelopIconsJig },
