@@ -18,10 +18,12 @@
     "test:e2e": "playwright test",
     "db:migrate": "node --import tsx server/src/db/migrate-cli.ts",
     "seed": "node --import tsx server/src/seed.ts",
+    "seed:demo": "node --import tsx server/src/db/demo-seed-cli.ts",
     "backup": "node --import tsx scripts/backup.ts",
     "smoke:providers": "node --import tsx server/src/agents/smoke.ts",
     "eval": "node --import tsx evals/run.ts",
     "smoke:production": "node --import tsx scripts/production-smoke.ts",
+    "smoke:checkout": "node --import tsx scripts/smoke-checkout.ts",
     "test:workflow": "playwright test -c web/playwright.config.ts && playwright test -c web/review.playwright.config.ts"
   },
   "dependencies": {

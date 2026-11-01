@@ -12,6 +12,7 @@ import { selectSignalPage } from '../tools/signals-page.js';
 import { captureHandler, type ToolRegistry } from './capture.js';
 import { fetchArticle } from '../agents/fetch-article.js';
 import { mediaUploadHandler } from './uploads.js';
+import { isLocalRequest } from './local-request.js';
 
 type Options = { dataDir?: string; chat?: (body: unknown) => Promise<Response> | Response };
 export function createApp(db: Database.Database, tools: ToolRegistry, options: Options = {}) {
@@ -20,6 +21,7 @@ export function createApp(db: Database.Database, tools: ToolRegistry, options: O
   app.use('*', async (c, next) => {
     c.header('X-Content-Type-Options', 'nosniff');
     c.header('Referrer-Policy', 'same-origin');
+    if (!isLocalRequest(c.req.raw)) return c.json({ error: 'Requests must use the local app hostname' }, 403);
     const origin = c.req.header('origin');
     if (origin && !['GET', 'HEAD', 'OPTIONS'].includes(c.req.method)) {
       let allowed = false;

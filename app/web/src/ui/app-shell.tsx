@@ -19,7 +19,7 @@ import "./panes.css";
 import "./pill-study.css";
 import "./app-shell.css";
 import { useWorld, clearError, labelFor, rowFor, act, loadObject, refresh, markRead } from "../data/live";
-import { flushEdit } from "./edits";
+import { flushEdit, failedEditsCount, retryFailedEdits } from "./edits";
 import { DialogHost, findObjects, createObject } from "../app/dialogs";
 import "../app/production.css";
 import "../app/hit-areas.css";
@@ -272,7 +272,7 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
             })}
           </LayoutGroup>
         </nav>}
-        {error && <div role="alert" className="ab-error">{error}<button onClick={()=>{clearError();void refresh();}}>Retry</button><button onClick={clearError} aria-label="Dismiss error"><Icon name="x" size={14}/></button></div>}
+        {error && <div role="alert" className="ab-error">{error}<button onClick={()=>{clearError();void (failedEditsCount()?retryFailedEdits():refresh());}}>{failedEditsCount()?"Retry saving":"Retry"}</button><button onClick={clearError} aria-label="Dismiss error"><Icon name="x" size={14}/></button></div>}
         {loading && <div className="ab-loading" role="status">Loading Aber…</div>}
         <DialogHost/>
         <DumpOrAsk s={s} api={api} w={APP_W} h={APP_H} frameRef={frame} sees={sees} keys={false} closeOnClickAway={false}

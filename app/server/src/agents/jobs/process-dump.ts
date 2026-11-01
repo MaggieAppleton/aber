@@ -45,7 +45,7 @@ export async function processDump(db: AgentDatabase, layer: ToolLayer, dumpId: s
       const path = resolve(directory, image.path);
       if (!path.startsWith(`${directory}${sep}`)) throw new Error('Image path leaves the media directory');
       if ((await stat(path)).size > 20_000_000) throw new Error('Images above 20 MB need reducing before processing');
-      messageContent.push({ type: 'file', data: await imageForModel(path), mediaType: 'image/jpeg' });
+      messageContent.push({ type: 'file', data: await imageForModel(path, { signal: options.signal }), mediaType: 'image/jpeg' });
     }
   }
   const result = await runAgent(db, {
@@ -60,7 +60,7 @@ export async function processDump(db: AgentDatabase, layer: ToolLayer, dumpId: s
         catch (error) { return { error: { name: error instanceof Error ? error.name : 'Error', message: error instanceof Error ? error.message : String(error) } }; }
       };
       tools.createSignal = tool({
-        description: 'Create one distinct observation with its original source URLs and dump. Repeat URLs attach their origin; tombstoned observations are refused.',
+        description: 'Create one distinct finding with its original source URLs and dump. A newly captured article can yield several findings sharing its URL. A URL saved before this capture attaches all its existing findings; tombstoned observations are refused.',
         inputSchema: layer.schemas.createSignal,
         toModelOutput: projectedModelOutput,
         execute: async raw => {

@@ -7,11 +7,17 @@ const theoryFields={claim:z.string().trim().min(1),body:z.string().default(''),h
 export function versionTheory(ctx:ToolContext,id:string):void {
  const t=row(ctx,'theory',id);insert(ctx,'theory_versions',{theory_id:id,claim:t.claim,body:t.body,tripwire:t.tripwire,horizon:t.horizon,at:ctx.now,actor:actorString(ctx.actor)});
 }
+export function scheduleTripwireLookback(ctx:ToolContext,theory:Row,previous?:Row):void {
+ if(theory.status!=='held'||!theory.tripwire||theory.discarded_at||theory.merged_into_id)return;
+ if(previous?.status==='held'&&previous.tripwire_version===theory.tripwire_version)return;
+ enqueue(ctx,'tripwire',{theoryId:theory.id,tripwireVersion:theory.tripwire_version},`tripwire:theory:${theory.id}:${theory.tripwire_version}`);
+}
 export function editTheory(ctx:ToolContext,id:string,patch:Row):Row {
  const t=target(ctx,'theory',id);
  const fields:Row={};for(const key of ['claim','body','horizon','tripwire'])if(patch[key]!==undefined)fields[key]=patch[key];
  if(fields.tripwire!==undefined&&fields.tripwire!==t.tripwire)fields.tripwire_version=t.tripwire_version+1;
  update(ctx,'theories',id,fields);versionTheory(ctx,id);
+ scheduleTripwireLookback(ctx,{...t,...fields},t);
  return result(ctx,'theory',getObject(ctx.db,'theory',id,ctx.ownerId)!);
 }
 export function appendStance(ctx:ToolContext,id:string,confidence:number,note='',cause='set',suggestionId?:string):Row {
@@ -19,11 +25,28 @@ export function appendStance(ctx:ToolContext,id:string,confidence:number,note=''
  const theory=row(ctx,'theory',id);if(theory.status!=='held')throw new Error('Accept a draft before setting confidence');
  return insert(ctx,'stances',{person_id:ctx.actor.id??ctx.actor.personId,theory_id:id,confidence,note,cause,suggestion_id:suggestionId,at:ctx.now});
 }
+type ConfidenceCommand={id:string;confidence:number;note:string};
+function setConfidence(ctx:ToolContext,i:{id:string;confidence:number;note:string;commandId?:string}):Row {
+ const theory=target(ctx,'theory',i.id);
+ if(i.commandId!==undefined){
+  const events=ctx.db.prepare("SELECT before_json FROM events WHERE owner_id=? AND actor=? AND object_kind='theory' AND object_id=? AND tool='setConfidence' ORDER BY rowid").all(ctx.ownerId,actorString(ctx.actor),i.id) as {before_json:string|null}[];
+  const previous=events.map(event=>parse<{command?:ConfidenceCommand}>(event.before_json,{}).command).find(command=>command?.id===i.commandId);
+  if(previous){
+   if(previous.confidence!==i.confidence||previous.note!==i.note)throw new Error('Confidence command was already used with different values');
+   ctx.noEvent=true;
+   return result(ctx,'theory',getObject(ctx.db,'theory',i.id,ctx.ownerId)!);
+  }
+  ctx.before={...theory,command:{id:i.commandId,confidence:i.confidence,note:i.note}};
+ }
+ appendStance(ctx,i.id,i.confidence,i.note);
+ return result(ctx,'theory',getObject(ctx.db,'theory',i.id,ctx.ownerId)!);
+}
 function createTheory(ctx:ToolContext,i:Row,draft=false):Row {
  const theory=insert(ctx,'theories',{claim:i.claim,body:i.body,status:draft?'draft':'held',authorship:draft?'agent':'mine',horizon:i.horizon??null,tripwire:i.tripwire??'',tripwire_version:i.tripwire?1:0});
  for(const themeId of i.themes){row(ctx,'theme',themeId);insert(ctx,'theory_themes',{theory_id:theory.id,theme_id:themeId},true);}
  for(const fromId of i.follows){row(ctx,'theory',fromId);insert(ctx,'follows',{theory_id:theory.id,from_id:fromId},true);}
  versionTheory(ctx,theory.id);if(i.confidence!=null)appendStance(ctx,theory.id,i.confidence,i.note??'');
+ scheduleTripwireLookback(ctx,theory);
  return result(ctx,'theory',getObject(ctx.db,'theory',theory.id,ctx.ownerId)!);
 }
 const link=z.object({theoryId:z.string(),signalId:z.string(),stance:EvidenceStanceSchema,note:z.string().default('')});
@@ -78,9 +101,9 @@ export const theoryTools={
  createDraftTheory:define(z.object({...theoryFields,dumpId:z.string().optional(),key:z.string().optional()}),'agent',(ctx,i)=>{ctx.dumpId=i.dumpId??ctx.dumpId;return createTheory(ctx,i,true);},{key:i=>i.key??i.claim.trim().toLowerCase()}),
  editTheory:define(idSchema.extend({claim:z.string().trim().min(1).optional(),body:z.string().optional(),horizon:theoryFields.horizon,tripwire:z.string().optional()}),'person',(ctx,i)=>editTheory(ctx,i.id,i)),
  editDraftTheory:define(idSchema.extend({claim:z.string().trim().min(1).optional(),body:z.string().optional(),horizon:theoryFields.horizon,tripwire:z.string().optional()}),'agent',(ctx,i)=>editTheory(ctx,i.id,i)),
- setConfidence:define(idSchema.extend({confidence:z.number().int().min(1).max(5),note:z.string().default('')}),'person',(ctx,i)=>{target(ctx,'theory',i.id);appendStance(ctx,i.id,i.confidence,i.note);return result(ctx,'theory',getObject(ctx.db,'theory',i.id,ctx.ownerId)!);}),
+ setConfidence:define(idSchema.extend({confidence:z.number().int().min(1).max(5),note:z.string().default(''),commandId:z.string().min(1).max(128).optional()}),'person',setConfidence),
  setHorizon:define(idSchema.extend({horizon:theoryFields.horizon}),'person',(ctx,i)=>editTheory(ctx,i.id,{horizon:i.horizon})),
- setTripwire:define(idSchema.extend({tripwire:z.string()}),'person',(ctx,i)=>{const t=editTheory(ctx,i.id,{tripwire:i.tripwire});if(i.tripwire)enqueue(ctx,'tripwire',{theoryId:i.id,tripwireVersion:t.tripwire_version},`tripwire:theory:${i.id}:${t.tripwire_version}`);return t;}),
+ setTripwire:define(idSchema.extend({tripwire:z.string()}),'person',(ctx,i)=>editTheory(ctx,i.id,{tripwire:i.tripwire})),
  retireTheory:define(idSchema.extend({reason:RetireReasonSchema}),'person',(ctx,i)=>{target(ctx,'theory',i.id);update(ctx,'theories',i.id,{status:'retired',retire_reason:i.reason,seen_at:ctx.now});return result(ctx,'theory',getObject(ctx.db,'theory',i.id,ctx.ownerId)!);}),
  linkEvidence:define(link,'both',linkEvidence),
  unlinkEvidence:define(z.object({theoryId:z.string(),signalId:z.string()}),'both',unlinkEvidence),

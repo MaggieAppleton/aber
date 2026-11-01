@@ -24,6 +24,7 @@ const selected = providers.filter(provider => {
   return present;
 });
 console.log(provenance);
+if (fake) console.log('Fake passes validate scripted plumbing and scoring, not model accuracy.');
 console.log(`Budget: $${budget.toFixed(2)}. ${compare ? 'OpenAI versus Claude; ' : ''}${fake ? 'deterministic SDK mocks' : 'live provider requests'}.`);
 const results: EvalResult[] = [];
 let spent = 0;
@@ -55,6 +56,7 @@ for (const fixture of fixtures) {
     activeFixture = null; await persist();
     console.log(`${provider.padEnd(9)} ${fixture.job.padEnd(14)} ${fixture.id.padEnd(18)} ${result.pass ? 'PASS' : 'FAIL'}${result.error ? `: ${result.error}` : ''}`);
     if (!result.pass) {
+      console.log(`  Failed checks: ${Object.entries(result.checks).filter(([, passed]) => !passed).map(([name]) => name).join(', ')}`);
       for (const failure of result.diagnostics.authorityErrors) console.log(`  AuthorityError ${failure.toolName}(${JSON.stringify(failure.input)}): ${failure.message}`);
       if (result.diagnostics.lastAssistantText) console.log(`  Assistant: ${result.diagnostics.lastAssistantText}`);
     }

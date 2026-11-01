@@ -3,6 +3,7 @@ import { mkdtemp, rm, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { createServer } from 'node:net';
+import { get } from 'node:http';
 import assert from 'node:assert/strict';
 import { createDatabase } from '../server/src/db/index.js';
 import { seed } from '../server/src/seed.js';
@@ -42,6 +43,13 @@ try {
   for (const path of assets) assert((await fetch(base + path)).ok, `Missing built asset ${path}`);
   const world = await (await fetch(`${base}/api/world`)).json();
   assert.equal(world.themes.length, 7);
+  // Node fetch replaces a custom Host header; raw HTTP exercises the real boundary.
+  const foreignHostStatus = await new Promise<number | undefined>((resolveStatus, reject) => {
+    get(`${base}/api/world`, { headers: { Host: 'untrusted.invalid' } }, response => {
+      response.resume(); response.once('end', () => resolveStatus(response.statusCode));
+    }).once('error', reject);
+  });
+  assert.equal(foreignHostStatus, 403, 'The built server must reject a foreign Host before serving data');
   const streamAbort = new AbortController();
   const stream = await fetch(`${base}/api/events/stream`, { signal: streamAbort.signal });
   assert.match(stream.headers.get('content-type') ?? '', /text\/event-stream/);

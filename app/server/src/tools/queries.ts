@@ -69,9 +69,21 @@ export function getObject(db:Database,kind:string,id:string,ownerId='maggie'):Ro
  if(kind==='prototype')return {...alias(raw),draft:!!raw.draft,links:parse(raw.links_json,[]),theories:all(db,'SELECT theory_id FROM prototype_theories WHERE prototype_id=? ORDER BY theory_id',id).map(t=>t.theory_id),media:all(db,'SELECT m.*,pm.position FROM prototype_media pm JOIN media m ON m.id=pm.media_id WHERE pm.prototype_id=? ORDER BY pm.position,m.id',id).map(alias)};
  return {...alias(raw),snapshot:parse(raw.snapshot_json,{})};
 }
+function selectObjects(db:Database,kind:string,ownerId:string,where=''):Row[] {
+ return all(db,`SELECT id FROM ${collection[kind]} WHERE owner_id=? ${where} ORDER BY created_at,id`,ownerId).map(r=>getObject(db,kind,r.id,ownerId)!);
+}
+export function selectThemes(db:Database,ownerId='maggie'):Row[] {
+ return selectObjects(db,'theme',ownerId,'AND discarded_at IS NULL AND merged_into_id IS NULL');
+}
+export function selectTheories(db:Database,ownerId='maggie'):Row[] {
+ return selectObjects(db,'theory',ownerId,'AND discarded_at IS NULL AND merged_into_id IS NULL');
+}
+export function selectSignals(db:Database,ownerId='maggie'):Row[] {
+ return selectObjects(db,'signal',ownerId,'AND discarded_at IS NULL AND merged_into_id IS NULL AND deleted_by_dump_id IS NULL');
+}
 export function getWorld(db:Database,ownerId='maggie',options:{signalPage?:SignalPageOptions}={}):Row {
- const fetch=(kind:string,where='')=>all(db,`SELECT id FROM ${collection[kind]} WHERE owner_id=? ${where} ORDER BY created_at,id`,ownerId).map(r=>getObject(db,kind,r.id,ownerId)!);
+ const fetch=(kind:string,where='')=>selectObjects(db,kind,ownerId,where);
  const page=options.signalPage?selectSignalPage(db,options.signalPage,ownerId):undefined;
- const signals=page?page.ids.map(id=>getObject(db,'signal',id,ownerId)!):fetch('signal','AND discarded_at IS NULL AND merged_into_id IS NULL AND deleted_by_dump_id IS NULL');
- return {...(page?{signalPage:page.signalPage}:{}),themes:fetch('theme','AND discarded_at IS NULL AND merged_into_id IS NULL'),theories:fetch('theory','AND discarded_at IS NULL AND merged_into_id IS NULL'),signals,dumps:[...listDumps(db,false,ownerId),...listDumps(db,true,ownerId)],prototypes:fetch('prototype','AND discarded_at IS NULL'),suggestions:fetch('suggestion'),merges:fetch('merge'),relationships:{signalThemes:all(db,'SELECT * FROM signal_themes WHERE owner_id=?',ownerId),theoryThemes:all(db,'SELECT * FROM theory_themes WHERE owner_id=?',ownerId),evidence:all(db,'SELECT * FROM evidence WHERE owner_id=?',ownerId),rivals:all(db,'SELECT * FROM rivals WHERE owner_id=?',ownerId),follows:all(db,'SELECT * FROM follows WHERE owner_id=?',ownerId),prototypeTheories:all(db,'SELECT * FROM prototype_theories WHERE owner_id=?',ownerId)},binCount:(db.prepare('SELECT COUNT(*) n FROM dumps WHERE owner_id=? AND deleted_at IS NOT NULL').get(ownerId) as Row).n};
+ const signals=page?page.ids.map(id=>getObject(db,'signal',id,ownerId)!):selectSignals(db,ownerId);
+ return {...(page?{signalPage:page.signalPage}:{}),themes:selectThemes(db,ownerId),theories:selectTheories(db,ownerId),signals,dumps:[...listDumps(db,false,ownerId),...listDumps(db,true,ownerId)],prototypes:fetch('prototype','AND discarded_at IS NULL'),suggestions:fetch('suggestion'),merges:fetch('merge'),relationships:{signalThemes:all(db,'SELECT * FROM signal_themes WHERE owner_id=?',ownerId),theoryThemes:all(db,'SELECT * FROM theory_themes WHERE owner_id=?',ownerId),evidence:all(db,'SELECT * FROM evidence WHERE owner_id=?',ownerId),rivals:all(db,'SELECT * FROM rivals WHERE owner_id=?',ownerId),follows:all(db,'SELECT * FROM follows WHERE owner_id=?',ownerId),prototypeTheories:all(db,'SELECT * FROM prototype_theories WHERE owner_id=?',ownerId)},binCount:(db.prepare('SELECT COUNT(*) n FROM dumps WHERE owner_id=? AND deleted_at IS NOT NULL').get(ownerId) as Row).n};
 }

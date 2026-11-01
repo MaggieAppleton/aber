@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { define, target, update, result, type ToolContext, type Row } from './core.js';
 import { getObject } from './queries.js';
-import { appendStance, versionTheory } from './theories.js';
+import { appendStance, versionTheory, scheduleTripwireLookback } from './theories.js';
 const input=z.object({kind:z.enum(['theme','theory','prototype']).optional(),id:z.string(),confidence:z.number().int().min(1).max(5).optional(),claim:z.string().trim().min(1).optional(),name:z.string().trim().min(1).optional(),body:z.string().optional(),text:z.string().trim().min(1).optional()});
 function resolveKind(ctx:ToolContext,i:Row):string {
  if(i.kind)return i.kind;
@@ -24,6 +24,7 @@ function decideDraft(ctx:ToolContext,i:Row,rephrase=false,discard=false):Row {
   }
   update(ctx,table,i.id,patch);
   if(kind==='theory'){
+   scheduleTripwireLookback(ctx,{...value,...patch},value);
    if(rephrase)versionTheory(ctx,i.id);
    if(i.confidence!=null)appendStance(ctx,i.id,i.confidence,'','accepted_draft');
   }

@@ -9,7 +9,8 @@ build/
 !.env.example
 
 # Local database files
-data/
+/data/
+/app/data/
 *.sqlite
 *.sqlite-*
 *.db

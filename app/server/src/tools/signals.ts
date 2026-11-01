@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { createHash } from 'node:crypto';
 import { SourceSchema } from '../../../shared/src/index.js';
-import { define, idSchema, insert, target, result, row, normaliseUrl, enqueue, update, activeSignal, type ToolContext, type Row } from './core.js';
+import { define, idSchema, insert, target, result, row, normaliseUrl, enqueue, update, activeSignal, parse, type ToolContext, type Row } from './core.js';
+import { actorString } from './authority.js';
 import { getObject } from './queries.js';
 function attachOrigin(ctx:ToolContext,signalId:string,dumpId:string,mention=true):void {
  activeSignal(ctx,signalId);const dump=row(ctx,'dump',dumpId);if(dump.deleted_at)throw new Error('Cannot attach a deleted dump');
@@ -9,16 +10,40 @@ function attachOrigin(ctx:ToolContext,signalId:string,dumpId:string,mention=true
  insert(ctx,'signal_origins',{signal_id:signalId,dump_id:dumpId},true);
  if(mention&&!exists)insert(ctx,'mentions',{object_kind:'signal',object_id:signalId,dump_id:dumpId,at:ctx.now});
 }
-function identity(i:Row):string {return i.key??i.idempotencyKey??`${i.dumpId}:`+createHash('sha256').update(i.sources?.filter((s:Row)=>s.url).map((s:Row)=>normaliseUrl(s.url)).sort().join('|')||i.gist.trim().toLowerCase()).digest('hex');}
+function normalisedGist(gist:string):string {return gist.trim().toLowerCase().replace(/\s+/g,' ');}
+function sourceUrls(i:Row):string[] {return [...new Set<string>(i.sources.filter((source:Row)=>source.url).map((source:Row)=>normaliseUrl(source.url)))].sort();}
+function identity(i:Row):string {return i.key??i.idempotencyKey??createHash('sha256').update(JSON.stringify([i.dumpId,normalisedGist(i.gist),sourceUrls(i)])).digest('hex');}
+function currentCaptureSources(ctx:ToolContext,dumpId:string):Set<string> {
+ const current=new Set<string>(),seen=new Set<string>();
+ if(ctx.actor.kind!=='agent')return current;
+ const events=ctx.db.prepare("SELECT dump_id,after_json FROM events WHERE owner_id=? AND run_id=? AND object_kind='signal' AND tool='createSignal' ORDER BY rowid").all(ctx.ownerId,ctx.actor.runId) as Row[];
+ for(const event of events)for(const source of parse<Row>(event.after_json,{}).sources??[]){
+  if(seen.has(source.id))continue;seen.add(source.id);
+  // Source identity survives a merge; its first capture must not move with the survivor or a repeat.
+  if(source.created_by===actorString(ctx.actor)&&event.dump_id===dumpId)current.add(source.id);
+ }
+ return current;
+}
+function reuseCapturedSource(ctx:ToolContext,i:Row,urls:string[]):Row|undefined {
+ if(!urls.length)return;
+ const sources=ctx.db.prepare(`SELECT s.id,s.gist,ss.id source_id FROM signals s JOIN signal_sources ss ON ss.signal_id=s.id WHERE ss.url_normalised IN (${urls.map(()=>'?').join(',')}) AND s.owner_id=? AND s.discarded_at IS NULL AND s.deleted_by_dump_id IS NULL AND s.merged_into_id IS NULL ORDER BY s.created_at,s.id`).all(...urls,ctx.ownerId) as Row[];
+ const matches=[...new Map(sources.map(source=>[source.id,source])).values()];
+ if(!matches.length)return;
+ const sameGist=matches.find(signal=>normalisedGist(signal.gist)===normalisedGist(i.gist));
+ const currentSources=currentCaptureSources(ctx,i.dumpId);
+ const previouslyCaptured=sources.some(source=>!currentSources.has(source.source_id));
+ if(!previouslyCaptured&&!sameGist)return;
+ for(const signal of previouslyCaptured?matches:[sameGist!])attachOrigin(ctx,signal.id,i.dumpId);
+ return result(ctx,'signal',getObject(ctx.db,'signal',(sameGist??matches[0]).id,ctx.ownerId)!);
+}
 export const signalTools={
  createSignal:define(z.object({dumpId:z.string(),gist:z.string().trim().min(1),note:z.string().default(''),sources:z.array(SourceSchema).min(1).default([{ownObservation:true}]),fetched:z.unknown().optional(),embedding:z.array(z.number()).optional(),key:z.string().optional(),idempotencyKey:z.string().optional()}),'agent',(ctx,i)=>{
   ctx.dumpId=i.dumpId;const dump=row(ctx,'dump',i.dumpId);if(dump.deleted_at)throw new Error('Cannot process a deleted dump');
-  for(const source of i.sources){if(source.url&&ctx.db.prepare('SELECT 1 FROM tombstones WHERE url_normalised=? AND owner_id=?').get(normaliseUrl(source.url),ctx.ownerId))throw new Error('Signal was previously discarded (tombstone)');}
-  for(const source of i.sources){if(!source.url)continue;const url=normaliseUrl(source.url);
+  const urls=sourceUrls(i);
+  for(const url of urls){
    if(ctx.db.prepare('SELECT 1 FROM tombstones WHERE url_normalised=? AND owner_id=?').get(url,ctx.ownerId))throw new Error('Signal was previously discarded (tombstone)');
-   const existing=ctx.db.prepare('SELECT s.id FROM signals s JOIN signal_sources ss ON ss.signal_id=s.id WHERE ss.url_normalised=? AND s.owner_id=? AND s.discarded_at IS NULL AND s.deleted_by_dump_id IS NULL AND s.merged_into_id IS NULL').get(url,ctx.ownerId) as Row|undefined;
-   if(existing){attachOrigin(ctx,existing.id,i.dumpId);return result(ctx,'signal',getObject(ctx.db,'signal',existing.id,ctx.ownerId)!);}
   }
+  const existing=reuseCapturedSource(ctx,i,urls);if(existing)return existing;
   if(ctx.db.prepare('SELECT 1 FROM tombstones WHERE lower(gist)=? AND owner_id=?').get(i.gist.toLowerCase(),ctx.ownerId))throw new Error('Signal was previously discarded (tombstone)');
   const signal=insert(ctx,'signals',{gist:i.gist,note:i.note,fetched_json:i.fetched==null?null:JSON.stringify(i.fetched),embedding:i.embedding?Buffer.from(new Float32Array(i.embedding).buffer):null});
   for(const [position,source] of i.sources.entries())insert(ctx,'signal_sources',{signal_id:signal.id,url:source.url,url_normalised:source.url?normaliseUrl(source.url):null,author:source.author,published_at:source.publishedAt,title:source.title,own_observation:source.ownObservation?1:source.url?0:1,position});

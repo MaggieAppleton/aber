@@ -8,8 +8,9 @@ import type { ProviderName } from '../server/src/agents/types.js';
 import { dumpFixtures, evidenceFixtures, tripwireFixtures } from './fixtures/synthetic.js';
 import { observeContext, traceDiagnostics, type ModelContext } from './diagnostics.js';
 import { novelEvidenceFixtures, novelEvidenceProvenance } from './fixtures/novel-evidence-v1.js';
+import { processingCases } from './processing.js';
 
-export type EvalCase = { id: string; job: string; fixture?: { version: string; text: string; expected: { theoryId: string; stance: string }; provenance: string }; run: (provider: ProviderName) => Promise<EvalResult> };
+export type EvalCase = { id: string; job: string; fixture?: { version: string; text: string; expected: Record<string, unknown>; provenance: string; [key: string]: unknown }; run: (provider: ProviderName) => Promise<EvalResult> };
 export interface EvalResult { id: string; job: string; provider: ProviderName; pass: boolean; checks: Record<string, boolean>; inputTokens: number; outputTokens: number; costUsd: number; error?: string; diagnostics: ReturnType<typeof traceDiagnostics> & ModelContext & Record<string, unknown> }
 const person = { kind: 'person' as const, id: 'maggie' };
 
@@ -67,5 +68,6 @@ export function cases(): EvalCase[] {
       const hits = db.prepare("SELECT payload_json FROM suggestions WHERE kind='challenge' AND target_id='t3'").all() as { payload_json: string }[];
       return { hitDecision: hits.some(item => JSON.parse(item.payload_json).signal_id === observation.id) === fixture.hit };
     }) })),
+    ...processingCases(),
   ];
 }

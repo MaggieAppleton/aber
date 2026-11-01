@@ -59,13 +59,18 @@ function openRun(db: AgentDatabase, spec: AgentSpec, input: unknown, ctx: RunCon
     .run(runId, ctx.jobId ?? null, spec.job, ctx.attempt ?? 1, provider, modelId(model), spec.promptVersion, 'running', now().toISOString(), '[]', 0);
   let inputTokens = 0, outputTokens = 0, cachedInputTokens = 0;
   const trace: unknown[] = [];
+  let terminal: { status: 'done' | 'failed'; error: string | null; finishedAt: string } | undefined;
   const snapshot = () => ({ runId, inputTokens, outputTokens, costUsd: tokenCost(spec.job, inputTokens, outputTokens, provider), trace });
-  const persist = (status: string, error: string | null = null) => {
+  const persist = (status: 'running' | 'done' | 'failed', error: string | null = null) => {
+    const nextTerminal = terminal ?? (status === 'running' ? undefined : { status, error, finishedAt: now().toISOString() });
     const stats = snapshot();
+    // Later SDK steps may report usage after failure; keep its first terminal state.
     db.prepare('UPDATE agent_runs SET input_tokens=?,output_tokens=?,cached_input_tokens=?,cost_usd=?,status=?,error=?,trace_json=?,finished_at=? WHERE id=?')
-      .run(inputTokens, outputTokens, cachedInputTokens, stats.costUsd, status, error, JSON.stringify(trace), status === 'running' ? null : now().toISOString(), runId);
+      .run(inputTokens, outputTokens, cachedInputTokens, stats.costUsd, nextTerminal?.status ?? status, nextTerminal?.error ?? error, JSON.stringify(trace), nextTerminal?.finishedAt ?? null, runId);
+    terminal = nextTerminal;
   };
   const fail = (error: unknown) => {
+    if (terminal) return;
     const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
     trace.push({ type: 'error', message });
     persist('failed', message);
@@ -84,7 +89,7 @@ function openRun(db: AgentDatabase, spec: AgentSpec, input: unknown, ctx: RunCon
   };
   const prepare = (messages: unknown) => { assertInputLimit(spec.system, messages, tools, spec.maxInputTokens); assertBudget(db, now()); };
   try { prepare(input); } catch (error) { fail(error); throw error; }
-  return { runId, model, tools, step, prepare, snapshot, persist, fail, now };
+  return { runId, model, tools, step, prepare, snapshot, persist, fail, now, isRunning: () => !terminal };
 }
 
 export async function runAgent(db: AgentDatabase, spec: AgentSpec, input: AgentInput, ctx: RunContext = {}): Promise<RunResult> {
@@ -112,7 +117,6 @@ export async function streamAgent(db: AgentDatabase, spec: AgentSpec, input: Cha
       toolCallConcurrency: 1,
       prepareStep: ({ messages: current }) => { const projected = projectToolMessages(current); run.prepare(projected); return { messages: projected }; },
       onStepFinish: run.step,
-      onFinish: () => { run.persist('done'); },
       onError: ({ error }) => { run.fail(error); },
       onAbort: () => { run.fail(new Error('Chat stream aborted')); },
     });
@@ -120,7 +124,18 @@ export async function streamAgent(db: AgentDatabase, spec: AgentSpec, input: Cha
       originalMessages: input.messages,
       generateMessageId: ulid,
       sendReasoning: false,
-      onFinish: async ({ responseMessage }) => { await ctx.onReply(responseMessage.parts, run.runId); },
+      onFinish: async ({ responseMessage, isAborted, isCancelled, outcome }) => {
+        if (!run.isRunning()) return;
+        if (isAborted || isCancelled || ctx.signal?.aborted || outcome.status !== 'completed') {
+          run.fail(outcome.status === 'failed' ? outcome.error ?? new Error('Chat stream failed') : new Error('Chat stream aborted before completion'));
+          return;
+        }
+        try {
+          await ctx.onReply(responseMessage.parts, run.runId);
+          if (ctx.signal?.aborted) run.fail(new Error('Chat stream aborted'));
+          else run.persist('done');
+        } catch (error) { run.fail(error); throw error; }
+      },
       onError: error => error instanceof Error ? error.message : 'Agent request failed',
     });
   } catch (error) { run.fail(error); throw error; }
