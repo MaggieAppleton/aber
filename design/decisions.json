@@ -36,5 +36,138 @@
   "pill-add-icon": {
     "choice": "crosshair",
     "updatedAt": "2026-10-31T23:51:02.522Z"
+  },
+  "timeline-direction": {
+    "choice": "field",
+    "updatedAt": "2026-11-01T04:55:25.394Z"
+  },
+  "tripwire": {
+    "choice": "C",
+    "updatedAt": "2026-11-01T05:11:19.473Z"
+  },
+  "icon-signal": {
+    "choice": "Pulse",
+    "updatedAt": "2026-11-01T05:43:57.915Z"
+  },
+  "icon-theme": {
+    "choice": "Compass",
+    "updatedAt": "2026-11-01T05:42:44.679Z"
+  },
+  "icon-theory": {
+    "choice": "Target",
+    "updatedAt": "2026-11-01T05:44:31.446Z"
+  },
+  "icon-prototype": {
+    "choice": "PencilRuler",
+    "updatedAt": "2026-11-01T05:44:48.856Z"
+  },
+  "d-main-view": {
+    "choice": "sections",
+    "updatedAt": "2026-11-01T05:52:59.601Z",
+    "note": "Theme section is the main view, but I also want to keep columns, atlas, and timeline. you should be able to switch between these with a small view UI in the bottom left corner like in the jig"
+  },
+  "d-columns-fold": {
+    "choice": "rails",
+    "updatedAt": "2026-11-01T05:53:19.650Z"
+  },
+  "d-atlas-structure": {
+    "choice": "circles",
+    "updatedAt": "2026-11-01T05:53:43.657Z"
+  },
+  "d-atlas-signals": {
+    "choice": "halo-zoom",
+    "updatedAt": "2026-11-01T05:54:03.170Z"
+  },
+  "d-river": {
+    "choice": "drop",
+    "updatedAt": "2026-11-01T05:54:17.920Z"
+  },
+  "d-spark": {
+    "choice": "A",
+    "updatedAt": "2026-11-01T05:54:39.282Z"
+  },
+  "d-theme-icon": {
+    "choice": "binoculars",
+    "updatedAt": "2026-11-01T05:54:43.490Z"
+  },
+  "d-pill-send-attach": {
+    "choice": "keep",
+    "updatedAt": "2026-11-01T05:54:59.057Z"
+  },
+  "d-briefing": {
+    "choice": "lens",
+    "updatedAt": "2026-11-01T05:55:07.012Z"
+  },
+  "d-dump-log": {
+    "choice": "minimal",
+    "updatedAt": "2026-11-01T05:55:17.528Z"
+  },
+  "d-deck-document": {
+    "choice": "defer",
+    "updatedAt": "2026-11-01T05:55:22.816Z"
+  },
+  "d-phone": {
+    "choice": "shortcut",
+    "updatedAt": "2026-11-01T05:55:37.053Z"
+  },
+  "d-half-vs-compact": {
+    "choice": "half",
+    "updatedAt": "2026-11-01T05:55:49.365Z"
+  },
+  "d-chat-as-dump": {
+    "choice": "yes",
+    "updatedAt": "2026-11-01T05:56:00.189Z"
+  },
+  "d-draft-expiry": {
+    "choice": "stack",
+    "updatedAt": "2026-11-01T05:56:04.782Z"
+  },
+  "d-near-dup": {
+    "choice": "auto",
+    "updatedAt": "2026-11-01T05:56:27.973Z"
+  },
+  "d-sources": {
+    "choice": "several",
+    "updatedAt": "2026-11-01T05:56:32.828Z"
+  },
+  "d-tombstones": {
+    "choice": "keep",
+    "updatedAt": "2026-11-01T05:56:41.769Z"
+  },
+  "d-retire-reasons": {
+    "choice": "complete",
+    "updatedAt": "2026-11-01T05:56:49.031Z"
+  },
+  "d-pin": {
+    "choice": "drop",
+    "updatedAt": "2026-11-01T05:57:00.206Z"
+  },
+  "d-stack": {
+    "choice": "react",
+    "updatedAt": "2026-11-01T05:57:04.711Z"
+  },
+  "d-server": {
+    "choice": "hono",
+    "updatedAt": "2026-11-01T05:57:07.753Z"
+  },
+  "d-agents": {
+    "note": "Undecided. Maybe Pi? Maybe Vercel agent SDK? We need to have a proper chat about this. I want to use both OpenAI and Claude models.",
+    "updatedAt": "2026-11-01T05:57:48.796Z"
+  },
+  "d-transcription": {
+    "choice": "server",
+    "updatedAt": "2026-11-01T05:57:53.868Z"
+  },
+  "d-hosting": {
+    "choice": "coolify",
+    "updatedAt": "2026-11-01T05:58:08.456Z"
+  },
+  "d-media": {
+    "choice": "disk",
+    "updatedAt": "2026-11-01T05:58:15.044Z"
+  },
+  "d-v1-scope": {
+    "choice": "core",
+    "updatedAt": "2026-11-01T05:58:18.173Z"
   }
 }
