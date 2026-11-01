@@ -370,6 +370,30 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .modal .row-end { display: flex; justify-content: flex-end; gap: 6px; margin-top: 6px; }
 .cur { position: absolute; z-index: 120; pointer-events: none; filter: drop-shadow(0 1px 1px rgb(0 0 0 / 22%)); }
 
+
+/* Signal-in-a-suggestion alternates */
+.evx { grid-column: 2; min-width: 0; font-size: var(--t-12); color: var(--ink-2); }
+.evx .src { color: var(--ink-3); margin-left: 8px; white-space: nowrap; }
+.evx svg { color: var(--ink-3); }
+.evx .stance { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-3); font-size: var(--t-11); font-weight: 500; }
+.evx.a { display: grid; gap: 4px; padding: 7px 10px 8px; border-radius: var(--r-2); outline: 1px dashed var(--draft-line); outline-offset: -1px; background: var(--draft-fill); }
+.evx.a .sigline { display: flex; gap: 8px; align-items: flex-start; color: var(--ink); }
+.evx.a .sigline svg { margin-top: 2px; }
+.evx.b { display: grid; gap: 5px; }
+.evx .quote, .evx.d { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: var(--r-2); }
+.evx .quote { background: var(--sunk); }
+.evx .well { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); box-shadow: 0 0 0 0.5px rgb(var(--shc) / 10%); flex: none; }
+.evx .qt { display: grid; gap: 1px; min-width: 0; color: var(--ink); }
+.evx .qt .src { margin-left: 0; }
+.evx.c { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.evx.c .stance { font-size: var(--t-12); font-weight: 400; color: var(--ink-2); }
+.evx.c .sigchip { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 9px 0 7px; border-radius: var(--r-pill); outline: 1px dashed var(--draft-line); outline-offset: -1px; background: var(--draft-fill); color: var(--ink); max-width: 100%; }
+.evx.c .sigchip span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.evx.c .src { margin-left: 2px; }
+.evx.d { background: var(--draft-fill); outline: 1px dashed var(--draft-line); outline-offset: -1px; }
+.evx.d .well { background: var(--sunk); box-shadow: none; }
+.evx.d .tag { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 7px; border-radius: var(--r-pill); background: var(--sunk); color: var(--ink-2); font-size: var(--t-11); font-weight: 500; white-space: nowrap; }
+
 /* ---------- Boards ---------- */
 .board { background: var(--ground); color: var(--ink); font-family: var(--font); border-radius: 16px; box-shadow: 0 0 0 1px var(--pg-line); padding: 20px; min-width: 0; font-size: 13px; }
 .board svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
@@ -581,6 +605,58 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
         </div>
       </div>
       <figcaption><b>Keyboard focus</b>J and K move a 2 px jade ring between items. Focus is the only place the accent rings anything.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:620px;height:420px">
+          <div class="w-brief">
+            <div class="glabel">Suggestions <span class="num">3</span></div>
+            <div class="bitem"><svg class="i s glyph"><use href="#i-theory"/></svg><span class="t">Frontier intelligence stays scarce and expensive</span><span class="evx a"><span class="stance"><svg class="i s"><use href="#i-up"/></svg>Supports</span><span class="sigline"><svg class="i s"><use href="#i-pulse"/></svg><span>Data-centre power contracts are booked years ahead<span class="src">ft.com</span></span></span></span><span class="acts"><span class="act btn ghost sm">Accept</span><span class="act ib" data-x style="width:26px;height:26px"><svg class="i"><use href="#i-x"/></svg></span></span></div>
+            <div class="bitem"><svg class="i s glyph"><use href="#i-theory"/></svg><span class="t">Agents keep context across months, not sessions</span><span class="evx a"><span class="stance"><svg class="i s"><use href="#i-down"/></svg>Undermines</span><span class="sigline"><svg class="i s"><use href="#i-pulse"/></svg><span>Memory feature withdrawn after privacy complaints<span class="src">theverge.com</span></span></span></span><span class="acts"><span class="act btn ghost sm">Accept</span><span class="act ib" data-x style="width:26px;height:26px"><svg class="i"><use href="#i-x"/></svg></span></span></div>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>Signal option A · labelled row</b>The stance is a small label above. The signal sits on one line with its pulse icon, inside the dashed "not yet mine" outline.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:620px;height:420px">
+          <div class="w-brief">
+            <div class="glabel">Suggestions <span class="num">3</span></div>
+            <div class="bitem"><svg class="i s glyph"><use href="#i-theory"/></svg><span class="t">Frontier intelligence stays scarce and expensive</span><span class="evx b"><span class="stance"><svg class="i s"><use href="#i-up"/></svg>Supports</span><span class="quote"><span class="well"><svg class="i s"><use href="#i-pulse"/></svg></span><span class="qt"><span>Data-centre power contracts are booked years ahead</span><span class="src">ft.com</span></span></span></span><span class="acts"><span class="act btn ghost sm">Accept</span><span class="act ib" data-x style="width:26px;height:26px"><svg class="i"><use href="#i-x"/></svg></span></span></div>
+            <div class="bitem"><svg class="i s glyph"><use href="#i-theory"/></svg><span class="t">Agents keep context across months, not sessions</span><span class="evx b"><span class="stance"><svg class="i s"><use href="#i-down"/></svg>Undermines</span><span class="quote"><span class="well"><svg class="i s"><use href="#i-pulse"/></svg></span><span class="qt"><span>Memory feature withdrawn after privacy complaints</span><span class="src">theverge.com</span></span></span></span><span class="acts"><span class="act btn ghost sm">Accept</span><span class="act ib" data-x style="width:26px;height:26px"><svg class="i"><use href="#i-x"/></svg></span></span></div>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>Signal option B · quoted signal</b>A sunk, borderless block with the pulse icon in a white well, like a quoted source. The stance is a label above it. Dashes only on the item.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:620px;height:420px">
+          <div class="w-brief">
+            <div class="glabel">Suggestions <span class="num">3</span></div>
+            <div class="bitem"><svg class="i s glyph"><use href="#i-theory"/></svg><span class="t">Frontier intelligence stays scarce and expensive</span><span class="evx c"><span class="stance"><svg class="i s"><use href="#i-up"/></svg>Supports</span><span class="sigchip"><svg class="i s"><use href="#i-pulse"/></svg><span>Data-centre power contracts are booked years ahead</span></span><span class="src">ft.com</span></span><span class="acts"><span class="act btn ghost sm">Accept</span><span class="act ib" data-x style="width:26px;height:26px"><svg class="i"><use href="#i-x"/></svg></span></span></div>
+            <div class="bitem"><svg class="i s glyph"><use href="#i-theory"/></svg><span class="t">Agents keep context across months, not sessions</span><span class="evx c"><span class="stance"><svg class="i s"><use href="#i-down"/></svg>Undermines</span><span class="sigchip"><svg class="i s"><use href="#i-pulse"/></svg><span>Memory feature withdrawn after privacy complaints</span></span><span class="src">theverge.com</span></span><span class="acts"><span class="act btn ghost sm">Accept</span><span class="act ib" data-x style="width:26px;height:26px"><svg class="i"><use href="#i-x"/></svg></span></span></div>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>Signal option C · inline chip</b>Reads as a sentence: Supports, then the signal as a dashed chip with its icon, then its source.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:620px;height:420px">
+          <div class="w-brief">
+            <div class="glabel">Suggestions <span class="num">3</span></div>
+            <div class="bitem"><svg class="i s glyph"><use href="#i-theory"/></svg><span class="t">Frontier intelligence stays scarce and expensive</span><span class="evx d"><span class="well"><svg class="i s"><use href="#i-pulse"/></svg></span><span class="qt"><span>Data-centre power contracts are booked years ahead</span><span class="src">ft.com</span></span><span class="tag"><svg class="i s"><use href="#i-up"/></svg>Supports</span></span><span class="acts"><span class="act btn ghost sm">Accept</span><span class="act ib" data-x style="width:26px;height:26px"><svg class="i"><use href="#i-x"/></svg></span></span></div>
+            <div class="bitem"><svg class="i s glyph"><use href="#i-theory"/></svg><span class="t">Agents keep context across months, not sessions</span><span class="evx d"><span class="well"><svg class="i s"><use href="#i-pulse"/></svg></span><span class="qt"><span>Memory feature withdrawn after privacy complaints</span><span class="src">theverge.com</span></span><span class="tag"><svg class="i s"><use href="#i-down"/></svg>Undermines</span></span><span class="acts"><span class="act btn ghost sm">Accept</span><span class="act ib" data-x style="width:26px;height:26px"><svg class="i"><use href="#i-x"/></svg></span></span></div>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>Signal option D · mini signal card</b>The signal as a small card of its own: icon well, gist and source, with the stance as a tag on its right. Dashed because it is proposed.</figcaption>
     </figure>
 
     <figure class="shot">
