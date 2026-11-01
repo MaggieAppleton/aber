@@ -1,0 +1,984 @@
+/* Dump-or-ask pill study: the pill, its closed states and how it opens (B2: a column growing up from the bottom-right pill).
+   One state hook (useDump) drives every frame, so live frames and scripted demos share the same component. */
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
+import { AnimatePresence, motion, useIsPresent, useReducedMotion, type Transition } from "motion/react";
+import { SIGNALS, THEMES, theory } from "./data";
+import { Conf, Icon, Mark, TheoryCard, type IconName, type IconWeight } from "./atoms";
+import "./pill-study.css";
+
+/* ── Icons: the shared Phosphor set (see atoms). ── */
+export type { IconName };
+export const I = ({ n, size = 16, weight }: { n: IconName; size?: number; weight?: IconWeight }) => <Icon name={n} size={size} weight={weight} />;
+/** Stop sits inside the live recording control, so it is the active (fill) weight. */
+const StopGlyph = ({ size = 12 }: { size?: number }) => <Icon name="stop" size={size} weight="fill" />;
+
+export const IconBtn = ({ n, label, onClick, target, className, size = 28, pressed }: { n: IconName; label: string; onClick?: () => void; target?: string; className?: string; size?: number; pressed?: boolean }) => (
+  <button type="button" className={`ps-ib ${className ?? ""}`} style={{ width: size, height: size }} aria-label={label} title={label} onClick={onClick} data-target={target} aria-pressed={pressed}>
+    <I n={n} weight={pressed ? "fill" : "regular"} />
+  </button>
+);
+
+/** Swaps an icon with the scale + blur cross-fade (one slot, both icons share it). */
+export const SwapIcon = ({ k, children }: { k: string; children: ReactNode }) => (
+  <span className="ps-swap">
+    <AnimatePresence initial={false} mode="popLayout">
+      <motion.span key={k} className="ps-swap-i" initial={{ opacity: 0, scale: 0.25, filter: "blur(4px)" }} animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }} exit={{ opacity: 0, scale: 0.25, filter: "blur(4px)" }} transition={{ type: "spring", duration: 0.3, bounce: 0 }}>
+        {children}
+      </motion.span>
+    </AnimatePresence>
+  </span>
+);
+
+/* ── Favicons: real marks where we have them, a globe otherwise ── */
+export function Favicon({ host, size = 14 }: { host: string; size?: number }) {
+  if (host === "x.com") return (
+    <span className="ps-fav" data-host="x" style={{ width: size, height: size }} aria-hidden>
+      <svg viewBox="0 0 24 24" width={size * 0.62} height={size * 0.62}><path fill="#fff" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+    </span>
+  );
+  if (host === "news.ycombinator.com") return <span className="ps-fav" data-host="hn" style={{ width: size, height: size, fontSize: size * 0.72 }} aria-hidden>Y</span>;
+  if (host.endsWith(".png")) return <span className="ps-fav" data-host="img" style={{ width: size, height: size }} aria-hidden />;
+  return <span className="ps-fav" style={{ width: size, height: size }} aria-hidden><I n="globe" size={size} /></span>;
+}
+
+export const TITLES: Record<string, string> = {
+  "x.com": "Small models are eating the routine work",
+  "news.ycombinator.com": "Open-weight model matches last year's frontier",
+  "arxiv.org": "Inference cost falls 10x a year for fixed quality",
+};
+export const hostOf = (url: string) => { try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return url; } };
+
+/* ── State ── */
+export type Att = { id: string; kind: "link" | "image"; host: string; title?: string; by?: string };
+export type Ctx = { id: string; label: string; kind: "screen" | "theory" | "signal"; region: string };
+export type Draft = { claim: string; kind: "theory" | "revision"; state: "pending" | "accepted" | "discarded"; joins?: string; ev?: [number, number] };
+export type Filed = { theme: string; n: number; gists?: string[] };
+export type Msg =
+  | { id: string; who: "me"; text: string; atts: Att[]; voice?: number; time: string }
+  | { id: string; who: "agent"; thinking: boolean; filed: Filed[]; draft?: Draft; say?: string };
+export type ToastPart = { icon: IconName; n: number; one: string; many: string };
+export type ToastT = { id: string; parts: ToastPart[] };
+export type DumpState = {
+  open: boolean; text: string; atts: Att[]; ctx: Ctx[]; thread: Msg[];
+  rec: number | null; busy: boolean; incoming: Att | null; toast: ToastT | null;
+  picking: boolean; drag: Att | null; hot: string | null; made: { signals: number; theories: number };
+};
+
+let uid = 0;
+const nid = (p: string) => `${p}${++uid}`;
+export const SCREEN_CTX: Ctx = { id: "c-screen", label: "Cost of intelligence", kind: "screen", region: "main" };
+export const PRIOR: Msg[] = [
+  { id: "prior-me", who: "me", text: "Price drops might only reach routine work. Frontier reasoning stays expensive.", time: "08:12",
+    atts: [{ id: "prior-a0", kind: "link", host: "x.com", title: TITLES["x.com"] }, { id: "prior-a1", kind: "link", host: "news.ycombinator.com", title: TITLES["news.ycombinator.com"] }] },
+  { id: "prior-agent", who: "agent", thinking: false, filed: [{ theme: "Cost of intelligence", n: 2, gists: ["Lab cuts API prices again for its small model tier", "Open-weight model matches last year's frontier on coding"] }],
+    draft: { claim: "Tokens become nearly free for routine work, not for frontier reasoning", kind: "revision", state: "pending", joins: "Tokens become nearly free", ev: [5, 2] } },
+];
+const BASE: DumpState = {
+  open: false, text: "", atts: [], ctx: [SCREEN_CTX], thread: [], rec: null, busy: false, incoming: null, toast: null,
+  picking: false, drag: null, hot: null, made: { signals: 0, theories: 0 },
+};
+const ASK_REPLY = "Two things would: small-model prices flattening across two releases, or routine work still needing frontier models a year from now.";
+const VOICE_WORDS = "So the thing I keep noticing is that every routine task I hand to an agent now runs on a small model and nobody is metering it anymore".split(" ");
+export const nowTime = () => new Date().toTimeString().slice(0, 5);
+
+export type DumpApi = ReturnType<typeof useDump>["api"];
+
+export function useDump(init?: Partial<DumpState>) {
+  const [s, setS] = useState<DumpState>(() => ({ ...BASE, ...init }));
+  const ref = useRef(s);
+  ref.current = s;
+  const timers = useRef<number[]>([]);
+  const toastHold = useRef(false);
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  const api = useMemo(() => {
+    const later = (ms: number, f: () => void) => { timers.current.push(window.setTimeout(f, ms)); };
+    const set = (p: Partial<DumpState> | ((s: DumpState) => Partial<DumpState>)) =>
+      setS(prev => ({ ...prev, ...(typeof p === "function" ? p(prev) : p) }));
+    const patchMsg = (id: string, f: (m: Msg) => Msg) => set(p => ({ thread: p.thread.map(m => (m.id === id ? f(m) : m)) }));
+    const hideToastLater = (id: string, ms = 5000) => later(ms, () => {
+      if (toastHold.current) return hideToastLater(id, 1500);
+      set(p => (p.toast?.id === id ? { toast: null } : {}));
+    });
+    const showToast = (parts: ToastPart[]) => {
+      const id = nid("t");
+      set({ toast: { id, parts } });
+      hideToastLater(id);
+    };
+    const reply = (agentId: string, ask: boolean, links: number, voice: boolean) => later(1200, () => {
+      if (ask) return patchMsg(agentId, () => ({ id: agentId, who: "agent", thinking: false, filed: [], say: ASK_REPLY }));
+      const n = Math.max(1, links + (voice ? 2 : 0));
+      const gists = voice ? ["Routine agent work now runs on small models", "Nobody meters routine agent work anymore"] : ["Small models are eating the routine work"];
+      patchMsg(agentId, () => ({ id: agentId, who: "agent", thinking: false,
+        filed: [{ theme: "Cost of intelligence", n, gists: gists.slice(0, n) }, ...(voice ? [{ theme: "Personal software", n: 1, gists: ["Agents quietly run household chores"] }] : [])],
+        draft: { claim: "Local models absorb most everyday agent work", kind: "theory", state: "pending", joins: "Cost of intelligence", ev: [3, 0] } }));
+      set(p => ({ made: { ...p.made, signals: p.made.signals + n + (voice ? 1 : 0) } }));
+    });
+    const api = {
+      reset: (st?: Partial<DumpState>) => { timers.current.forEach(clearTimeout); timers.current = []; setS({ ...BASE, ...st }); },
+      open: () => set({ open: true, toast: null, picking: false, hot: null, made: { signals: 0, theories: 0 } }),
+      close: () => {
+        const { made, open } = ref.current;
+        if (!open) return;
+        set({ open: false, picking: false, hot: null });
+        if (made.signals + made.theories > 0) later(380, () => showToast([
+          ...(made.signals ? [{ icon: "signal" as const, n: made.signals, one: "signal", many: "signals" }] : []),
+          ...(made.theories ? [{ icon: "theory" as const, n: made.theories, one: "theory", many: "theories" }] : []),
+        ]));
+      },
+      setText: (text: string) => set({ text }),
+      addLink: (url: string) => {
+        const host = hostOf(url);
+        const id = nid("a");
+        set(p => ({ atts: [...p.atts, { id, kind: "link", host }] }));
+        later(700, () => set(p => ({ atts: p.atts.map(a => (a.id === id ? { ...a, title: TITLES[host] ?? url.replace(/^https?:\/\//, "") } : a)) })));
+      },
+      addImage: () => set(p => ({ atts: [...p.atts, { id: nid("a"), kind: "image", host: `screenshot-${p.atts.length + 1}.png`, title: "Screenshot" }] })),
+      removeAtt: (id: string) => set(p => ({ atts: p.atts.filter(a => a.id !== id) })),
+      addCtx: (c: Ctx) => set(p => ({ ctx: p.ctx.some(x => x.id === c.id) ? p.ctx : [...p.ctx, c], picking: false, hot: null })),
+      removeCtx: (id: string) => set(p => ({ ctx: p.ctx.filter(c => c.id !== id), hot: null })),
+      setPicking: (picking: boolean) => set({ picking, hot: null }),
+      setHot: (hot: string | null) => set({ hot }),
+      send: () => {
+        const { text, atts } = ref.current;
+        if (!text.trim() && atts.length === 0) return;
+        const ask = text.includes("?");
+        const meId = nid("m"), agentId = nid("m");
+        set(p => ({ text: "", atts: [], thread: [...p.thread, { id: meId, who: "me", text: text.trim(), atts, time: nowTime() }, { id: agentId, who: "agent", thinking: true, filed: [] }] }));
+        reply(agentId, ask, atts.filter(a => a.kind === "link").length, false);
+      },
+      decide: (id: string, state: "accepted" | "discarded") => {
+        patchMsg(id, m => (m.who === "agent" && m.draft ? { ...m, draft: { ...m.draft, state } } : m));
+        if (state === "accepted") set(p => ({ made: { ...p.made, theories: p.made.theories + 1 } }));
+      },
+      decideLast: (state: "accepted" | "discarded") => {
+        const last = [...ref.current.thread].reverse().find(m => m.who === "agent");
+        if (last) api.decide(last.id, state);
+      },
+      startRec: () => set({ rec: Date.now(), toast: null }),
+      cancelRec: () => set({ rec: null }),
+      stopRec: () => {
+        const { rec, open } = ref.current;
+        if (rec == null) return;
+        const secs = Math.max(3, Math.round((Date.now() - rec) / 1000));
+        if (open) {
+          const meId = nid("m"), agentId = nid("m");
+          set(p => ({ rec: null, thread: [...p.thread, { id: meId, who: "me", text: VOICE_WORDS.slice(0, 14).join(" ") + "…", atts: [], voice: secs, time: nowTime() }, { id: agentId, who: "agent", thinking: true, filed: [] }] }));
+          reply(agentId, false, 0, true);
+        } else {
+          set({ rec: null });
+          api.dumpDirect(null);
+        }
+      },
+      /** A dump that never opens the panel: dropped on the pill, or a voice note. */
+      dumpDirect: (att: Att | null) => {
+        set({ incoming: att, drag: null, toast: null });
+        later(att ? 460 : 260, () => set({ incoming: null, busy: true }));
+        later(2100, () => {
+          set({ busy: false });
+          showToast(att ? [{ icon: "signal", n: 1, one: "signal", many: "signals" }] : [{ icon: "signal", n: 3, one: "signal", many: "signals" }, { icon: "theory", n: 1, one: "draft", many: "drafts" }]);
+        });
+      },
+      /** Voice-first on the phone: stop opens the sheet with the note and the reply. */
+      stopRecInto: () => {
+        const { rec } = ref.current;
+        if (rec == null) return;
+        const secs = Math.max(3, Math.round((Date.now() - rec) / 1000));
+        const meId = nid("m"), agentId = nid("m");
+        set(p => ({ rec: null, open: true, made: { signals: 0, theories: 0 }, thread: [...p.thread, { id: meId, who: "me", text: VOICE_WORDS.slice(0, Math.min(VOICE_WORDS.length, 4 + secs * 3)).join(" "), atts: [], voice: secs, time: nowTime() }, { id: agentId, who: "agent", thinking: true, filed: [] }] }));
+        reply(agentId, false, 0, true);
+      },
+      setDrag: (drag: Att | null) => set({ drag }),
+      undo: () => set({ toast: null }),
+      dismissToast: () => set({ toast: null }),
+      holdToast: (h: boolean) => { toastHold.current = h; },
+      showToast,
+      set,
+    };
+    return api;
+  }, []);
+  return { s, api };
+}
+
+/* ── Live bits ── */
+export function useNow(on: boolean, ms = 250) {
+  const [, tick] = useState(0);
+  useEffect(() => {
+    if (!on) return;
+    const t = window.setInterval(() => tick(x => x + 1), ms);
+    return () => clearInterval(t);
+  }, [on, ms]);
+  return Date.now();
+}
+export const mmss = (secs: number) => `${Math.floor(secs / 60)}:${String(Math.floor(secs % 60)).padStart(2, "0")}`;
+
+/** A live, scrolling waveform: new samples enter at the right. */
+export function LiveWave({ bars = 28, height = 18, live = true, seed = 1 }: { bars?: number; height?: number; live?: boolean; seed?: number }) {
+  const reduced = useReducedMotion();
+  const [levels, setLevels] = useState(() => Array.from({ length: bars }, (_, i) => 0.25 + 0.6 * Math.abs(Math.sin(i * 1.7 + seed))));
+  useEffect(() => {
+    if (!live || reduced) return;
+    let t = 0;
+    const id = window.setInterval(() => {
+      t += 1;
+      const speech = 0.5 + 0.5 * Math.sin(t / 5);
+      setLevels(l => [...l.slice(1), Math.min(1, 0.12 + speech * (0.3 + Math.random() * 0.7))]);
+    }, 80);
+    return () => clearInterval(id);
+  }, [live, reduced]);
+  return (
+    <span className="ps-wave" style={{ height }} aria-hidden>
+      {levels.map((v, i) => <i key={i} style={{ height: Math.max(3, v * height), opacity: 0.35 + 0.65 * (i / bars) }} />)}
+    </span>
+  );
+}
+
+/** A recorded note's waveform: deterministic peaks, the played part in ink. Scrubbable when onSeek is given. */
+export function NoteWave({ bars = 48, height = 22, at = 0, onSeek }: { bars?: number; height?: number; at?: number; onSeek?: (f: number) => void }) {
+  const peaks = useMemo(() => Array.from({ length: bars }, (_, i) => 0.2 + 0.8 * Math.abs(Math.sin(i * 0.9) * Math.cos(i * 0.31 + 1))), [bars]);
+  const ref = useRef<HTMLSpanElement>(null);
+  const seek = (e: React.PointerEvent) => {
+    const r = ref.current!.getBoundingClientRect();
+    onSeek?.(Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)));
+  };
+  return (
+    <span ref={ref} className="ps-note-wave" style={{ height }} data-scrub={onSeek ? "" : undefined}
+      onPointerDown={onSeek ? e => { (e.target as Element).setPointerCapture?.(e.pointerId); seek(e); } : undefined}
+      onPointerMove={onSeek ? e => { if (e.buttons) seek(e); } : undefined}>
+      {peaks.map((v, i) => <i key={i} data-on={i / bars < at ? "" : undefined} style={{ height: Math.max(3, v * height) }} />)}
+      {onSeek && <b className="ps-note-head" style={{ left: `${at * 100}%` }} />}
+    </span>
+  );
+}
+
+const Spinner = ({ size = 14 }: { size?: number }) => (
+  <svg className="ps-spin" width={size} height={size} viewBox="0 0 16 16" aria-hidden>
+    <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" strokeOpacity="0.18" strokeWidth="1.6" />
+    <path d="M8 2a6 6 0 0 1 6 6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+  </svg>
+);
+
+/* ── Chips ── */
+export function LinkChip({ a, onRemove, big }: { a: Att; onRemove?: () => void; big?: boolean }) {
+  if (a.kind === "image") return (
+    <span className="ps-thumb" data-big={big ? "" : undefined} title={a.host}>
+      <span className="ps-thumb-img" aria-hidden><i /><i /><i /></span>
+      {onRemove && <button type="button" className="ps-thumb-x" aria-label="Remove" title="Remove" onClick={onRemove}><I n="x" size={10} /></button>}
+    </span>
+  );
+  return (
+    <span className="ps-link" title={a.title ? `${a.title}\n${a.host}` : a.host}>
+      <Favicon host={a.host} />
+      <span className="ps-link-text">
+        <AnimatePresence initial={false} mode="popLayout">
+          {a.title
+            ? <motion.span key="t" className="ps-link-title" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}>{a.title}</motion.span>
+            : <motion.span key="h" className="ps-link-host" exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }}>{a.host}<i className="ps-shimmer" /></motion.span>}
+        </AnimatePresence>
+      </span>
+      {onRemove && <button type="button" className="ps-chip-x" aria-label="Remove link" title="Remove link" onClick={onRemove}><I n="x" size={12} /></button>}
+    </span>
+  );
+}
+
+export function CtxChip({ c, onRemove, onHot }: { c: Ctx; onRemove?: () => void; onHot?: (r: string | null) => void }) {
+  return (
+    <motion.span layout className="ps-ctx" title={`The agent sees ${c.label}`}
+      initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.15 } }}
+      transition={{ type: "spring", duration: 0.35, bounce: 0.15 }}
+      onPointerEnter={() => onHot?.(c.region)} onPointerLeave={() => onHot?.(null)}>
+      <I n={c.kind === "screen" ? "screen" : c.kind === "theory" ? "theory" : "signal"} size={13} />
+      <span className="ps-ctx-label">{c.label}</span>
+      {onRemove && <button type="button" className="ps-chip-x" aria-label={`Stop sharing ${c.label}`} title="Remove" onClick={onRemove}><I n="x" size={12} /></button>}
+    </motion.span>
+  );
+}
+
+/** What the agent sees: pills floating above the composer, lined up with the input's left edge. */
+export function CtxRow({ s, api }: { s: DumpState; api: DumpApi }) {
+  return (
+    <div className="ps-ctxrow">
+      <AnimatePresence mode="popLayout" initial={false}>
+        {s.ctx.map(c => <CtxChip key={c.id} c={c} onRemove={() => api.removeCtx(c.id)} onHot={api.setHot} />)}
+        <motion.button layout key="add" type="button" className="ps-add" data-on={s.picking ? "" : undefined} data-target="add-ctx"
+          aria-label={s.picking ? "Stop picking" : "Add something on screen"} title={s.picking ? "Stop picking (Esc)" : "Add something on screen"}
+          onClick={() => api.setPicking(!s.picking)} transition={{ type: "spring", duration: 0.35, bounce: 0.15 }}>
+          <SwapIcon k={s.picking ? "on" : "off"}><I n="crosshair" size={14} weight={s.picking ? "fill" : "regular"} /></SwapIcon>
+        </motion.button>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ── Conversation ── */
+/** Choices used inside the panel (open alternatives are shown on the jig's revisions section). */
+export const CHOSEN = { att: "fanX" as AttStyle };
+
+/* Link preview art: abstract, per site; never a fake logo. */
+export function Og({ host, w, h }: { host: string; w: number; h: number }) {
+  return (
+    <span className="ps-og" data-host={host === "x.com" ? "x" : host === "news.ycombinator.com" ? "hn" : "web"} style={{ width: w, height: h }} aria-hidden>
+      <i /><i /><i />
+    </span>
+  );
+}
+
+export type AttStyle = "cards" | "fan" | "fanX" | "tiles";
+/** Plausible per-site art: an X post shows its author, HN its orange tile, arXiv a first page, an article its hero with the favicon badged on. */
+export function SiteArt({ a, w, h }: { a: Att; w: number; h: number }) {
+  const site = a.host === "x.com" ? "x" : a.host === "news.ycombinator.com" ? "hn" : a.host === "arxiv.org" ? "arxiv" : "web";
+  return (
+    <span className="ps-art" data-site={site} style={{ width: w, height: h }} aria-hidden>
+      {site === "x" && <><span className="ps-art-avatar" /><i /><i /><i /></>}
+      {site === "hn" && <><b>Y</b><i /><i /></>}
+      {site === "arxiv" && <span className="ps-art-page"><b /><i /><i /><span className="ps-art-abs" /><span className="ps-art-cols"><i /><i /><i /><i /></span></span>}
+      {site === "web" && <><span className="ps-art-sky" /><span className="ps-art-hill" /><span className="ps-art-badge"><Favicon host={a.host} size={12} /></span></>}
+    </span>
+  );
+}
+function LinkCard({ a, small }: { a: Att; small?: boolean }) {
+  const x = a.host === "x.com";
+  return (
+    <span className="ps-lcard" data-small={small ? "" : undefined} title={a.title}>
+      <SiteArt a={a} w={small ? 40 : 44} h={small ? 40 : 44} />
+      <span className="ps-lcard-text">
+        <span className="ps-lcard-title">{a.title ?? a.host}</span>
+        <span className="ps-lcard-host"><Favicon host={a.host} size={12} /><span className="ps-ell">{x ? a.by ?? "@ml_notes" : a.host.replace(/^news\./, "")}</span></span>
+      </span>
+    </span>
+  );
+}
+function Tile({ a }: { a: Att }) {
+  return (
+    <span className="ps-tile" title={a.title}>
+      <SiteArt a={a} w={112} h={52} />
+      <span className="ps-tile-title">{a.title ?? a.host}</span>
+      <span className="ps-tile-host"><Favicon host={a.host} size={12} />{a.host === "x.com" ? a.by ?? "@ml_notes" : a.host.replace(/^news\./, "")}</span>
+    </span>
+  );
+}
+/** Attachments on a sent dump, in one of three styles. */
+export function AttGroup({ atts, voice, style }: { atts: Att[]; voice?: number; style: AttStyle }) {
+  const [open, setOpen] = useState(false);
+  const [room, setRoom] = useState(520);
+  const fanRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const p = fanRef.current?.parentElement;
+    if (!p) return;
+    const measure = () => { const cs = getComputedStyle(p); setRoom(p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)); };
+    const ro = new ResizeObserver(measure);
+    ro.observe(p); measure();
+    return () => ro.disconnect();
+  }, [style]);
+  if (style === "tiles") return (
+    <div className="ps-tiles">
+      {voice != null && <span className="ps-tile ps-tile-voice"><NoteWave bars={22} height={26} /><span className="ps-tile-title"><I n="mic" size={12} /><span className="ap-num">{mmss(voice)}</span></span></span>}
+      {atts.map(a => <Tile key={a.id} a={a} />)}
+    </div>
+  );
+  if (style === "cards") return <div className="ps-lcards">{atts.map(a => <LinkCard key={a.id} a={a} />)}</div>;
+  // fan: a small stack that spreads into a column (fan) or a row (fanX) on hover or focus
+  const n = atts.length, across = style === "fanX", cw = across ? 168 : 264;
+  // Across: cards sit side by side when there is room, and overlap when the column is narrow.
+  const step = across ? Math.max(48, Math.min(174, (room - cw) / Math.max(1, n - 1))) : 70;
+  const spring = (i: number) => ({ type: "spring" as const, stiffness: 200, damping: 26, delay: open ? i * 0.05 : (n - 1 - i) * 0.03 });
+  return (
+    <div ref={fanRef} className="ps-fan" data-across={across ? "" : undefined}
+      style={across ? { height: 64 + (open ? 0 : (n - 1) * 6), width: open ? cw + (n - 1) * step : cw } : { height: open ? n * step - 6 : 64 + (n - 1) * 6, width: cw }} tabIndex={n > 1 ? 0 : undefined}
+      aria-label={`${n} ${n === 1 ? "link" : "links"}`} onPointerEnter={() => setOpen(true)} onPointerLeave={() => setOpen(false)} onFocus={() => setOpen(true)} onBlur={() => setOpen(false)}>
+      {atts.map((a, i) => (
+        <motion.span key={a.id} className="ps-fan-card" style={{ zIndex: n - i }} initial={false}
+          animate={open ? { x: across ? -i * step : 0, y: across ? 0 : i * step, rotate: 0, scale: 1 } : { x: 0, y: i * 6, rotate: i === 0 ? 0 : i % 2 ? 2.5 : -2.5, scale: 1 - i * 0.04 }}
+          transition={spring(i)}>
+          <LinkCard a={a} small={across} />
+        </motion.span>
+      ))}
+      {n > 1 && <motion.span className="ps-fan-n ap-num" animate={{ opacity: open ? 0 : 1, scale: open ? 0.6 : 1 }} transition={{ duration: 0.2 }}>{n}</motion.span>}
+    </div>
+  );
+}
+
+/** "Filed into a theme": theme glyph, name, count badge; click to see which signals. */
+export function FiledToken({ f }: { f: Filed }) {
+  const [open, setOpen] = useState(false);
+  const label = `${f.n} ${f.n === 1 ? "signal" : "signals"} filed in ${f.theme}`;
+  return (
+    <div className="ps-filed-wrap">
+      <button type="button" className="ps-filed" aria-expanded={open} title={label} aria-label={label} onClick={() => setOpen(o => !o)}>
+        <I n="theme" size={13} />
+        <span className="ps-filed-name">{f.theme}</span>
+        <span className="ps-filed-n ap-num">{f.n}</span>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && f.gists && (
+          <motion.ul className="ps-gists" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}>
+            {f.gists.map(g => <li key={g}><I n="signal" size={13} />{g}</li>)}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/** A draft or suggestion: dashed means not yet yours. Actions straddle the card's top edge; accepting solidifies it in place. */
+export function DraftView({ d, onDecide, target }: { d: Draft; onDecide: (s: "accepted" | "discarded") => void; target?: boolean }) {
+  const pending = d.state === "pending";
+  const accept = <IconBtn n="check" label="Accept (A)" onClick={() => onDecide("accepted")} target={target ? "accept" : undefined} />;
+  const discard = <IconBtn n="x" label="Discard (X)" onClick={() => onDecide("discarded")} />;
+  const meta = (
+    <span className="ps-draft-meta">
+      <span className="ps-draft-joins" title={d.kind === "theory" ? `Would join ${d.joins}` : `Revises ${d.joins}`}><I n={d.kind === "theory" ? "theme" : "edit"} size={12} />{d.joins}</span>
+      {d.ev && <span className="ap-num ps-draft-ev" title={`${d.ev[0]} support, ${d.ev[1]} undermine`}>+{d.ev[0]} <span className="ap-muted">−{d.ev[1]}</span></span>}
+      {d.state === "accepted" && <motion.span initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}><Conf n={null} /></motion.span>}
+    </span>
+  );
+  return (
+    <AnimatePresence initial={false}>
+      {d.state !== "discarded" && (
+        <motion.div className="ps-draft" data-state={d.state}
+          exit={{ opacity: 0, height: 0, scale: 0.97, transition: { opacity: { duration: 0.12 }, height: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } } }}>
+          <motion.div className="ps-draft-in" initial={false}
+            animate={d.state === "accepted" ? { scale: [1, 1.025, 1], y: [0, -2, 0] } : { scale: 1, y: 0 }}
+            transition={{ duration: 0.45, times: [0, 0.35, 1], ease: "easeOut" }}>
+            <span className="ps-draft-dash" aria-hidden />
+            <span className="ps-draft-claim">{d.claim}</span>
+            {meta}
+            <AnimatePresence initial={false}>
+              {pending && <motion.span className="ps-draft-edge" initial={false} exit={{ opacity: 0, scale: 0.6, transition: { duration: 0.15 } }}>{accept}{discard}</motion.span>}
+            </AnimatePresence>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+export function MeMsg({ m, att = CHOSEN.att }: { m: Extract<Msg, { who: "me" }>; att?: AttStyle }) {
+  return (
+    <motion.div className="ps-me" initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", duration: 0.45, bounce: 0.1 }}>
+      {m.voice != null
+        ? <div className="ps-bubble ps-voice"><button type="button" className="ps-ib" aria-label="Play" title="Play"><I n="play" size={14} /></button><NoteWave bars={30} height={16} /><span className="ap-num ap-muted">{mmss(m.voice)}</span></div>
+        : m.text && <div className="ps-bubble">{m.text}</div>}
+      {m.voice != null && m.text && <div className="ps-transcript">{m.text}</div>}
+      {m.atts.length > 0 && <AttGroup atts={m.atts} style={att} />}
+      <span className="ps-time ap-num" title="Saved as a dump">{m.time}</span>
+    </motion.div>
+  );
+}
+
+export function AgentMsg({ m, api, last }: { m: Extract<Msg, { who: "agent" }>; api: DumpApi; last: boolean }) {
+  return (
+    <div className="ps-agent">
+      <AnimatePresence initial={false} mode="popLayout">
+        {m.thinking
+          ? <motion.span key="think" className="ps-think" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} aria-label="Working" title="Working"><Spinner /></motion.span>
+          : (
+            <motion.div key="done" className="ps-agent-body" initial="h" animate="v" variants={{ v: { transition: { staggerChildren: 0.07 } } }}>
+              {m.say && <motion.p className="ps-say" variants={ITEM}>{m.say}</motion.p>}
+              {m.filed.length > 0 && <motion.div className="ps-filed-row" variants={ITEM}>{m.filed.map(f => <FiledToken key={f.theme} f={f} />)}</motion.div>}
+              {m.draft && <motion.div variants={ITEM}><DraftView d={m.draft} onDecide={st => api.decide(m.id, st)} target={last} /></motion.div>}
+            </motion.div>
+          )}
+      </AnimatePresence>
+    </div>
+  );
+}
+const ITEM = { h: { opacity: 0, y: 6 }, v: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] as const } } };
+
+export function Thread({ s, api, grow }: { s: DumpState; api: DumpApi; grow?: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const lastId = [...s.thread].reverse().find(m => m.who === "agent")?.id;
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [s.thread]);
+  return (
+    <div ref={ref} className="ps-thread" data-grow={grow ? "" : undefined}>
+      {s.thread.map(m => (m.who === "me" ? <MeMsg key={m.id} m={m} /> : <AgentMsg key={m.id} m={m} api={api} last={m.id === lastId} />))}
+    </div>
+  );
+}
+
+/* ── Composer ── */
+export const isAsk = (t: string) => t.includes("?");
+export function SendBtn({ text, ready, onSend, size = 32 }: { text: string; ready: boolean; onSend: () => void; size?: number }) {
+  const ask = isAsk(text);
+  return (
+    <button type="button" className="ps-send" style={{ width: size, height: size }} data-ready={ready ? "" : undefined} data-ask={ask ? "" : undefined} disabled={!ready}
+      aria-label={ask ? "Ask (Return)" : "Dump (Return)"} title={ask ? "Ask (Return)" : "Dump (Return)"} onClick={onSend} data-target="send">
+      <SwapIcon k={ask ? "ask" : "send"}><I n={ask ? "questionMark" : "send"} weight="bold" /></SwapIcon>
+    </button>
+  );
+}
+
+export function Recorder({ s, api, onStop, time }: { s: DumpState; api: DumpApi; onStop: () => void; time?: string }) {
+  const now = useNow(s.rec != null && !time);
+  return (
+    <div className="ps-rec">
+      <IconBtn n="x" label="Discard recording" onClick={api.cancelRec} />
+      <LiveWave bars={40} height={20} />
+      <span className="ps-rec-time ap-num">{time ?? mmss(s.rec ? (now - s.rec) / 1000 : 0)}</span>
+      <button type="button" className="ps-stop" aria-label="Stop and dump" title="Stop and dump" onClick={onStop}><StopGlyph /></button>
+    </div>
+  );
+}
+
+export function Composer({ s, api, screen, inputRef, big, sees = true }: { s: DumpState; api: DumpApi; screen: string; inputRef?: RefObject<HTMLTextAreaElement | null>; big?: boolean; sees?: boolean }) {
+  const ready = !!s.text.trim() || s.atts.length > 0;
+  const onPaste = (e: React.ClipboardEvent) => {
+    const t = e.clipboardData.getData("text").trim();
+    if (/^https?:\/\/\S+$/.test(t)) { e.preventDefault(); api.addLink(t); }
+  };
+  const onChange = (v: string) => {
+    const m = v.match(/(^|\s)(https?:\/\/\S+)\s$/);
+    if (m) { api.addLink(m[2]); api.setText(v.slice(0, m.index! + m[1].length)); return; }
+    api.setText(v);
+  };
+  void screen;
+  const addCtx = (
+    <IconBtn n="crosshair" label={s.picking ? "Stop picking (Esc)" : "Add something on screen"} onClick={() => api.setPicking(!s.picking)} pressed={s.picking} target="add-ctx" />
+  );
+  return (
+    <div className="ps-composer" data-big={big ? "" : undefined}>
+      <AnimatePresence initial={false}>
+        {sees && s.ctx.length > 0 && (
+          <motion.div key="float" className="ps-ctxfloat" initial={{ opacity: 0, y: 12, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 260, damping: 26 }}>
+            <CtxRow s={s} api={api} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence initial={false}>
+        {s.atts.length > 0 && (
+          <motion.div className="ps-atts" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}>
+            <div className="ps-atts-in">
+              <AnimatePresence initial={false} mode="popLayout">
+                {s.atts.map(a => (
+                  <motion.span layout key={a.id} initial={{ opacity: 0, scale: 0.85, filter: "blur(4px)" }} animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }} exit={{ opacity: 0, scale: 0.85 }} transition={{ type: "spring", duration: 0.35, bounce: 0.1 }}>
+                    <LinkChip a={a} onRemove={() => api.removeAtt(a.id)} />
+                  </motion.span>
+                ))}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {s.rec != null
+        ? <Recorder s={s} api={api} onStop={api.stopRec} />
+        : (
+          <div className="ps-inputrow">
+            <textarea ref={inputRef} className="ps-input" rows={1} value={s.text} data-target="input" aria-label="Dump or ask"
+              placeholder="Dump anything, or ask"
+              onPaste={onPaste} onChange={e => onChange(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); api.send(); } }} />
+            {sees && s.ctx.length === 0 && addCtx}
+            <IconBtn n="plus" label="Attach" onClick={api.addImage} />
+            <IconBtn n="mic" label="Record a voice note" onClick={api.startRec} target="composer-mic" />
+            <SendBtn text={s.text} ready={ready} onSend={api.send} />
+          </div>
+        )}
+    </div>
+  );
+}
+
+/* ── Backdrops ── */
+export const SIDEBAR = 232;
+const COST_SIGNALS = SIGNALS.filter(x => x.themes.includes("cost"));
+/** Shared drag payload for HTML drag-and-drop (dataTransfer can't be read during dragover). */
+export const dragPayload: { att: Att | null } = { att: null };
+
+export function DesktopScreen({ left, dock, top = 0, solid = [] }: { left: number; dock: number; top?: number; solid?: string[] }) {
+  return (
+    <div className="ps-screen" style={{ left, top }}>
+      <aside className="ps-rail">
+        <div className="ps-brand">Aber</div>
+        {THEMES.map(t => (
+          <div key={t.id} className="ps-rail-item" data-active={t.id === "cost" ? "" : undefined}>
+            <span>{t.name}</span><span className="ap-muted ap-num">{t.signals}</span>
+          </div>
+        ))}
+      </aside>
+      <div className="ps-main" style={{ paddingRight: 40 + dock }}>
+        <div className="ps-region" data-region="main">
+          <div className="ps-h"><span>Cost of intelligence</span><Mark kind="fresh" /></div>
+          <div className="ps-cards">
+            {["t1", "t2", "t7", "d1", "d2"].map(id => (
+              <div key={id} data-pick={id} data-region={id} data-label={theory(id).claim}><TheoryCard t={solid.includes(id) ? { ...theory(id), draft: false } : theory(id)} /></div>
+            ))}
+          </div>
+          <div className="ps-sigs">
+            {COST_SIGNALS.map(x => (
+              <div key={x.id} className="ps-sig" data-pick={x.id} data-region={x.id} data-label={x.gist} data-kind="signal" draggable
+                onDragStart={e => { const host = x.source; e.dataTransfer.setData("text/uri-list", `https://${host}/`); dragPayload.att = { id: nid("a"), kind: "link", host, title: x.gist }; }}
+                onDragEnd={() => { dragPayload.att = null; }}>
+                <I n="signal" size={14} /><span className="ps-sig-gist">{x.gist}</span><span className="ap-muted">{x.source}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PhoneScreen({ solid }: { solid: string[] }) {
+  return (
+    <div className="ps-pscreen">
+      <div className="ps-p-top"><span className="ps-p-back"><I n="down" size={16} /></span><span className="ap-h">Cost of intelligence</span><Mark kind="fresh" /></div>
+      <div className="ps-p-body" data-region="main">
+        {["t1", "t2", "d1"].map(id => <TheoryCard key={id} t={solid.includes(id) ? { ...theory(id), draft: false } : theory(id)} />)}
+        {[...COST_SIGNALS, ...SIGNALS.filter(x => !x.themes.includes("cost")).slice(0, 3)].map(x => <div key={x.id} className="ps-sig"><I n="signal" size={14} /><span className="ps-sig-gist">{x.gist}</span></div>)}
+      </div>
+    </div>
+  );
+}
+
+/* ── The stage: backdrop, pill, panel, toast ── */
+/** B2: desktop, the pill in the bottom-right corner with a column growing up out of it. P: phone. */
+export type Variant = "B2" | "P";
+export type Force = { approach?: boolean; hover?: boolean; pressed?: boolean; focus?: boolean; midflight?: boolean; time?: string; noScreen?: boolean };
+const OPEN_T: Transition = { type: "spring", duration: 0.5, bounce: 0.12 };
+const CLOSE_T: Transition = { type: "spring", duration: 0.38, bounce: 0 };
+const SHADOW = {
+  pill: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 4px 14px 0px rgba(0, 0, 0, 0.1)",
+  lift: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 6px 18px 0px rgba(0, 0, 0, 0.12)",
+  sheet: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 8px 24px 0px rgba(0, 0, 0, 0.14)",
+};
+let activeStage: string | null = null;
+
+export function Stage({ variant, s, api, w, h, cx: cxProp, centred, force = {}, children, frameRef: extRef, screen = "Cost of intelligence", live = true, screenY = 0, screenX }: {
+  /** centred: the closed pill sits at cx instead of the corner (for state tiles that never open). */
+  variant: Variant; s: DumpState; api: DumpApi; w: number; h: number; cx?: number; centred?: boolean; force?: Force; children?: ReactNode;
+  frameRef?: RefObject<HTMLDivElement | null>; screen?: string; live?: boolean; screenY?: number; screenX?: number;
+}) {
+  const reduced = !!useReducedMotion();
+  const localRef = useRef<HTMLDivElement>(null);
+  const frameRef = extRef ?? localRef;
+  const surfaceRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const hitRef = useRef<HTMLButtonElement>(null);
+  const id = useId();
+  const [pillW, setPillW] = useState(variant === "P" ? 150 : 250);
+  const [panelH, setPanelH] = useState(320);
+  const [hover, setHover] = useState(false);
+  const [pressed, setPressed] = useState(false);
+  const [approach, setApproach] = useState(false);
+  const [focus, setFocus] = useState(false);
+  const [hl, setHl] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  const [pickHover, setPickHover] = useState<string | null>(null);
+
+  const phone = variant === "P";
+  const cx = cxProp ?? (phone ? w / 2 : SIDEBAR + (w - SIDEBAR) / 2);
+  const ph = phone ? 44 : 40, micW = ph, bottom = phone ? 30 : 24;
+  const corner = variant === "B2" && !centred, docked = variant === "B2";
+  const ap = force.approach ?? approach, hv = force.hover ?? hover, pr = force.pressed ?? pressed, fc = force.focus ?? focus;
+  const voiceSheet = phone && !s.open && s.rec != null;
+  // The mic is a segment inside the pill, so the closed surface is label + mic.
+  const closedW = pillW + micW;
+  const closedLeft = corner ? w - 20 - closedW : cx - closedW / 2;
+  const pillBottom = bottom;
+  const pillCx = closedLeft + closedW / 2;
+  const maxH = h - (phone ? 70 : 48);
+
+  let box: { left: number; bottom: number; width: number; height: number; r: number };
+  let panelW = 600;
+  if (s.open) {
+    if (docked) { panelW = 360; box = { left: w - 372, bottom: 12, width: 360, height: h - 24, r: 14 }; }
+    else { panelW = w - 16; box = { left: 8, bottom: 8, width: w - 16, height: Math.min(panelH, maxH), r: 40 }; }
+  } else if (voiceSheet) {
+    panelW = w - 16; box = { left: 8, bottom: 8, width: w - 16, height: 252, r: 40 };
+  } else box = { left: closedLeft, bottom: pillBottom, width: closedW, height: ph, r: ph / 2 };
+
+  // Panel height follows its content.
+  useLayoutEffect(() => {
+    const el = panelRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setPanelH(el.offsetHeight));
+    ro.observe(el);
+    setPanelH(el.offsetHeight);
+    return () => ro.disconnect();
+  }, [s.open]);
+
+  // Focus the input once the panel has room; give focus back to the pill when it closes.
+  const wasOpen = useRef(s.open);
+  const keyClose = useRef(false);
+  useEffect(() => {
+    if (!live) return;
+    if (s.open && !wasOpen.current) window.setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 60);
+    if (!s.open && wasOpen.current && keyClose.current && frameRef.current?.contains(document.activeElement)) { (document.activeElement as HTMLElement).blur(); window.setTimeout(() => hitRef.current?.focus({ preventScroll: true }), 400); }
+    wasOpen.current = s.open;
+    keyClose.current = false;
+  }, [s.open, live]);
+
+  // The region the agent sees, outlined on the screen behind.
+  const region = s.picking ? pickHover : s.hot;
+  useLayoutEffect(() => {
+    const f = frameRef.current;
+    const el = region ? f?.querySelector<HTMLElement>(`[data-region="${region}"]`) : null;
+    if (!f || !el) return setHl(null);
+    const a = f.getBoundingClientRect(), b = el.getBoundingClientRect();
+    setHl({ x: b.left - a.left, y: b.top - a.top, w: b.width, h: b.height });
+  }, [region, s.open]);
+
+  // ⌘J and Esc for whichever stage the pointer was last in.
+  const sRef = useRef(s);
+  sRef.current = s;
+  useEffect(() => {
+    if (!live) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (activeStage !== id) return;
+      const st = sRef.current;
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "j") { e.preventDefault(); keyClose.current = true; st.open ? api.close() : api.open(); }
+      else if (e.key === "Escape") {
+        if (st.picking) api.setPicking(false);
+        else if (st.rec != null) api.cancelRec();
+        else if (st.open) { keyClose.current = true; api.close(); }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [live, id, api]);
+
+  const onFramePointerMove = (e: React.PointerEvent) => {
+    if (!live || s.open) return;
+    const r = surfaceRef.current?.getBoundingClientRect();
+    if (!r) return;
+    const dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right - micW - 8), dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
+    setApproach(Math.hypot(dx, dy) < 56);
+  };
+  const onFramePointerDown = (e: React.PointerEvent) => {
+    activeStage = id;
+    const t = e.target as Element;
+    if (s.picking) {
+      const pick = t.closest<HTMLElement>("[data-pick]");
+      if (pick) {
+        const kind = pick.dataset.kind === "signal" ? "signal" : "theory";
+        api.addCtx({ id: `c-${pick.dataset.pick}`, label: pick.dataset.label!.length > 34 ? pick.dataset.label!.slice(0, 32) + "…" : pick.dataset.label!, kind, region: pick.dataset.pick! });
+        setPickHover(null);
+        e.preventDefault();
+      } else if (!surfaceRef.current?.contains(t)) api.setPicking(false);
+      return;
+    }
+    if (s.open && !surfaceRef.current?.contains(t)) api.close();
+  };
+  const onScreenMove = (e: React.PointerEvent) => {
+    if (!s.picking) return;
+    const pick = (e.target as Element).closest<HTMLElement>("[data-pick]");
+    setPickHover(pick?.dataset.pick ?? null);
+  };
+
+  // Drag and drop onto the pill (or the open panel, where it becomes an attachment).
+  const depth = useRef(0);
+  const dnd = {
+    onDragEnter: (e: React.DragEvent) => { e.preventDefault(); depth.current++; if (!s.drag) api.setDrag(dragPayload.att ?? { id: nid("a"), kind: e.dataTransfer.types.includes("Files") ? "image" : "link", host: e.dataTransfer.types.includes("Files") ? "file.png" : "link" }); },
+    onDragOver: (e: React.DragEvent) => e.preventDefault(),
+    onDragLeave: () => { depth.current = Math.max(0, depth.current - 1); if (depth.current === 0) api.setDrag(null); },
+    onDrop: (e: React.DragEvent) => {
+      e.preventDefault();
+      depth.current = 0;
+      const att = s.drag ?? dragPayload.att;
+      if (!att) return;
+      if (s.open) { api.setDrag(null); api.set(p => ({ atts: [...p.atts, att] })); }
+      else api.dumpDirect(att);
+    },
+  };
+
+  const lifted = !s.open && !s.rec && !s.drag && hv;
+  const scale = !s.open && pr ? 0.96 : !s.open && s.drag ? 1.06 : 1;
+  const showMic = !s.open && !voiceSheet;
+  const recClosed = !s.open && s.rec != null && !phone;
+  // Accepting a draft in the conversation solidifies the same draft on the screen behind.
+  const solid = s.thread.some(m => m.who === "agent" && m.draft?.state === "accepted" && m.draft.claim === theory("d1").claim) ? ["d1"] : [];
+  const screenLeft = phone ? 0 : screenX ?? cx - (SIDEBAR + (1240 - SIDEBAR) / 2);
+
+  return (
+    <div ref={frameRef} className="ap ps-frame" data-variant={variant} data-picking={s.picking ? "" : undefined} style={{ width: w, height: h }}
+      onPointerMove={onFramePointerMove} onPointerLeave={() => setApproach(false)} onPointerDownCapture={onFramePointerDown} onPointerEnter={() => { activeStage = id; }}
+      onFocusCapture={() => { activeStage = id; }}>
+      {!force.noScreen && (
+        <div className="ps-back" onPointerMove={onScreenMove} onPointerLeave={() => setPickHover(null)}>
+          {phone ? <PhoneScreen solid={solid} /> : <DesktopScreen left={screenLeft} top={screenY} dock={docked && s.open ? 372 : 0} solid={solid} />}
+          <div className="ps-wash" />
+        </div>
+      )}
+      <AnimatePresence>
+        {hl && (
+          <motion.div key="hl" className="ps-hl" initial={{ opacity: 0 }} animate={{ opacity: 1, left: hl.x - 6, top: hl.y - 6, width: hl.w + 12, height: hl.h + 12 }} exit={{ opacity: 0 }}
+            transition={{ opacity: { duration: 0.15 }, default: { type: "spring", duration: 0.3, bounce: 0 } }} style={{ left: hl.x - 6, top: hl.y - 6, width: hl.w + 12, height: hl.h + 12 }} />
+        )}
+      </AnimatePresence>
+
+      {/* Toast: tier 6, rises from the pill and sinks back into it */}
+      <div className="ps-toast-slot" style={{ left: Math.min(pillCx - 200, w - 412), bottom: pillBottom + ph + 10, justifyContent: corner ? "flex-end" : "center" }}>
+        <AnimatePresence>
+          {s.toast && !s.open && (
+            <motion.div key={s.toast.id} className="ps-toast" role="status" style={{ transformOrigin: "50% 100%" }} initial={{ opacity: 0, y: 16, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 14, scale: 0.9, transition: { duration: 0.2, ease: [0.4, 0, 1, 1] } }}
+              transition={{ type: "spring", duration: 0.45, bounce: 0.2 }}
+              onPointerEnter={() => api.holdToast(true)} onPointerLeave={() => api.holdToast(false)}>
+              {s.toast.parts.map((p, i) => (
+                <motion.span key={p.icon} className="ps-toast-part" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 + i * 0.07, duration: 0.25 }}>
+                  <I n={p.icon} size={14} /><b className="ap-num">{p.n}</b>{p.n === 1 ? p.one : p.many}
+                </motion.span>
+              ))}
+              <button type="button" className="ps-toast-undo" onClick={api.undo} title="Undo (⌘Z)" data-target="undo">Undo</button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* What the agent sees: a thumbnail after a deliberate hover on the screen name */}
+      <AnimatePresence>
+        {s.hot === "main" && !s.open && !s.toast && !phone && (
+          <motion.div key="thumb" className="ps-seethumb" role="img" aria-label={`The agent sees ${screen}`} style={{ left: Math.min(pillCx - 124, w - 260), bottom: pillBottom + ph + 10 }}
+            initial={{ opacity: 0, y: 6, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1, transition: { delay: live ? 0.35 : 0, type: "spring", duration: 0.3, bounce: 0 } }} exit={{ opacity: 0, y: 4, transition: { duration: 0.12 } }}>
+            <div className="ps-seethumb-in" aria-hidden><DesktopScreen left={0} dock={0} /></div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Something travelling into the pill */}
+      <AnimatePresence>
+        {s.incoming && (
+          <motion.div key={s.incoming.id} className="ps-incoming" style={{ left: closedLeft + 14, bottom: pillBottom + ph / 2 - 13 }}
+            initial={{ y: -64, x: 40, scale: 1, opacity: 0 }}
+            animate={force.midflight ? { y: -30, x: 18, scale: 0.8, opacity: 1 } : { y: 0, x: 0, scale: 0.3, opacity: [0, 1, 1, 0] }}
+            transition={force.midflight ? { duration: 0 } : { duration: 0.46, ease: [0.5, 0, 0.75, 0], opacity: { times: [0, 0.15, 0.8, 1], duration: 0.46 } }}>
+            <LinkChip a={s.incoming} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* The surface: pill when closed, panel when open */}
+      <motion.div ref={surfaceRef} className="ps-surface" data-open={s.open || voiceSheet ? "" : undefined} data-focus={fc && !s.open ? "" : undefined} data-drag={s.drag && !s.open ? "" : undefined}
+        initial={false}
+        animate={{ left: box.left, bottom: box.bottom, width: box.width, height: box.height, borderRadius: box.r, y: lifted ? -1 : 0, scale, boxShadow: s.open || voiceSheet ? SHADOW.sheet : lifted || s.drag ? SHADOW.lift : SHADOW.pill }}
+        transition={reduced ? { duration: 0 } : { default: s.open || voiceSheet ? OPEN_T : CLOSE_T, y: { duration: 0.15, ease: "easeOut" }, scale: { type: "spring", duration: 0.3, bounce: s.drag ? 0.35 : 0 }, boxShadow: { duration: 0.2 } }}
+        style={{ transformOrigin: corner ? "100% 100%" : "50% 100%" }}
+        {...dnd}>
+        {s.drag && <div className="ps-dropcatch" />}
+        <AnimatePresence initial={false}>
+          {!s.open && !voiceSheet && (
+            <motion.div key="pill" className="ps-pill-layer" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: reduced ? 0 : 0.14, duration: 0.18 } }} exit={{ opacity: 0, transition: { duration: 0.08 } }}>
+              <PillRows s={s} api={api} recClosed={recClosed} phone={phone} screen={screen} onWidth={setPillW} hitRef={hitRef} time={force.time}
+                onHover={setHover} onPress={setPressed} onFocus={setFocus} />
+              <button type="button" className="ps-micseg" data-rec={recClosed ? "" : undefined} data-phone={phone ? "" : undefined} data-target="mic" style={{ width: micW }}
+                aria-label={recClosed ? "Stop and dump" : "Voice dump"} title={recClosed ? "Stop and dump" : "Voice dump"}
+                onClick={() => (recClosed ? api.stopRec() : api.startRec())}>
+                <span className="ps-micseg-in"><SwapIcon k={recClosed ? "stop" : "mic"}>{recClosed ? <StopGlyph /> : <I n="mic" size={phone ? 18 : 16} />}</SwapIcon></span>
+              </button>
+            </motion.div>
+          )}
+          {s.open && (
+            <motion.div key="panel" className="ps-panel-layer" style={{ width: panelW }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: reduced ? 0 : 0.07, duration: 0.22 } }} exit={{ opacity: 0, transition: { duration: 0.1 } }}>
+              <div ref={panelRef} className="ps-panel" data-variant={variant} style={{ maxHeight: docked ? undefined : maxH, height: docked ? h - 24 : undefined }}>
+                <button type="button" className="ps-grab" aria-label="Close (Esc)" title="Close (Esc)" onClick={api.close} data-target="close"><i /></button>
+                <Thread s={s} api={api} grow={docked} />
+                <Composer s={s} api={api} screen={phone ? "phone" : screen} inputRef={inputRef} big={phone} />
+              </div>
+            </motion.div>
+          )}
+          {voiceSheet && (
+            <motion.div key="voice" className="ps-panel-layer" style={{ width: panelW }} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 0.1, duration: 0.2 } }} exit={{ opacity: 0, transition: { duration: 0.1 } }}>
+              <VoiceSheet s={s} api={api} time={force.time} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {children}
+    </div>
+  );
+}
+
+function PillRows({ s, api, recClosed, phone, screen, onWidth, hitRef, onHover, onPress, onFocus, time }: {
+  s: DumpState; api: DumpApi; recClosed: boolean; phone: boolean; screen: string; onWidth: (w: number) => void;
+  hitRef: RefObject<HTMLButtonElement | null>; onHover: (b: boolean) => void; onPress: (b: boolean) => void; onFocus: (b: boolean) => void; time?: string;
+}) {
+  const mode = recClosed ? "rec" : s.drag ? "drag" : "rest";
+  const now = useNow(mode === "rec" && !time);
+  return (
+    <AnimatePresence initial={false} mode="popLayout">
+      <PillRow key={mode} mode={mode} onWidth={onWidth}>
+        {mode === "rest" && (
+          <button ref={hitRef} type="button" className="ps-pill" data-target="pill" aria-label="Dump or ask (⌘J)" title="Dump or ask (⌘J)"
+            onClick={api.open} onPointerEnter={() => onHover(true)} onPointerLeave={() => { onHover(false); onPress(false); }}
+            onPointerDown={() => onPress(true)} onPointerUp={() => onPress(false)} onFocus={e => onFocus(e.currentTarget.matches(":focus-visible"))} onBlur={() => onFocus(false)}>
+            <SwapIcon k={s.busy ? "busy" : "idle"}>{s.busy ? <Spinner size={16} /> : <I n="dump" />}</SwapIcon>
+            <span className="ps-pill-label">Dump or ask</span>
+            {!phone && (
+              <span className="ps-pill-ctx" onPointerEnter={() => api.setHot("main")} onPointerLeave={() => api.setHot(null)} title={`The agent sees ${screen}`} data-target="pill-ctx">
+                <I n="screen" size={13} />{screen}
+              </span>
+            )}
+          </button>
+        )}
+        {mode === "drag" && s.drag && (
+          <div className="ps-pill ps-pill-drop" data-target="pill">
+            <span className="ps-drop-plus"><I n="plus" size={12} /></span>
+            {s.drag.title ? <><Favicon host={s.drag.host} /><span className="ps-drop-title">{s.drag.title}</span></> : <span className="ps-drop-title"><I n={s.drag.kind === "image" ? "image" : "link"} size={14} /></span>}
+          </div>
+        )}
+        {mode === "rec" && (
+          <div className="ps-pill ps-pill-rec">
+            <IconBtn n="x" label="Discard (Esc)" onClick={api.cancelRec} size={28} />
+            <LiveWave bars={30} height={18} />
+            <span className="ps-rec-time ap-num">{time ?? mmss(s.rec ? (now - s.rec) / 1000 : 0)}</span>
+          </div>
+        )}
+      </PillRow>
+    </AnimatePresence>
+  );
+}
+
+/** One closed-pill layout. Only the row that is present reports its width, so an exiting row can't shrink the pill. */
+function PillRow({ mode, onWidth, children }: { mode: string; onWidth: (w: number) => void; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const present = useIsPresent();
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || !present) return;
+    const ro = new ResizeObserver(() => onWidth(el.offsetWidth));
+    ro.observe(el);
+    onWidth(el.offsetWidth);
+    return () => ro.disconnect();
+  }, [present]);
+  return (
+    <motion.div ref={ref} className="ps-pill-row" data-mode={mode}
+      initial={{ opacity: 0, filter: "blur(3px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} exit={{ opacity: 0, filter: "blur(3px)" }} transition={{ duration: 0.18 }}>
+      {children}
+    </motion.div>
+  );
+}
+
+function VoiceSheet({ s, api, time }: { s: DumpState; api: DumpApi; time?: string }) {
+  const now = useNow(s.rec != null && !time, 200);
+  const secs = time ? 7 : s.rec ? (now - s.rec) / 1000 : 0;
+  const words = VOICE_WORDS.slice(0, Math.min(VOICE_WORDS.length, Math.floor(secs * 3.2) + 1));
+  return (
+    <div className="ps-vsheet">
+      <p className="ps-transcript-live">
+        <AnimatePresence initial={false}>
+          {words.slice(-18).map((wd, i) => <motion.span key={`${words.length - Math.min(18, words.length) + i}`} initial={{ opacity: 0, filter: "blur(3px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} transition={{ duration: 0.3 }}>{wd} </motion.span>)}
+        </AnimatePresence>
+      </p>
+      <LiveWave bars={46} height={36} />
+      <div className="ps-vsheet-row">
+        <IconBtn n="x" label="Discard" onClick={api.cancelRec} size={44} />
+        <span className="ps-rec-time ap-num">{time ?? mmss(secs)}</span>
+        <button type="button" className="ps-stop ps-stop-big" aria-label="Stop and dump" title="Stop and dump" onClick={api.stopRecInto} data-target="stop"><StopGlyph size={16} /></button>
+      </div>
+    </div>
+  );
+}
+
+/** Phone frame (390 × 844): screen, island, home indicator. */
+export function PhoneFrame({ children }: { children: ReactNode }) {
+  return (
+    <div className="ps-phone">
+      {children}
+      <span className="ps-island" aria-hidden />
+      <span className="ps-home" aria-hidden />
+    </div>
+  );
+}

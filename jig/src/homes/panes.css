@@ -1,0 +1,117 @@
+/* Object panes: theme, theory, prototype. Shared by Columns and Atlas; uses the .ap tokens from homes.css. */
+.ap { --pn-edit-hover: rgb(0 0 0 / 2.5%); --pn-edit-bg: rgb(0 0 0 / 3.5%); --pn-edit-ring: rgb(0 0 0 / 14%); }
+
+.pn-doc { max-width: 680px; padding: 40px 48px 120px; display: grid; gap: 16px; }
+.pn-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-height: 24px; }
+
+/* Editable text: no browser focus rectangle. A faint tint that reaches past the text on hover,
+   and the tint plus a hairline inset ring while editing. Padding with matching negative margin keeps
+   the text where it was and keeps the ring inside the element's own box, so nothing outside can clip it. */
+.pn-edit { outline: none; border-radius: 6px; white-space: pre-wrap; overflow-wrap: anywhere; cursor: text; transition: background-color 150ms ease-out, box-shadow 150ms ease-out; }
+.pn-edit:hover { background: var(--pn-edit-hover); }
+.pn-edit:focus, .pn-edit:focus-visible { outline: none; background: var(--pn-edit-bg); box-shadow: inset 0 0 0 1px var(--pn-edit-ring); }
+[data-placeholder]:empty::before { content: attr(data-placeholder); color: var(--ap-ink-3); pointer-events: none; }
+
+.pn-title { margin: -4px -8px; padding: 4px 8px; font-size: 26px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; text-wrap: balance; }
+.pn-title[data-draft] { color: var(--ap-ink-2); outline: 1px dashed rgb(0 0 0 / 28%); outline-offset: -1px; }
+.pn-title[data-draft]:focus, .pn-title[data-draft]:focus-visible { outline: 1px dashed rgb(0 0 0 / 40%); outline-offset: -1px; box-shadow: none; }
+.pn-body { margin: -4px -8px; padding: 4px 8px; font-size: 15px; line-height: 1.65; color: var(--ap-ink-2); min-height: 48px; }
+
+/* Expanding field: a compact mark that grows in place to show its name and control. */
+.pn-field { display: inline-flex; align-items: center; min-height: 24px; padding: 0 6px; margin: 0 -6px; border-radius: 6px; color: var(--ap-ink-3); outline: none; transition: background 150ms ease-out; }
+.pn-field:hover, .pn-field[data-open] { background: var(--ap-line-2); }
+.pn-field:focus-visible { box-shadow: inset 0 0 0 1.5px var(--ap-ink-3); }
+.pn-field-val { color: var(--ap-ink-2); }
+.pn-meta .pn-field .ap-label { font-size: 13px; }
+.pn-reveal { display: inline-flex; overflow: hidden; white-space: nowrap; flex-shrink: 0; }
+.pn-reveal[data-axis="y"] { display: flex; }
+.pn-reveal-in { display: inline-flex; align-items: center; }
+.pn-reveal[data-axis="x"][data-side="start"] .pn-reveal-in { padding-right: 6px; }
+.pn-reveal[data-axis="x"][data-side="end"] .pn-reveal-in { padding-left: 6px; }
+.pn-reveal[data-axis="y"] .pn-reveal-in { padding-bottom: 4px; }
+.pn-reveal[data-side="end"] + .pn-field-val, .pn-field > svg + .pn-field-val { padding-left: 4px; }
+.pn-step { width: 20px; height: 20px; padding: 0; border: 0; border-radius: 5px; background: transparent; display: grid; place-items: center; color: var(--ap-ink-2); cursor: pointer; transition: background 100ms, transform 100ms; }
+.pn-step:hover { background: var(--ap-hover); color: var(--ap-ink); }
+.pn-step:active { transform: scale(0.92); }
+.pn-step:focus-visible { outline: 1.5px solid var(--ap-ink-3); outline-offset: -1.5px; }
+.pn-spark { color: var(--ap-ink-2); display: block; }
+
+.pn-conf { display: inline-flex; gap: 3px; }
+.pn-conf button { width: 20px; height: 6px; padding: 0; border: 0; border-radius: 3px; background: rgb(0 0 0 / 10%); cursor: pointer; transition: background 150ms, transform 100ms; }
+.pn-conf button[data-on] { background: var(--ap-ink); }
+.pn-conf button:hover { transform: scaleY(1.5); }
+
+.ap .pn-rival { gap: 6px; }
+.pn-rival .pn-clip { min-width: 0; }
+.pn-clip { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* What would change my mind */
+.pn-trip { display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px; margin: 0 -8px; }
+.pn-trip-glyph { flex-shrink: 0; width: 16px; height: 20px; padding: 0; border: 0; background: transparent; display: grid; place-items: center; color: var(--ap-ink-3); cursor: text; }
+.pn-trip-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+/* The wrap clips while its height animates; it reaches 8px past the text each side so the open box isn't cut. */
+.pn-trip-wrap { overflow: hidden; margin: 0 -8px; padding: 0 8px; }
+.pn-tripwire { min-height: 20px; color: var(--ap-ink-2); line-height: 20px; margin: 0 -8px; padding: 0 8px; }
+.pn-trip[data-open] .pn-tripwire { padding: 4px 8px; background: var(--ap-surface); box-shadow: inset 0 0 0 0.5px var(--ap-line); }
+.pn-trip[data-open] .pn-tripwire:focus, .pn-trip[data-open] .pn-tripwire:focus-visible { box-shadow: inset 0 0 0 1px var(--pn-edit-ring); }
+.pn-trip:not([data-open]) .pn-tripwire:hover { background: transparent; }
+
+/* Evidence */
+.pn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.pn-col { display: grid; gap: 4px; align-content: start; }
+.pn-ev-head { justify-self: start; margin: 0 0 2px; padding: 0 4px; font-size: 12px; }
+.pn-ev-name { font-weight: 500; color: var(--ap-ink-2); }
+
+/* A signal, unfolding in place */
+.pn-sig { border-radius: 7px; background: var(--ap-sunk); transition: background 100ms, box-shadow 150ms; }
+.pn-sig[data-open] { background: var(--ap-surface); box-shadow: var(--ap-shadow-1); }
+.pn-sig[data-current] { box-shadow: inset 0 0 0 1.5px var(--ap-ink); }
+.pn-sig[data-suggested] { background: transparent; outline: 1px dashed rgb(0 0 0 / 28%); outline-offset: -1px; }
+.pn-ev { display: grid; gap: 2px; width: 100%; text-align: left; padding: 7px 10px; border: 0; border-radius: 7px; background: transparent; color: var(--ap-ink-2); cursor: pointer; transition: background 100ms; }
+.pn-ev:focus-visible { outline: 1.5px solid var(--ap-ink-3); outline-offset: -1.5px; }
+.pn-sig:not([data-open]) .pn-ev:hover { background: var(--ap-hover); }
+.pn-sig[data-open] .pn-ev { color: var(--ap-ink); }
+.pn-ev .ap-muted { font-size: 12px; }
+.pn-line { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.pn-claim { font-weight: 600; text-wrap: pretty; }
+.pn-detail { overflow: hidden; }
+.pn-detail-inner { display: grid; gap: 6px; padding: 0 10px 10px; }
+.pn-note { min-height: 22px; padding: 4px 6px; border-radius: 5px; background: var(--ap-surface); box-shadow: inset 0 0 0 0.5px var(--ap-line); }
+.pn-note:hover { background: var(--ap-surface); box-shadow: inset 0 0 0 0.5px var(--pn-edit-ring); }
+.pn-note:focus, .pn-note:focus-visible { background: var(--ap-surface); box-shadow: inset 0 0 0 1px var(--pn-edit-ring); }
+.pn-link { display: flex; align-items: flex-start; gap: 6px; text-align: left; border: 0; background: transparent; padding: 3px 4px; border-radius: 5px; cursor: pointer; color: var(--ap-ink-2); font-size: 12px; }
+.pn-link svg { flex-shrink: 0; margin-top: 2px; }
+.pn-link:hover { background: var(--ap-hover); color: var(--ap-ink); }
+.pn-link[data-suggested] { outline: 1px dashed rgb(0 0 0 / 28%); outline-offset: -1px; }
+.pn-link:focus-visible { outline: 1.5px solid var(--ap-ink-3); outline-offset: -1.5px; }
+
+/* Chips */
+.pn-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.pn-chip { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border: 0; border-radius: 6px; background: var(--ap-surface); box-shadow: inset 0 0 0 0.5px var(--ap-line); font-size: 12px; color: var(--ap-ink-2); cursor: pointer; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background 100ms, transform 100ms; }
+.pn-chip svg, .pn-chip .ap-proto { flex-shrink: 0; }
+.pn-chip:hover { background: var(--ap-hover); color: var(--ap-ink); }
+.pn-chip:active { transform: scale(0.96); }
+.pn-chip:focus-visible { outline: 1.5px solid var(--ap-ink-3); outline-offset: -1.5px; }
+.pn-chip.pn-static { cursor: default; background: transparent; }
+.pn-chip.pn-static:active { transform: none; }
+.pn-chip[data-draft] { box-shadow: none; outline: 1px dashed rgb(0 0 0 / 28%); outline-offset: -1px; background: transparent; }
+.pn-links { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 12px; border-top: 0.5px solid var(--ap-line-2); }
+
+/* Theme: theory tiles */
+.pn-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.pn-tile { display: block; width: 100%; height: 100%; text-align: left; padding: 0; border: 0; background: var(--ap-surface); box-shadow: var(--ap-shadow-1); cursor: pointer; overflow: hidden; }
+.pn-tile-inner { display: grid; gap: 8px; align-content: start; padding: 10px 12px; }
+.pn-tile[data-large] .pn-tile-inner { padding: 14px 16px; gap: 10px; }
+.pn-tile-body { color: var(--ap-ink-2); text-wrap: pretty; }
+.pn-tile[data-draft] { box-shadow: none; outline: 1px dashed rgb(0 0 0 / 28%); outline-offset: -1px; background: transparent; color: var(--ap-ink-2); }
+.pn-add { display: grid; place-items: center; color: var(--ap-ink-3); box-shadow: inset 0 0 0 0.5px var(--ap-line); background: transparent; min-height: 56px; border-radius: 8px; }
+
+/* Prototype */
+.pn-status { display: inline-flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--ap-sunk); }
+.pn-status button { min-width: 28px; height: 24px; padding: 0 7px; border: 0; border-radius: 6px; background: transparent; display: inline-flex; align-items: center; cursor: pointer; transition: background 150ms; }
+.pn-status button:hover { background: var(--ap-hover); }
+.pn-status button[aria-checked="true"] { background: var(--ap-surface); box-shadow: var(--ap-shadow-1); }
+.pn-status-glyph { display: inline-grid; place-items: center; }
+.pn-status-name { font-size: 12px; color: var(--ap-ink-2); }
+.pn-media { aspect-ratio: 16 / 9; border-radius: 10px; background: linear-gradient(135deg, #eee, #e2e2e2); display: grid; place-items: center; box-shadow: inset 0 0 0 0.5px rgb(0 0 0 / 8%); }
+.pn-play { width: 44px; height: 44px; border: 0; border-radius: 22px; background: var(--ap-ink); color: #fff; display: grid; place-items: center; cursor: pointer; }

@@ -17,6 +17,7 @@ v1 is for her alone, on an iPhone and two MacBooks, over Tailscale. Multiplayer 
 | [docs/design-exploration.md](design-exploration.md) | What was tried, decided and rejected, plus the feedback log. Read it before proposing anything, so you don't re-propose rejected ideas |
 | [docs/hosting-guide.md](hosting-guide.md) | Step-by-step setup for hosting Aber privately over Tailscale, with costs. Hosting is still undecided: own server vs the team's Coolify server |
 | [docs/reference/interface-grammar.md](reference/interface-grammar.md) | Maggie's design method. **Follow it.** |
+| [jig/](../jig/) | Interactive design jigs with Agentation. Run `bun install && bun run dev` in `jig/`, then open http://localhost:5181. Choices made on `/decisions` save to `design/decisions.json` |
 
 The live Claude Design canvas is private to Maggie: https://claude.ai/artifact/684MAujZZHLPsVor9fVDBj. You don't need it; the export holds all of it.
 

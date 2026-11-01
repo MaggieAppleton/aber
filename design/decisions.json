@@ -1,0 +1,40 @@
+{
+  "bin": {
+    "choice": "30",
+    "updatedAt": "2026-10-31T21:36:39.992Z"
+  },
+  "homes": {
+    "picks": [
+      "current",
+      "columns",
+      "briefing",
+      "atlas",
+      "deck",
+      "document"
+    ],
+    "updatedAt": "2026-10-31T22:15:09.458Z"
+  },
+  "pill-open": {
+    "choice": "B2",
+    "updatedAt": "2026-10-31T23:49:22.740Z"
+  },
+  "pill-send": {
+    "updatedAt": "2026-10-31T23:49:49.252Z"
+  },
+  "pill-filed": {
+    "choice": "badge",
+    "updatedAt": "2026-10-31T23:50:43.210Z"
+  },
+  "pill-draft": {
+    "choice": "card",
+    "updatedAt": "2026-10-31T23:50:45.001Z"
+  },
+  "pill-context": {
+    "choice": "float",
+    "updatedAt": "2026-10-31T23:50:53.526Z"
+  },
+  "pill-add-icon": {
+    "choice": "crosshair",
+    "updatedAt": "2026-10-31T23:51:02.522Z"
+  }
+}
