@@ -1,36 +1,20 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { CornersIn } from "@phosphor-icons/react";
 import { AnimatePresence, LayoutGroup, MotionConfig, motion, useReducedMotion } from "motion/react";
-import { THEMES, THEORIES, SIGNALS, PROTOTYPES, theoriesIn, theory, theme, type Theory } from "./data";
+import { THEORIES, SIGNALS, PROTOTYPES, theoriesIn, theory, theme, type Theory } from "./data";
 import { Icon, IconButton, Mark, Pill } from "./atoms";
-import { ObjectPane, ThemeHead, TheoryTile, SignalRow, Claim, ThemeName, type ObjKind, type OnOpen, type PaneNav } from "./panes";
+import { ObjectPane, ThemeHead, TheoryTile, SignalRow, Claim, type ObjKind, type OnOpen, type PaneNav } from "./panes";
 import { useCamera, type Camera } from "./atlas2-camera";
+import { W, H, REGION, pinPos } from "./atlas-styles/geo";
+import { Ground, type MapStyle } from "./atlas-styles/grounds";
+import { placeLabels, GAP, type Place } from "./atlas-styles/labels";
 import "./atlas2.css";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const T = { duration: 0.6, ease: EASE };
-const W = 1240, H = 760;
 export type Variant = "side" | "deep";
+export type { MapStyle };
 type Doc = { kind: "theory" | "prototype"; id: string };
-
-/* ── Map geometry, copied from the Atlas home ── */
-const REGION: Record<string, { x: number; y: number; r: number }> = {
-  cost: { x: 600, y: 370, r: 150 }, memory: { x: 820, y: 290, r: 160 }, personal: { x: 420, y: 230, r: 130 },
-  funding: { x: 520, y: 560, r: 100 }, review: { x: 980, y: 540, r: 120 }, interfaces: { x: 220, y: 500, r: 105 }, identity: { x: 1070, y: 150, r: 75 },
-};
-
-function rand(seed: number) { return () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }; }
-
-function pinPos(t: Theory) {
-  const rs = t.themes.map(id => REGION[id]);
-  const cx = rs.reduce((a, r) => a + r.x, 0) / rs.length, cy = rs.reduce((a, r) => a + r.y, 0) / rs.length;
-  if (rs.length > 1) return { x: cx, y: cy };
-  const siblings = theoriesIn(t.themes[0]).filter(x => x.themes.length === 1);
-  const k = siblings.findIndex(x => x.id === t.id), n = siblings.length;
-  const a = (k / Math.max(1, n)) * Math.PI * 2 - Math.PI / 4;
-  const d = n === 1 ? 0 : rs[0].r * 0.45;
-  return { x: cx + Math.cos(a) * d, y: cy + Math.sin(a) * d };
-}
 
 /** Fit the world into a viewport, or centre and zoom on one territory. */
 function view(vw: number, vh: number, focus?: string) {
@@ -54,23 +38,36 @@ const CLAIM_Z = 1.6;
 /** Below this scale territory names would overlap, so only the open one stays. */
 const FAR_Z = 0.55;
 
-function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, inert }: {
+/** A wrapped label's box stays as wide as its max-width; narrow it to its longest line so the paper fits the words. */
+function shrinkWrap(el: HTMLElement) {
+  el.style.width = "";
+  const ratio = el.getBoundingClientRect().width / el.offsetWidth;
+  if (!ratio) return;
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const lines = new Map<number, { l: number; r: number }>();
+  for (const r of range.getClientRects()) {
+    const k = Math.round(r.top), o = lines.get(k);
+    lines.set(k, { l: Math.min(o?.l ?? r.left, r.left), r: Math.max(o?.r ?? r.right, r.right) });
+  }
+  if (lines.size < 2) return;
+  const cs = getComputedStyle(el), pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+  el.style.width = `${Math.ceil(Math.max(...[...lines.values()].map(v => v.r - v.l)) / ratio + pad)}px`;
+}
+
+/** A landmark's natural radius, ring included; selection grows it. */
+const pinR = (t: Theory, sel: boolean) => (t.draft ? 5 : (8 + (t.confidence ?? 0) * 1.5) / 2 + 2) * (sel ? 1.3 : 1);
+const LANDMARKS = THEORIES.map(t => ({ t, p: pinPos(t) }));
+
+function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, inert, mapStyle = "circles" }: {
   vw: number; vh: number; focus?: string; claims?: string; selTheme?: string; selPin?: string;
-  onRegion: (id: string) => void; onPin: (id: string, at: { x: number; y: number }) => void; inert?: boolean;
+  onRegion: (id: string) => void; onPin: (id: string, at: { x: number; y: number }) => void; inert?: boolean; mapStyle?: MapStyle;
 }) {
   const [peek, setPeek] = useState<string>();
   const timer = useRef<number>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
   const box = useRef<HTMLDivElement>(null);
   const cam = useCamera({ el: box, vw, vh, world: WORLD, fit: () => view(vw, vh) });
-
-  const dots = useMemo(() => THEMES.flatMap(th => {
-    const r = rand(th.signals * 7 + th.id.length), R = REGION[th.id];
-    return [...Array(th.signals)].map((_, i) => {
-      const a = r() * Math.PI * 2, d = Math.sqrt(r()) * R.r * 0.9;
-      return { id: `${th.id}${i}`, x: R.x + Math.cos(a) * d, y: R.y + Math.sin(a) * d, fresh: i < th.fresh };
-    });
-  }), []);
 
   // Opening something frames it; after that the camera is the user's. A resize keeps the view's centre still.
   const last = useRef<{ focus?: string; pin?: string; vw: number; vh: number }>(undefined);
@@ -90,49 +87,68 @@ function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, in
     }
   }, [focus, selPin, vw, vh]);
 
+  // Claim sizes in natural pixels, for placing them clear of each other and of every landmark.
+  const [sizes, setSizes] = useState<Record<string, { w: number; h: number }>>({});
+  const labelEls = useRef(new Map<string, HTMLElement>());
+  useLayoutEffect(() => {
+    const read = () => {
+      const next: Record<string, { w: number; h: number }> = {};
+      labelEls.current.forEach((el, id) => { shrinkWrap(el); next[id] = { w: el.offsetWidth, h: el.offsetHeight }; });
+      setSizes(prev => Object.keys(next).every(k => prev[k]?.w === next[k].w && prev[k]?.h === next[k].h) ? prev : next);
+    };
+    read();
+    const ro = new ResizeObserver(read);
+    labelEls.current.forEach(el => ro.observe(el));
+    return () => ro.disconnect();
+  }, []);
+
   const { scale, tx, ty } = cam.snap;
+  const near = (p: { x: number; y: number }) => { const sx = p.x * scale + tx, sy = p.y * scale + ty; return scale >= CLAIM_Z && sx > 0 && sx < vw && sy > 0 && sy < vh; };
+  const wanted = new Set(LANDMARKS.filter(({ t, p }) => (claims && t.themes.includes(claims)) || near(p)).map(({ t }) => t.id));
+  const places = placeLabels({
+    pins: LANDMARKS.map(({ t, p }) => ({ id: t.id, x: p.x, y: p.y, r: pinR(t, t.id === selPin), prio: (t.draft ? 0 : 10) + (t.confidence ?? 0) })),
+    wanted, forced: new Set(selPin ? [selPin] : []), extra: peek, sizes, scale, tx, vw,
+  });
+  // A label that hides keeps its last side, so it fades out where it was.
+  const lastPlace = useRef<Record<string, Place>>({});
+  Object.assign(lastPlace.current, places);
+
+  const hover = (id: string) => ({
+    onPointerEnter: () => { clearTimeout(timer.current); timer.current = window.setTimeout(() => setPeek(id), 400); },
+    onPointerLeave: () => { clearTimeout(timer.current); setPeek(p => p === id ? undefined : p); },
+  });
+
   return (
-    <div className="a2-map" inert={inert} ref={box} tabIndex={inert ? -1 : 0} role="group" aria-roledescription="map" aria-label="Atlas map"
+    <div className="a2-map" inert={inert} ref={box} tabIndex={inert ? -1 : 0} role="group" aria-roledescription="map" aria-label="Atlas map" data-style={mapStyle}
       data-panning={cam.panning ? "" : undefined} data-far={scale < FAR_Z ? "" : undefined} {...cam.handlers}>
       <motion.div className="a2-world" style={{ x: cam.x, y: cam.y, scale: cam.s, originX: 0, originY: 0 }}>
-        {THEMES.map(th => {
-          const R = REGION[th.id];
+        <Ground style={mapStyle} focus={focus} selTheme={selTheme} onRegion={onRegion} />
+        {LANDMARKS.map(({ t, p }) => {
+          const open = (e: { stopPropagation: () => void }) => { e.stopPropagation(); onPin(t.id, { x: p.x * scale + tx, y: p.y * scale + ty }); };
+          const sel = selPin === t.id, pk = peek === t.id && !sel;
           return (
-            <button key={th.id} className="a2-region" data-open={theoriesIn(th.id).length === 0 ? "" : undefined}
-              data-zoomed={focus === th.id ? "" : undefined} data-sel={selTheme === th.id ? "" : undefined}
-              style={{ left: R.x - R.r, top: R.y - R.r, width: R.r * 2, height: R.r * 2 }}
-              onClick={() => onRegion(th.id)} aria-label={th.name} />
-          );
-        })}
-        {dots.map(d => <i key={d.id} className="a2-dot" data-fresh={d.fresh ? "" : undefined} style={{ left: d.x, top: d.y }} />)}
-        {THEMES.map(th => {
-          const R = REGION[th.id];
-          return (
-            <span key={th.id} className="a2-name" data-sel={selTheme === th.id ? "" : undefined} style={{ left: R.x, top: R.y - R.r + 16 }}>
-              <ThemeName id={th.id} />{theoriesIn(th.id).length === 0 && <Mark kind="open" />}
-            </span>
-          );
-        })}
-        {THEORIES.map(t => {
-          const p = pinPos(t);
-          const sx = p.x * scale + tx, sy = p.y * scale + ty;
-          const near = scale >= CLAIM_Z && sx > 0 && sx < vw && sy > 0 && sy < vh;
-          const show = (claims && t.themes.includes(claims)) || near || peek === t.id || selPin === t.id;
-          // Claims read towards whichever side has room, and wrap rather than run off the edge.
-          const right = vw - sx - 28, left = sx - 28;
-          const flip = right < 240 && left > right;
-          const cw = Math.max(120, Math.min(360, flip ? left : right));
-          return (
-            <button key={t.id} className="a2-pin" data-draft={t.draft ? "" : undefined} data-sel={selPin === t.id ? "" : undefined}
-              style={{ left: p.x, top: p.y, ["--c" as string]: t.confidence ?? 0, ["--cw" as string]: `${cw}px` }} aria-label={t.claim} data-flip={flip ? "" : undefined}
-              onClick={e => { e.stopPropagation(); onPin(t.id, { x: sx, y: sy }); }}
-              onPointerEnter={() => { clearTimeout(timer.current); timer.current = window.setTimeout(() => setPeek(t.id), 400); }}
-              onPointerLeave={() => { clearTimeout(timer.current); setPeek(p => p === t.id ? undefined : p); }}
-              onFocus={() => setPeek(t.id)} onBlur={() => setPeek(p => p === t.id ? undefined : p)}>
+            <button key={t.id} className="a2-pin" data-draft={t.draft ? "" : undefined} data-sel={sel ? "" : undefined} data-peek={pk ? "" : undefined}
+              style={{ left: p.x, top: p.y, ["--c" as string]: t.confidence ?? 0 }} aria-label={t.claim}
+              onClick={open} {...hover(t.id)} onFocus={() => setPeek(t.id)} onBlur={() => setPeek(p => p === t.id ? undefined : p)}>
               <i />
-              <span className="a2-claim" data-show={show ? "" : undefined}><Claim id={t.id} /></span>
               {t.challenge && <Mark kind="challenge" />}
             </button>
+          );
+        })}
+        {LANDMARKS.map(({ t, p }) => {
+          const pl = places[t.id], at = pl ?? lastPlace.current[t.id] ?? { side: 1, dy: 0 };
+          const sel = selPin === t.id, pk = peek === t.id && !sel, r = pinR(t, sel);
+          return (
+            <div key={t.id} className="a2-lab" data-show={pl ? "" : undefined} data-flip={at.side < 0 ? "" : undefined} data-sel={sel ? "" : undefined} data-peek={pk ? "" : undefined}
+              style={{ left: p.x, top: p.y, ["--off" as string]: `${r + GAP}px`, ["--dy" as string]: `${at.dy}px` }}>
+              {at.dy !== 0 && (
+                <svg className="a2-leader" aria-hidden><line x1={at.side * r} y1={0} x2={at.side * (r + GAP + 1)} y2={at.dy} /></svg>
+              )}
+              <span className="a2-claim" ref={el => { if (el) labelEls.current.set(t.id, el); }} aria-hidden
+                onClick={e => { e.stopPropagation(); onPin(t.id, { x: p.x * scale + tx, y: p.y * scale + ty }); }} {...hover(t.id)}>
+                <Claim id={t.id} />
+              </span>
+            </div>
           );
         })}
       </motion.div>
@@ -140,6 +156,7 @@ function AtlasMap({ vw, vh, focus, claims, selTheme, selPin, onRegion, onPin, in
     </div>
   );
 }
+
 
 /** Floating map chrome: zoom out, zoom in, fit. Sits above the map it acts on and never starts a pan. */
 function ZoomControl({ cam }: { cam: Camera }) {
@@ -165,7 +182,7 @@ function useResetScroll(dep: string | undefined) {
 /* ═════ Side pane ═════ */
 const MAPW = 496;
 
-function SidePane() {
+function SidePane({ mapStyle }: { mapStyle?: MapStyle }) {
   const [themeId, setTheme] = useState<string>();
   const [doc, setDoc] = useState<Doc>();
   const [unfolded, setUnfolded] = useState<string>();
@@ -192,7 +209,7 @@ function SidePane() {
   return (
     <div className="ap a2" data-variant="side" tabIndex={0} ref={frame}>
       <motion.div className="a2-mapbox" data-shrunk={open ? "" : undefined} initial={false} animate={{ width: open ? MAPW : W }} transition={T}>
-        <AtlasMap vw={open ? MAPW : W} vh={H} focus={themeId} selTheme={themeId} selPin={doc?.kind === "theory" ? doc.id : undefined}
+        <AtlasMap mapStyle={mapStyle} vw={open ? MAPW : W} vh={H} focus={themeId} selTheme={themeId} selPin={doc?.kind === "theory" ? doc.id : undefined}
           onRegion={id => openObj("theme", id)} onPin={id => openObj("theory", id)} />
       </motion.div>
       <AnimatePresence>
@@ -343,13 +360,13 @@ function useEscape(back: () => void) {
  * Atlas side-pane variant for a host (the app shell) that draws the object pane itself.
  * The map fills the width it is given and centres on the open object's territory.
  */
-export function AtlasHosted({ open, onOpen, width, height }: { open?: { kind: ObjKind; id: string }; onOpen: OnOpen; width: number; height: number }) {
+export function AtlasHosted({ open, onOpen, width, height, mapStyle = "circles" }: { open?: { kind: ObjKind; id: string }; onOpen: OnOpen; width: number; height: number; mapStyle?: MapStyle }) {
   const [themeId, setTheme] = useState<string>();
   useEffect(() => { setTheme(t => (open ? contextFor(t, open.kind, open.id) : undefined)); }, [open?.kind, open?.id]);
   return (
     <MotionConfig reducedMotion="user">
       <div className="ap a2" data-variant="side" data-hosted="" style={{ width, height }}>
-        <AtlasMap vw={width} vh={height} focus={themeId} selTheme={themeId} selPin={open?.kind === "theory" ? open.id : undefined}
+        <AtlasMap mapStyle={mapStyle} vw={width} vh={height} focus={themeId} selTheme={themeId} selPin={open?.kind === "theory" ? open.id : undefined}
           onRegion={id => onOpen("theme", id)} onPin={id => onOpen("theory", id)} />
       </div>
     </MotionConfig>
@@ -357,10 +374,10 @@ export function AtlasHosted({ open, onOpen, width, height }: { open?: { kind: Ob
 }
 
 /** Atlas, developed: two ways to open a territory or landmark to read and write it without losing the map. */
-export function AtlasDeveloped({ variant }: { variant: Variant }) {
+export function AtlasDeveloped({ variant, mapStyle }: { variant: Variant; mapStyle?: MapStyle }) {
   return (
     <MotionConfig reducedMotion="user">
-      {variant === "side" ? <SidePane /> : <DeepZoom />}
+      {variant === "side" ? <SidePane mapStyle={mapStyle} /> : <DeepZoom />}
     </MotionConfig>
   );
 }
