@@ -375,8 +375,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 
 
 /* Signal-in-a-suggestion alternates */
-.evx { grid-column: 2; min-width: 0; font-size: var(--t-12); color: var(--ink-2); }
-.evx .src { color: var(--ink-3); margin-left: 8px; white-space: nowrap; }
+.evx { grid-column: 2; min-width: 0; font-size: var(--t-13); color: var(--ink); }
+.evx .src { color: var(--ink-2); margin-left: 8px; white-space: nowrap; font-size: var(--t-12); }
 .evx svg { color: var(--ink-3); }
 .evx .stance { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-3); font-size: var(--t-11); font-weight: 500; }
 .evx.a { display: grid; gap: 4px; padding: 7px 10px 8px; border-radius: var(--r-2); outline: 1px dashed var(--draft-line); outline-offset: -1px; background: var(--draft-fill); }
@@ -460,9 +460,9 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .bitem .t { grid-column: 2; font-weight: 600; line-height: 1.4; text-wrap: pretty; padding-right: 24px; }
 .bitem .t .dot { margin-left: 10px; vertical-align: var(--dot-shift, 0); }   /* measured: dot centre on the x-height centre */   /* trails the last word, centred on the x-height */
 .bitem .acts { grid-column: 2; justify-self: end; display: flex; gap: var(--sp-1); align-items: center; margin-top: var(--sp-1); }   /* actions always sit bottom right, after the content they act on */
-.bitem .ev-row { grid-column: 2; display: flex; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); border-radius: var(--r-2); box-shadow: inset 0 0 0 1px var(--draft-line); background: var(--draft-fill); color: var(--ink-2); font-size: var(--t-12); }
+.bitem .ev-row { grid-column: 2; display: flex; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); border-radius: var(--r-2); box-shadow: inset 0 0 0 1px var(--draft-line); background: var(--draft-fill); color: var(--ink); font-size: var(--t-13); }
 .bitem .ev-row svg { color: var(--h-signal); }
-.bitem .why { grid-column: 2; font-size: var(--t-12); color: var(--ink-3); }
+.bitem .why { grid-column: 2; font-size: var(--t-13); line-height: 1.45; color: var(--ink-2); }   /* the agent's reasoning: body size, ink 2 */
 .bitem.chal { background: var(--surface); }
 .bitem:focus-visible, .bitem.focus { outline: 2px solid var(--focus); outline-offset: 2px; }   /* the red dot alone carries the challenge; no tinted card */
 .bitem.out { transform: translateX(28px); opacity: 0; }
