@@ -414,12 +414,13 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .bitem { --obj: var(--h-theory); display: grid; grid-template-columns: auto 1fr auto; gap: var(--sp-1) var(--sp-3); padding: var(--sp-4); border-radius: var(--r-3); background: var(--surface); box-shadow: var(--hi), var(--sh-card);
   transition: transform var(--dur-2) var(--ease), opacity var(--dur-2) var(--ease); margin: 2px; }
 .bitem .glyph { color: var(--h-theory); margin-top: 1px; }
-.bitem .t { font-weight: 600; display: flex; gap: var(--sp-2); align-items: center; }
+.bitem .t { font-weight: 600; line-height: 1.4; text-wrap: pretty; }
+.bitem .t .dot { margin-left: var(--sp-2); vertical-align: 0.12em; }   /* trails the last word, centred on the x-height */
 .bitem .acts { display: flex; gap: var(--sp-1); align-items: start; }
 .bitem .ev-row { grid-column: 2; display: flex; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); border-radius: var(--r-2); box-shadow: inset 0 0 0 1px var(--draft-line); background: var(--draft-fill); color: var(--ink-2); font-size: var(--t-12); }
 .bitem .ev-row svg { color: var(--h-signal); }
 .bitem .why { grid-column: 2; font-size: var(--t-12); color: var(--ink-3); }
-.bitem.chal { background: color-mix(in oklab, var(--challenge-wash) 55%, var(--surface)); }
+.bitem.chal { background: var(--surface); }   /* the red dot alone carries the challenge; no tinted card */
 .bitem.out { transform: translateX(28px); opacity: 0; }
 .bitem.ok { transform: translateX(-6px); opacity: 0; }
 .kbdrow { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--ink-3); margin-top: 8px; }
@@ -850,7 +851,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   function renderBrief() {
     $('#brief').innerHTML = briefItems.map((b, i) => `<div class="bitem-wrap"><div><div class="bitem ${b.k === 'chal' ? 'chal' : ''}" tabindex="0" data-i="${i}">
       ${icon('theory', 'i s glyph')}
-      <span class="t">${b.k === 'chal' ? '<span class="dot chal"></span>' : ''}${b.t}</span>
+      <span class="t">${b.t}${b.k === 'chal' ? '<span class="dot chal" aria-label="Challenge"></span>' : ''}</span>
       <span class="acts"><button class="act btn ghost" data-a style="height:26px">Accept</button><button class="act ib" data-x aria-label="Discard" data-tip="Discard" data-key="X" style="width:26px;height:26px">${icon('x')}</button></span>
       <span class="ev-row">${icon(b.ev[0])}<span>${b.ev[1]} <span style="color:var(--ink-3)">${b.ev[2]}</span></span></span>
       <span class="why">${b.why}</span>
