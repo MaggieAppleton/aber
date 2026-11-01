@@ -236,9 +236,13 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .card.draft::after { content: ""; position: absolute; inset: 0; border-radius: inherit; border: 1px dashed var(--draft-line); pointer-events: none; transition: opacity var(--dur-3) var(--ease); }
 .card.draft .claim { color: var(--ink-2); }
 .card.draft:hover, .card.draft.is-hover { background: color-mix(in oklab, var(--draft-fill) 60%, var(--surface)); }
-.edge-acts { position: absolute; right: var(--sp-2); bottom: var(--sp-2); display: flex; gap: var(--sp-1); opacity: 0; transform: translateY(2px);
-  transition: opacity var(--dur-2) var(--ease), transform var(--dur-2) var(--ease); }
-.card.draft:hover .edge-acts, .card.draft:focus-within .edge-acts, .card.draft.is-hover .edge-acts { opacity: 1; transform: none; }
+/* Action placement: dismiss or discard (X) sits top right; positive actions sit bottom right */
+.edge-acts { display: contents; }
+.card.draft .mini { position: absolute; opacity: 0; transform: translateY(2px); transition: opacity var(--dur-2) var(--ease), transform var(--dur-2) var(--ease); }
+.card.draft .mini.yes { right: var(--sp-2); bottom: var(--sp-2); }
+.card.draft .mini.no { right: var(--sp-2); top: var(--sp-2); transform: translateY(-2px); }
+.card.draft:is(:hover, :focus-within, .is-hover) .mini { opacity: 1; transform: none; }
+.card.draft:is(:hover, :focus-within, .is-hover) .claim-icon { opacity: 0; }
 .mini { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: var(--r-pill); background: var(--surface); box-shadow: var(--hi), 0 0 0 0.5px var(--line), 0 1px 2px var(--line-2); color: var(--ink-2); }
 .mini.yes:hover { color: var(--rose); }
 .mini.no:hover { color: var(--challenge-text); }
@@ -412,10 +416,11 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .bitem-wrap.gone { grid-template-rows: 0fr; }
 .bitem-wrap > div { overflow: hidden; }
 .bitem { --obj: var(--h-theory); display: grid; grid-template-columns: auto 1fr; gap: var(--sp-1) var(--sp-3); padding: var(--sp-4); border-radius: var(--r-3); background: var(--surface); box-shadow: var(--hi), var(--sh-card);
-  transition: transform var(--dur-2) var(--ease), opacity var(--dur-2) var(--ease); margin: 2px; }
+  transition: transform var(--dur-2) var(--ease), opacity var(--dur-2) var(--ease); margin: 2px; position: relative; }
+.bitem [data-x] { position: absolute; top: var(--sp-2); right: var(--sp-2); }
 .bitem .glyph { color: var(--h-theory); margin-top: 1px; }
-.bitem .t { grid-column: 2; font-weight: 600; line-height: 1.4; text-wrap: pretty; }
-.bitem .t .dot { margin-left: var(--sp-2); vertical-align: 0.12em; }   /* trails the last word, centred on the x-height */
+.bitem .t { grid-column: 2; font-weight: 600; line-height: 1.4; text-wrap: pretty; padding-right: 24px; }
+.bitem .t .dot { margin-left: 10px; vertical-align: var(--dot-shift, 0); }   /* measured: dot centre on the x-height centre */   /* trails the last word, centred on the x-height */
 .bitem .acts { grid-column: 2; grid-row: 4; justify-self: end; display: flex; gap: var(--sp-1); align-items: center; margin-top: var(--sp-1); }   /* actions always sit bottom right, after the content they act on */
 .bitem .ev-row { grid-column: 2; display: flex; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); border-radius: var(--r-2); box-shadow: inset 0 0 0 1px var(--draft-line); background: var(--draft-fill); color: var(--ink-2); font-size: var(--t-12); }
 .bitem .ev-row svg { color: var(--h-signal); }

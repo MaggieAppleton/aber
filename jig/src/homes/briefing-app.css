@@ -19,7 +19,7 @@
 /* An item: a card. The cursor is a ring, not a fill. */
 .br-item { border-radius: 8px; transition: box-shadow 150ms ease-out; }
 .br-item[data-cursor] { box-shadow: var(--ap-sel); }
-.br-row { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; align-items: start; gap: 4px 10px; padding: 10px 10px 10px 12px; border-radius: 8px; background: var(--ap-surface); box-shadow: var(--ap-shadow-1); }
+.br-row { position: relative; display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; align-items: start; gap: 4px 10px; padding: 10px 10px 10px 12px; border-radius: 8px; background: var(--ap-surface); box-shadow: var(--ap-shadow-1); }
 .br-row[data-draft] { background: rgb(255 255 255 / 50%); box-shadow: none; outline: 1px dashed rgb(var(--ap-shc) / 12%); outline-offset: -1px; }
 .br-glyph { height: 20px; display: grid; place-items: center; color: var(--ap-ink-3); }
 .br-main { display: grid; gap: 6px; min-width: 0; }
@@ -72,3 +72,8 @@
 .br[data-phone] .br-col { padding: 60px 16px 120px; }
 .br[data-phone] .br-row { grid-template-columns: 16px minmax(0, 1fr); }
 .br[data-phone] .br-acts { grid-column: 2; justify-self: start; margin: 2px 0 0 -2px; }
+
+/* Action placement: dismiss or discard (X) sits top right; positive actions sit bottom right */
+.br-acts .ap-iconbtn[aria-label$="(X)"] { position: absolute; top: 6px; right: 6px; }
+.br-row:has(.br-acts .ap-iconbtn[aria-label$="(X)"]) .br-title { padding-right: 26px; }
+.br-title > .br-open + *, .br-title > .br-static + * { margin-left: 3px; }   /* a trailing mark sits 10px from the title */
