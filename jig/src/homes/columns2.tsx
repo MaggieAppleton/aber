@@ -23,10 +23,23 @@ const STOCKS: Kind[] = ["theme", "theory", "prototype"];
  * Columns, developed. Stocks (themes, theories, prototypes) open into a wide pane.
  * Flows (dumps, signals) unfold in place. Columns fold away to rails or to dots.
  */
-export function ColumnsDeveloped({ fold }: { fold: Fold }) {
+/** Lets a host (the app shell) hold what is open and unfolded, and draw the pane itself. */
+export type ColumnsHost = {
+  open?: { kind: Kind; id: string }; onOpen: (kind: Kind, id: string) => void; onClose: () => void;
+  unfolded?: string; onUnfold: (id: string | undefined) => void;
+};
+
+export function ColumnsDeveloped({ fold, host }: { fold: Fold; host?: ColumnsHost }) {
   const [visible, setVisible] = useState<Kind[]>(["theme", "theory", "prototype"]);
-  const [open, setOpen] = useState<{ kind: Kind; id: string }>();
-  const [unfolded, setUnfolded] = useState<string>();   // signal or dump expanded in place
+  const [ownOpen, setOwnOpen] = useState<{ kind: Kind; id: string }>();
+  const [ownUnfolded, setOwnUnfolded] = useState<string>();   // signal or dump expanded in place
+  const open = host ? host.open : ownOpen;
+  const unfolded = host ? host.unfolded : ownUnfolded;
+  const setOpen = (o: { kind: Kind; id: string } | undefined) => host ? (o ? host.onOpen(o.kind, o.id) : host.onClose()) : setOwnOpen(o);
+  const setUnfolded = (f: string | undefined | ((u: string | undefined) => string | undefined)) => {
+    const next = typeof f === "function" ? f(unfolded) : f;
+    if (host) host.onUnfold(next); else setOwnUnfolded(next);
+  };
 
   const unfoldedKind: Kind | undefined = unfolded ? (unfolded.startsWith("D") ? "dump" : "signal") : undefined;
   const related = open ? lineage(open.kind, open.id) : unfolded && unfoldedKind ? lineage(unfoldedKind, unfolded) : undefined;
@@ -36,13 +49,13 @@ export function ColumnsDeveloped({ fold }: { fold: Fold }) {
   // When something is open, only its own column stays wide, plus the column of any item unfolded from it.
   const isWide = (k: Kind) => open ? k === open.kind || k === unfoldedKind : visible.includes(k);
 
-  const openObj = (kind: Kind, id: string) => { setUnfolded(undefined); setOpen({ kind, id }); };
+  const openObj = (kind: Kind, id: string) => { if (!host) setUnfolded(undefined); setOpen({ kind, id }); };
   const unfold = (kind: Kind, id: string) => { show(kind); setUnfolded(u => u === id ? undefined : id); };
   // Signals unfold in their own column, not inside the pane.
   const nav: PaneNav = { onOpen: openObj, onUnfold: unfold, unfolded };
 
   return (
-    <div className="ap cd" data-fold={fold} tabIndex={0} onKeyDown={e => { if (e.key === "Escape") { if (open) setOpen(undefined); else setUnfolded(undefined); } }}>
+    <div className="ap cd" data-fold={fold} data-hosted={host ? "" : undefined} tabIndex={host ? undefined : 0} onKeyDown={host ? undefined : e => { if (e.key === "Escape") { if (open) setOpen(undefined); else setUnfolded(undefined); } }}>
       <LayoutGroup id={`cd-${fold}`}>
         {fold === "dots" && (
           <div className="cd-dots">
@@ -78,17 +91,17 @@ export function ColumnsDeveloped({ fold }: { fold: Fold }) {
             );
           })}
           <AnimatePresence mode="popLayout">
-            {open && (
+            {open && !host && (
               <motion.article key={`${open.kind}${open.id}`} className="cd-pane ap-scroll" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 24, transition: { duration: 0.15 } }} transition={{ duration: 0.4, ease: EASE }}>
                 <div className="cd-pane-close"><IconButton icon="x" label="Close (Esc)" onClick={() => setOpen(undefined)} /></div>
                 <ObjectPane kind={open.kind as ObjKind} id={open.id} nav={nav} />
               </motion.article>
             )}
           </AnimatePresence>
-          {!open && <div className="cd-empty" />}
+          {(!open || host) && <div className="cd-empty" />}
         </div>
       </LayoutGroup>
-      <Pill sees={open ? ({ theory: "Theory", theme: "Theme", prototype: "Prototype" } as Record<string, string>)[open.kind] : "Columns"} />
+      {!host && <Pill sees={open ? ({ theory: "Theory", theme: "Theme", prototype: "Prototype" } as Record<string, string>)[open.kind] : "Columns"} />}
     </div>
   );
 }
@@ -146,7 +159,7 @@ function ColumnList({ kind, icon, name, related, open, unfolded, fold, onOpen, o
           if (r.top + r.height / 2 < l.top + l.height / 2) up++; else down++;
         });
         // Lift the bottom marker clear of the frame's floating pill when this column sits under it.
-        const pill = list.closest(".ap")?.querySelector(".ap-pill-wrap")?.getBoundingClientRect();
+        const pill = (list.closest("[data-pill-host]") ?? list.closest(".ap"))?.querySelector(".ap-pill-wrap, .ps-surface:not([data-open])")?.getBoundingClientRect();
         const mid = (l.left + l.right) / 2;
         const lift = !!pill && pill.left < mid + 40 && pill.right > mid - 40 && pill.top < l.bottom;
         setOff(o => o.up === up && o.down === down && o.lift === lift ? o : { up, down, lift });

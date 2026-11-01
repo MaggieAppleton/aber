@@ -7,10 +7,12 @@ import { HomesJig } from "./homes";
 import { DevelopColumnsJig } from "./develop-columns";
 import { DevelopAtlasJig } from "./develop-atlas";
 import { DevelopPillJig } from "./develop-pill";
+import { DevelopAppJig } from "./develop-app";
 import "./jig.css";
 import "./minis/wf.css";
 
 const JIGS = {
+  app: { title: "App", view: DevelopAppJig },
   pill: { title: "Dump or ask", view: DevelopPillJig },
   atlas: { title: "Atlas, developed", view: DevelopAtlasJig },
   columns: { title: "Columns, developed", view: DevelopColumnsJig },

@@ -293,6 +293,23 @@ function useEscape(back: () => void) {
   return ref;
 }
 
+/**
+ * Atlas side-pane variant for a host (the app shell) that draws the object pane itself.
+ * The map fills the width it is given and centres on the open object's territory.
+ */
+export function AtlasHosted({ open, onOpen, width, height }: { open?: { kind: ObjKind; id: string }; onOpen: OnOpen; width: number; height: number }) {
+  const [themeId, setTheme] = useState<string>();
+  useEffect(() => { setTheme(t => (open ? contextFor(t, open.kind, open.id) : undefined)); }, [open?.kind, open?.id]);
+  return (
+    <MotionConfig reducedMotion="user">
+      <div className="ap a2" data-variant="side" data-hosted="" style={{ width, height }}>
+        <AtlasMap vw={width} vh={height} focus={themeId} selTheme={themeId} selPin={open?.kind === "theory" ? open.id : undefined}
+          onRegion={id => onOpen("theme", id)} onPin={id => onOpen("theory", id)} />
+      </div>
+    </MotionConfig>
+  );
+}
+
 /** Atlas, developed: two ways to open a territory or landmark to read and write it without losing the map. */
 export function AtlasDeveloped({ variant }: { variant: Variant }) {
   return (

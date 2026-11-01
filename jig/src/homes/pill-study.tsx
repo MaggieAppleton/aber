@@ -50,7 +50,7 @@ export const hostOf = (url: string) => { try { return new URL(url).hostname.repl
 
 /* ── State ── */
 export type Att = { id: string; kind: "link" | "image"; host: string; title?: string; by?: string };
-export type Ctx = { id: string; label: string; kind: "screen" | "theory" | "signal"; region: string };
+export type Ctx = { id: string; label: string; kind: "screen" | "theory" | "signal" | "theme" | "prototype"; region: string; auto?: boolean };
 export type Draft = { claim: string; kind: "theory" | "revision"; state: "pending" | "accepted" | "discarded"; joins?: string; ev?: [number, number] };
 export type Filed = { theme: string; n: number; gists?: string[] };
 export type Msg =
@@ -287,7 +287,7 @@ export function CtxChip({ c, onRemove, onHot }: { c: Ctx; onRemove?: () => void;
       initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.15 } }}
       transition={{ type: "spring", duration: 0.35, bounce: 0.15 }}
       onPointerEnter={() => onHot?.(c.region)} onPointerLeave={() => onHot?.(null)}>
-      <I n={c.kind === "screen" ? "screen" : c.kind === "theory" ? "theory" : "signal"} size={13} />
+      <I n={c.kind} size={13} />
       <span className="ps-ctx-label">{c.label}</span>
       {onRemove && <button type="button" className="ps-chip-x" aria-label={`Stop sharing ${c.label}`} title="Remove" onClick={onRemove}><I n="x" size={12} /></button>}
     </motion.span>
@@ -645,15 +645,72 @@ const SHADOW = {
   sheet: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 8px 24px 0px rgba(0, 0, 0, 0.14)",
 };
 let activeStage: string | null = null;
+/** Whether the last input was the keyboard, so closing by key hands focus back to the pill (and by pointer doesn't). */
+let keyInput = false;
+if (typeof window !== "undefined") {
+  window.addEventListener("keydown", () => { keyInput = true; }, true);
+  window.addEventListener("pointerdown", () => { keyInput = false; }, true);
+}
+/** Width the docked B2 column takes from the right edge of its host (column plus its margins). */
+export const DOCK_W = 372;
 
-export function Stage({ variant, s, api, w, h, cx: cxProp, centred, force = {}, children, frameRef: extRef, screen = "Cost of intelligence", live = true, screenY = 0, screenX }: {
+/** The demo stage: a faint app backdrop with the dump-or-ask surface on top. */
+export function Stage({ variant, s, api, w, h, cx, centred, force = {}, children, frameRef: extRef, screen = "Cost of intelligence", live = true, screenY = 0, screenX }: {
   /** centred: the closed pill sits at cx instead of the corner (for state tiles that never open). */
   variant: Variant; s: DumpState; api: DumpApi; w: number; h: number; cx?: number; centred?: boolean; force?: Force; children?: ReactNode;
   frameRef?: RefObject<HTMLDivElement | null>; screen?: string; live?: boolean; screenY?: number; screenX?: number;
 }) {
-  const reduced = !!useReducedMotion();
   const localRef = useRef<HTMLDivElement>(null);
   const frameRef = extRef ?? localRef;
+  const phone = variant === "P";
+  const cxv = cx ?? (phone ? w / 2 : SIDEBAR + (w - SIDEBAR) / 2);
+  // Accepting a draft in the conversation solidifies the same draft on the screen behind.
+  const solid = s.thread.some(m => m.who === "agent" && m.draft?.state === "accepted" && m.draft.claim === theory("d1").claim) ? ["d1"] : [];
+  const screenLeft = phone ? 0 : screenX ?? cxv - (SIDEBAR + (1240 - SIDEBAR) / 2);
+  return (
+    <div ref={frameRef} className="ap ps-frame" data-variant={variant} data-picking={s.picking ? "" : undefined} style={{ width: w, height: h }}>
+      {!force.noScreen && (
+        <div className="ps-back">
+          {phone ? <PhoneScreen solid={solid} /> : <DesktopScreen left={screenLeft} top={screenY} dock={variant === "B2" && s.open ? DOCK_W : 0} solid={solid} />}
+          <div className="ps-wash" />
+        </div>
+      )}
+      <DumpOrAsk variant={variant} s={s} api={api} w={w} h={h} cx={cx} centred={centred} force={force} frameRef={frameRef} live={live}
+        sees={[{ label: screen, kind: "screen", region: "main" }]} syncSees={false} thumb={<DesktopScreen left={0} dock={0} />} />
+      {children}
+    </div>
+  );
+}
+
+/** One thing the agent sees: shown as a context chip, and the first one names the closed pill. */
+export type Sees = { label: string; kind: Ctx["kind"]; id?: string; region?: string };
+
+/** One Esc step inside the surface: stop picking, then discard a take, then close. Returns false when there was nothing to do. */
+export function escapeDump(s: DumpState, api: DumpApi) {
+  if (s.picking) api.setPicking(false);
+  else if (s.rec != null) api.cancelRec();
+  else if (s.open) api.close();
+  else return false;
+  return true;
+}
+
+/**
+ * Dump or ask: the pill (with its mic) and the panel it grows into, plus its toast, drop target, highlight and pick-from-screen.
+ * Embed it inside any positioned host frame; the host owns the state (useDump) and decides what the agent sees.
+ *
+ * - `frameRef`: the host frame. The surface listens on it for approach, click-away and picking, and outlines `[data-region]` inside it.
+ * - `sees`: what is on screen, first = primary (it names the closed pill). Synced into the context chips unless `syncSees` is false;
+ *   chips the user picked with the crosshair are kept. Anything in the host marked `data-pick` (+ `data-label`, `data-kind`) can be picked.
+ * - `keys`: handle ⌘J and Esc itself (default). Hosts with their own Esc stack pass false and call `escapeDump`.
+ * - `closeOnClickAway`: close when the host is clicked outside the panel (default). A docked host passes false.
+ * - `onDecide`: a draft in the conversation was accepted or discarded.
+ */
+export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, force = {}, frameRef, live = true, sees, syncSees = true, keys = true, closeOnClickAway = true, thumb, onDecide }: {
+  variant?: Variant; s: DumpState; api: DumpApi; w: number; h: number; cx?: number; centred?: boolean; force?: Force;
+  frameRef: RefObject<HTMLDivElement | null>; live?: boolean; sees: Sees[]; syncSees?: boolean; keys?: boolean; closeOnClickAway?: boolean;
+  thumb?: ReactNode; onDecide?: (d: Draft, state: "accepted" | "discarded") => void;
+}) {
+  const reduced = !!useReducedMotion();
   const surfaceRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -667,12 +724,34 @@ export function Stage({ variant, s, api, w, h, cx: cxProp, centred, force = {}, 
   const [focus, setFocus] = useState(false);
   const [hl, setHl] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const [pickHover, setPickHover] = useState<string | null>(null);
+  const primary = sees[0];
+  const screen = primary?.label ?? "";
+
+  // What is on screen becomes the context chips; picked chips stay.
+  const seesKey = JSON.stringify(sees);
+  useEffect(() => {
+    if (!syncSees) return;
+    const auto: Ctx[] = sees.map(x => ({ id: `c-auto-${x.kind}-${x.id ?? x.label}`, label: x.label, kind: x.kind, region: x.region ?? x.id ?? "main", auto: true }));
+    api.set(p => ({ ctx: [...auto, ...p.ctx.filter(c => !c.auto)] }));
+  }, [seesKey, syncSees]);
+
+  // Tell the host about decisions on drafts.
+  const decided = useRef(new Set<string>());
+  useEffect(() => {
+    if (!onDecide) return;
+    s.thread.forEach(m => {
+      if (m.who !== "agent" || !m.draft || m.draft.state === "pending" || decided.current.has(m.id)) return;
+      decided.current.add(m.id);
+      onDecide(m.draft, m.draft.state);
+    });
+  }, [s.thread]);
 
   const phone = variant === "P";
   const cx = cxProp ?? (phone ? w / 2 : SIDEBAR + (w - SIDEBAR) / 2);
   const ph = phone ? 44 : 40, micW = ph, bottom = phone ? 30 : 24;
   const corner = variant === "B2" && !centred, docked = variant === "B2";
   const ap = force.approach ?? approach, hv = force.hover ?? hover, pr = force.pressed ?? pressed, fc = force.focus ?? focus;
+  void ap;
   const voiceSheet = phone && !s.open && s.rec != null;
   // The mic is a segment inside the pill, so the closed surface is label + mic.
   const closedW = pillW + micW;
@@ -684,7 +763,7 @@ export function Stage({ variant, s, api, w, h, cx: cxProp, centred, force = {}, 
   let box: { left: number; bottom: number; width: number; height: number; r: number };
   let panelW = 600;
   if (s.open) {
-    if (docked) { panelW = 360; box = { left: w - 372, bottom: 12, width: 360, height: h - 24, r: 14 }; }
+    if (docked) { panelW = DOCK_W - 12; box = { left: w - DOCK_W, bottom: 12, width: DOCK_W - 12, height: h - 24, r: 14 }; }
     else { panelW = w - 16; box = { left: 8, bottom: 8, width: w - 16, height: Math.min(panelH, maxH), r: 40 }; }
   } else if (voiceSheet) {
     panelW = w - 16; box = { left: 8, bottom: 8, width: w - 16, height: 252, r: 40 };
@@ -702,71 +781,103 @@ export function Stage({ variant, s, api, w, h, cx: cxProp, centred, force = {}, 
 
   // Focus the input once the panel has room; give focus back to the pill when it closes.
   const wasOpen = useRef(s.open);
-  const keyClose = useRef(false);
   useEffect(() => {
     if (!live) return;
     if (s.open && !wasOpen.current) window.setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 60);
-    if (!s.open && wasOpen.current && keyClose.current && frameRef.current?.contains(document.activeElement)) { (document.activeElement as HTMLElement).blur(); window.setTimeout(() => hitRef.current?.focus({ preventScroll: true }), 400); }
+    if (!s.open && wasOpen.current && keyInput && frameRef.current?.contains(document.activeElement)) {
+      (document.activeElement as HTMLElement).blur(); window.setTimeout(() => hitRef.current?.focus({ preventScroll: true }), 400);
+    }
     wasOpen.current = s.open;
-    keyClose.current = false;
   }, [s.open, live]);
 
-  // The region the agent sees, outlined on the screen behind.
+  // The region the agent sees, outlined on the screen behind. It follows the region while it moves or resizes.
   const region = s.picking ? pickHover : s.hot;
   useLayoutEffect(() => {
     const f = frameRef.current;
-    const el = region ? f?.querySelector<HTMLElement>(`[data-region="${region}"]`) : null;
-    if (!f || !el) return setHl(null);
-    const a = f.getBoundingClientRect(), b = el.getBoundingClientRect();
-    setHl({ x: b.left - a.left, y: b.top - a.top, w: b.width, h: b.height });
+    if (!f || !region) return setHl(null);
+    let raf = 0;
+    const measure = () => {
+      const el = f.querySelector<HTMLElement>(`[data-region="${region}"]`);
+      if (!el) { setHl(null); return; }
+      const a = f.getBoundingClientRect(), b = el.getBoundingClientRect();
+      // Outline 6px outside the region, but never past the host's own edge (a full-frame region gets an inset outline).
+      const l = Math.max(b.left - a.left - 6, 2), t = Math.max(b.top - a.top - 6, 2);
+      const r = Math.min(b.right - a.left + 6, a.width - 2), btm = Math.min(b.bottom - a.top + 6, a.height - 2);
+      const next = { x: l + 6, y: t + 6, w: r - l - 12, h: btm - t - 12 };
+      setHl(h => (h && h.x === next.x && h.y === next.y && h.w === next.w && h.h === next.h ? h : next));
+      raf = requestAnimationFrame(measure);
+    };
+    measure();
+    return () => cancelAnimationFrame(raf);
   }, [region, s.open]);
 
   // ⌘J and Esc for whichever stage the pointer was last in.
   const sRef = useRef(s);
   sRef.current = s;
   useEffect(() => {
-    if (!live) return;
+    if (!live || !keys) return;
     const onKey = (e: KeyboardEvent) => {
       if (activeStage !== id) return;
       const st = sRef.current;
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "j") { e.preventDefault(); keyClose.current = true; st.open ? api.close() : api.open(); }
-      else if (e.key === "Escape") {
-        if (st.picking) api.setPicking(false);
-        else if (st.rec != null) api.cancelRec();
-        else if (st.open) { keyClose.current = true; api.close(); }
-      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "j") { e.preventDefault(); st.open ? api.close() : api.open(); }
+      else if (e.key === "Escape") escapeDump(st, api);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [live, id, api]);
+  }, [live, keys, id, api]);
 
-  const onFramePointerMove = (e: React.PointerEvent) => {
-    if (!live || s.open) return;
-    const r = surfaceRef.current?.getBoundingClientRect();
-    if (!r) return;
-    const dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right - micW - 8), dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
-    setApproach(Math.hypot(dx, dy) < 56);
-  };
-  const onFramePointerDown = (e: React.PointerEvent) => {
-    activeStage = id;
-    const t = e.target as Element;
-    if (s.picking) {
-      const pick = t.closest<HTMLElement>("[data-pick]");
-      if (pick) {
-        const kind = pick.dataset.kind === "signal" ? "signal" : "theory";
-        api.addCtx({ id: `c-${pick.dataset.pick}`, label: pick.dataset.label!.length > 34 ? pick.dataset.label!.slice(0, 32) + "…" : pick.dataset.label!, kind, region: pick.dataset.pick! });
-        setPickHover(null);
-        e.preventDefault();
-      } else if (!surfaceRef.current?.contains(t)) api.setPicking(false);
-      return;
-    }
-    if (s.open && !surfaceRef.current?.contains(t)) api.close();
-  };
-  const onScreenMove = (e: React.PointerEvent) => {
-    if (!s.picking) return;
-    const pick = (e.target as Element).closest<HTMLElement>("[data-pick]");
-    setPickHover(pick?.dataset.pick ?? null);
-  };
+  // Listen on the host frame: approach, click-away, picking.
+  const opts = useRef({ closeOnClickAway, live, micW });
+  opts.current = { closeOnClickAway, live, micW };
+  useEffect(() => {
+    const f = frameRef.current;
+    if (!f) return;
+    let swallow = false;
+    const move = (e: PointerEvent) => {
+      const st = sRef.current, t = e.target as Element;
+      if (st.picking) {
+        const pick = surfaceRef.current?.contains(t) ? null : t.closest<HTMLElement>("[data-pick]");
+        setPickHover(pick?.dataset.pick ?? null);
+        return;
+      }
+      if (!opts.current.live || st.open) return;
+      const r = surfaceRef.current?.getBoundingClientRect();
+      if (!r) return;
+      const dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right - opts.current.micW - 8), dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
+      setApproach(Math.hypot(dx, dy) < 56);
+    };
+    const leave = () => { setApproach(false); setPickHover(null); };
+    const enter = () => { activeStage = id; };
+    const down = (e: PointerEvent) => {
+      activeStage = id;
+      const st = sRef.current, t = e.target as Element;
+      if (st.picking) {
+        const pick = surfaceRef.current?.contains(t) ? null : t.closest<HTMLElement>("[data-pick]");
+        if (pick) {
+          const kind = (["signal", "theme", "prototype"].includes(pick.dataset.kind ?? "") ? pick.dataset.kind : "theory") as Ctx["kind"];
+          const label = pick.dataset.label!;
+          api.addCtx({ id: `c-${pick.dataset.pick}`, label: label.length > 34 ? label.slice(0, 32) + "…" : label, kind, region: pick.dataset.pick! });
+          setPickHover(null);
+          swallow = true;
+          e.preventDefault();
+        } else if (!surfaceRef.current?.contains(t)) api.setPicking(false);
+        return;
+      }
+      if (st.open && opts.current.closeOnClickAway && !surfaceRef.current?.contains(t)) api.close();
+    };
+    // A pick never also clicks the thing picked.
+    const click = (e: MouseEvent) => { if (swallow) { swallow = false; e.stopPropagation(); e.preventDefault(); } };
+    f.addEventListener("pointermove", move);
+    f.addEventListener("pointerleave", leave);
+    f.addEventListener("pointerenter", enter);
+    f.addEventListener("focusin", enter);
+    f.addEventListener("pointerdown", down, true);
+    f.addEventListener("click", click, true);
+    return () => {
+      f.removeEventListener("pointermove", move); f.removeEventListener("pointerleave", leave); f.removeEventListener("pointerenter", enter);
+      f.removeEventListener("focusin", enter); f.removeEventListener("pointerdown", down, true); f.removeEventListener("click", click, true);
+    };
+  }, [frameRef, id, api]);
 
   // Drag and drop onto the pill (or the open panel, where it becomes an attachment).
   const depth = useRef(0);
@@ -786,22 +897,11 @@ export function Stage({ variant, s, api, w, h, cx: cxProp, centred, force = {}, 
 
   const lifted = !s.open && !s.rec && !s.drag && hv;
   const scale = !s.open && pr ? 0.96 : !s.open && s.drag ? 1.06 : 1;
-  const showMic = !s.open && !voiceSheet;
   const recClosed = !s.open && s.rec != null && !phone;
-  // Accepting a draft in the conversation solidifies the same draft on the screen behind.
-  const solid = s.thread.some(m => m.who === "agent" && m.draft?.state === "accepted" && m.draft.claim === theory("d1").claim) ? ["d1"] : [];
-  const screenLeft = phone ? 0 : screenX ?? cx - (SIDEBAR + (1240 - SIDEBAR) / 2);
+  const primaryIcon: IconName = primary?.kind ?? "screen";
 
   return (
-    <div ref={frameRef} className="ap ps-frame" data-variant={variant} data-picking={s.picking ? "" : undefined} style={{ width: w, height: h }}
-      onPointerMove={onFramePointerMove} onPointerLeave={() => setApproach(false)} onPointerDownCapture={onFramePointerDown} onPointerEnter={() => { activeStage = id; }}
-      onFocusCapture={() => { activeStage = id; }}>
-      {!force.noScreen && (
-        <div className="ps-back" onPointerMove={onScreenMove} onPointerLeave={() => setPickHover(null)}>
-          {phone ? <PhoneScreen solid={solid} /> : <DesktopScreen left={screenLeft} top={screenY} dock={docked && s.open ? 372 : 0} solid={solid} />}
-          <div className="ps-wash" />
-        </div>
-      )}
+    <>
       <AnimatePresence>
         {hl && (
           <motion.div key="hl" className="ps-hl" initial={{ opacity: 0 }} animate={{ opacity: 1, left: hl.x - 6, top: hl.y - 6, width: hl.w + 12, height: hl.h + 12 }} exit={{ opacity: 0 }}
@@ -829,10 +929,10 @@ export function Stage({ variant, s, api, w, h, cx: cxProp, centred, force = {}, 
 
       {/* What the agent sees: a thumbnail after a deliberate hover on the screen name */}
       <AnimatePresence>
-        {s.hot === "main" && !s.open && !s.toast && !phone && (
+        {thumb && s.hot === "main" && !s.open && !s.toast && !phone && (
           <motion.div key="thumb" className="ps-seethumb" role="img" aria-label={`The agent sees ${screen}`} style={{ left: Math.min(pillCx - 124, w - 260), bottom: pillBottom + ph + 10 }}
             initial={{ opacity: 0, y: 6, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1, transition: { delay: live ? 0.35 : 0, type: "spring", duration: 0.3, bounce: 0 } }} exit={{ opacity: 0, y: 4, transition: { duration: 0.12 } }}>
-            <div className="ps-seethumb-in" aria-hidden><DesktopScreen left={0} dock={0} /></div>
+            <div className="ps-seethumb-in" aria-hidden>{thumb}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -850,7 +950,7 @@ export function Stage({ variant, s, api, w, h, cx: cxProp, centred, force = {}, 
       </AnimatePresence>
 
       {/* The surface: pill when closed, panel when open */}
-      <motion.div ref={surfaceRef} className="ps-surface" data-open={s.open || voiceSheet ? "" : undefined} data-focus={fc && !s.open ? "" : undefined} data-drag={s.drag && !s.open ? "" : undefined}
+      <motion.div ref={surfaceRef} className="ps-surface" data-variant={variant} data-open={s.open || voiceSheet ? "" : undefined} data-focus={fc && !s.open ? "" : undefined} data-drag={s.drag && !s.open ? "" : undefined}
         initial={false}
         animate={{ left: box.left, bottom: box.bottom, width: box.width, height: box.height, borderRadius: box.r, y: lifted ? -1 : 0, scale, boxShadow: s.open || voiceSheet ? SHADOW.sheet : lifted || s.drag ? SHADOW.lift : SHADOW.pill }}
         transition={reduced ? { duration: 0 } : { default: s.open || voiceSheet ? OPEN_T : CLOSE_T, y: { duration: 0.15, ease: "easeOut" }, scale: { type: "spring", duration: 0.3, bounce: s.drag ? 0.35 : 0 }, boxShadow: { duration: 0.2 } }}
@@ -860,7 +960,7 @@ export function Stage({ variant, s, api, w, h, cx: cxProp, centred, force = {}, 
         <AnimatePresence initial={false}>
           {!s.open && !voiceSheet && (
             <motion.div key="pill" className="ps-pill-layer" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: reduced ? 0 : 0.14, duration: 0.18 } }} exit={{ opacity: 0, transition: { duration: 0.08 } }}>
-              <PillRows s={s} api={api} recClosed={recClosed} phone={phone} screen={screen} onWidth={setPillW} hitRef={hitRef} time={force.time}
+              <PillRows s={s} api={api} recClosed={recClosed} phone={phone} screen={screen} icon={primaryIcon} region={primary?.region ?? "main"} onWidth={setPillW} hitRef={hitRef} time={force.time}
                 onHover={setHover} onPress={setPressed} onFocus={setFocus} />
               <button type="button" className="ps-micseg" data-rec={recClosed ? "" : undefined} data-phone={phone ? "" : undefined} data-target="mic" style={{ width: micW }}
                 aria-label={recClosed ? "Stop and dump" : "Voice dump"} title={recClosed ? "Stop and dump" : "Voice dump"}
@@ -885,14 +985,12 @@ export function Stage({ variant, s, api, w, h, cx: cxProp, centred, force = {}, 
           )}
         </AnimatePresence>
       </motion.div>
-
-      {children}
-    </div>
+    </>
   );
 }
 
-function PillRows({ s, api, recClosed, phone, screen, onWidth, hitRef, onHover, onPress, onFocus, time }: {
-  s: DumpState; api: DumpApi; recClosed: boolean; phone: boolean; screen: string; onWidth: (w: number) => void;
+function PillRows({ s, api, recClosed, phone, screen, icon, region, onWidth, hitRef, onHover, onPress, onFocus, time }: {
+  s: DumpState; api: DumpApi; recClosed: boolean; phone: boolean; screen: string; icon: IconName; region: string; onWidth: (w: number) => void;
   hitRef: RefObject<HTMLButtonElement | null>; onHover: (b: boolean) => void; onPress: (b: boolean) => void; onFocus: (b: boolean) => void; time?: string;
 }) {
   const mode = recClosed ? "rec" : s.drag ? "drag" : "rest";
@@ -907,8 +1005,8 @@ function PillRows({ s, api, recClosed, phone, screen, onWidth, hitRef, onHover, 
             <SwapIcon k={s.busy ? "busy" : "idle"}>{s.busy ? <Spinner size={16} /> : <I n="dump" />}</SwapIcon>
             <span className="ps-pill-label">Dump or ask</span>
             {!phone && (
-              <span className="ps-pill-ctx" onPointerEnter={() => api.setHot("main")} onPointerLeave={() => api.setHot(null)} title={`The agent sees ${screen}`} data-target="pill-ctx">
-                <I n="screen" size={13} />{screen}
+              <span className="ps-pill-ctx" onPointerEnter={() => api.setHot(region)} onPointerLeave={() => api.setHot(null)} title={`The agent sees ${screen}`} data-target="pill-ctx">
+                <I n={icon} size={13} /><span className="ps-pill-ctx-label">{screen}</span>
               </span>
             )}
           </button>

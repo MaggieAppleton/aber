@@ -406,3 +406,4 @@
 .ps-panel:has(.ps-ctxfloat) .ps-thread { padding-bottom: 46px; }
 /* Gists unfold at the theme's size, with the signal icon at the theme icon's size */
 .ps-gists li { font-size: 13px; color: var(--ap-ink-2); gap: 6px; }
+.ps-pill-ctx-label { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
