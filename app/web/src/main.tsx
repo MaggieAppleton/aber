@@ -4,11 +4,10 @@ import { connect } from "./data/live";
 import { TooltipProvider } from "./ui/tooltip";
 import "./design-tokens.css";
 import "./app/base.css";
-/** Agentation feedback overlay: ?feedback=1 turns it on (and remembers), ?feedback=0 turns it off. */
+/** Agentation feedback overlay: only when this page load's URL has ?feedback=1, so it never shows in a live demo. */
 function feedbackOn(){
-  const q=new URLSearchParams(location.search).get("feedback");
-  try{ if(q!==null) localStorage.setItem("aber-feedback",q==="1"?"1":"0"); return localStorage.getItem("aber-feedback")==="1"; }
-  catch{ return q==="1"; }
+  try{ localStorage.removeItem("aber-feedback"); }catch{}   // the old remembered setting
+  return new URLSearchParams(location.search).get("feedback")==="1";
 }
 const root=createRoot(document.getElementById("root")!);
 root.render(<div className="startup" role="status">Loading Aber…</div>);

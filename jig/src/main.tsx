@@ -49,7 +49,8 @@ function App() {
           </nav>
         </main>
       )}
-      <Agentation appName={`Aber jig: ${jig?.title ?? "index"}`} />
+      {/* Hidden on the talk deck unless ?feedback is in the URL, so it never shows while presenting. */}
+      {(id !== "deck" || new URLSearchParams(location.search).has("feedback")) && <Agentation appName={`Aber jig: ${jig?.title ?? "index"}`} />}
     </>
   );
 }
