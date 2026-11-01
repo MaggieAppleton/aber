@@ -247,3 +247,10 @@
 .t2x .t2-tool:focus-visible, .t2x-badge:focus-visible, .t2x-crumb:focus-visible { outline: none; box-shadow: 0 0 0 var(--size-px-0-5) var(--color-gray-0-a-30), 0 0 0 var(--size-px-3) var(--color-gray-0-a-8); }
 .t2x-halo { fill: none; stroke: var(--ap-bg); stroke-width: 6; stroke-linecap: butt; }
 .t2x-hop[data-faint] { opacity: 0.2; }
+
+/* Packed field dots are 16px apart. Their independent hit region must not cover a neighbouring mark. */
+.ab-production .t2a-item[data-mode="dots"]::after {
+  content: "";
+  position: absolute;
+  inset: var(--size-px-neg-1);
+}

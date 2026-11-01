@@ -338,7 +338,7 @@
 .ps-micseg[data-phone] .ps-micseg-in { width: var(--size-px-36); height: var(--size-px-36); }
 .ps-micseg:focus-visible { outline: none; }
 .ps-micseg:focus-visible .ps-micseg-in { outline: var(--size-px-2) solid var(--color-rgb-47-111-237-a-55); outline-offset: var(--size-px-2); }
-.ps-pill-row[data-mode="rest"] .ps-pill { padding-right: var(--size-px-6); }
+.ps-pill-row[data-mode="rest"] .ps-pill { width: 100%; padding-right: var(--size-px-6); }
 .ps-pill-row[data-mode="rec"] .ps-pill { padding-right: var(--size-px-8); }
 /* Attachment stack: slower, and an across version */
 .ps-fan { transition: height 500ms cubic-bezier(0.16, 1, 0.3, 1), width 500ms cubic-bezier(0.16, 1, 0.3, 1); margin-left: auto; }

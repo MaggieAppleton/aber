@@ -17,7 +17,7 @@ import { tripFor } from "./trips";
 import { ConfidenceSpark, type SparkVariant } from "./confidence-spark";
 import { ConfidenceControl } from "./confidence-control";
 import { RetirementNotice, retirementLabel } from "./object-status";
-import { SuggestionReview } from "./suggestion-review";
+import { SuggestionPreview } from "./suggestion-preview";
 import { stancesFor, TODAY } from "./histories";
 import "./panes.css";
 
@@ -125,11 +125,11 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
               <ConfidenceSpark stances={stancesFor(id, edit.log, edit.confidence)} variant={SPARK} />
               {(trip.hits.length ? tripped : t.challenge) && <Mark kind="challenge" />}
             </dd></div>}
-        <div className="pn-meta-row"><dt className="ap-label">Happens by</dt><dd><span className="pn-year" role="group" aria-label="Happens by">
+        <div className="pn-meta-row"><dt className="ap-label">Happens by</dt><dd className="pn-year">
           <button className="pn-step" aria-label="Earlier" title="Earlier" onClick={() => set({ horizon: edit.horizon - 1 })}><Icon name="minus" size={12} /></button>
           <span className="ap-num pn-field-val">{edit.horizon}</span>
           <button className="pn-step" aria-label="Later" title="Later" onClick={() => set({ horizon: edit.horizon + 1 })}><Icon name="plus" size={12} /></button>
-        </span></dd></div>
+        </dd></div>
         {t.rivals.length > 0 && <div className="pn-meta-row"><dt className="ap-label">Rival</dt><dd className="pn-rivals">
           {t.rivals.map(r => <button key={r} className="pn-chip pn-rival" onClick={() => onOpen("theory", r)}><Swap /><span><Claim id={r} /></span></button>)}
         </dd></div>}
@@ -318,5 +318,5 @@ function TheoryTripwire({ id }: { id: string }) {
 
 function SuggestionActions({id}:{id:string}) {
   const suggestions=world.suggestions.filter(s=>s.status==="pending"&&s.kind!=="challenge"&&field(s,"targetId")===id);
-  return <>{suggestions.map(s=><SuggestionReview key={s.id} suggestion={s}/>)}</>;
+  return <>{suggestions.map(s=><SuggestionPreview key={s.id} suggestion={s}/>)}</>;
 }

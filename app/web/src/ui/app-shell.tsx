@@ -108,10 +108,11 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
   const [restore, setRestore] = useState<Partial<Record<View, Snap>>>({});
   const [dragW, setDragW] = useState<number | null>(null);
   const { s, api } = useDump({ ctx: [], thread: [] });
-  // The dump log: every dump and what it became. Rises from the pill; ⌘⇧L.
+  // Dumps are opened from Briefing or the keyboard, independently of capture.
   const dumpLog = useDumpLog();
 
   const [logOpen, setLogOpenState] = useState(false);
+  const logReturnFocus = useRef<HTMLElement | null>(null);
   // One stack of transient surfaces, most recent last: Esc closes from the end.
   const stack = useRef<Layer[]>([]);
   const push = (l: Layer) => { stack.current = [...stack.current.filter(x => x !== l), l]; };
@@ -121,7 +122,14 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
   useEffect(()=>{if(open)push("pane");},[]);
   const closeObj = () => { drop("pane"); setUnfolded(undefined); setOpenState(undefined); };
   useEffect(() => { if (s.open) push("dump"); else drop("dump"); }, [s.open]);
-  const setLogOpen = (o: boolean) => { if (o) push("log"); else drop("log"); setLogOpenState(o); };
+  const setLogOpen = (o: boolean) => {
+    if (o) {
+      const active = document.activeElement;
+      if (active instanceof HTMLElement && active !== document.body && !active.closest('.ps-log')) logReturnFocus.current = active;
+      push("log");
+    } else drop("log");
+    setLogOpenState(o);
+  };
   // Opening the dump column closes the log; the log never sits over the open column.
   useEffect(() => { if (s.open && logOpen) setLogOpen(false); }, [s.open]);
   // A click anywhere outside the log (other than its own toggle) closes it.
@@ -186,7 +194,7 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
       const { s: st, open: o, unfolded: u } = live.current;
       if (st.picking || st.rec != null) { escapeDump(st, api); return; }
       const top = stack.current.at(-1);
-      if (top === "log" && live.current.logOpen) { setLogOpen(false); frame.current?.querySelector<HTMLElement>("[data-log-toggle]")?.focus({ preventScroll: true }); return; }
+      if (top === "log" && live.current.logOpen) { setLogOpen(false); (logReturnFocus.current?.isConnected ? logReturnFocus.current : frame.current?.querySelector<HTMLElement>(".ps-pill"))?.focus({ preventScroll: true }); return; }
       if (top === "dump" && st.open) { api.close(); return; }
       if (top === "pane" && o) { const timelineEscape=new Event("aber:timeline-escape",{cancelable:true});if(frame.current?.dataset.view==="timeline"){window.dispatchEvent(timelineEscape);if(timelineEscape.defaultPrevented)return;} if (u) setUnfolded(undefined); else closeObj(); return; }
       if (u) setUnfolded(undefined);

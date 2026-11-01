@@ -3,24 +3,36 @@ import { THEMES, theoriesIn, type Theory } from "../data";
 
 /** World size and the territory layout both map structures share. */
 export const W = 1240, H = 760;
-export const REGION: Record<string, {x:number;y:number;r:number}> = {};
-/** Stable circle packing: largest themes first, positioned on a golden-angle spiral. */
+type Region = { x: number; y: number; r: number };
+/** The canonical Atlas composition. Keep familiar territories stable as the world changes. */
+const ANCHORS: Record<string, Region> = {
+  cost: { x: 600, y: 370, r: 150 }, memory: { x: 820, y: 290, r: 160 }, personal: { x: 420, y: 230, r: 130 },
+  funding: { x: 520, y: 560, r: 100 }, review: { x: 980, y: 540, r: 120 }, interfaces: { x: 220, y: 500, r: 105 }, identity: { x: 1070, y: 150, r: 75 },
+};
+export const REGION: Record<string, Region> = {};
+/** Extra territories pack deterministically around the canonical world without moving its landmarks. */
 export function layoutRegions() {
-  for(const key of Object.keys(REGION)) delete REGION[key];
-  const ordered=[...THEMES].sort((a,b)=>b.signals-a.signals || a.id.localeCompare(b.id));
-  const placed: {x:number;y:number;r:number}[]=[];
-  ordered.forEach((theme,index)=>{
-    const r=Math.min(185,Math.max(110,94+Math.sqrt(Math.max(0,theme.signals))*16,theme.name.length*3.6+24));
-    let point={x:W/2,y:H/2,r};
-    for(let step=0;step<12000;step++) {
-      const angle=step*2.399963229728653, distance=Math.sqrt(step)*7;
-      point={x:W/2+Math.cos(angle)*distance,y:H/2+Math.sin(angle)*distance*.72,r};
-      if(placed.every(other=>Math.hypot(point.x-other.x,point.y-other.y) >= (r+other.r)*.96)) break;
+  for (const key of Object.keys(REGION)) delete REGION[key];
+  const placed: Region[] = [];
+  for (const theme of THEMES) {
+    const anchor = ANCHORS[theme.id];
+    if (anchor) { REGION[theme.id] = { ...anchor }; placed.push(REGION[theme.id]); }
+  }
+  const extra = THEMES.filter(theme => !ANCHORS[theme.id]).sort((a, b) => b.signals - a.signals || a.id.localeCompare(b.id));
+  for (const theme of extra) {
+    const r = Math.min(185, Math.max(110, 94 + Math.sqrt(Math.max(0, theme.signals)) * 16, theme.name.length * 3.6 + 24));
+    let point = { x: W / 2, y: H / 2, r };
+    for (let step = 0; step < 12000; step++) {
+      const angle = step * 2.399963229728653, distance = Math.sqrt(step) * 7;
+      point = { x: W / 2 + Math.cos(angle) * distance, y: H / 2 + Math.sin(angle) * distance * .72, r };
+      if (placed.every(other => Math.hypot(point.x - other.x, point.y - other.y) >= (r + other.r) * .96)) break;
     }
-    REGION[theme.id]=point;placed.push(point);
-  });
+    REGION[theme.id] = point;
+    placed.push(point);
+  }
 }
-onWorld(layoutRegions);layoutRegions();
+onWorld(layoutRegions);
+layoutRegions();
 
 export function rand(seed: number) { return () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }; }
 
@@ -44,15 +56,23 @@ function gauss(r: () => number) { return Math.sqrt(-2 * Math.log(Math.max(1e-6, 
 
 export let SIGS: Sig[] = [];
 function layoutSignals() {
-  SIGS=THEMES.flatMap(th=>{
-    const region=REGION[th.id], random=rand(th.signals*13+th.id.length*7);
-    return Array.from({length:th.signals},(_,index)=>{
-      const angle=random()*Math.PI*2, radius=Math.sqrt(random())*region.r*.85;
-      return {id:`${th.id}:${index}`,theme:th.id,themes:[th.id],x:region.x+Math.cos(angle)*radius,y:region.y+Math.sin(angle)*radius,fresh:index<th.fresh};
+  SIGS = THEMES.flatMap(th => {
+    const R = REGION[th.id], r = rand(th.signals * 13 + th.id.length * 7);
+    const at = [{ x: R.x, y: R.y, w: 1.3, s: .36 }, ...theoriesIn(th.id).map(t => ({ ...pinPos(t), w: t.draft ? .6 : 1, s: .2 }))];
+    const total = at.reduce((a, b) => a + b.w, 0);
+    return Array.from({ length: th.signals }, (_, i) => {
+      let pick = r() * total, a = at[0];
+      for (const c of at) { pick -= c.w; if (pick <= 0) { a = c; break; } }
+      let x = a.x + gauss(r) * R.r * a.s, y = a.y + gauss(r) * R.r * a.s;
+      const dx = x - R.x, dy = y - R.y, d = Math.hypot(dx, dy), max = R.r * .9;
+      if (d > max) { x = R.x + dx / d * max; y = R.y + dy / d * max; }
+      const themes = [th.id, ...THEMES.filter(o => o.id !== th.id && Math.hypot(x - REGION[o.id].x, y - REGION[o.id].y) < REGION[o.id].r * .78).map(o => o.id)].slice(0, 2);
+      return { id: `${th.id}${i}`, theme: th.id, themes, x, y, fresh: i < th.fresh };
     });
   });
 }
-onWorld(layoutSignals);layoutSignals();
+onWorld(() => { layoutSignals(); terrainCache = undefined; });
+layoutSignals();
 
 /* ── Paths ── */
 type P = [number, number];

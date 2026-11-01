@@ -74,13 +74,14 @@ function Dots({ dots }: { dots: { id: string; x: number; y: number; fresh: boole
 /* ── Circles: the baseline ── */
 function Circles(props: GroundProps) {
   const { focus, selTheme, onRegion, signals = "scatter" } = props;
+  const layoutKey = THEMES.map(th => `${th.id}:${th.signals}:${th.fresh}:${REGION[th.id].x}:${REGION[th.id].y}:${REGION[th.id].r}`).join("|");
   const dots = useMemo(() => THEMES.flatMap(th => {
     const r = rand(th.signals * 7 + th.id.length), R = REGION[th.id];
     return [...Array(th.signals)].map((_, i) => {
       const a = r() * Math.PI * 2, d = Math.sqrt(r()) * R.r * 0.9;
       return { id: `${th.id}${i}`, x: R.x + Math.cos(a) * d, y: R.y + Math.sin(a) * d, fresh: i < th.fresh };
     });
-  }), []);
+  }), [layoutKey]);
   return (
     <>
       {THEMES.map(th => {

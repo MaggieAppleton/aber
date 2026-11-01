@@ -9,25 +9,23 @@
 .pn-meta dd { display: flex; align-items: center; flex-wrap: wrap; gap: var(--size-px-8); min-width: 0; min-height: var(--size-px-24); margin: 0; }
 
 /* Editable text: no browser focus rectangle. A faint tint that reaches past the text on hover,
-   and the tint plus a hairline inset ring for keyboard focus. Padding with matching negative margin keeps
+   and the tint plus a hairline inset ring while editing. Padding with matching negative margin keeps
    the text where it was and keeps the ring inside the element's own box, so nothing outside can clip it. */
 .pn-edit { outline: none; border-radius: var(--size-px-6); white-space: pre-wrap; overflow-wrap: anywhere; cursor: text; transition: background-color 150ms ease-out, box-shadow 150ms ease-out; }
 .pn-edit:hover { background: var(--pn-edit-hover); }
-.pn-edit:focus { background: var(--pn-edit-bg); }
-.pn-edit:focus-visible { outline: none; background: var(--pn-edit-bg); box-shadow: inset 0 0 0 var(--size-px-1) var(--pn-edit-ring); }
+.pn-edit:focus, .pn-edit:focus-visible { outline: none; background: var(--pn-edit-bg); box-shadow: inset 0 0 0 var(--size-px-1) var(--pn-edit-ring); }
 [data-placeholder]:empty::before { content: attr(data-placeholder); color: var(--ap-ink-3); pointer-events: none; }
 
 .pn-title { margin: var(--size-px-neg-4) var(--size-px-neg-8); padding: var(--size-px-4) var(--size-px-8); font-size: var(--size-px-26); font-weight: 600; letter-spacing: var(--size-em-neg-0-015); line-height: 1.2; text-wrap: balance; }
 .pn-title[data-draft] { color: var(--ap-ink-2); outline: var(--size-px-1) dashed var(--color-gray-0-a-28); outline-offset: var(--size-px-neg-1); }
-.pn-title[data-draft]:focus-visible { outline: var(--size-px-1) dashed var(--color-gray-0-a-40); outline-offset: var(--size-px-neg-1); box-shadow: none; }
+.pn-title[data-draft]:focus, .pn-title[data-draft]:focus-visible { outline: var(--size-px-1) dashed var(--color-gray-0-a-40); outline-offset: var(--size-px-neg-1); box-shadow: none; }
 /* The body: the document's main prose. A faint paper tint and generous inset set it apart from the meta above and the
    tripwire and evidence below (the doc's 16px gap plus 8px each side); the negative margin keeps its text aligned with
    everything else. Empty, it stays a three-line writing area. */
 .ap .pn-doc > .pn-body.pn-edit { margin: var(--size-px-8) var(--size-px-neg-14); padding: var(--size-px-14); max-width: calc(var(--size-ch-68) + var(--size-px-28)); font-size: var(--size-px-15); line-height: 1.65; color: var(--ap-ink-2);
   min-height: calc(var(--size-lh-3) + var(--size-px-28)); border-radius: var(--size-px-8); background: var(--color-gray-0-a-2); }
 .ap .pn-doc > .pn-body.pn-edit:hover { background: var(--color-gray-0-a-3); }
-.ap .pn-doc > .pn-body.pn-edit:focus { background: var(--pn-edit-bg); }
-.ap .pn-doc > .pn-body.pn-edit:focus-visible { background: var(--pn-edit-bg); box-shadow: inset 0 0 0 var(--size-px-1) var(--pn-edit-ring); }
+.ap .pn-doc > .pn-body.pn-edit:focus, .ap .pn-doc > .pn-body.pn-edit:focus-visible { background: var(--pn-edit-bg); box-shadow: inset 0 0 0 var(--size-px-1) var(--pn-edit-ring); }
 
 .pn-field-val { color: var(--ap-ink-2); }
 .pn-year { gap: var(--size-px-2); }
@@ -39,11 +37,14 @@
 .pn-step:active { transform: scale(0.92); }
 .pn-step:focus-visible { outline: var(--size-px-1-5) solid var(--ap-ink-3); outline-offset: var(--size-px-neg-1-5); }
 
-.pn-conf { display: inline-flex; flex-shrink: 0; }
-.pn-conf-control { position: relative; width: var(--size-px-112); height: var(--size-px-40); cursor: pointer; touch-action: none; border-radius: var(--size-px-5); }
+.pn-conf { position: relative; display: inline-flex; width: var(--size-px-112); height: var(--size-px-6); flex-shrink: 0; }
+/* The marks keep the canonical six-pixel silhouette. The single target fills the
+   metadata row without enlarging it or overlapping the next row's controls. */
+.pn-conf-control { position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 100%; height: var(--size-px-24); cursor: pointer; touch-action: none; border-radius: var(--size-px-5); }
 .pn-conf-marks { position: absolute; inset: 0; display: flex; align-items: center; gap: var(--size-px-3); pointer-events: none; }
-.pn-conf-marks i { width: var(--size-px-20); height: var(--size-px-6); border-radius: var(--size-px-3); background: var(--color-gray-0-a-10); transition: background 150ms; }
+.pn-conf-marks i { width: var(--size-px-20); height: var(--size-px-6); border-radius: var(--size-px-3); background: var(--color-gray-0-a-10); pointer-events: auto; transition: background 150ms, transform 100ms; }
 .pn-conf-marks i[data-on] { background: var(--ap-ink); }
+.pn-conf-marks i:hover { transform: scaleY(1.5); }
 /* The single range input covers its whole composite; marks are presentation only. */
 .pn-conf-thumb { width: 100%; height: 100%; left: 0!important; top: 0!important; translate: none!important; pointer-events: none; }
 .ab-production .pn-conf input[type="range"]:focus-visible { outline: none; }
@@ -76,8 +77,7 @@
 .pn-detail-inner { display: grid; gap: var(--size-px-6); padding: 0 var(--size-px-10) var(--size-px-10); }
 .pn-note { min-height: var(--size-px-22); padding: var(--size-px-4) var(--size-px-6); border-radius: var(--size-px-5); background: var(--ap-surface); box-shadow: inset 0 0 0 var(--size-px-0-5) var(--ap-line); }
 .pn-note:hover { background: var(--ap-surface); box-shadow: inset 0 0 0 var(--size-px-0-5) var(--pn-edit-ring); }
-.pn-note:focus { background: var(--ap-surface); }
-.pn-note:focus-visible { background: var(--ap-surface); box-shadow: inset 0 0 0 var(--size-px-1) var(--pn-edit-ring); }
+.pn-note:focus, .pn-note:focus-visible { background: var(--ap-surface); box-shadow: inset 0 0 0 var(--size-px-1) var(--pn-edit-ring); }
 .pn-link { display: flex; align-items: flex-start; gap: var(--size-px-6); text-align: left; border: 0; background: transparent; padding: var(--size-px-3) var(--size-px-4); border-radius: var(--size-px-5); cursor: pointer; color: var(--ap-ink-2); font-size: var(--size-px-12); }
 .pn-link svg { flex-shrink: 0; margin-top: var(--size-px-2); }
 .pn-link:hover { background: var(--ap-hover); color: var(--ap-ink); }

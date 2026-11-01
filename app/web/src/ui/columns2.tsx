@@ -2,7 +2,7 @@ import { beginObjectDrag,endObjectDrag } from "../data/object-drag";
 import { SURFACE_RADII } from "./metrics";
 import { rowFor, field, json, labelFor, act, markRead } from "../data/live";
 import { VoicePlayback } from "./pill-study";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { AnimatePresence, motion, LayoutGroup } from "motion/react";
 import { DUMPS, SIGNALS, THEMES, THEORIES, PROTOTYPES, theoriesIn, signal } from "./data";
 import { Icon, IconButton, DumpIcon, Mark, Pill, type IconName } from "./atoms";
@@ -27,6 +27,7 @@ export function columnsWidth(openKind?: Kind, unfoldedKind?: Kind, compact?: boo
   return COLS.reduce((w, c) => w + (!compact && (c.kind === openKind || c.kind === unfoldedKind) ? c.width : RAIL), 0);
 }
 const STOCKS: Kind[] = ["theme", "theory", "prototype"];
+type ScrollOffsets = Partial<Record<Kind, number>>;
 
 /**
  * Columns, developed. Stocks (themes, theories, prototypes) open into a wide pane.
@@ -44,6 +45,7 @@ export function ColumnsDeveloped({ fold, host }: { fold: Fold; host?: ColumnsHos
   const [visible, setVisible] = useState<Kind[]>(["theme", "theory", "prototype"]);
   const [ownOpen, setOwnOpen] = useState<{ kind: Kind; id: string }>();
   const [ownUnfolded, setOwnUnfolded] = useState<string>();   // signal or dump expanded in place
+  const scrollOffsets = useRef<ScrollOffsets>({});
   const open = host ? host.open : ownOpen;
   const unfolded = host ? host.unfolded : ownUnfolded;
   const setOpen = (o: { kind: Kind; id: string } | undefined) => host ? (o ? host.onOpen(o.kind, o.id) : host.onClose()) : setOwnOpen(o);
@@ -93,7 +95,7 @@ export function ColumnsDeveloped({ fold, host }: { fold: Fold; host?: ColumnsHos
                 animate={{ width }} initial={false} transition={SPRING}>
                 {wide ? (
                   <ColumnList kind={c.kind} icon={c.icon} name={c.name} related={related} open={open} unfolded={unfolded} fold={fold}
-                    onOpen={openObj} onUnfold={unfold} onFold={() => { if (open) setOpen(undefined); toggle(c.kind); }} />
+                    scrollOffsets={scrollOffsets} onOpen={openObj} onUnfold={unfold} onFold={() => { if (open) setOpen(undefined); toggle(c.kind); }} />
                 ) : fold === "rails" ? (
                   <button className="cd-rail" aria-label={`Show ${c.name}`} title={c.name} onClick={() => { if (compact) { host!.onRestore?.(); return; } if (open) setOpen(undefined); show(c.kind); }}>
                     <Icon name={c.icon} size={16} />
@@ -123,9 +125,18 @@ function countRelated(kind: Kind, related: Set<string>) {
   return [...related].filter(k => k.startsWith(kind + ":")).length;
 }
 
+/** A mostly visible row already provides its own context; only mark the rows beyond it. */
+function offscreenDirection(row: HTMLElement, viewport: DOMRect): "up" | "down" | undefined {
+  const bounds = row.getBoundingClientRect();
+  const visible = Math.max(0, Math.min(bounds.bottom, viewport.bottom) - Math.max(bounds.top, viewport.top));
+  if (!bounds.height || visible >= bounds.height / 2) return;
+  return bounds.top + bounds.height / 2 < viewport.top + viewport.height / 2 ? "up" : "down";
+}
+
 /* ── One column ── */
-function ColumnList({ kind, icon, name, related, open, unfolded, fold, onOpen, onUnfold, onFold }: {
+function ColumnList({ kind, icon, name, related, open, unfolded, fold, scrollOffsets, onOpen, onUnfold, onFold }: {
   kind: Kind; icon: IconName; name: string; related?: Set<string>; open?: { kind: Kind; id: string }; unfolded?: string; fold: Fold;
+  scrollOffsets: RefObject<ScrollOffsets>;
   onOpen: (k: Kind, id: string) => void; onUnfold: (k: Kind, id: string) => void; onFold: () => void;
 }) {
   const items: { id: string; draft?: boolean; body: ReactNode; detail?: ReactNode }[] =
@@ -135,23 +146,11 @@ function ColumnList({ kind, icon, name, related, open, unfolded, fold, onOpen, o
     : kind === "theory" ? THEORIES.map(t => ({ id: t.id, draft: t.draft, body: <><span className="cd-claim"><Claim id={t.id} /></span><span className="cd-line">{!t.draft && <TheoryConf id={t.id} />}{t.challenge && <Mark kind="challenge" />}{t.pending > 0 && <Mark kind="pending" n={t.pending} />}</span></> }))
     : PROTOTYPES.map(p => ({ id: p.id, body: <span className="cd-line"><ProtoStatus id={p.id} /><span><ProtoName id={p.id} /></span></span> }));
 
-  if(related) items.sort((a,b)=>Number(related.has(key(kind,b.id)))-Number(related.has(key(kind,a.id))));
-  // Bring the unfolded item into view within this column's list (not the page).
+  // Selection changes emphasis, never order or the reader's place in a column.
   const listRef = useRef<HTMLDivElement>(null);
-  const hasUnfolded = unfolded !== undefined && items.some(i => i.id === unfolded);
-  useEffect(() => {
-    if (!hasUnfolded) return;
-    const t = setTimeout(() => {
-      const list = listRef.current;
-      const el = list?.querySelector<HTMLElement>(`[data-id="${unfolded}"]`);
-      if (!list || !el) return;
-      const l = list.getBoundingClientRect(), r = el.getBoundingClientRect();
-      const top = r.top - l.top, bottom = r.bottom - l.bottom;
-      const delta = top < 0 || r.height > l.height ? top : bottom > 0 ? bottom : 0;
-      if (delta) list.scrollTo({ top: list.scrollTop + delta, behavior: "smooth" });
-    }, 360);
-    return () => clearTimeout(t);
-  }, [unfolded, hasUnfolded]);
+  useLayoutEffect(() => {
+    if (listRef.current) listRef.current.scrollTop = scrollOffsets.current[kind] ?? 0;
+  }, [kind, scrollOffsets]);
 
   // Count related items lying (mostly) outside the list's visible area, above and below.
   const [off, setOff] = useState({ up: 0, down: 0, lift: false });
@@ -167,10 +166,8 @@ function ColumnList({ kind, icon, name, related, open, unfolded, fold, onOpen, o
         let up = 0, down = 0;
         list.querySelectorAll<HTMLElement>(".cd-item[data-id]").forEach(el => {
           if (!related.has(key(kind, el.dataset.id!))) return;
-          const r = el.getBoundingClientRect();
-          const seen = Math.max(0, Math.min(r.bottom, l.bottom) - Math.max(r.top, l.top));
-          if (seen >= r.height / 2) return;
-          if (r.top + r.height / 2 < l.top + l.height / 2) up++; else down++;
+          const direction = offscreenDirection(el, l);
+          if (direction === "up") up++; else if (direction === "down") down++;
         });
         // Lift the bottom marker clear of the frame's floating pill when this column sits under it.
         const pill = (list.closest("[data-pill-host]") ?? list.closest(".ap"))?.querySelector(".ap-pill-wrap, .ps-surface:not([data-open])")?.getBoundingClientRect();
@@ -192,13 +189,12 @@ function ColumnList({ kind, icon, name, related, open, unfolded, fold, onOpen, o
     const list = listRef.current;
     if (!list || !related) return;
     const l = list.getBoundingClientRect();
-    const els = [...list.querySelectorAll<HTMLElement>(".cd-item[data-id]")].filter(el => related.has(key(kind, el.dataset.id!)));
-    const target = dir === "up"
-      ? els.filter(el => el.getBoundingClientRect().top < l.top - 1).pop()
-      : els.find(el => el.getBoundingClientRect().bottom > l.bottom + 1);
+    const els = [...list.querySelectorAll<HTMLElement>(".cd-item[data-id]")].filter(el => related.has(key(kind, el.dataset.id!)) && offscreenDirection(el, l) === dir);
+    const target = dir === "up" ? els.at(-1) : els[0];
     if (!target) return;
     const r = target.getBoundingClientRect();
-    const delta = dir === "up" ? r.top - l.top - 8 : r.bottom - l.bottom + 8 + (off.lift ? 100 : 40);
+    const clearance = dir === "down" && off.lift ? 108 : 40;
+    const delta = dir === "up" || r.height > l.height - clearance ? r.top - l.top - clearance : r.bottom - l.bottom + clearance;
     list.scrollTo({ top: list.scrollTop + delta, behavior: "smooth" });
   };
 
@@ -211,7 +207,7 @@ function ColumnList({ kind, icon, name, related, open, unfolded, fold, onOpen, o
         <span className="cd-head-fold"><IconButton icon={fold === "rails" ? "chevronLeft" : "x"} label={`Fold ${name}`} onClick={onFold} /></span>
       </header>
       <div className="cd-list-wrap">
-      <div className="cd-list ap-scroll" ref={listRef}>
+      <div className="cd-list ap-scroll" ref={listRef} onScroll={event => { scrollOffsets.current[kind] = event.currentTarget.scrollTop; }}>
         {items.map(i => {
           const isOpen = open?.kind === kind && open.id === i.id;
           const isUnfolded = unfolded === i.id;

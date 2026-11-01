@@ -2,10 +2,10 @@ import { currentSuggestion } from "../data/challenge-target";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Accordion } from "@base-ui/react/accordion";
-import { THEMES, THEORIES, PROTOTYPES, SIGNALS } from "./data";
-import { Icon, IconButton, Mark } from "./atoms";
-import { TheoryTile, SignalRow, Claim, ThemeName, type ObjKind, type OnOpen } from "./panes";
-import { act, field, json, mutate, useWorld, world, type Row } from "../data/live";
+import { DUMPS, THEMES, THEORIES, SIGNALS } from "./data";
+import { Balance, Icon, IconButton, Mark } from "./atoms";
+import { SignalRow, ThemeName, type ObjKind, type OnOpen } from "./panes";
+import { field, json, markRead, mutate, useWorld, world, type Row } from "../data/live";
 import "./briefing-app.css";
 import { SuggestionReview } from "./suggestion-review";
 export type BriefingHost = {open?:{kind:ObjKind;id:string};onOpen:OnOpen;compact?:boolean;onLog?:()=>void};
@@ -58,27 +58,55 @@ export function BriefingView({host,phone}:{host:BriefingHost;phone?:boolean}) {
   },[]);
   return <div className="ap br" ref={root} data-phone={phone?"":undefined} data-compact={host.compact?"":undefined}><div className="br-scroll ap-scroll"><div className="br-col">
     <header className="br-head"><span className="ap-h">Since you last looked</span><span className="br-left ap-muted ap-num" aria-live="polite">{items.length?`${items.length} left`:"Done"}</span></header>
-    <button className="br-overnight" onClick={host.onLog}><Icon name="dump" size={14}/><span>{processing?`${processing} ${processing===1?"dump":"dumps"}`:"Dumps"}</span><Icon name="chevron" size={12}/></button>
+    <Overnight onLog={host.onLog} processing={processing}/>
     {!items.length&&<p className="ap-muted">All caught up.</p>}
-    {GROUPS.map(group=><section className="br-group" key={group}>{items.some(x=>x.group===group)&&<h3 className="ap-label br-group-name">{group}</h3>}<AnimatePresence initial={false}>{items.filter(x=>x.group===group).map(item=><motion.div layout="position" key={item.id} className="br-item" data-bid={item.id} data-cursor={current?.id===item.id?"":undefined} onPointerDown={()=>setCursor(item.id)} exit={{opacity:0,x:40}} transition={{duration:.2}}>
+    {GROUPS.map(group=><section className="br-group" key={group}>{items.some(x=>x.group===group)&&<h3 className="ap-label br-group-name">{group}<span className="ap-num">{items.filter(x=>x.group===group).length}</span></h3>}<AnimatePresence initial={false}>{items.filter(x=>x.group===group).map(item=><motion.div layout="position" key={item.id} className="br-item" data-bid={item.id} data-cursor={current?.id===item.id?"":undefined} onPointerEnter={()=>setCursor(item.id)} onFocus={()=>setCursor(item.id)} onPointerDown={()=>setCursor(item.id)} exit={{opacity:0,x:40}} transition={{duration:.2}}>
       <BriefingItem item={item} host={host} onOpen={()=>open(item)} onDecide={d=>void decide(item,d)}/>
     </motion.div>)}</AnimatePresence></section>)}
   </div></div></div>;
 }
+function Overnight({onLog,processing}:{onLog?:()=>void;processing:number}) {
+  const dumps=DUMPS.filter(d=>d.day==="Today"||d.day==="Yesterday");
+  const produced=new Set(dumps.flatMap(d=>d.produced));
+  const signals=SIGNALS.filter(s=>produced.has(s.id)).length;
+  const since=new Date();since.setHours(0,0,0,0);since.setDate(since.getDate()-1);
+  const drafts=[...THEORIES.filter(t=>t.draft),...world.themes.filter(t=>t.status==="draft"),...world.prototypes.filter(p=>p.draft)].filter(row=>new Date(field(row,"createdAt")??0)>=since).length;
+  return <button className="br-flow" onClick={onLog} title={processing?`${processing} processing. Dump log (⌘⇧L)`:"Dump log (⌘⇧L)"} aria-label={`${dumps.length} dumps became ${signals} signals and ${drafts} drafts. Open the dump log`}>
+    <span className="ap-num">{dumps.length}</span><Icon name="dump" size={14}/><Icon name="arrowRight" size={12}/>
+    <span className="ap-num">{signals}</span><Icon name="signal" size={14}/><span className="ap-num">{drafts}</span><span className="br-flow-draft"><Icon name="theory" size={14}/></span>
+  </button>;
+}
 function BriefingItem({item,host,onOpen,onDecide}:{item:Item;host:BriefingHost;onOpen:()=>void;onDecide:(decision:"accepted"|"discarded")=>void}) {
-  const [unfolded,setUnfolded]=useState<string>();
+  const [reviewing,setReviewing]=useState(false);
   const payload=json<Row>(item.row.payload??item.row.payloadJson??item.row.payload_json,{});
   const signal=SIGNALS.find(s=>s.id===(payload.signalId??payload.signal_id??item.target));
   const review=["revision","evidence","merge"].includes(item.kind);
+  const theory=THEORIES.find(t=>t.id===item.target);
   let title=item.row.claim??item.row.name??"";
   if(item.kind!=="draft"&&item.kind!=="signals") title=THEORIES.find(t=>t.id===item.target)?.claim??THEMES.find(t=>t.id===item.target)?.name??signal?.gist??"Merged signals";
   if(item.kind==="merge")title=`Merge ${title} with ${THEMES.find(t=>t.id===(payload.otherId??payload.other_id))?.name??THEORIES.find(t=>t.id===(payload.otherId??payload.other_id))?.claim??""}`;
-  const actions=<span className="br-acts">{item.kind==="near-dup"?<><IconButton icon="check" label="Keep merge (A)" onClick={()=>onDecide("accepted")}/><button className="ap-btn" title="Undo merge (U)" onClick={()=>onDecide("discarded")}>Undo merge</button></>:<><button className="ap-btn" onClick={()=>onDecide("accepted")}>{item.kind==="signals"?"Seen":"Accept"}</button><IconButton icon="x" label={item.kind==="challenge"?"Dismiss (X)":"Discard (X)"} onClick={()=>onDecide("discarded")}/></>}</span>;
-  if(item.kind==="signals") return <Accordion.Root className="br-new" value={unfolded?[item.id]:[]} onValueChange={value=>setUnfolded(value.length?item.id:undefined)}><Accordion.Item value={item.id}><Accordion.Header><Accordion.Trigger className="br-row ab-disclosure"><Icon name="theme" size={14}/><span>{item.row.name}</span><span className="ap-num ap-muted">{item.row.signals.length}</span><Icon name="chevron" size={12}/></Accordion.Trigger></Accordion.Header><Accordion.Panel className="ab-accordion-panel"><div className="br-detail">{item.row.signals.map((s:any)=><SignalRow key={s.id} s={s} open={unfolded===s.id} onToggle={()=>setUnfolded(x=>x===s.id?item.id:s.id)} onOpen={host.onOpen}/>)}{actions}</div></Accordion.Panel></Accordion.Item></Accordion.Root>;
-  return <div className="br-row" data-draft={item.kind==="draft"?"":undefined}><span className="br-glyph"><Icon name={item.kind==="near-dup"?"merge":item.targetKind} size={14}/></span><div className="br-main"><div className="br-title">{item.kind==="challenge"&&<Mark kind="challenge"/>}<button className="br-open" onClick={onOpen}>{title}</button></div><div className="br-detail">
-    {review?<SuggestionReview suggestion={item.row}/>:<>{signal&&<span className="br-ghost br-sig"><Icon name={payload.stance==="supports"?"arrowUp":"arrowDown"} size={12}/>{signal.gist}</span>}
+  const actions=<span className="br-acts">{item.kind==="near-dup"?<><button className="ap-btn" title="Undo merge (U)" onClick={()=>onDecide("discarded")}><Icon name="split" size={12}/>Undo merge</button><IconButton icon="check" label="Keep merge (A)" onClick={()=>onDecide("accepted")}/></>:<><button className="ap-btn" onClick={()=>onDecide("accepted")}>Accept</button><IconButton icon="x" label={item.kind==="challenge"?"Dismiss (X)":"Discard (X)"} onClick={()=>onDecide("discarded")}/></>}</span>;
+  if(item.kind==="signals") return <NewSignals item={item} host={host} onOpen={onOpen} onSeen={()=>onDecide("accepted")}/>;
+  const glyph=item.kind==="near-dup"||item.kind==="merge"?"merge":item.kind==="revision"?"edit":item.targetKind;
+  return <div className="br-row" data-draft={item.kind==="draft"?"":undefined}><span className="br-glyph"><Icon name={glyph} size={14}/>{review&&!reviewing&&<span className="br-rephrase"><IconButton icon="edit" label="Review suggestion" onClick={()=>setReviewing(true)}/></span>}</span><div className="br-main"><div className="br-title">{item.kind==="challenge"&&<Mark kind="challenge"/>}<button className="br-open" onClick={onOpen}>{item.kind==="revision"?<s className="br-was">{title}</s>:title}</button></div><div className="br-detail">
+    {reviewing?<><SuggestionReview suggestion={item.row}/><button className="br-link" onClick={()=>setReviewing(false)}>Close review</button></>:<>{signal&&<span className="br-ghost br-sig"><Icon name={payload.stance==="supports"?"arrowUp":"arrowDown"} size={12}/><span>{signal.gist} <span className="ap-muted">{signal.source}</span></span></span>}
     {(payload.claim||payload.bodyInsert||payload.body_insert)&&<span className="br-ghost">{payload.claim??payload.bodyInsert??payload.body_insert}</span>}
-    {item.row.reasoning&&<span className="ap-muted">{item.row.reasoning}</span>}
-    {item.kind==="draft"&&item.row.body&&<span className="br-ghost">{item.row.body}</span>}</>}
-  </div></div>{!review&&actions}</div>;
+    {item.row.reasoning&&!review&&<span className="ap-muted">{item.row.reasoning}</span>}
+    {item.kind==="evidence"&&payload.note&&<span className="br-ghost">{payload.note}</span>}
+    {item.kind==="draft"&&(theory?<span className="br-meta"><Balance s={theory.supports} u={theory.undermines}/>{theory.themes[0]&&<span className="ap-muted ap-inline"><Icon name="theme" size={12}/><ThemeName id={theory.themes[0]}/></span>}</span>:item.row.body&&<span className="br-ghost">{item.row.body}</span>)}</>}
+  </div></div>{!reviewing&&actions}</div>;
+}
+
+function NewSignals({item,host,onOpen,onSeen}:{item:Item;host:BriefingHost;onOpen:()=>void;onSeen:()=>void}) {
+  const [expanded,setExpanded]=useState(false);
+  const [signalOpen,setSignalOpen]=useState<string>();
+  return <Accordion.Root className="br-new" value={expanded?[item.id]:[]} onValueChange={value=>setExpanded(value.length>0)}><Accordion.Item className="br-row" value={item.id}>
+    <span className="br-glyph"><Icon name="theme" size={14}/></span>
+    <div className="br-main"><div className="br-title"><Mark kind="fresh"/><button className="br-open" onClick={onOpen}>{item.row.name}</button></div>
+      <Accordion.Panel className="ab-accordion-panel"><div className="br-siglist">
+        {item.row.signals.map((s:any)=>signalOpen===s.id?<SignalRow key={s.id} s={s} open onToggle={()=>setSignalOpen(undefined)} onOpen={host.onOpen}/>:<button key={s.id} className="br-siglist-row br-siglist-button" onClick={()=>{setSignalOpen(s.id);markRead("signal",s.id);}}><Icon name="signal" size={12}/><span>{s.gist} <span className="ap-muted">{s.source}</span></span></button>)}
+      </div></Accordion.Panel>
+    </div>
+    <span className="br-acts"><Accordion.Header render={<span/>} className="br-count-head"><Accordion.Trigger className="br-count ap-num" title={expanded?"Fold":"Show the new signals"}>{item.row.signals.length} new<span className="br-caret" data-open={expanded?"":undefined}><Icon name="chevron" size={12}/></span></Accordion.Trigger></Accordion.Header><IconButton icon="check" label="Seen (A)" onClick={onSeen}/></span>
+  </Accordion.Item></Accordion.Root>;
 }

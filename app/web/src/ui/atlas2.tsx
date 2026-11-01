@@ -25,13 +25,14 @@ type Doc = { kind: "theory" | "prototype"; id: string };
 /** Fit the world into a viewport, or centre and zoom on one territory. */
 function view(vw: number, vh: number, focus?: string) {
   if (!focus) {
-    const regions=Object.values(REGION);
-    const x0=regions.length?Math.min(...regions.map(r=>r.x-r.r))-48:0;
-    const y0=regions.length?Math.min(...regions.map(r=>r.y-r.r))-48:0;
-    const width=regions.length?Math.max(...regions.map(r=>r.x+r.r))+48-x0:W;
-    const height=regions.length?Math.max(...regions.map(r=>r.y+r.r))+72-y0:H;
-    const scale=Math.min(1,vw/width,vh/height);
-    return {scale,tx:(vw-width*scale)/2-x0*scale,ty:(vh-height*scale)/2-y0*scale};
+    // Preserve the jig's 1240×760 world and framing; extend only when added territories need room.
+    const regions = Object.values(REGION);
+    const x0 = Math.min(0, ...regions.map(r => r.x - r.r - 48));
+    const y0 = Math.min(0, ...regions.map(r => r.y - r.r - 48));
+    const width = Math.max(W, ...regions.map(r => r.x + r.r + 48)) - x0;
+    const height = Math.max(H, ...regions.map(r => r.y + r.r + 72)) - y0;
+    const scale = Math.min(1, vw / width, vh / height);
+    return { scale, tx: (vw - width * scale) / 2 - x0 * scale, ty: (vh - height * scale) / 2 - y0 * scale };
   }
   const R = REGION[focus];
   if (!R) return view(vw,vh);

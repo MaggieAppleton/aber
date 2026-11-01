@@ -515,7 +515,7 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const hitRef = useRef<HTMLButtonElement>(null);
   const id = useId();
-  const [pillW, setPillW] = useState(variant === "P" ? 150 : 250);
+  const [pillW, setPillW] = useState(variant === "P" ? 206 : 210);
   const [panelH, setPanelH] = useState(320);
   const [hover, setHover] = useState(false);
   const [pressed, setPressed] = useState(false);
@@ -547,16 +547,14 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
 
   const phone = variant === "P";
   const cx = cxProp ?? (phone ? w / 2 : SIDEBAR + (w - SIDEBAR) / 2);
-  const ph = phone ? 44 : 40, micW = ph, bottom = phone ? 30 : 24;
+  const ph = phone ? 44 : 40, micW = ph, bottom = 12;
   const corner = (variant === "B2" && !centred) || !!cornerProp, docked = variant === "B2";
   const ap = force.approach ?? approach, hv = force.hover ?? hover, pr = force.pressed ?? pressed, fc = force.focus ?? focus;
   void ap;
   const voiceSheet = phone && !s.open && s.rec != null;
-  // The mic is a segment inside the pill, so the closed surface is (log +) label + mic. The log segment shows at rest only.
-  const logOn = !!log && !(!s.open && s.rec != null && !phone) && !s.drag;
-  const logW = logOn ? 40 : 0;
-  const closedW = pillW + micW + logW;
-  const closedLeft = corner ? w - 20 - closedW : cx - closedW / 2;
+  // The closed pill contains the capture label and microphone. The dump log opens separately.
+  const closedW = pillW + micW;
+  const closedLeft = corner ? w - 12 - closedW : cx - closedW / 2;
   const pillBottom = bottom;
   const pillCx = closedLeft + closedW / 2;
   const maxH = h - (phone ? 70 : 48);
@@ -702,7 +700,6 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
   const lifted = !s.open && !s.rec && !s.drag && hv;
   const scale = !s.open && pr ? 0.96 : !s.open && s.drag ? 1.06 : 1;
   const recClosed = !s.open && s.rec != null && !phone;
-  const primaryIcon: IconName = primary?.kind ?? "screen";
 
   return (
     <>
@@ -783,14 +780,8 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
         {s.drag && <div className="ps-dropcatch" />}
         <AnimatePresence initial={false}>
           {!s.open && !voiceSheet && (
-            <motion.div key="pill" className="ps-pill-layer" data-log={logOn ? "" : undefined} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: reduced ? 0 : 0.14, duration: 0.18 } }} exit={{ opacity: 0, transition: { duration: 0.08 } }}>
-              {logOn && (
-                <button type="button" className="ps-logseg" data-log-toggle="" aria-expanded={log!.open} aria-label="Dump log (⌘⇧L)" title="Dump log (⌘⇧L)" onClick={log!.onToggle}>
-                  <span className="ps-logseg-in"><I n="history" size={16} weight={log!.open ? "fill" : "regular"} /></span>
-                  {log!.status && <span className="ps-logseg-dot" data-failed={log!.status === "failed" ? "" : undefined} aria-hidden />}
-                </button>
-              )}
-              <PillRows s={s} api={api} recClosed={recClosed} phone={phone} screen={screen} icon={primaryIcon} region={primary?.region ?? "main"} onWidth={setPillW} hitRef={hitRef} time={force.time}
+            <motion.div key="pill" className="ps-pill-layer" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: reduced ? 0 : 0.14, duration: 0.18 } }} exit={{ opacity: 0, transition: { duration: 0.08 } }}>
+              <PillRows s={s} api={api} recClosed={recClosed} restWidth={250 - micW} onWidth={setPillW} hitRef={hitRef} time={force.time}
                 onHover={setHover} onPress={setPressed} onFocus={setFocus} />
               <button type="button" className="ps-micseg" data-rec={recClosed ? "" : undefined} data-phone={phone ? "" : undefined} data-target="mic" style={{ width: micW }}
                 aria-label={recClosed ? "Stop and dump" : "Voice dump"} title={recClosed ? "Stop and dump" : "Voice dump"}
@@ -819,26 +810,21 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
   );
 }
 
-function PillRows({ s, api, recClosed, phone, screen, icon, region, onWidth, hitRef, onHover, onPress, onFocus, time }: {
-  s: DumpState; api: DumpApi; recClosed: boolean; phone: boolean; screen: string; icon: IconName; region: string; onWidth: (w: number) => void;
+function PillRows({ s, api, recClosed, restWidth, onWidth, hitRef, onHover, onPress, onFocus, time }: {
+  s: DumpState; api: DumpApi; recClosed: boolean; restWidth: number; onWidth: (w: number) => void;
   hitRef: RefObject<HTMLButtonElement | null>; onHover: (b: boolean) => void; onPress: (b: boolean) => void; onFocus: (b: boolean) => void; time?: string;
 }) {
   const mode = recClosed ? "rec" : s.drag ? "drag" : "rest";
   const now = useNow(mode === "rec" && !time);
   return (
     <AnimatePresence initial={false} mode="popLayout">
-      <PillRow key={mode} mode={mode} onWidth={onWidth}>
+      <PillRow key={mode} mode={mode} width={mode === "rest" ? restWidth : undefined} onWidth={onWidth}>
         {mode === "rest" && (
           <button ref={hitRef} type="button" className="ps-pill" data-target="pill" aria-label="Dump or ask (⌘J)" title="Dump or ask (⌘J)"
             onClick={api.open} onPointerEnter={() => onHover(true)} onPointerLeave={() => { onHover(false); onPress(false); }}
             onPointerDown={() => onPress(true)} onPointerUp={() => onPress(false)} onFocus={e => onFocus(e.currentTarget.matches(":focus-visible"))} onBlur={() => onFocus(false)}>
             <SwapIcon k={s.busy ? "busy" : "idle"}>{s.busy ? <Spinner size={16} /> : <I n="dump" />}</SwapIcon>
             <span className="ps-pill-label">Dump or ask</span>
-            {!phone && (
-              <span className="ps-pill-ctx" onPointerEnter={() => api.setHot(region)} onPointerLeave={() => api.setHot(null)} title={`The agent sees ${screen}`} data-target="pill-ctx">
-                <I n={icon} size={13} /><span className="ps-pill-ctx-label">{screen}</span>
-              </span>
-            )}
           </button>
         )}
         {mode === "drag" && s.drag && (
@@ -860,7 +846,7 @@ function PillRows({ s, api, recClosed, phone, screen, icon, region, onWidth, hit
 }
 
 /** One closed-pill layout. Only the row that is present reports its width, so an exiting row can't shrink the pill. */
-function PillRow({ mode, onWidth, children }: { mode: string; onWidth: (w: number) => void; children: ReactNode }) {
+function PillRow({ mode, width, onWidth, children }: { mode: string; width?: number; onWidth: (w: number) => void; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const present = useIsPresent();
   useLayoutEffect(() => {
@@ -872,7 +858,7 @@ function PillRow({ mode, onWidth, children }: { mode: string; onWidth: (w: numbe
     return () => ro.disconnect();
   }, [present]);
   return (
-    <motion.div ref={ref} className="ps-pill-row" data-mode={mode}
+    <motion.div ref={ref} className="ps-pill-row" data-mode={mode} style={width == null ? undefined : { width }}
       initial={{ opacity: 0, filter: "blur(3px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} exit={{ opacity: 0, filter: "blur(3px)" }} transition={{ duration: 0.18 }}>
       {children}
     </motion.div>

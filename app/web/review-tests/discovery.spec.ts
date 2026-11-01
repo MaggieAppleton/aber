@@ -30,9 +30,13 @@ test("prototype Tests disclose each retirement reason and retain navigation and 
   }
 });
 
-test("the tripwire match count has a separate 40px target",async({page})=>{
+test("the compact tripwire count retains its independent expanded hit region",async({page})=>{
   await page.goto("/?open=theory:t3");const count=page.getByRole("button",{name:"1 signal matches",exact:true});
-  await expect(count).toBeVisible();const bounds=await count.boundingBox();expect(bounds?.width).toBeGreaterThanOrEqual(40);expect(bounds?.height).toBeGreaterThanOrEqual(40);
+  await expect(count).toBeVisible();
+  const target=await count.evaluate(node=>{const pseudo=getComputedStyle(node,'::after');return{width:parseFloat(pseudo.width),height:parseFloat(pseudo.height)};});
+  expect(target.width).toBeGreaterThanOrEqual(40);expect(target.height).toBeGreaterThanOrEqual(40);
+  const wasVisible=await page.locator('.tw-hits').isVisible();await count.click();
+  if(wasVisible)await expect(page.locator('.tw-hits')).toBeHidden();else await expect(page.locator('.tw-hits')).toBeVisible();
 });
 test("an accepted tripwire hit retains its historical lowered value after confidence changes",async({page,request})=>{
   const world=await snapshot(request),theory=world.theories.find((row:any)=>row.claim==="Review historical challenge decision");
@@ -43,6 +47,8 @@ test("an accepted tripwire hit retains its historical lowered value after confid
 test("phone evidence review unfolds the real signal in its existing full-width pane",async({page,request})=>{
   const world=await snapshot(request),suggestion=world.suggestions.find((s:any)=>s.reasoning==="Review evidence reasoning"),signal=world.signals.find((s:any)=>s.id===suggestion.payload.signal_id);
   await page.setViewportSize({width:390,height:844});await page.goto("/?view=briefing");
+  const card=page.locator(`[data-bid="${suggestion.id}"]`);await expect(card.locator('.ab-proposal')).toHaveCount(0);await card.hover();await card.getByRole('button',{name:'Review suggestion',exact:true}).click();
+  await expect(card.locator('.ab-proposal')).toBeVisible();
   await page.locator(`[data-suggestion-id="${suggestion.id}"] .pn-link`).click();
   await expect(page.locator(".as-pane .pn-sig[data-open] .pn-detail-inner")).toContainText(signal.gist);
   await expect(page.getByRole("textbox",{name:"Claim",exact:true})).toHaveText("Review evidence proposal target");

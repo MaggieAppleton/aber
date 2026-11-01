@@ -26,7 +26,7 @@
 .as-pane .pn-media, .as-pane .pn-doc > .pn-col { max-width: var(--size-px-860); }
 
 /* View switcher */
-.as-switch { position: absolute; left: var(--size-px-12); bottom: var(--size-px-24); z-index: 6; display: flex; gap: var(--size-px-2); padding: var(--size-px-4); border-radius: var(--size-px-20); background: var(--ap-surface); box-shadow: var(--ap-shadow-float); }
+.as-switch { position: absolute; left: var(--size-px-12); bottom: var(--size-px-12); z-index: 6; display: flex; gap: var(--size-px-2); padding: var(--size-px-4); border-radius: var(--size-px-20); background: var(--ap-surface); box-shadow: var(--ap-shadow-float); }
 .as-switch-btn { position: relative; width: var(--size-px-32); height: var(--size-px-32); border: 0; padding: 0; border-radius: var(--size-px-16); background: transparent; color: var(--ap-ink-3); display: grid; place-items: center; cursor: pointer; transition: color 120ms ease-out, transform 100ms ease-out; }
 .as-switch-btn:hover { color: var(--ap-ink); }
 .as-switch-btn:active { transform: scale(0.94); }
@@ -71,7 +71,7 @@
 /* Always one pixel scrollable, so Chrome reveals a caret in the pane by scrolling the pane, never the page. */
 .as-pane-scroll > * { min-height: calc(100% + var(--size-px-1)); }
 .as-view > .ap { box-shadow: none; border-radius: 0; }
-.as-switch { left: var(--size-px-20); }
+.as-switch { left: var(--size-px-12); }
 
 /* Phone: Briefing, the pane over it, the pill bottom-right */
 .aph-row { display: flex; gap: var(--size-px-48); padding: var(--size-px-16) var(--size-px-10) var(--size-px-24); flex-wrap: wrap; }

@@ -704,7 +704,7 @@ Lift components from `jig/src/homes/` rather than rewriting them. Replace the ji
 | Canonical | [`/columns#rails`](http://localhost:5181/columns#rails), hosted in [`/app?view=columns`](http://localhost:5181/app?view=columns); `homes/columns2.tsx` |
 | Columns | Dumps 250, Signals 290, Themes 230, Theories 300, Prototypes 220. Folded columns become 44 px rails with an icon and related count |
 | Stocks and flows | Themes, theories and prototypes open into the pane; dumps and signals unfold in place (note, theories, themes, dump chip) |
-| Lineage | Whatever is open or unfolded pulls its relatives to the top of every column and dims the rest |
+| Lineage | Keep the existing list order and scroll position when selecting or highlighting. Related items stay at full opacity; dim the rest. Show small related-item indicators above/below the visible scroll area, and scroll only when the person chooses an indicator. Selection uses a quiet surface, without a strong black outline. This is Maggie's explicit 1 November correction and supersedes the older "pull relatives to the top" wording in the read-only design model. |
 | Full pane | Every column folds to a rail; clicking a rail restores the previous snap |
 
 ### 6.7 Atlas

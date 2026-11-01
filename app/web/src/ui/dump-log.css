@@ -34,16 +34,6 @@
 .dl-tok { display: inline-flex; align-items: center; gap: var(--size-px-3); height: var(--size-px-20); padding: 0 var(--size-px-6); border-radius: var(--size-px-10); background: var(--ap-sunk); color: var(--ap-ink-2); font-size: var(--size-px-12); }
 .dl-tok[data-draft] { background: transparent; outline: var(--size-px-1) dashed var(--color-gray-0-a-30); outline-offset: var(--size-px-neg-1); }
 
-/* The slot DumpOrAsk positions over the pill, and the pill's log segment */
+/* The slot DumpOrAsk positions over the pill when the log opens elsewhere. */
 .ps-log-slot { position: absolute; z-index: 6; }
 .ps-log { position: absolute; inset: 0; background: var(--ap-surface); border-radius: var(--size-px-14); box-shadow: 0 0 0 var(--size-px-0-5) var(--color-gray-0-a-10), 0 var(--size-px-12) var(--size-px-32) var(--color-gray-0-a-14); overflow: hidden; }
-.ps-logseg { position: absolute; left: 0; top: 0; bottom: 0; display: grid; place-items: center start; padding: 0 0 0 var(--size-px-4); border: 0; background: transparent; cursor: pointer; z-index: 2; border-radius: var(--size-px-999) 0 0 var(--size-px-999); }
-.ps-logseg-in { width: var(--size-px-32); height: var(--size-px-32); border-radius: 50%; display: grid; place-items: center; color: var(--ap-ink-3); transition: background 150ms ease-out, color 150ms ease-out, transform 100ms ease-out; }
-.ps-logseg:hover .ps-logseg-in, .ps-logseg[aria-expanded="true"] .ps-logseg-in { background: var(--ap-sunk); color: var(--ap-ink); }
-.ps-logseg:active .ps-logseg-in { transform: scale(0.94); }
-.ps-logseg:focus-visible { outline: none; }
-.ps-logseg:focus-visible .ps-logseg-in { outline: var(--size-px-2) solid var(--color-rgb-47-111-237-a-55); outline-offset: var(--size-px-2); }
-.ps-logseg-dot { position: absolute; top: var(--size-px-9); left: var(--size-px-26); width: var(--size-px-6); height: var(--size-px-6); border-radius: var(--size-px-3); background: var(--ap-ink-3); box-shadow: 0 0 0 var(--size-px-1-5) var(--ap-surface); }
-.ps-logseg-dot[data-failed] { background: var(--ap-neg); }
-.ps-pill-layer[data-log] .ps-pill-row { left: var(--size-px-36); }
-.ps-pill-layer[data-log] .ps-pill-row[data-mode="rest"] .ps-pill { padding-left: var(--size-px-4); }

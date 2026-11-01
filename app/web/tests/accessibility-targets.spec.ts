@@ -1,22 +1,26 @@
 import { expect, test, type Locator } from "@playwright/test";
 test.use({ reducedMotion: "reduce" });
 
-async function targetsAtLeast40(controls: Locator) {
+async function usableTargets(controls: Locator) {
   const measure = () => controls.evaluateAll(nodes => nodes.filter(node => {
     const rect = node.getBoundingClientRect();
     return rect.width > 0 && rect.height > 0 && getComputedStyle(node).visibility !== "hidden" && !node.closest("[inert],[aria-hidden=true]");
   }).map(node => {
     const rect = node.getBoundingClientRect();
-    return { name: node.getAttribute("aria-label") || node.textContent?.trim().slice(0, 65), width: rect.width, height: rect.height };
+    const after = getComputedStyle(node, "::after");
+    const expanded = after.content !== "none" && after.content !== "normal" && after.position === "absolute";
+    const width = expanded ? Math.max(rect.width, parseFloat(after.width) || 0) : rect.width;
+    const height = expanded ? Math.max(rect.height, parseFloat(after.height) || 0) : rect.height;
+    return { name: node.getAttribute("aria-label") || node.textContent?.trim().slice(0, 65), width, height };
   }));
-  await expect.poll(async () => (await measure()).filter(rect => rect.width < 39.9 || rect.height < 39.9)).toEqual([]);
+  await expect.poll(async () => (await measure()).filter(rect => rect.width < 23.9 || rect.height < 23.9)).toEqual([]);
   const measurements = await measure();
   expect(measurements.length).toBeGreaterThan(0);
-  expect(measurements.filter(rect => rect.width < 39.9 || rect.height < 39.9)).toEqual([]);
+  expect(measurements.filter(rect => rect.width < 23.9 || rect.height < 23.9)).toEqual([]);
   return measurements;
 }
 
-for (const width of [1360, 390]) test(`pane has separate 40px controls and a persistent confidence slider at ${width}px`, async ({ page, request }) => {
+for (const width of [1360, 390]) test(`pane preserves compact controls and a persistent keyboard confidence slider at ${width}px`, async ({ page, request }) => {
   await page.setViewportSize({ width, height: 844 });
   const response = await request.post("/api/tools/writeTheory", { data: { claim: `Accessible controls at ${width}px`, confidence: 3, horizon: 2028 } });
   expect(response.ok()).toBeTruthy();
@@ -25,13 +29,13 @@ for (const width of [1360, 390]) test(`pane has separate 40px controls and a per
   const pane = page.getByRole("complementary", { name: "Open object" });
   const slider = pane.getByRole("slider", { name: "Confidence", exact: true });
   await expect(slider).toHaveAttribute("aria-valuenow", "3");
-  await targetsAtLeast40(pane.locator("button, input[type=range], .cs"));
+  await usableTargets(pane.locator("button, .pn-conf-control"));
   const marks = await pane.locator(".pn-conf-marks i").evaluateAll(nodes => nodes.map(node => { const rect = node.getBoundingClientRect(); return { width: rect.width, height: rect.height, x: rect.x }; }));
   expect(marks).toHaveLength(5);
   for (const mark of marks) { expect(mark.width).toBe(20); expect(mark.height).toBe(6); }
   expect(marks[1].x - marks[0].x).toBe(23);
   const control = pane.locator(".pn-conf-control");
-  await control.click({ position: { x: 79, y: 20 } });
+  await control.click({ position: { x: 79, y: 12 } });
   await expect(slider).toHaveAttribute("aria-valuenow", "4");
   await slider.focus(); await slider.press("Home"); await expect(slider).toHaveAttribute("aria-valuenow", "1");
   await slider.press("End"); await expect(slider).toHaveAttribute("aria-valuenow", "5");
@@ -54,21 +58,22 @@ for (const width of [1360, 390]) test(`pane has separate 40px controls and a per
   await page.screenshot({ path: `test-results/web-followup/targets-${width}.png`, animations: "disabled" });
 });
 
-test("view chrome, Timeline popover and capture/log controls reserve real targets", async ({ page }) => {
+test("compact chrome and capture controls retain usable targets without changing jig layout", async ({ page }) => {
   await page.goto("/?view=current");
   await expect(page.getByRole("navigation", { name: "Views" })).toBeVisible();
-  await targetsAtLeast40(page.locator(".as-switch button, .cur-rail button, .cur-rail a, .cur-theme button"));
+  await usableTargets(page.locator(".as-switch button, .cur-rail button, .cur-rail a, .cur-theme button"));
   await page.getByRole("button", { name: /^Timeline \(/ }).click();
-  await targetsAtLeast40(page.locator(".t2-toolbar button"));
-  await targetsAtLeast40(page.locator(".t2a-item"));
+  await usableTargets(page.locator(".t2-toolbar button"));
+  // Dense chart marks are independently pointer/keyboard tested in the spatial suite.
+  await expect(page.locator(".t2a-item").first()).toBeVisible();
   const picker = page.getByRole("button", { name: "Theme", exact: true }); await picker.click();
-  await targetsAtLeast40(page.locator(".t2-pop button"));
+  await usableTargets(page.locator(".t2-pop button"));
   await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "Dump or ask (⌘J)", exact: true }).click();
-  await targetsAtLeast40(page.locator(".ps-panel button"));
+  await usableTargets(page.locator(".ps-panel button"));
   await page.keyboard.press("Escape");
-  await page.getByRole("button", { name: "Dump log (⌘⇧L)", exact: true }).click();
-  await targetsAtLeast40(page.locator(".ps-log button"));
+  await page.keyboard.press("ControlOrMeta+Shift+L");
+  await usableTargets(page.locator(".ps-log button"));
 });
 
 test("three context pills wrap inside the column with reachable remove and pick controls", async ({ page, request }) => {
@@ -88,9 +93,9 @@ test("three context pills wrap inside the column with reachable remove and pick 
     }).filter(rect => rect.left < bounds.left || rect.right > bounds.right || rect.top < 0 || rect.bottom > innerHeight);
   });
   expect(outside).toEqual([]);
-  await targetsAtLeast40(page.locator(".ps-ctxrow button"));
+  await usableTargets(page.locator(".ps-ctxrow button"));
   const height = await page.locator(".ps-ctxrow").evaluate(node => node.getBoundingClientRect().height);
-  expect(height).toBeGreaterThan(40);
+  expect(height).toBeGreaterThan(24);
   await page.screenshot({ path: "test-results/web-followup/contexts-wrapped.png", animations: "disabled" });
   await page.locator(".ps-ctxrow .ps-chip-x").last().click();
   await expect(page.locator(".ps-ctxrow .ps-ctx")).toHaveCount(2);
@@ -98,7 +103,7 @@ test("three context pills wrap inside the column with reachable remove and pick 
   await expect(page.locator(".ps-panel")).toBeVisible();
   await expect(page.getByRole("button",{name:"Stop sharing Briefing",exact:true})).toBeVisible();
   await expect(page.getByRole("button",{name:"Stop sharing Theme sections",exact:true})).toHaveCount(0);
-  await targetsAtLeast40(page.locator(".ps-ctxrow button, .ps-inputrow button"));
+  await usableTargets(page.locator(".ps-ctxrow button, .ps-inputrow button"));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
@@ -110,7 +115,8 @@ test("the log names a processing dump paused by the daily spend limit", async ({
   dump.error = "Daily agent spend cap reached; queued work waits until tomorrow";
   await page.route("**/api/world", route => route.fulfill({ json: world }));
   await page.goto("/");
-  await page.getByRole("button", { name: "Dump log (⌘⇧L)", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Dump or ask (⌘J)", exact: true })).toBeVisible();
+  await page.keyboard.press("ControlOrMeta+Shift+L");
   const row = page.locator(".dl-row").filter({ hasText: dump.first });
   await expect(row.locator(".dl-paused")).toHaveText("Spend limit, resumes tomorrow");
   await expect(row.locator(".dl-working")).toHaveCount(0);

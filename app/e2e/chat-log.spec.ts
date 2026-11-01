@@ -29,9 +29,13 @@ test('the dump log previews deletion consequences and restores from its bin', as
   const capture = await request.post('/api/dumps', { data: { text, from: 'web' } });
   const { id } = await capture.json();
   await expect.poll(async () => (await (await request.get(`/api/dumps/${id}`)).json()).status).toBe('done');
-  await page.goto('/');
-  await page.getByRole('button', { name: /^Dump log/ }).click();
+  await page.goto('/?view=briefing');
+  await expect(page.locator('.ps-logseg')).toHaveCount(0);
+  const dumps = page.getByRole('button', { name: /Open the dump log/ });
+  await dumps.click();
   const log = page.getByRole('dialog', { name: 'Dump log', exact: true });
+  await expect(log).toBeVisible(); await page.keyboard.press('Escape');
+  await expect(dumps).toBeFocused(); await dumps.click();
   const row = log.locator('.dl-row').filter({ hasText: text });
   await row.getByRole('button', { name: /^Delete/ }).click();
   const confirmation = page.getByRole('dialog', { name: 'Move dump to the bin?', exact: true });
