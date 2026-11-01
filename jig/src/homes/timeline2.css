@@ -204,7 +204,7 @@
 .t2x-card-meta { display: flex; gap: 8px; align-items: center; height: 16px; }
 .t2x-tag-rival { display: inline-grid; color: var(--ap-ink-3); flex-shrink: 0; padding-left: 2px; }
 .t2x .t2-link { transition: stroke 160ms ease-out, opacity 160ms ease-out; }
-.t2x .t2-link[data-deep] { stroke: var(--ap-ink-2); stroke-width: 1.25; }
+.t2x .t2-link[data-deep] { stroke: var(--ap-ink-3); stroke-width: 1.25; }
 .t2x .t2-link[data-faint] { opacity: 0.2; }
 
 /* River variants (t2r) */
@@ -231,20 +231,19 @@
 .t2r-list:not([data-outline]) .t2r-after { width: 300px; }
 .t2r-list:not([data-outline]) .t2r-after:empty { display: flex; }
 
-/* Selection finesse: one calm accent (violet) for the selected theory and its own links. Blue already means new and
-   red means challenged; green is support. Text stays in ink. */
-.t2x { --t2-accent: #5b47d6; }
+/* Selection finesse: the selected theory and its own links are full-strength ink; opened deeper levels are mid-grey
+   and drawn underneath. Blue already means new and red means challenged; green is support. */
 .t2x-chev { fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; stroke: var(--ap-ink); }
-.t2x-chev[data-c="deep"] { stroke: var(--ap-ink-2); }
-.t2x-chev[data-c="accent"] { stroke: var(--t2-accent, #5b47d6); }
+.t2x-chev[data-c="deep"] { stroke: var(--ap-ink-3); }
+.t2x-chev[data-c="accent"] { stroke: var(--ap-ink); }
 .t2x .t2-link { stroke-linejoin: round; }
-.t2x .t2-link[data-accent] { stroke: var(--t2-accent); }
+.t2x .t2-link[data-accent] { stroke: var(--ap-ink); }
 .t2x .t2a-item[data-sel] { z-index: 6 !important; }
-.t2x .t2a-item[data-sel] .t2a-dot { background: var(--t2-accent); transform: scale(1.2); box-shadow: 0 0 0 1.5px var(--ap-bg), 0 0 0 3px var(--t2-accent), 0 1px 4px 1px rgb(0 0 0 / 22%); }
-.t2x .t2a-item[data-sel][data-draft] .t2a-dot { background: var(--ap-surface); outline-color: var(--t2-accent); }
+.t2x .t2a-item[data-sel] .t2a-dot { background: var(--ap-ink); transform: scale(1.2); box-shadow: 0 0 0 1.5px var(--ap-bg), 0 0 0 3px var(--ap-ink), 0 1px 4px 1px rgb(0 0 0 / 22%); }
+.t2x .t2a-item[data-sel][data-draft] .t2a-dot { background: var(--ap-surface); outline-color: var(--ap-ink); }
 .t2x .t2a-dot { transition: transform 160ms var(--ap-ease), background 160ms ease-out; }
-.t2x-card[data-sel] { box-shadow: 0 0 0 1.5px var(--t2-accent), 0 2px 8px rgb(0 0 0 / 10%); }
-.t2x-card[data-draft][data-sel] { box-shadow: 0 0 0 1.5px var(--t2-accent); }
+.t2x-card[data-sel] { box-shadow: 0 0 0 1.5px var(--ap-ink), 0 2px 8px rgb(0 0 0 / 10%); }
+.t2x-card[data-draft][data-sel] { box-shadow: 0 0 0 1.5px var(--ap-ink); }
 .t2x .t2-tool:focus-visible, .t2x-badge:focus-visible, .t2x-crumb:focus-visible { outline: none; box-shadow: 0 0 0 0.5px rgb(0 0 0 / 30%), 0 0 0 3px rgb(0 0 0 / 8%); }
 .t2x-halo { fill: none; stroke: var(--ap-bg); stroke-width: 6; stroke-linecap: butt; }
 .t2x-hop[data-faint] { opacity: 0.2; }
