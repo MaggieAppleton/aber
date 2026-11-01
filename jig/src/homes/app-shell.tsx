@@ -31,10 +31,13 @@ export const VIEWS: { id: View; name: string; icon: IconName }[] = [
 type Obj = { kind: ObjKind; id: string };
 type Layer = "pane" | "dump";
 
-/* Pane widths. Each view has three stops: compact, wide (the view's own default) and full,
-   where the view folds to a thin strip of itself. The chosen stop is remembered per view. */
-type Snap = "compact" | "wide" | "full";
-const SNAPS: Snap[] = ["compact", "wide", "full"];
+/* Pane widths. Each view has four stops: compact, half (pane and view share the width evenly), wide (the view's own
+   default) and full, where the view folds to a thin strip of itself. The chosen stop is remembered per view. */
+type Snap = "compact" | "half" | "wide" | "full";
+const SNAPS: Snap[] = ["compact", "half", "wide", "full"];
+const SNAP_NAME: Record<Snap, string> = { compact: "Compact", half: "Half", wide: "Wide", full: "Full" };
+/** Half is dropped (merged into its neighbour) when it lands this close to another stop. */
+const MERGE = 40;
 const COMPACT = 480, PANE_MIN = 400;
 /** What each view keeps at full width: Columns its rails, Current its index, Atlas and Timeline a strip. */
 const STRIP: Record<View, number> = { columns: columnsWidth(undefined, undefined, true), current: 232, atlas: 180, timeline: 200 };
@@ -47,11 +50,21 @@ function paneStops(view: View, avail: number, open?: Obj, unfolded?: string): Re
   const clamp = (w: number) => Math.round(Math.max(Math.min(PANE_MIN, full), Math.min(full, w)));
   const keep = view === "columns" ? columnsWidth(open?.kind, unfolded ? (unfolded.startsWith("D") ? "dump" : "signal") : undefined) : KEEP[view];
   const wide = clamp(view === "timeline" ? TIMELINE_PANE : avail - keep);
-  return { compact: Math.min(wide, clamp(COMPACT)), wide, full };
+  const compact = Math.min(wide, clamp(COMPACT));
+  const even = clamp(avail / 2);
+  const near = [compact, wide, full].find(w => Math.abs(w - even) < MERGE);
+  return { compact, half: near ?? even, wide, full };
 }
+/** The distinct stops, narrowest first (half drops out when it merged into a neighbour). */
+function snapOrder(stops: Record<Snap, number>): Snap[] {
+  const keys = SNAPS.filter(k => k !== "half" || ![stops.compact, stops.wide, stops.full].includes(stops.half));
+  return keys.sort((a, b) => stops[a] - stops[b]);
+}
+/** The stop nearest a width. */
+const nearestSnap = (stops: Record<Snap, number>, w: number) => snapOrder(stops).reduce((a, b) => Math.abs(stops[b] - w) < Math.abs(stops[a] - w) ? b : a);
 /** The next distinct stop wider (+1) or narrower (-1) than the current width. */
 function stepSnap(stops: Record<Snap, number>, w: number, dir: 1 | -1): Snap | undefined {
-  const order = [...SNAPS].sort((a, b) => stops[a] - stops[b]);
+  const order = snapOrder(stops);
   return dir > 0 ? order.find(k => stops[k] > w + 1) : [...order].reverse().find(k => stops[k] < w - 1);
 }
 const isTyping = (el: EventTarget | null) => el instanceof HTMLElement && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
@@ -168,6 +181,7 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
               initial={{ x: paneW + DOCK_W, width: paneW, right: dumpW }} animate={{ x: 0, width: paneW, right: dumpW }} exit={{ x: paneW + dumpW + 24 }}
               transition={dock}>
               <PaneEdge width={paneW} stops={stops} min={Math.min(PANE_MIN, stops.full)} label={`Resize pane (${keysHint})`}
+                valueText={dragW == null ? `${SNAP_NAME[snap]} width` : `${Math.round(dragW)} pixels`}
                 onDrag={setDragW} onSettle={k => { setDragW(null); setSnap(k); }} onStep={step} />
               <div className="as-pane-close">
                 <IconButton icon={full ? "collapse" : "expand"} label={full ? "Restore width (⌘])" : "Full width (⌘[)"} onClick={toggleFull} />
@@ -209,8 +223,8 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
 
 /* The pane's left edge: a resize handle. A hairline and grip appear on approach; the edge follows the pointer 1:1,
    then settles with a spring on the stop nearest to where the throw was heading. Arrow keys step between stops. */
-function PaneEdge({ width, stops, min, label, onDrag, onSettle, onStep }: {
-  width: number; stops: Record<Snap, number>; min: number; label: string;
+function PaneEdge({ width, stops, min, label, valueText, onDrag, onSettle, onStep }: {
+  width: number; stops: Record<Snap, number>; min: number; label: string; valueText: string;
   onDrag: (w: number) => void; onSettle: (k: Snap) => void; onStep: (dir: 1 | -1) => void;
 }) {
   const drag = useRef<{ x: number; w: number; v: number; t: number; last: number } | null>(null);
@@ -219,7 +233,7 @@ function PaneEdge({ width, stops, min, label, onDrag, onSettle, onStep }: {
   const rubber = (w: number) => w > stops.full ? stops.full + (w - stops.full) * 0.2 : w < min ? min - (min - w) * 0.2 : w;
   return (
     <div className="as-pane-edge" role="separator" aria-orientation="vertical" aria-label={label} title={label} tabIndex={0}
-      aria-valuemin={min} aria-valuemax={stops.full} aria-valuenow={Math.round(width)} data-active={active ? "" : undefined}
+      aria-valuemin={min} aria-valuemax={stops.full} aria-valuenow={Math.round(width)} aria-valuetext={valueText} data-active={active ? "" : undefined}
       onPointerDown={e => {
         if (e.button !== 0) return;
         e.preventDefault();
@@ -242,11 +256,11 @@ function PaneEdge({ width, stops, min, label, onDrag, onSettle, onStep }: {
         if (!d) return;
         const v = e.timeStamp - d.t > 80 ? 0 : d.v;   // a held pointer has no throw
         const aim = d.last + v * 160;   // where the throw was heading
-        const k = SNAPS.reduce((a, b) => Math.abs(stops[b] - aim) < Math.abs(stops[a] - aim) ? b : a);
+        const k = nearestSnap(stops, aim);
         e.currentTarget.releasePointerCapture(e.pointerId);
         onSettle(k);
       }}
-      onPointerCancel={() => { drag.current = null; setActive(false); onSettle(SNAPS.reduce((a, b) => Math.abs(stops[b] - width) < Math.abs(stops[a] - width) ? b : a)); }}
+      onPointerCancel={() => { drag.current = null; setActive(false); onSettle(nearestSnap(stops, width)); }}
       onKeyDown={e => {
         if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); onStep(e.key === "ArrowLeft" ? 1 : -1); }
       }}
