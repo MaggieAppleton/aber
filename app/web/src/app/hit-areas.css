@@ -1,0 +1,50 @@
+/* Production accessibility exception: reserve real 40px controls without enlarging glyphs.
+   These boxes participate in layout; no enlarged, overlapping pseudo hit areas. */
+.ab-production :is(.ap-iconbtn, .as-switch-btn, .pn-step, .ps-ib, .ps-add, .ps-chip-x, .ps-thumb-x, .ps-send, .ps-stop, .ps-grab, .t2-tool, .cd-dot) {
+  min-width: var(--size-px-40);
+  min-height: var(--size-px-40);
+  flex-shrink: 0;
+}
+.ab-production :is(.ap-btn, .pn-status button, .pn-chip, .pn-link, .pn-ev, .cd-item-btn, .cd-link, .cd-off, .cur-theme-btn, .cur-index a, .cur-protos, .br-open, .br-link, .br-count, .br-flow, .br-overnight, .ab-disclosure, .t2-active, .t2-pop-row, .t2a-item, .dl-bin, .ps-filed, .ps-toast-undo, .tw-tc-flag) {
+  min-height: var(--size-px-40);
+  min-width: var(--size-px-40);
+}
+.ab-dialog :is(button, .ab-input) { min-height: var(--size-px-40); min-width: var(--size-px-40); }
+.ab-production :is(.ps-ib, .ps-chip-x)::after { content: none; }
+.ab-production :is(.ps-ctx, .ps-link):has(.ps-chip-x) { height: auto; min-height: var(--size-px-40); }
+.ab-production .ps-thumb-x { top: var(--size-px-2); right: var(--size-px-2); }
+.ab-production .ps-thumb { width: var(--size-px-48); height: var(--size-px-48); }
+.ab-production .ps-grab { margin-bottom: 0; }
+.ab-production .ps-logseg { width: var(--size-px-40); }
+.ab-production .ps-pill-layer[data-log] .ps-pill-row { left: var(--size-px-40); }
+.ab-production .ps-toast { height: auto; min-height: var(--size-px-44); }
+.ab-production .cur-theme { height: auto; min-height: var(--size-px-40); }
+.ab-production .as-switch { border-radius: var(--size-px-24); }
+.ab-production .as-switch-btn { border-radius: var(--size-px-20); }
+.ab-production .as-pane .pn-doc { padding-top: var(--size-px-64); }
+.ab-production .cs { min-width: var(--size-px-52); min-height: var(--size-px-40); align-items: center; }
+.ab-production .t2-pop { top: calc(100% + var(--size-px-6)); }
+.ab-production .t2-search { height: auto; min-height: var(--size-px-40); }
+.ab-production :is(.t2-search input, .ps-input, .pn-edit[role="textbox"]) { min-height: var(--size-px-40); }
+.ab-production .pn-chip { height: auto; padding-block: var(--size-px-7); white-space: normal; overflow-wrap: anywhere; }
+.ab-production .pn-chip span { min-width: 0; }
+.ab-production .pn-status { flex-wrap: wrap; }
+.ab-production :is(.br-acts, .dl-acts, .ab-dialog-actions) { flex-wrap: wrap; }
+.ab-production .br-acts { margin-block: 0; }
+.ab-production .ps-note-wave[data-scrub] { min-height: var(--size-px-40); }
+.ab-production .ps-voice { flex-wrap: wrap; }
+.ab-production .ps-voice .ps-note-wave { flex: 1; min-width: var(--size-px-72); justify-content: space-between; }
+.ab-production .ps-composer { min-width: 0; width: 100%; }
+.ab-production .ps-panel .ps-ctxfloat { right: var(--size-px-8); max-height: min(var(--size-px-160), var(--size-dvh-25)); overflow-y: auto; padding: var(--size-px-2); margin: var(--size-px-neg-2); }
+.ab-production .ps-ctxrow { width: 100%; min-width: 0; flex-wrap: wrap; align-items: center; }
+.ab-production .ps-ctxrow .ps-ctx { min-width: 0; max-width: 100%; }
+.ab-production .ps-ctx-label { min-width: 0; }
+.ab-production .ps-panel:has(.ps-ctxfloat) .ps-thread { padding-bottom: calc(var(--ps-context-height, var(--size-px-40)) + var(--size-px-14)); }
+.ab-error button { min-width: var(--size-px-40); min-height: var(--size-px-40); }
+@media (max-width: 639px) {
+  .ab-production .as-pane .pn-doc { padding-top: var(--size-px-64); }
+  .ab-production .ps-pill-ctx { max-width: var(--size-px-150); }
+  .ab-production .ps-ctx-label { min-width: 0; }
+  .ab-production .ps-link { max-width: 100%; }
+  .ab-production .ps-toast-slot { max-width: calc(var(--size-vw-100) - var(--size-px-24)); }
+}

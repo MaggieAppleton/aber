@@ -19,3 +19,10 @@ data/
 .DS_Store
 .vscode/
 .idea/
+
+# Local verification artefacts and backups
+app/test-results/
+app/playwright-report/
+app/backups/
+app/.e2e-data/
+.agent-kit/

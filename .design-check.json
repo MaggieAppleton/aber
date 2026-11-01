@@ -1,0 +1,490 @@
+{
+  "version": 1,
+  "url": "http://127.0.0.1:3000",
+  "context": {
+    "task": "Review current theories across Theme sections, Columns, Atlas, Timeline and Briefing; inspect an existing theory and its confidence history; open the capture column and adjust its local context without sending or changing any stored object.",
+    "audience": "fluent",
+    "authority": "docs/design-model.md, docs/build-spec.md and the canonical jig at /app govern this app. The jig is explicitly canonical for appearance and motion; this review preserves its compact sovereign-tool typography, hierarchy and spacing.",
+    "typography": "The established UI uses Inter 13px body, 12px labels/meta and 11px badges/keys (design-model section 5). Canonical pane CSS additionally uses 26px title and 15px prose/tripwire; phone editable native inputs are 16px to avoid zoom. These role-specific choices govern instead of a generic 14px floor. Whole-pane captures may include five sizes; whole-app captures may include six because chrome and object content are distinct roles.",
+    "space": "View, pane and capture column are docked peers; opening the column compresses the pane and view. Capture context floats above its composer, wraps within it and names the selected objects. Confidence history is an informational tethered tooltip, with hover/focus and pointer-exit/blur dismissal.",
+    "encoding": "Solid objects are mine; dashed/translucent objects are drafts or suggestions. Red is a challenge, blue is new (and the acknowledged canonical building-status clash). Atlas circles and landmarks use the model's accepted deterministic dynamic layout and honest derived counts.",
+    "actions": {
+      "Tripwire count": "Toggle named matched signals without deciding them",
+      "Dump or ask": "Open or close the local capture column",
+      "Add something on screen": "Pick one on-screen object as local context",
+      "Stop sharing": "Remove local context",
+      "Confidence focus": "Inspect keyboard focus without changing its value",
+      "Find": "Search local object names without selecting or editing an object"
+    },
+    "safety": "All cases use seeded local data and nonmutating controls. Never accept, discard, send, record, change confidence/horizon, delete, persist a drag or invoke an app provider job. Direct open URLs avoid mark-seen click paths.",
+    "coverage_limits": "Settled success states, local empty search, disabled empty composer, hover, focus, narrow, disclosure and fresh reduced motion are configured. Loading and server error states require response injection unsupported by this checker and are not claimed. The separate reports/design-final browser fixture covers revision readability; no stored revision is created here. Full-app node limits preserve enclosing context and all visible chrome rather than truncating nodes. Source scanning keeps the entire production web source, dependencies and model/spec; canonical jig images remain fingerprinted references, while unimported jig source is outside the production style scan in watch. Literal source violations remain real checker failures; no catch-all token or source exemption is used.",
+    "token_rationale": "design-tokens.css defines shared literal primitives. atlas-styles/styles.css defines component-local derived semantic colours at their original selectors so --gr and --glow keep their exact scope; only custom-property definitions are exempt, and all ordinary rules remain scanned."
+  },
+  "watch": [
+    "app/web/src/**/*",
+    "app/web/index.html",
+    "app/package.json",
+    "app/*lock*",
+    "app/vite.config.ts",
+    "app/tsconfig.json",
+    "docs/design-model.md",
+    "docs/build-spec.md"
+  ],
+  "design_model": "docs/design-model.md",
+  "token_sources": [
+    "app/web/src/design-tokens.css",
+    "app/web/src/ui/atlas-styles/styles.css"
+  ],
+  "required_states": [
+    "rest",
+    "hover",
+    "focus",
+    "narrow",
+    "expanded",
+    "empty",
+    "reduced-motion"
+  ],
+  "elevation_scale": [
+    -1,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    20,
+    29,
+    30,
+    50,
+    51,
+    60
+  ],
+  "min_hit_area": 40,
+  "min_text_size": 11,
+  "max_font_sizes": 5,
+  "allow_gradients": false,
+  "reference_images": {
+    "compact-spacing": {
+      "accepted": [
+        "reports/design-round1/jig-current-frame.png",
+        "reports/design-round1/jig-pane-frame.png"
+      ],
+      "rejected": []
+    },
+    "semantic-encoding": {
+      "accepted": [
+        "reports/design-round1/jig-current-frame.png"
+      ],
+      "rejected": []
+    }
+  },
+  "cases": [
+    {
+      "id": "theme-sections-rest",
+      "state": "rest",
+      "path": "/?view=current",
+      "ready": ".cur-card[data-pick=t1]",
+      "selector": ".cur",
+      "viewport": {
+        "width": 1360,
+        "height": 820
+      },
+      "max_nodes": 450,
+      "targets": [
+        {
+          "selector": ".cur-index a",
+          "row": true
+        },
+        {
+          "selector": ".cur-theme-btn",
+          "row": true
+        }
+      ],
+      "assertions": [
+        {
+          "selector": ".ab-error",
+          "condition": "absent"
+        }
+      ]
+    },
+    {
+      "id": "columns-rest",
+      "state": "rest",
+      "path": "/?view=columns",
+      "ready": ".cd",
+      "selector": ".cd",
+      "viewport": {
+        "width": 1360,
+        "height": 820
+      },
+      "max_nodes": 450
+    },
+    {
+      "id": "atlas-rest",
+      "state": "rest",
+      "path": "/?view=atlas",
+      "ready": ".a2",
+      "selector": ".a2",
+      "viewport": {
+        "width": 1360,
+        "height": 820
+      },
+      "max_nodes": 450,
+      "context": {
+        "task": "See themes as territories and theories as landmarks; no selection, pan, drag or zoom is performed in this capture."
+      }
+    },
+    {
+      "id": "timeline-rest",
+      "state": "rest",
+      "path": "/?view=timeline",
+      "ready": ".tla",
+      "selector": ".tla",
+      "viewport": {
+        "width": 1360,
+        "height": 820
+      },
+      "max_nodes": 450,
+      "context": {
+        "task": "Read the Field's year and confidence arrangement, including the separate draft row; no theory is dragged or edited."
+      }
+    },
+    {
+      "id": "briefing-rest",
+      "state": "rest",
+      "path": "/?view=briefing",
+      "ready": ".br",
+      "selector": ".br",
+      "viewport": {
+        "width": 1360,
+        "height": 820
+      },
+      "max_nodes": 450
+    },
+    {
+      "id": "confidence-history-hover",
+      "state": "hover",
+      "path": "/?view=current&open=theory:t3",
+      "ready": ".as-pane[style*=\"transform: none\"] .pn-title",
+      "selector": ".as-pane",
+      "viewport": {
+        "width": 1360,
+        "height": 820
+      },
+      "max_nodes": 450,
+      "steps": [
+        {
+          "action": "hover",
+          "selector": ".as-pane .cs",
+          "capture": true,
+          "assertions": [
+            {
+              "selector": ".as-pane .cs-tip",
+              "condition": "visible"
+            }
+          ]
+        },
+        {
+          "action": "move",
+          "x": 10,
+          "y": 10,
+          "settle_ms": 400
+        }
+      ],
+      "assertions": [
+        {
+          "selector": ".as-pane .cs-tip",
+          "condition": "hidden"
+        }
+      ]
+    },
+    {
+      "id": "confidence-keyboard-focus",
+      "state": "focus",
+      "path": "/?view=current&open=theory:t3",
+      "ready": ".as-pane[style*=\"transform: none\"] .pn-title",
+      "selector": ".as-pane",
+      "viewport": {
+        "width": 1360,
+        "height": 820
+      },
+      "max_nodes": 450,
+      "steps": [
+        {
+          "action": "focus",
+          "selector": ".as-pane .pn-conf input[type=range]"
+        }
+      ],
+      "assertions": [
+        {
+          "selector": ".as-pane .pn-conf input[type=range]",
+          "condition": "focused"
+        }
+      ],
+      "targets": [
+        {
+          "selector": ".pn-conf-control",
+          "minHitArea": 40
+        }
+      ]
+    },
+    {
+      "id": "tripwire-disclosure",
+      "state": "expanded",
+      "path": "/?view=current&open=theory:t3",
+      "ready": ".as-pane[style*=\"transform: none\"] .pn-title",
+      "selector": ".as-pane",
+      "viewport": {
+        "width": 1360,
+        "height": 820
+      },
+      "max_nodes": 450,
+      "steps": [
+        {
+          "action": "click",
+          "selector": ".tw-tc-flag",
+          "settle_ms": 500,
+          "capture": true,
+          "assertions": [
+            {
+              "selector": ".tw-hits",
+              "condition": "hidden"
+            }
+          ]
+        },
+        {
+          "action": "click",
+          "selector": ".tw-tc-flag",
+          "settle_ms": 500,
+          "capture": true,
+          "assertions": [
+            {
+              "selector": ".tw-hits",
+              "condition": "visible"
+            }
+          ]
+        }
+      ],
+      "targets": [
+        {
+          "selector": ".tw-tc-flag",
+          "square": true,
+          "minHitArea": 40
+        }
+      ]
+    },
+    {
+      "id": "phone-briefing",
+      "state": "narrow",
+      "path": "/?view=briefing",
+      "ready": ".br",
+      "selector": ".br",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "max_nodes": 450
+    },
+    {
+      "id": "phone-pane",
+      "state": "narrow",
+      "path": "/?view=briefing&open=theory:t3",
+      "ready": ".as-pane[style*=\"transform: none\"] .pn-title",
+      "selector": ".as-pane",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "max_nodes": 450,
+      "steps": [
+        {
+          "action": "focus",
+          "selector": ".pn-conf input[type=range]"
+        }
+      ],
+      "targets": [
+        {
+          "selector": ".pn-conf-control",
+          "minHitArea": 40
+        },
+        {
+          "selector": ".tw-tc-flag",
+          "square": true,
+          "minHitArea": 40
+        }
+      ]
+    },
+    {
+      "id": "capture-contexts",
+      "state": "expanded",
+      "path": "/?view=current&open=theory:t3",
+      "ready": ".as-pane[style*=\"transform: none\"] .pn-title",
+      "selector": ".as",
+      "viewport": {
+        "width": 1360,
+        "height": 820
+      },
+      "max_nodes": 650,
+      "max_font_sizes": 6,
+      "steps": [
+        {
+          "action": "click",
+          "selector": ".ps-pill",
+          "settle_ms": 700,
+          "capture": true,
+          "assertions": [
+            {
+              "selector": ".ps-panel",
+              "condition": "visible"
+            }
+          ]
+        },
+        {
+          "action": "click",
+          "selector": ".ps-add",
+          "capture": true
+        },
+        {
+          "action": "click",
+          "selector": ".cur-theme-btn[data-pick=cost]",
+          "capture": true,
+          "assertions": [
+            {
+              "selector": ".ps-chip-x[aria-label='Stop sharing Cost of intelligence']",
+              "condition": "visible"
+            }
+          ]
+        },
+        {
+          "action": "click",
+          "selector": ".ps-chip-x[aria-label='Stop sharing Cost of intelligence']",
+          "capture": true
+        },
+        {
+          "action": "keyboard",
+          "key": "Escape",
+          "settle_ms": 700
+        }
+      ],
+      "assertions": [
+        {
+          "selector": ".ps-input",
+          "condition": "paste-enabled"
+        },
+        {
+          "selector": ".ps-panel",
+          "condition": "hidden"
+        }
+      ],
+      "targets": [
+        {
+          "selector": ".ps-chip-x",
+          "square": true,
+          "minHitArea": 40
+        },
+        {
+          "selector": ".ps-add",
+          "square": true,
+          "minHitArea": 40
+        }
+      ]
+    },
+    {
+      "id": "pane-column-reduced-motion",
+      "state": "reduced-motion",
+      "path": "/?view=current&open=theory:t3",
+      "ready": ".as-pane[style*=\"transform: none\"] .pn-title",
+      "selector": ".as",
+      "viewport": {
+        "width": 1360,
+        "height": 820
+      },
+      "max_nodes": 650,
+      "max_font_sizes": 6,
+      "reduced_motion": true,
+      "steps": [
+        {
+          "action": "click",
+          "selector": ".ps-pill",
+          "settle_ms": 700,
+          "capture": true
+        },
+        {
+          "action": "keyboard",
+          "key": "Escape",
+          "settle_ms": 700
+        }
+      ],
+      "assertions": [
+        {
+          "selector": ".ps-input",
+          "condition": "paste-enabled"
+        },
+        {
+          "selector": ".ps-panel",
+          "condition": "hidden"
+        },
+        {
+          "selector": ".as-pane",
+          "condition": "css",
+          "property": "transform",
+          "value": "none"
+        }
+      ]
+    },
+    {
+      "id": "find-empty-results",
+      "state": "empty",
+      "path": "/?view=current",
+      "ready": ".cur-card[data-pick=t1]",
+      "selector": "body:has(.ab-dialog) .ab-dialog, body:not(:has(.ab-dialog)) .as",
+      "viewport": {
+        "width": 1360,
+        "height": 820
+      },
+      "max_nodes": 650,
+      "max_font_sizes": 6,
+      "steps": [
+        {
+          "action": "click",
+          "selector": "button[aria-label='Find (\u2318K)']",
+          "capture": true,
+          "assertions": [
+            {
+              "selector": ".ab-dialog",
+              "condition": "visible"
+            }
+          ]
+        },
+        {
+          "action": "fill",
+          "selector": ".ab-dialog input[aria-label=Find]",
+          "value": "zzzz-design-review-no-matching-object",
+          "capture": true
+        },
+        {
+          "action": "keyboard",
+          "key": "Escape"
+        }
+      ],
+      "assertions": [
+        {
+          "selector": ".ab-dialog input[aria-label=Find]",
+          "condition": "paste-enabled"
+        },
+        {
+          "selector": ".ab-dialog",
+          "condition": "hidden"
+        }
+      ],
+      "context": {
+        "task": "Open Find, inspect its real search field, search a synthetic nonmatching phrase, then dismiss with Escape. Capture the modal itself while open; the inert background is outside the active component."
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+.ab-proposal { min-width:0; width:100%; display:grid; gap:var(--size-px-10); padding:var(--size-px-10); border-radius:var(--size-px-7); outline:var(--size-px-1) dashed var(--color-gray-0-a-28); outline-offset:var(--size-px-neg-1); }
+.ab-proposal-fields,.ab-proposal-form { display:grid; gap:var(--size-px-10); margin:0; min-width:0; }
+.ab-proposal-fields>div { display:grid; gap:var(--size-px-4); }
+.ab-proposal-fields dd { white-space:pre-wrap; overflow-wrap:anywhere; color:var(--ap-ink-2); }
+.ab-proposal-form label { display:grid; gap:var(--size-px-4); font-size:var(--size-px-12); color:var(--ap-ink-2); }
+.ab-proposal .ab-input { margin:0; min-height:var(--size-px-40); font-size:var(--size-px-13); }
+.ab-proposal .pn-chips { align-items:center; }
+.ab-proposal .ap-btn { display:inline-flex; align-items:center; gap:var(--size-px-6); }
+.ab-proposal-merge { display:grid; gap:var(--size-px-6); justify-items:start; }
+.ab-retired { font-size:var(--size-px-12); }
+.pn-tested-claim { display:grid; gap:var(--size-px-3); }
+.pn-tested-claim small { font-size:var(--size-px-12); font-weight:400; color:var(--ap-ink-3); }
+.br-row:has(.ab-proposal) { grid-template-columns:var(--size-px-16) minmax(0,1fr); }
+.br-detail:has(.ab-proposal) { justify-items:stretch; }
+.ab-chat-object { text-align:left; width:100%; }
+.ab-merge-review { display:grid; gap:var(--size-px-16); margin-top:var(--size-px-16); }
+.ab-merge-source { display:grid; gap:var(--size-px-6); overflow-wrap:anywhere; }
+.ab-dialog .ab-merge-source .pn-chip { min-height:var(--size-px-40); height:auto; padding:var(--size-px-7) var(--size-px-8); white-space:normal; }

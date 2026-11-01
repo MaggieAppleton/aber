@@ -1,0 +1,48 @@
+import { test, expect } from '@playwright/test';
+
+test('a contextual question streams real display components and persists the reply', async ({ page, request }) => {
+  await page.goto('/?view=current&open=theory:t1');
+  await page.getByRole('button', { name: /^Dump or ask/ }).click();
+  const input = page.getByPlaceholder('Dump anything, or ask');
+  const question = 'Show the theory Tokens become nearly free for routine work?';
+  await input.fill(question);
+  await expect(page.getByRole('button', { name: 'Ask (Return)', exact: true })).toBeVisible();
+  await input.press('Enter');
+  const reply = 'Here is the theory and its current evidence. The split includes pending proposals for you to assess.';
+  await expect(page.locator('.ps-thread').getByText(reply, { exact: true })).toBeVisible();
+  await expect(page.locator('.ab-chat-evidence')).toBeVisible();
+  const world = await (await request.get('/api/world')).json();
+  const dump = world.dumps.find((row: any) => row.text === question);
+  expect(dump.captured_from).toBe('column');
+  expect(dump.is_ask).toBe(1);
+  expect(dump.context.some((context: any) => context.kind === 'theory' && context.id === 't1')).toBeTruthy();
+  await expect.poll(async () => (await (await request.get(`/api/dumps/${dump.id}`)).json()).replies.length).toBeGreaterThan(0);
+  await page.reload();
+  await page.getByRole('button', { name: /^Dump or ask/ }).click();
+  await expect(page.locator('.ps-thread').getByText(reply, { exact: true })).toHaveCount(1);
+  await expect(page.locator('.ab-chat-evidence')).toBeVisible();
+  await page.screenshot({ path: 'test-results/parity/app-chat-persisted.png', animations: 'disabled' });
+});
+
+test('the dump log previews deletion consequences and restores from its bin', async ({ page, request }) => {
+  const text = 'A test studio moves code review from line-by-line diffs to stated intent.';
+  const capture = await request.post('/api/dumps', { data: { text, from: 'web' } });
+  const { id } = await capture.json();
+  await expect.poll(async () => (await (await request.get(`/api/dumps/${id}`)).json()).status).toBe('done');
+  await page.goto('/');
+  await page.getByRole('button', { name: /^Dump log/ }).click();
+  const log = page.getByRole('dialog', { name: 'Dump log', exact: true });
+  const row = log.locator('.dl-row').filter({ hasText: text });
+  await row.getByRole('button', { name: /^Delete/ }).click();
+  const confirmation = page.getByRole('dialog', { name: 'Move dump to the bin?', exact: true });
+  await expect(confirmation).toContainText(/Removes \d+ signals and \d+ evidence links/);
+  await confirmation.getByRole('button', { name: 'Move to bin', exact: true }).click();
+  await expect(row).toHaveCount(0);
+  await log.getByRole('button', { name: /^Bin,/ }).click();
+  const bin = page.getByRole('dialog', { name: 'Bin', exact: true });
+  await bin.locator('.dl-row').filter({ hasText: text }).getByRole('button', { name: 'Restore', exact: true }).click();
+  await expect(bin.locator('.dl-row').filter({ hasText: text })).toHaveCount(0);
+  const restored = await (await request.get(`/api/dumps/${id}`)).json();
+  expect(restored.deleted_at).toBeNull();
+  expect(restored.signals.length).toBeGreaterThan(0);
+});

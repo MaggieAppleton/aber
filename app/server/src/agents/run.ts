@@ -1,0 +1,129 @@
+import { generateText, streamText, stepCountIs, convertToModelMessages } from 'ai';
+import type { LanguageModel, StepResult, Tool, UIMessage } from 'ai';
+import { ulid } from 'ulid';
+import { z } from 'zod';
+import { modelFor, tokenCost, choiceFor } from './models.js';
+import type { AgentDatabase, AgentInput, AgentSpec, ChatInput, RunContext, RunResult, ProviderName } from './types.js';
+import { projectToolMessages } from './projection.js';
+
+export class BudgetExceededError extends Error {
+  constructor() { super('Daily agent spend cap reached; queued work waits until tomorrow'); this.name = 'BudgetExceededError'; }
+}
+
+export function daySpend(db: AgentDatabase, now = new Date()): number {
+  const start = `${now.toISOString().slice(0, 10)}T00:00:00.000Z`;
+  return (db.prepare('SELECT COALESCE(SUM(cost_usd),0) AS cost FROM agent_runs WHERE started_at>=?').get(start) as { cost: number }).cost;
+}
+
+export function spendCap(): number {
+  const cap = Number(process.env.DAILY_SPEND_CAP_USD ?? 5);
+  return Number.isFinite(cap) && cap >= 0 ? cap : 5;
+}
+
+export function assertBudget(db: AgentDatabase, now = new Date()): void {
+  if (daySpend(db, now) >= spendCap()) throw new BudgetExceededError();
+}
+
+/** A conservative byte bound (plus framing) keeps even unusual Unicode <100k tokens. */
+export function assertInputLimit(system: string, input: unknown, tools: Record<string, Tool>, max = 99_000): void {
+  let imageAllowance = 0;
+  const serialised = JSON.stringify(input, (key, value) => {
+    if (value && typeof value === 'object' && value.type === 'file' && typeof value.mediaType === 'string' && value.mediaType.startsWith('image/')) {
+      imageAllowance += 10_000; return { type: 'file', mediaType: value.mediaType, data: '[bounded image]' };
+    }
+    if (key === 'image') { imageAllowance += 10_000; return '[bounded image]'; }
+    return value;
+  });
+  const schemaBytes = Object.entries(tools).reduce((total, [name, definition]) => {
+    try { return total + Buffer.byteLength(JSON.stringify({ name, description: definition.description, input: z.toJSONSchema(definition.inputSchema as z.ZodType, { unrepresentable: 'any' }) })) + 256; }
+    catch { return total + 2000; }
+  }, 0);
+  const bytes = Buffer.byteLength(system + serialised) + schemaBytes + imageAllowance + 4096;
+  if (bytes >= Math.min(max, 100_000)) {
+    const messages = Array.isArray(input) ? input : [];
+    const sizes = messages.map(message => ({ role: message.role, bytes: Buffer.byteLength(JSON.stringify(message)) }));
+    throw new Error(`Agent input exceeds its ${Math.min(max, 100_000)} token safety bound (${Buffer.byteLength(serialised)} context bytes, ${schemaBytes} schema bytes; messages ${JSON.stringify(sizes)}); narrow the context`);
+  }
+}
+
+function modelId(model: LanguageModel): string { return typeof model === 'string' ? model : model.modelId; }
+
+function openRun(db: AgentDatabase, spec: AgentSpec, input: unknown, ctx: RunContext) {
+  const runId = ulid();
+  const now = ctx.now ?? (() => new Date());
+  const provider: ProviderName = spec.provider ?? (process.env.AGENT_MODE === 'fake' ? 'fake' : 'openai');
+  const model = spec.model ?? modelFor(spec.job, provider);
+  if (typeof model === 'string') throw new Error('Agent models must be provider objects, never Gateway model strings');
+  const tools = spec.tools(runId);
+  db.prepare('INSERT INTO agent_runs (id,job_id,job,attempt,provider,model,prompt_version,status,started_at,trace_json,cost_usd) VALUES (?,?,?,?,?,?,?,?,?,?,?)')
+    .run(runId, ctx.jobId ?? null, spec.job, ctx.attempt ?? 1, provider, modelId(model), spec.promptVersion, 'running', now().toISOString(), '[]', 0);
+  let inputTokens = 0, outputTokens = 0, cachedInputTokens = 0;
+  const trace: unknown[] = [];
+  const snapshot = () => ({ runId, inputTokens, outputTokens, costUsd: tokenCost(spec.job, inputTokens, outputTokens, provider), trace });
+  const persist = (status: string, error: string | null = null) => {
+    const stats = snapshot();
+    db.prepare('UPDATE agent_runs SET input_tokens=?,output_tokens=?,cached_input_tokens=?,cost_usd=?,status=?,error=?,trace_json=?,finished_at=? WHERE id=?')
+      .run(inputTokens, outputTokens, cachedInputTokens, stats.costUsd, status, error, JSON.stringify(trace), status === 'running' ? null : now().toISOString(), runId);
+  };
+  const fail = (error: unknown) => {
+    const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+    trace.push({ type: 'error', message });
+    persist('failed', message);
+  };
+  const step = (result: StepResult<Record<string, Tool>>) => {
+    inputTokens += result.usage.inputTokens ?? 0;
+    outputTokens += result.usage.outputTokens ?? 0;
+    cachedInputTokens += result.usage.inputTokenDetails.cacheReadTokens ?? 0;
+    const entry = { step: trace.length + 1, text: result.text, toolCalls: result.toolCalls, toolResults: result.toolResults, content: result.content, usage: result.usage, finishReason: result.finishReason };
+    trace.push(JSON.parse(JSON.stringify(entry, (key, value) => {
+      if (['trace_json', 'traceJson', 'embedding'].includes(key)) return '[stored separately]';
+      return value;
+    })));
+    persist('running');
+    if ((result.usage.inputTokens ?? 0) >= Math.min(spec.maxInputTokens, 100_000)) throw new Error('Provider reported input over the 100k safety limit');
+  };
+  const prepare = (messages: unknown) => { assertInputLimit(spec.system, messages, tools, spec.maxInputTokens); assertBudget(db, now()); };
+  try { prepare(input); } catch (error) { fail(error); throw error; }
+  return { runId, model, tools, step, prepare, snapshot, persist, fail, now };
+}
+
+export async function runAgent(db: AgentDatabase, spec: AgentSpec, input: AgentInput, ctx: RunContext = {}): Promise<RunResult> {
+  const run = openRun(db, spec, input, ctx);
+  try {
+    const result = await generateText({
+      model: run.model, system: spec.system, ...input, tools: run.tools,
+      stopWhen: stepCountIs(spec.maxSteps), maxOutputTokens: spec.maxOutputTokens ?? 4000, maxRetries: 0, abortSignal: ctx.signal,
+      toolCallConcurrency: 1,
+      prepareStep: ({ messages }) => { const projected = projectToolMessages(messages); run.prepare(projected); return { messages: projected }; },
+      onStepFinish: run.step,
+    });
+    run.persist('done');
+    return { ...run.snapshot(), text: result.text };
+  } catch (error) { run.fail(error); throw error; }
+}
+
+export async function streamAgent(db: AgentDatabase, spec: AgentSpec, input: ChatInput, ctx: RunContext & { onReply: (parts: UIMessage['parts'], runId: string) => unknown | Promise<unknown> }): Promise<Response> {
+  const run = openRun(db, spec, input, ctx);
+  try {
+    const messages = await convertToModelMessages(input.messages, { tools: run.tools, ignoreIncompleteToolCalls: true });
+    const result = streamText({
+      model: run.model, system: spec.system, messages, tools: run.tools,
+      stopWhen: stepCountIs(spec.maxSteps), maxOutputTokens: spec.maxOutputTokens ?? 4000, maxRetries: 0, abortSignal: ctx.signal,
+      toolCallConcurrency: 1,
+      prepareStep: ({ messages: current }) => { const projected = projectToolMessages(current); run.prepare(projected); return { messages: projected }; },
+      onStepFinish: run.step,
+      onFinish: () => { run.persist('done'); },
+      onError: ({ error }) => { run.fail(error); },
+      onAbort: () => { run.fail(new Error('Chat stream aborted')); },
+    });
+    return result.toUIMessageStreamResponse({
+      originalMessages: input.messages,
+      generateMessageId: ulid,
+      sendReasoning: false,
+      onFinish: async ({ responseMessage }) => { await ctx.onReply(responseMessage.parts, run.runId); },
+      onError: error => error instanceof Error ? error.message : 'Agent request failed',
+    });
+  } catch (error) { run.fail(error); throw error; }
+}
+
+export { modelFor, choiceFor };

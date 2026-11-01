@@ -1,0 +1,65 @@
+{
+  "name": "aber",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web \"npm:dev:server\" \"npm:dev:web\"",
+    "dev:server": "tsx watch server/src/index.ts",
+    "dev:web": "vite --host 127.0.0.1 --port 5174 --strictPort",
+    "build": "vite build && esbuild server/src/index.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/server/index.js && node scripts/copy-assets.mjs",
+    "start": "node dist/server/index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "db:migrate": "node --import tsx server/src/db/migrate-cli.ts",
+    "seed": "node --import tsx server/src/seed.ts",
+    "backup": "node --import tsx scripts/backup.ts",
+    "smoke:providers": "node --import tsx server/src/agents/smoke.ts",
+    "eval": "node --import tsx evals/run.ts",
+    "smoke:production": "node --import tsx scripts/production-smoke.ts",
+    "test:workflow": "playwright test -c web/playwright.config.ts && playwright test -c web/review.playwright.config.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.94",
+    "@ai-sdk/openai": "^4.0.106",
+    "@ai-sdk/react": "^4.0.163",
+    "@base-ui/react": "^1.9.0",
+    "@hono/node-server": "^2.1.5",
+    "@mozilla/readability": "^0.6.0",
+    "@phosphor-icons/react": "^2.1.10",
+    "ai": "^7.0.159",
+    "better-sqlite3": "^13.0.3",
+    "drizzle-orm": "^0.45.4",
+    "hono": "^4.13.16",
+    "linkedom": "^0.18.14",
+    "motion": "^14.9.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "ulid": "^3.0.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "concurrently": "^10.0.6",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  },
+  "allowScripts": {
+    "better-sqlite3@13.0.3": true,
+    "esbuild@0.28.2": true
+  }
+}

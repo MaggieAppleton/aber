@@ -1,0 +1,52 @@
+/* The tripwire, written as a sentence under the theory body (variant C), and the signals it matches. Tokens from .ap (homes.css). */
+.ap .ap-btn.tw-accept:focus-visible { outline: var(--size-px-1-5) solid var(--ap-ink-3); outline-offset: var(--size-px-1); }
+/* Watching: a dot that breathes slowly */
+.tw-watch { position: relative; width: var(--size-px-7); height: var(--size-px-7); border-radius: 50%; background: var(--ap-ink-3); flex-shrink: 0; display: inline-block; }
+.tw-watch::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--ap-ink-3); animation: tw-breathe 2.8s ease-out infinite; }
+@keyframes tw-breathe { 0% { transform: scale(1); opacity: 0.5; } 70%, 100% { transform: scale(2.6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .tw-watch::after { animation: none; opacity: 0; } }
+/* A matched signal: dashed until decided */
+.tw-hits { display: grid; gap: var(--size-px-4); }
+.tw-hit { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--size-px-4) var(--size-px-10); padding: var(--size-px-7) var(--size-px-8) var(--size-px-7) var(--size-px-10); border-radius: var(--size-px-7); outline: var(--size-px-1) dashed var(--color-gray-0-a-28); outline-offset: var(--size-px-neg-1); background: transparent; }
+.tw-hit[data-decided] { outline: 0; background: var(--ap-sunk); }
+.tw-hit-text { display: grid; gap: var(--size-px-2); min-width: 0; }
+.tw-hit-text .ap-muted { font-size: var(--size-px-12); }
+.tw-hit-gist { color: var(--ap-ink); text-wrap: pretty; }
+.tw-hit[data-decided] .tw-hit-gist { color: var(--ap-ink-2); }
+.tw-hit-src { font-size: var(--size-px-12); }
+.tw-hit-acts { display: inline-flex; align-items: center; gap: var(--size-px-4); }
+.tw-hit[data-compact] { grid-template-columns: minmax(0, 1fr) auto; }
+.tw-hit[data-compact] .tw-hit-src { display: none; }
+.ap .tw-accept { height: var(--size-px-24); padding: 0 var(--size-px-9); }
+.tw-unfold { overflow: hidden; }
+.tw-unfold > * { padding-top: var(--size-px-6); }
+.tw-unfold > .tw-hits { padding: var(--size-px-6) var(--size-px-2) var(--size-px-2); }
+/* C. Sentence: icon inline at the start, wrapped lines return to the body's left edge */
+.tw-tc { display: grid; gap: var(--size-px-6); }
+.tw-tc-line { margin: 0; font-size: var(--size-px-15); line-height: 1.65; color: var(--ap-ink-2); text-wrap: pretty; }
+.tw-tc-lead { color: var(--ap-ink-3); white-space: pre; cursor: text; }
+.tw-tc-icon { display: inline-block; vertical-align: var(--size-px-neg-3); margin-right: var(--size-px-6); color: var(--ap-ink-3); transition: color 200ms ease-out; }
+.tw-tc-icon svg { display: block; }
+.tw-tc-icon[data-tripped] { color: var(--ap-neg); }
+.ap .tw-tc-phrase { display: inline; padding: var(--size-px-2) var(--size-px-4); margin: 0 var(--size-px-neg-4); color: var(--ap-ink); text-decoration: underline dotted var(--ap-ink-3); text-underline-offset: var(--size-px-4); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.ap .tw-tc-phrase[data-tripped] { text-decoration: underline wavy var(--ap-neg); text-decoration-thickness: var(--size-px-1); text-underline-offset: var(--size-px-5); }
+.ap .tw-tc-phrase:empty { display: inline-block; min-width: var(--size-px-28); vertical-align: bottom; }
+.tw-tc-after, .tw-tc-flag { display: inline-flex; align-items: center; gap: var(--size-px-4); margin-left: var(--size-px-8); vertical-align: var(--size-px-1); }
+.tw-tc-flag { border: 0; background: transparent; padding: var(--size-px-2) var(--size-px-4); border-radius: var(--size-px-6); cursor: pointer; font: inherit; }
+.tw-tc-flag:hover { background: var(--ap-hover); }
+.tw-tc-flag:focus-visible { outline: var(--size-px-1-5) solid var(--ap-ink-3); outline-offset: var(--size-px-neg-1-5); }
+.tw-tc-done { margin-left: var(--size-px-4); padding: 0 var(--size-px-6); font-size: var(--size-px-12); line-height: var(--size-px-22); color: var(--ap-ink-3); vertical-align: 0; }
+.tw-tc-end { white-space: nowrap; }
+.tw-unfold > .tw-tc-hits { padding: var(--size-px-6) 0 var(--size-px-2); }
+/* Empty: the lead floats so the blank runs on after "if " and returns full width for a second line */
+.tw-tc-blankline > .tw-tc-lead { float: left; position: relative; z-index: 1; }
+.ap .tw-tc-blank { display: block; margin: var(--size-px-neg-4) var(--size-px-neg-8); padding: var(--size-px-4) var(--size-px-8); min-height: calc(var(--size-lh-2) + var(--size-px-8)); color: var(--ap-ink); }
+.tw-tc-blankline:hover .tw-tc-blank { background-color: var(--pn-edit-hover); }
+.ap .tw-tc-blank:empty {
+  --rule: repeating-linear-gradient(to right, var(--color-gray-0-a-22) 0 var(--size-px-2), transparent var(--size-px-2) var(--size-px-5));
+  background-image: var(--rule), var(--rule);
+  background-size: calc(100% - var(--tc-lead, var(--size-px-0))) var(--size-px-1), 100% var(--size-px-1);
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  background-position: right 0 top var(--size-px-21), 0 calc(var(--size-lh-1) + var(--size-px-21));
+}

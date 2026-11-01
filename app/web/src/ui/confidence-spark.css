@@ -1,0 +1,22 @@
+/* Confidence history sparkline beside the confidence steps. Tokens from .ap (homes.css). */
+.ap { --cs-up: var(--color-rgb-31-122-77); --cs-down: var(--color-rgb-183-121-31); }
+.cs { position: relative; display: inline-flex; border-radius: var(--size-px-4); outline: none; cursor: default; }
+.cs svg { display: block; overflow: visible; }
+.cs:focus-visible { box-shadow: 0 0 0 var(--size-px-1-5) var(--ap-ink-3); }
+.cs [data-tone="flat"] { --t: var(--ap-ink-3); }
+.cs [data-tone="up"] { --t: var(--cs-up); }
+.cs [data-tone="down"] { --t: var(--cs-down); }
+.cs [data-tone="challenge"] { --t: var(--ap-neg); }
+.cs-line { fill: none; stroke: var(--t); stroke-width: 1.75; stroke-linecap: square; stroke-linejoin: miter; }
+.cs-round { stroke-linecap: round; stroke-linejoin: round; }
+.cs-ink { stroke: var(--ap-ink-2); stroke-width: 1.5; }
+.cs-stop { stop-color: var(--t); }
+.cs-end { fill: var(--t); stroke: var(--ap-bg); stroke-width: 1; }
+.cs-pt { fill: var(--t); }
+.cs-base { stroke: var(--color-gray-0-a-14); stroke-width: 1; stroke-dasharray: 1.5 2; }
+.cs-tip { position: absolute; top: calc(100% + var(--size-px-6)); z-index: 4; pointer-events: none; display: grid; gap: var(--size-px-3); padding: var(--size-px-7) var(--size-px-9); border-radius: var(--size-px-8); background: var(--ap-surface); box-shadow: var(--ap-shadow-float); font-size: var(--size-px-12); line-height: 1.45; color: var(--ap-ink-2); text-wrap: pretty; }
+.cs-log { display: grid; gap: var(--size-px-4); }
+.cs-row { display: grid; grid-template-columns: var(--size-px-44) var(--size-px-30) minmax(0, 1fr); gap: var(--size-px-8); align-items: baseline; }
+.cs-d { display: inline-flex; align-items: center; gap: var(--size-px-1); font-weight: 600; font-variant-numeric: tabular-nums; color: var(--t); }
+.cs-d svg { align-self: center; position: relative; top: var(--size-px-1); }
+.cs-d[data-tone="flat"] { font-weight: 500; }
