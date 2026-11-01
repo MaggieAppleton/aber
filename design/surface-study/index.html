@@ -40,16 +40,16 @@
 /* ---------- Shared tokens and semantics (Radix steps: 9 solid, 11 text, 3 wash) ---------- */
 #study {
   --ground: var(--n-ground); --surface: #ffffff; --raised: #ffffff; --sunk: var(--n-sunk); --glass: rgb(255 255 255 / 74%);
-  --line: rgb(var(--shc) / 9%); --line-2: rgb(var(--shc) / 5.5%);
+  --line: rgb(var(--shc) / 9%); --line-2: rgb(var(--shc) / 8%);
   --state-hover: rgb(var(--shc) / 4.5%); --state-press: var(--state-hover);   /* press never darkens; it only shrinks */
   --new: #0090ff;                                   /* blue 9 */
   --challenge: #e5484d; --challenge-text: #ce2c31; --challenge-wash: #feebec;   /* red 9, 11, 3 */
   --rose: #46a758;                                  /* grass 9: confidence rose */
   --fell: #ab6400;                                  /* amber 11: confidence fell */
-  --draft-line: rgb(var(--shc) / 26%); --draft-fill: rgb(255 255 255 / 45%);
+  --draft-line: rgb(var(--shc) / 12%); --draft-fill: rgb(255 255 255 / 45%);
   --h-signal: var(--ink-3); --h-theme: var(--ink-3); --h-theory: var(--ink-3); --h-proto: var(--ink-3);
   /* Selection is always neutral, light and raised: white surface, hairline ring, small lift. Colour never means "selected" */
-  --sel-wash: var(--surface); --sel-ring: inset 0 0 0 0.5px rgb(var(--shc) / 16%);
+  --sel-wash: var(--surface); --sel-ring: inset 0 0 0 0.5px rgb(var(--shc) / 12%);
   --sel-lift: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 1px 2px rgb(var(--shc) / 6%), 0 3px 8px -2px rgb(var(--shc) / 10%);
 }
 
@@ -59,7 +59,7 @@
   --r-1: 4px; --r-2: 7px; --r-3: 10px; --r-4: 14px; --r-pill: 999px;
   --hi: inset 0 0 0 0 transparent;
   --sh-card: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 1px 2px rgb(var(--shc) / 5%);
-  --sh-card-hover: 0 0 0 0.5px rgb(var(--shc) / 16%), 0 1px 2px rgb(var(--shc) / 6%);
+  --sh-card-hover: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 1px 2px rgb(var(--shc) / 6%);
   --sh-raised: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 2px 4px -1px rgb(var(--shc) / 6%), 0 8px 18px -6px rgb(var(--shc) / 12%);
   --sh-float: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 4px 8px -2px rgb(var(--shc) / 6%), 0 12px 28px -6px rgb(var(--shc) / 14%);
   --sh-sheet: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 8px 16px -4px rgb(var(--shc) / 8%), 0 20px 44px -10px rgb(var(--shc) / 18%);
@@ -75,13 +75,13 @@
   --font: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace; --blur: 10px; --glass: color-mix(in oklab, var(--surface) 88%, transparent);
   --r-1: 3px; --r-2: 5px; --r-3: 7px; --r-4: 11px; --r-pill: 999px;
   --hi: inset 0 0 0 0 transparent;
-  --sh-card: 0 0 0 0.5px rgb(var(--shc) / 15%), 0 1px 0 rgb(var(--shc) / 7%);
-  --sh-card-hover: 0 0 0 0.5px rgb(var(--shc) / 24%), 0 1px 0 rgb(var(--shc) / 9%);
-  --sh-raised: 0 0 0 0.5px rgb(var(--shc) / 18%), 0 2px 0 rgb(var(--shc) / 6%), 0 8px 16px -8px rgb(var(--shc) / 20%);
-  --sh-float: 0 0 0 0.5px rgb(var(--shc) / 15%), 0 2px 4px rgb(var(--shc) / 5%), 0 10px 24px -8px rgb(var(--shc) / 22%);
-  --sh-sheet: 0 0 0 0.5px rgb(var(--shc) / 15%), 0 16px 36px -10px rgb(var(--shc) / 26%);
-  --sh-pop: 0 0 0 0.5px rgb(var(--shc) / 17%), 0 12px 30px -8px rgb(var(--shc) / 28%);
-  --sh-modal: 0 0 0 0.5px rgb(var(--shc) / 17%), 0 24px 60px -12px rgb(var(--shc) / 34%);
+  --sh-card: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 1px 0 rgb(var(--shc) / 7%);
+  --sh-card-hover: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 1px 0 rgb(var(--shc) / 9%);
+  --sh-raised: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 2px 0 rgb(var(--shc) / 6%), 0 8px 16px -8px rgb(var(--shc) / 20%);
+  --sh-float: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 2px 4px rgb(var(--shc) / 5%), 0 10px 24px -8px rgb(var(--shc) / 22%);
+  --sh-sheet: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 16px 36px -10px rgb(var(--shc) / 26%);
+  --sh-pop: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 12px 30px -8px rgb(var(--shc) / 28%);
+  --sh-modal: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 24px 60px -12px rgb(var(--shc) / 34%);
   --sh-tip: 0 2px 6px rgb(var(--shc) / 24%);
   --dur-1: 90ms; --dur-2: 170ms; --dur-3: 280ms; --ease: cubic-bezier(0.25, 0.8, 0.25, 1);
   --spring: linear(0, 0.006, 0.025 2.8%, 0.101 6.1%, 0.539 18.9%, 0.721 25.3%, 0.849 31.5%, 0.937 38.1%, 0.968 41.8%, 0.991 45.7%, 1.006 50.1%, 1.015 55%, 1.017 63.9%, 1.001 85.9%, 1);
@@ -93,7 +93,7 @@
   --font: "Figtree", ui-sans-serif, system-ui, sans-serif; --mono: "Geist Mono", ui-monospace, monospace; --blur: 22px; --glass: color-mix(in oklab, var(--surface) 66%, transparent);
   --r-1: 6px; --r-2: 10px; --r-3: 14px; --r-4: 20px; --r-pill: 999px;
   --hi: inset 0 1px 0 rgb(255 255 255 / 95%), inset 0 -1px 0 rgb(var(--shc) / 4%);
-  --sh-card: 0 0 0 0.5px rgb(var(--shc) / 7%), 0 1px 1px rgb(var(--shc) / 3%), 0 3px 8px -3px rgb(var(--shc) / 9%);
+  --sh-card: 0 0 0 0.5px rgb(var(--shc) / 8%), 0 1px 1px rgb(var(--shc) / 3%), 0 3px 8px -3px rgb(var(--shc) / 9%);
   --sh-card-hover: 0 0 0 0.5px rgb(var(--shc) / 11%), 0 1px 1px rgb(var(--shc) / 4%), 0 4px 10px -3px rgb(var(--shc) / 12%);
   --sh-raised: 0 0 0 0.5px rgb(var(--shc) / 8%), 0 0 0 4px var(--sel-glow, transparent), 0 10px 24px -8px rgb(var(--shc) / 18%);
   --sh-float: 0 0 0 0.5px rgb(var(--shc) / 8%), 0 6px 12px -4px rgb(var(--shc) / 8%), 0 16px 36px -10px rgb(var(--shc) / 20%);
