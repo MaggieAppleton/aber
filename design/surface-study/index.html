@@ -8,17 +8,10 @@
    Every Aber component below is written once against semantic tokens; a direction only swaps token values.
    Spacing is shared by all directions, so density never changes. */
 
-/* ---------- Page chrome (theme-aware) ---------- */
+/* ---------- Page chrome: one light world, the same sage as the product ---------- */
 :root {
-  --pg-bg: #f5f5f3; --pg-fg: #17181b; --pg-mute: #6b6e76; --pg-line: rgb(0 0 0 / 9%); --pg-card: #ffffff;
-  --pg-code: rgb(0 0 0 / 5%);
-}
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --pg-bg: #141518; --pg-fg: #ecedef; --pg-mute: #9a9da6; --pg-line: rgb(255 255 255 / 10%); --pg-card: #1c1d21;
-  --pg-code: rgb(255 255 255 / 7%); color-scheme: dark; } }
-:root[data-theme="dark"] {
-  --pg-bg: #141518; --pg-fg: #ecedef; --pg-mute: #9a9da6; --pg-line: rgb(255 255 255 / 10%); --pg-card: #1c1d21;
-  --pg-code: rgb(255 255 255 / 7%); color-scheme: dark;
+  --pg-bg: color-mix(in oklab, #f7f9f8 55%, #eef1f0); --pg-fg: #1a211e; --pg-mute: #5f6563; --pg-line: rgb(26 33 30 / 9%); --pg-card: #ffffff;
+  --pg-code: rgb(26 33 30 / 6%); color-scheme: light;
 }
 
 /* ---------- Shared foundation: spacing (4 px grid), type sizes, z-index from tiers ---------- */
@@ -29,32 +22,31 @@
   --hit: 28px;
 }
 
-/* ---------- Neutral scales, verified against @radix-ui/colors 3.0.0 and tailwindcss 3.4.17 ----------
-   Mapping: ground = between steps 2 and 3 (Radix) or 50 and 100 (Tailwind); sunk = step 3 / 100;
-   ink = 12 / 900; ink-2 = 11 / 600; ink-3 = 9 / between 400 and 500. Shadows and lines are tinted with ink. */
-#study[data-neu="gray"]  { --n-ground: color-mix(in oklab, #f9f9f9 55%, #f0f0f0); --n-sunk: #f0f0f0; --ink: #202020; --ink-2: #646464; --ink-3: #8d8d8d; --shc: 32 32 32; }
-#study[data-neu="zinc"]  { --n-ground: color-mix(in oklab, #fafafa 40%, #f4f4f5); --n-sunk: #f4f4f5; --ink: #18181b; --ink-2: #52525b; --ink-3: color-mix(in oklab, #a1a1aa 45%, #71717a); --shc: 24 24 27; }
-#study[data-neu="slate"] { --n-ground: color-mix(in oklab, #f9f9fb 55%, #f0f0f3); --n-sunk: #f0f0f3; --ink: #1c2024; --ink-2: #60646c; --ink-3: #8b8d98; --shc: 28 32 36; }
-#study[data-neu="sage"]  { --n-ground: color-mix(in oklab, #f7f9f8 55%, #eef1f0); --n-sunk: #eef1f0; --ink: #1a211e; --ink-2: #5f6563; --ink-3: #868e8b; --shc: 26 33 30; }
-
-/* ---------- Shared tokens and semantics (Radix steps: 9 solid, 11 text, 3 wash) ---------- */
+/* ---------- Aber surface language: Crisp · Sage · Jade (decided 1 Nov 2026) ----------
+   Colour values are Radix Colors 3.0.0 steps. The jig uses the same values (jig/src/homes/homes.css). */
 #study {
-  --ground: var(--n-ground); --surface: #ffffff; --raised: #ffffff; --sunk: var(--n-sunk); --glass: rgb(255 255 255 / 74%);
+  /* Radix Sage */
+  --sage-1: #fbfdfc; --sage-2: #f7f9f8; --sage-3: #eef1f0; --sage-4: #e6e9e8; --sage-5: #dfe2e0; --sage-6: #d7dad9;
+  --sage-7: #cbcfcd; --sage-8: #b8bcba; --sage-9: #868e8b; --sage-10: #7c8481; --sage-11: #5f6563; --sage-12: #1a211e;
+  --shc: 26 33 30;
+  --ground: color-mix(in oklab, var(--sage-2) 55%, var(--sage-3)); --surface: #ffffff; --raised: #ffffff; --sunk: var(--sage-3);
+  --glass: rgb(255 255 255 / 74%);
+  --ink: var(--sage-12); --ink-2: var(--sage-11); --ink-3: var(--sage-9);
   --line: rgb(var(--shc) / 9%); --line-2: rgb(var(--shc) / 8%);
   --state-hover: rgb(var(--shc) / 4.5%); --state-press: var(--state-hover);   /* press never darkens; it only shrinks */
-  --new: #0090ff;                                   /* blue 9 */
+  /* Radix Jade: the accent means "you are acting here" */
+  --accent: #29a383; --accent-hover: #26997b; --accent-text: #208368; --accent-ink: #ffffff; --accent-wash: #e6f7ed; --accent-line: #8bceb6;
+  --focus: #29a383;
+  /* Semantics */
+  --new: #0090ff;                                                    /* blue 9 */
   --challenge: #e5484d; --challenge-text: #ce2c31; --challenge-wash: #feebec;   /* red 9, 11, 3 */
-  --rose: #46a758;                                  /* grass 9: confidence rose */
-  --fell: #ab6400;                                  /* amber 11: confidence fell */
+  --rose: #46a758; --fell: #ab6400;                                  /* grass 9, amber 11 */
   --draft-line: rgb(var(--shc) / 12%); --draft-fill: rgb(255 255 255 / 45%);
-  --h-signal: var(--ink-3); --h-theme: var(--ink-3); --h-theory: var(--ink-3); --h-proto: var(--ink-3);
-  /* Selection is always neutral, light and raised: white surface, hairline ring, small lift. Colour never means "selected" */
+  --h-signal: var(--ink-3); --h-theme: var(--ink-3); --h-theory: var(--ink-3); --h-proto: var(--ink-3);   /* object colours off */
+  /* Selection: neutral, light and raised */
   --sel-wash: var(--surface); --sel-ring: inset 0 0 0 0.5px rgb(var(--shc) / 12%);
   --sel-lift: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 1px 2px rgb(var(--shc) / 6%), 0 3px 8px -2px rgb(var(--shc) / 10%);
-}
-
-/* ---------- Material · Crisp ---------- */
-#study[data-mat="crisp"] {
+  /* Crisp material */
   --font: "Geist", ui-sans-serif, system-ui, sans-serif; --mono: "Geist Mono", ui-monospace, monospace; --blur: 18px;
   --r-1: 4px; --r-2: 7px; --r-3: 10px; --r-4: 14px; --r-pill: 999px;
   --hi: inset 0 0 0 0 transparent;
@@ -68,54 +60,8 @@
   --sh-tip: 0 2px 8px rgb(var(--shc) / 22%);
   --dur-1: 90ms; --dur-2: 160ms; --dur-3: 260ms; --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --spring: cubic-bezier(0.16, 1, 0.3, 1); --spring-dur: 380ms; --press: 0.98;
+  --sh-hero: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 2px 6px rgb(var(--shc) / 6%), 0 18px 40px -14px rgb(var(--shc) / 22%);
 }
-
-/* ---------- Material · Paper ---------- */
-#study[data-mat="paper"] {
-  --font: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace; --blur: 10px; --glass: color-mix(in oklab, var(--surface) 88%, transparent);
-  --r-1: 3px; --r-2: 5px; --r-3: 7px; --r-4: 11px; --r-pill: 999px;
-  --hi: inset 0 0 0 0 transparent;
-  --sh-card: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 1px 0 rgb(var(--shc) / 7%);
-  --sh-card-hover: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 1px 0 rgb(var(--shc) / 9%);
-  --sh-raised: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 2px 0 rgb(var(--shc) / 6%), 0 8px 16px -8px rgb(var(--shc) / 20%);
-  --sh-float: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 2px 4px rgb(var(--shc) / 5%), 0 10px 24px -8px rgb(var(--shc) / 22%);
-  --sh-sheet: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 16px 36px -10px rgb(var(--shc) / 26%);
-  --sh-pop: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 12px 30px -8px rgb(var(--shc) / 28%);
-  --sh-modal: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 24px 60px -12px rgb(var(--shc) / 34%);
-  --sh-tip: 0 2px 6px rgb(var(--shc) / 24%);
-  --dur-1: 90ms; --dur-2: 170ms; --dur-3: 280ms; --ease: cubic-bezier(0.25, 0.8, 0.25, 1);
-  --spring: linear(0, 0.006, 0.025 2.8%, 0.101 6.1%, 0.539 18.9%, 0.721 25.3%, 0.849 31.5%, 0.937 38.1%, 0.968 41.8%, 0.991 45.7%, 1.006 50.1%, 1.015 55%, 1.017 63.9%, 1.001 85.9%, 1);
-  --spring-dur: 460ms; --press: 0.98;
-}
-
-/* ---------- Material · Soft ---------- */
-#study[data-mat="soft"] {
-  --font: "Figtree", ui-sans-serif, system-ui, sans-serif; --mono: "Geist Mono", ui-monospace, monospace; --blur: 22px; --glass: color-mix(in oklab, var(--surface) 66%, transparent);
-  --r-1: 6px; --r-2: 10px; --r-3: 14px; --r-4: 20px; --r-pill: 999px;
-  --hi: inset 0 1px 0 rgb(255 255 255 / 95%), inset 0 -1px 0 rgb(var(--shc) / 4%);
-  --sh-card: 0 0 0 0.5px rgb(var(--shc) / 8%), 0 1px 1px rgb(var(--shc) / 3%), 0 3px 8px -3px rgb(var(--shc) / 9%);
-  --sh-card-hover: 0 0 0 0.5px rgb(var(--shc) / 11%), 0 1px 1px rgb(var(--shc) / 4%), 0 4px 10px -3px rgb(var(--shc) / 12%);
-  --sh-raised: 0 0 0 0.5px rgb(var(--shc) / 8%), 0 0 0 4px var(--sel-glow, transparent), 0 10px 24px -8px rgb(var(--shc) / 18%);
-  --sh-float: 0 0 0 0.5px rgb(var(--shc) / 8%), 0 6px 12px -4px rgb(var(--shc) / 8%), 0 16px 36px -10px rgb(var(--shc) / 20%);
-  --sh-sheet: 0 0 0 0.5px rgb(var(--shc) / 8%), 0 24px 52px -14px rgb(var(--shc) / 26%);
-  --sh-pop: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 18px 40px -12px rgb(var(--shc) / 28%);
-  --sh-modal: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 30px 80px -16px rgb(var(--shc) / 36%);
-  --sh-tip: 0 4px 12px rgb(var(--shc) / 24%);
-  --sel-glow: rgb(var(--shc) / 5%);
-  --dur-1: 100ms; --dur-2: 180ms; --dur-3: 300ms; --ease: cubic-bezier(0.3, 0.7, 0.2, 1);
-  --spring: linear(0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1);
-  --spring-dur: 520ms; --press: 0.98;
-}
-
-/* ---------- Accent ("you are acting here"): Radix solid 9, hover 10, text 11, wash 3, ring 7 ---------- */
-#study[data-acc="ink"]    { --accent: var(--ink); --accent-hover: color-mix(in oklab, var(--ink) 86%, white); --accent-text: var(--ink); --accent-ink: #ffffff; --accent-wash: rgb(var(--shc) / 5.5%); --accent-line: rgb(var(--shc) / 36%); --focus: var(--ink); }
-#study[data-acc="teal"]   { --accent: #12a594; --accent-hover: #0d9b8a; --accent-text: #008573; --accent-ink: #ffffff; --accent-wash: #e0f8f3; --accent-line: #83cdc1; --focus: #12a594; }
-#study[data-acc="jade"]   { --accent: #29a383; --accent-hover: #26997b; --accent-text: #208368; --accent-ink: #ffffff; --accent-wash: #e6f7ed; --accent-line: #8bceb6; --focus: #29a383; }
-#study[data-acc="cyan"]   { --accent: #00a2c7; --accent-hover: #0797b9; --accent-text: #107d98; --accent-ink: #ffffff; --accent-wash: #def7f9; --accent-line: #7dcedc; --focus: #00a2c7; }
-#study[data-acc="orange"] { --accent: #f76b15; --accent-hover: #ef5f00; --accent-text: #cc4e00; --accent-ink: #ffffff; --accent-wash: #ffefd6; --accent-line: #f5ae73; --focus: #f76b15; }
-
-/* ---------- Object colours (optional): object type, doubled with its glyph. Radix step 11 ---------- */
-#study[data-hue="on"] { --h-signal: #107d98; --h-theme: #208368; --h-theory: #cc4e00; --h-proto: var(--ink-2); }   /* cyan 11, jade 11, orange 11 */
 
 /* ---------- Page ---------- */
 * { box-sizing: border-box; }
@@ -220,7 +166,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .card[aria-current="true"], .card.is-sel { background: var(--sel-wash); box-shadow: var(--hi), var(--sel-lift); }
 .card .claim { font-weight: 600; text-wrap: pretty; padding-right: 18px; }
 .claim-icon { position: absolute; top: var(--sp-4); right: var(--sp-3); color: var(--h-theory); opacity: 0.7; transition: color var(--dur-1), opacity var(--dur-1); }
-#study[data-hue="off"] .claim-icon { opacity: 0; }
+.claim-icon { display: none; }   /* object colours are off: a grey theory glyph on every card adds nothing */
 .card .marks { display: flex; align-items: center; gap: var(--sp-3); font-size: var(--t-12); color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .conf-mini { display: inline-flex; gap: 2px; }
 .conf-mini i { width: 9px; height: 3px; border-radius: 2px; background: var(--line); }
@@ -261,6 +207,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
 .chip { --obj: var(--h-theme); display: inline-flex; align-items: center; gap: var(--sp-1); height: 24px; padding: 0 var(--sp-3) 0 var(--sp-2); border-radius: var(--r-pill); font-size: var(--t-12);
   background: var(--surface); color: var(--ink-2); box-shadow: var(--hi), 0 0 0 0.5px var(--line), 0 1px 1px var(--line-2); }
+.chip { white-space: nowrap; flex: none; }
 .chip .glyph, .ctx .chip .glyph { color: var(--ink-3); }   /* chips are references: glyphs stay neutral in every state */
 .chip:hover, .chip.is-hover { background: color-mix(in oklab, var(--surface) 94%, var(--ink)); color: var(--ink); }
 .chip.is-sel, .chip[aria-current="true"] { background: var(--sel-wash); box-shadow: var(--hi), var(--sel-lift); color: var(--ink); }
@@ -285,8 +232,13 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .year .ib { width: 22px; height: 22px; border-radius: var(--r-1); }
 .body { padding: var(--sp-4); border-radius: var(--r-3); background: var(--sunk); color: var(--ink-2); line-height: 1.55; }
 .trip { display: flex; gap: var(--sp-2); align-items: baseline; color: var(--ink-3); }
-.trip .phrase { color: var(--ink); text-decoration: underline wavy var(--challenge); text-underline-offset: 3px; text-decoration-thickness: 1px; }
-.trip svg { color: var(--challenge); transform: translateY(3px); }
+.trip .phrase { color: var(--ink); }
+.trip svg { color: var(--ink-3); transform: translateY(3px); flex: none; }
+.trip.tripped svg { color: var(--challenge-text); }
+.trip.tripped .phrase { text-decoration: underline wavy var(--challenge); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.trip .dot, .trip .badge-dash { margin-left: 10px; }
+.dot.watch { background: var(--ink-3); animation: breathe 2.4s ease-in-out infinite; }
+@keyframes breathe { 50% { opacity: 0.3; } }
 .evid { display: grid; gap: var(--sp-1); }
 .evid-h { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--t-12); color: var(--ink-3); margin-bottom: var(--sp-1); }
 .sig { --obj: var(--h-signal); display: grid; grid-template-columns: auto 1fr; gap: var(--sp-0) var(--sp-3); padding: var(--sp-3); border-radius: var(--r-2); text-align: left; width: 100%; }
@@ -340,7 +292,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .mi:hover, .mi:focus-visible { color: var(--ink); }
 .mi:focus-visible { outline: 0; background: var(--state-hover); }
 .mi kbd { margin-left: auto; font-family: var(--mono); font-size: var(--t-11); color: var(--ink-3); }
-.mi.danger:hover { color: var(--challenge-text); background: var(--challenge-wash); }
+
 .sep { height: 1px; margin: var(--sp-1) var(--sp-2); background: var(--line-2); }
 
 /* Toast (tier 6) */
@@ -358,6 +310,64 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   transition: opacity var(--dur-1) var(--ease), transform var(--dur-2) var(--spring); }
 .tip[hidden] { display: flex !important; opacity: 0; transform: translateY(var(--tip-from, 3px)) scale(0.96); visibility: hidden; }
 .tip kbd { font-family: var(--mono); font-size: 11px; opacity: 0.6; }
+
+
+/* ---------- Stages (after the stageshow skill: cropped product shots, one state story each) ---------- */
+.stages { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 32px 20px; }
+.shot { margin: 0; display: grid; gap: 10px; min-width: 0; }
+.shot figcaption { font-size: 13px; color: var(--ink-2); max-width: 62ch; }
+.shot figcaption b { color: var(--ink); font-weight: 600; margin-right: 6px; }
+.stg { position: relative; height: 300px; overflow: hidden; border-radius: 14px; background: var(--sunk); isolation: isolate;
+  color: var(--ink); font-family: var(--font); font-size: 13px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+.stg svg.i { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.stg svg.i.s { width: 14px; height: 14px; }
+.win { position: absolute; background: var(--ground); border-radius: 12px; box-shadow: var(--sh-hero); overflow: hidden; }
+.w-side { width: 208px; flex: none; height: 100%; }
+.w-view { padding: 20px 24px; display: grid; gap: 24px; align-content: start; min-width: 0; }
+.w-view.end { align-content: end; height: 100%; padding-bottom: 72px; }
+.w-pane { flex: 1; min-width: 0; background: var(--raised); border-left: 1px solid var(--line-2); padding: 14px 20px; display: grid; gap: 14px; align-content: start; }
+.w-pane.wide { border-left: 0; height: 100%; padding: 20px 24px; }
+.w-brief { padding: 14px 20px; display: grid; gap: 8px; align-content: start; width: 480px; }
+.glabel { font-size: 12px; color: var(--ink-3); font-weight: 500; margin: 6px 2px 0; }
+.ptitle { font-size: 20px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.25; text-wrap: balance; max-width: 420px; }
+.pbar { display: flex; align-items: center; gap: 4px; }
+.pbar .chips { flex: 1; }
+.skelsec { display: grid; gap: 10px; }
+.bar { display: block; height: 6px; border-radius: 3px; background: rgb(var(--shc) / 9%); }
+.cards.fixed { grid-template-columns: repeat(3, 210px); }
+.cards.one { grid-template-columns: 1fr; }
+.card.skel { align-content: start; gap: 10px; padding-top: 16px; }
+.ib.sm { width: 24px; height: 24px; }
+.ib.xs { width: 22px; height: 22px; border-radius: var(--r-1); }
+.ib.is-on { background: var(--state-hover); color: var(--ink); }
+.btn.sm { height: 26px; }
+.btn.solid-ink { background: var(--ink); color: #fff; }
+.btn.solid-ink:hover { background: color-mix(in oklab, var(--ink) 86%, white); }
+.hit { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; padding: 12px 12px 10px; border-radius: var(--r-3); background: var(--surface); box-shadow: var(--sh-card); max-width: 440px; }
+.hit > svg { color: var(--ink-3); margin-top: 2px; }
+.hit .g { padding-right: 26px; }
+.hit .src { color: var(--ink-3); }
+.hit .x { position: absolute; top: 6px; right: 6px; }
+.hit .btn { grid-column: 2; justify-self: end; }
+.composer.static { position: absolute; }
+.composer .ta { padding: 6px 8px 0; min-height: 46px; color: var(--ink); }
+.xchip { display: inline-grid; margin-left: 2px; color: var(--ink-3); }
+.pill.rec { width: 248px; gap: 10px; color: var(--ink); padding-left: 14px; }
+.recdot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; animation: breathe 1.2s ease-in-out infinite; }
+.wave { display: flex; align-items: center; gap: 2px; flex: 1; height: 20px; }
+.wave i { width: 2px; border-radius: 1px; background: var(--ink-2); }
+.pill.rec .t { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+.stop { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: #fff; flex: none; margin-right: 1px; }
+.menu.static { position: absolute; }
+.tip.static { position: absolute; }
+.toast.static { position: absolute; }
+.dim { position: absolute; inset: 0; background: rgb(var(--shc) / 22%); }
+.modal.static { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 300px; z-index: 3; background: var(--raised); border-radius: var(--r-4);
+  box-shadow: var(--sh-modal); padding: 16px; display: grid; gap: 8px; }
+.modal .mt { font-weight: 600; }
+.modal p { margin: 0; font-size: 12px; color: var(--ink-2); }
+.modal .row-end { display: flex; justify-content: flex-end; gap: 6px; margin-top: 6px; }
+.cur { position: absolute; z-index: 120; pointer-events: none; filter: drop-shadow(0 1px 1px rgb(0 0 0 / 22%)); }
 
 /* ---------- Boards ---------- */
 .board { background: var(--ground); color: var(--ink); font-family: var(--font); border-radius: 16px; box-shadow: 0 0 0 1px var(--pg-line); padding: 20px; min-width: 0; font-size: 13px; }
@@ -421,11 +431,12 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .bitem .glyph { color: var(--h-theory); margin-top: 1px; }
 .bitem .t { grid-column: 2; font-weight: 600; line-height: 1.4; text-wrap: pretty; padding-right: 24px; }
 .bitem .t .dot { margin-left: 10px; vertical-align: var(--dot-shift, 0); }   /* measured: dot centre on the x-height centre */   /* trails the last word, centred on the x-height */
-.bitem .acts { grid-column: 2; grid-row: 4; justify-self: end; display: flex; gap: var(--sp-1); align-items: center; margin-top: var(--sp-1); }   /* actions always sit bottom right, after the content they act on */
+.bitem .acts { grid-column: 2; justify-self: end; display: flex; gap: var(--sp-1); align-items: center; margin-top: var(--sp-1); }   /* actions always sit bottom right, after the content they act on */
 .bitem .ev-row { grid-column: 2; display: flex; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); border-radius: var(--r-2); box-shadow: inset 0 0 0 1px var(--draft-line); background: var(--draft-fill); color: var(--ink-2); font-size: var(--t-12); }
 .bitem .ev-row svg { color: var(--h-signal); }
 .bitem .why { grid-column: 2; font-size: var(--t-12); color: var(--ink-3); }
-.bitem.chal { background: var(--surface); }   /* the red dot alone carries the challenge; no tinted card */
+.bitem.chal { background: var(--surface); }
+.bitem:focus-visible, .bitem.focus { outline: 2px solid var(--focus); outline-offset: 2px; }   /* the red dot alone carries the challenge; no tinted card */
 .bitem.out { transform: translateX(28px); opacity: 0; }
 .bitem.ok { transform: translateX(-6px); opacity: 0; }
 .kbdrow { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--ink-3); margin-top: 8px; }
@@ -456,6 +467,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
   <symbol id="i-left" viewBox="0 0 24 24"><path d="M14.5 6.5 9 12l5.5 5.5"/></symbol>
   <symbol id="i-right" viewBox="0 0 24 24"><path d="M9.5 6.5 15 12l-5.5 5.5"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-merge" viewBox="0 0 24 24"><path d="M6 4v4a6 6 0 0 0 6 6h0a6 6 0 0 1 6 6M18 4v4a6 6 0 0 1-6 6M15 20h3v-3"/></symbol>
   <symbol id="i-sign" viewBox="0 0 24 24"><path d="M12 3v18M5 6h11l3 2.5-3 2.5H5z"/></symbol>
   <symbol id="i-rows" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="5" rx="1.2"/><rect x="4" y="14" width="16" height="5" rx="1.2"/></symbol>
   <symbol id="i-cols" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="16" rx="1.2"/><rect x="14" y="4" width="6" height="16" rx="1.2"/></symbol>
@@ -471,67 +484,251 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   <symbol id="i-clip" viewBox="0 0 24 24"><path d="M15.5 7.5 8.6 14.4a2 2 0 0 0 2.8 2.8l7.4-7.4a4 4 0 0 0-5.7-5.7l-7.4 7.4a6 6 0 0 0 8.5 8.5l6.2-6.2"/></symbol>
 </svg>
 
-<div id="study" data-mat="crisp" data-neu="slate" data-acc="ink" data-hue="on">
+<div id="study">
 <div class="wrap">
 
 <header class="top">
-  <div class="eyebrow">Aber · design language exploration · 1 Nov 2026</div>
-  <h1>A surface language for Aber, built from four switches</h1>
-  <p>The grammar, the spatial model and the density stay exactly as the design model fixes them. What changes is layers 3 and 4: material, colour, light and motion. Every component on this page is written once against semantic tokens. Instead of fixed bundles, pick each layer separately: material (shadow, radius, motion), a neutral scale from Radix or Tailwind, an accent, and whether objects carry their own colour. Hover, press, focus and tab through everything: it is all live.</p>
+  <div class="eyebrow">Aber · surface language · decided 1 Nov 2026</div>
+  <h1>Crisp, Sage and Jade</h1>
+  <p>Aber\'s surface language, staged across every component and state. The grammar, spatial model and density are unchanged from the design model. Colours are Radix Colors 3.0.0 steps, and the same tokens drive the jig.</p>
 </header>
 
-<div class="dirbar">
-  <div class="groups">
-    <span class="gl">Material</span>
-    <div class="seg" role="group" aria-label="Material" data-axis="mat"><span class="thumb" aria-hidden="true"></span>
-      <button type="button" data-v="crisp">Crisp</button><button type="button" data-v="paper">Paper</button><button type="button" data-v="soft">Soft</button></div>
-    <span class="gl">Neutral</span>
-    <div class="seg" role="group" aria-label="Neutral" data-axis="neu"><span class="thumb" aria-hidden="true"></span>
-      <button type="button" data-v="gray">Gray</button><button type="button" data-v="zinc">Zinc</button><button type="button" data-v="slate">Slate</button><button type="button" data-v="sage">Sage</button></div>
-    <span class="gl">Accent</span>
-    <div class="seg" role="group" aria-label="Accent" data-axis="acc"><span class="thumb" aria-hidden="true"></span>
-      <button type="button" data-v="ink">Ink</button><button type="button" data-v="teal">Teal</button><button type="button" data-v="jade">Jade</button><button type="button" data-v="cyan">Cyan</button><button type="button" data-v="orange">Orange</button></div>
-    <span class="gl">Object colours</span>
-    <div class="seg" role="group" aria-label="Object colours" data-axis="hue"><span class="thumb" aria-hidden="true"></span>
-      <button type="button" data-v="on">On</button><button type="button" data-v="off">Off</button></div>
-  </div>
-  <div class="dirnote" id="dirnote"></div>
-</div>
-
 <section>
-  <h2>Why it reads as brutalist today</h2>
-  <p class="lede">From the CSS in <code>app/web/src</code>. The issue is not taste in any one place; there is no semantic layer, so every surface invents its own values and colour has no permitted job except alarms.</p>
-  <div class="cols">
-    <div class="panel"><div class="stat num">279</div><h3>Primitive tokens, no semantic ones</h3><p><code>design-tokens.css</code> is a dump of literals renamed (<code>--size-px-13</code>, 40 alphas of black). Nothing says "card surface" or "hover", so nothing can be changed in one place.</p></div>
-    <div class="panel"><div class="stat num">87 · 27 · 158</div><h3>Shadows · radii · paddings</h3><p>Distinct values in use. With one elevation scale there would be about 8 shadows; with concentric radii, 5 radii.</p></div>
-    <div class="panel"><div class="stat num">95 : 15</div><h3>Hover rules to press rules</h3><p>Almost everything answers approach, almost nothing answers touch. Press is where "fun" lives, and it is mostly missing. 17 different durations, one easing curve.</p></div>
-    <div class="panel"><div class="stat">Grey by rule</div><h3>Colour is reserved for alarms</h3><p>Blue is new, red is challenge, green and amber are confidence. That is correct, but it leaves colour no everyday job, so every resting surface is grey. Shadows at 0.5 px ring plus 2 px blur read as borders, which flattens the tiers.</p></div>
+  <h2>Stages</h2>
+  <p class="lede">Every component in its states, staged the way it appears in Aber: one state story per shot, real words only on what the shot is about, quiet bars for the rest.</p>
+  <div class="stages">
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:720px;height:420px;display:flex">
+          <div class="side w-side">
+            <div class="side-head"><span class="brand">Aber</span><span class="ib"><svg class="i s"><use href="#i-search"/></svg></span></div>
+            <span class="act row" aria-current="true"><span class="lbl">Cost of intelligence</span><span class="cnt">5</span></span>
+            <span class="act row is-hover"><span class="lbl">Agent memory</span><span class="dot new"></span><span class="cnt">2</span></span>
+            <span class="act row"><span class="lbl">Code review after agents</span><span class="dot new"></span><span class="cnt">2</span></span>
+            <span class="act row"><span class="lbl">Personal software</span><span class="cnt">2</span></span>
+            <span class="act row"><span class="lbl">Novel agent interfaces</span><span class="open-ring"></span></span>
+          </div>
+          <div class="w-view"><div class="skelsec"><span class="bar" style="width:150px;height:7px"></span><div class="cards fixed"><span class="card skel"><span class="bar" style="width:78%"></span><span class="bar" style="width:52%"></span></span><span class="card skel"><span class="bar" style="width:66%"></span><span class="bar" style="width:48%"></span></span><span class="card skel"><span class="bar" style="width:84%"></span><span class="bar" style="width:40%"></span></span></div></div><div class="skelsec"><span class="bar" style="width:150px;height:7px"></span><div class="cards fixed"><span class="card skel"><span class="bar" style="width:78%"></span><span class="bar" style="width:52%"></span></span><span class="card skel"><span class="bar" style="width:66%"></span><span class="bar" style="width:48%"></span></span></div></div></div>
+        </div>
+        <svg class="cur" style="left:140.0px;top:113.5px" width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M10.6 6a1.7 1.7 0 0 1 3.4 0v6.6a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0V19c0 3.1-2 5.6-5 5.6h-2.6c-2 0-3.3-.9-4.4-2.4l-3.1-4.1c-.6-.9-.4-2 .5-2.5.8-.4 1.7-.2 2.3.5l1.1 1.4V6Z" fill="#fff" stroke="#000" stroke-width="1.1" stroke-linejoin="round"/><path d="M14 12.6v3.6M16.6 13.3v3M19.2 14v2.6" stroke="#000" stroke-width="1" stroke-linecap="round"/></svg>
+      </div>
+      <figcaption><b>Theme index</b>Selected is white and raised. Hover is a light sage layer. The new dot and open ring sit before the count.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:760px;height:420px">
+          <div class="w-view">
+            <div class="sec-h"><span class="name">Cost of intelligence</span><span class="meta num">23 signals</span><span class="ib sm"><svg class="i s"><use href="#i-plus"/></svg></span></div>
+            <div class="cards fixed">
+              <span class="act card is-hover is-press"><span class="claim">Tokens become nearly free for routine work</span><span class="marks"><span class="conf-mini"><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></span><span class="ev num"><span>+5</span><span>−2</span></span><span class="ev"><svg class="i s"><use href="#i-proto"/></svg>1</span></span></span>
+              <span class="act card"><span class="claim">Frontier intelligence stays scarce and expensive</span><span class="marks"><span class="conf-mini"><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></span><span class="ev num"><span>+3</span><span>−4</span></span><span class="badge-dash num">1</span></span></span>
+              <span class="card skel"><span class="bar" style="width:80%"></span><span class="bar" style="width:55%"></span></span>
+            </div>
+          </div>
+        </div>
+        <svg class="cur" style="left:195.0px;top:168.5px" width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M10.6 6a1.7 1.7 0 0 1 3.4 0v6.6a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0V19c0 3.1-2 5.6-5 5.6h-2.6c-2 0-3.3-.9-4.4-2.4l-3.1-4.1c-.6-.9-.4-2 .5-2.5.8-.4 1.7-.2 2.3.5l1.1 1.4V6Z" fill="#fff" stroke="#000" stroke-width="1.1" stroke-linejoin="round"/><path d="M14 12.6v3.6M16.6 13.3v3M19.2 14v2.6" stroke="#000" stroke-width="1" stroke-linecap="round"/></svg>
+      </div>
+      <figcaption><b>Press</b>The card keeps its surface and shrinks to 0.98. Nothing darkens, and nothing lifts on hover.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:820px;height:420px;display:flex">
+          <div class="w-view" style="width:250px;flex:none">
+            <div class="cards one">
+              <span class="act card"><span class="claim">Tokens become nearly free for routine work</span><span class="marks"><span class="conf-mini"><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></span><span class="ev num"><span>+5</span><span>−2</span></span></span></span>
+              <span class="act card" aria-current="true"><span class="claim">Agents run continuously in the background by default</span><span class="marks"><span class="conf-mini"><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></span><span class="ev num"><span>+3</span><span>−0</span></span></span></span>
+              <span class="card skel"><span class="bar" style="width:70%"></span><span class="bar" style="width:45%"></span></span>
+            </div>
+          </div>
+          <div class="w-pane">
+            <div class="chips"><span class="act chip"><svg class="i s"><use href="#i-theme"/></svg>Cost of intelligence</span><span class="act chip"><svg class="i s"><use href="#i-theme"/></svg>Agent memory</span></div>
+            <div class="ptitle">Agents run continuously in the background by default</div>
+            <div class="fields"><span class="k">Confidence</span><span><span class="steps"><button type="button" tabindex="-1" class="on" aria-hidden="true"><i></i></button><button type="button" tabindex="-1" class="on" aria-hidden="true"><i></i></button><button type="button" tabindex="-1" class="on" aria-hidden="true"><i></i></button><button type="button" tabindex="-1" class="" aria-hidden="true"><i></i></button><button type="button" tabindex="-1" class="" aria-hidden="true"><i></i></button></span></span><span class="k">Happens by</span><span class="year"><span class="ib xs"><svg class="i s"><use href="#i-left"/></svg></span><span class="v">2029</span><span class="ib xs"><svg class="i s"><use href="#i-right"/></svg></span></span></div>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>Open in the pane</b>The open card takes the selected style. The pane is docked, so it gets a hairline seam and no shadow.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:760px;height:420px">
+          <div class="w-view">
+            <div class="sec-h"><span class="name">Code review after agents</span><span class="meta num">18 signals</span></div>
+            <div class="cards fixed">
+              <span class="act card"><span class="claim">Code review becomes the bottleneck, not writing</span><span class="marks"><span class="conf-mini"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span><span class="ev num"><span>+6</span><span>−1</span></span></span></span>
+              <span class="act card draft is-hover"><span class="claim">Review shifts from diffs to intent</span><span class="marks"><span class="ev num"><span>+2</span><span>−0</span></span></span><span class="edge-acts"><span class="act mini no"><svg class="i s"><use href="#i-x"/></svg></span><span class="act mini yes is-hover"><svg class="i s"><use href="#i-check"/></svg></span></span></span>
+            </div>
+          </div>
+        </div>
+        <svg class="cur" style="left:458.0px;top:169.5px" width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M10.6 6a1.7 1.7 0 0 1 3.4 0v6.6a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0V19c0 3.1-2 5.6-5 5.6h-2.6c-2 0-3.3-.9-4.4-2.4l-3.1-4.1c-.6-.9-.4-2 .5-2.5.8-.4 1.7-.2 2.3.5l1.1 1.4V6Z" fill="#fff" stroke="#000" stroke-width="1.1" stroke-linejoin="round"/><path d="M14 12.6v3.6M16.6 13.3v3M19.2 14v2.6" stroke="#000" stroke-width="1" stroke-linecap="round"/></svg>
+      </div>
+      <figcaption><b>A draft, approached</b>Dashed means not yet mine. On approach, discard appears top right and accept bottom right.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:620px;height:420px">
+          <div class="w-brief">
+            <div class="glabel">Suggestions <span class="num">3</span></div>
+            <div class="bitem focus"><svg class="i s glyph"><use href="#i-theory"/></svg><span class="t">Frontier intelligence stays scarce and expensive</span><span class="ev-row"><svg class="i s"><use href="#i-up"/></svg><span>Data-centre power contracts are booked years ahead <span style="color:var(--ink-3)">ft.com</span></span></span><span class="acts"><span class="act btn ghost sm">Accept</span><span class="act ib" data-x style="width:26px;height:26px"><svg class="i"><use href="#i-x"/></svg></span></span></div>
+            <div class="bitem"><svg class="i s glyph"><use href="#i-theory"/></svg><span class="t">Agents keep context across months, not sessions</span><span class="ev-row"><svg class="i s"><use href="#i-down"/></svg><span>Memory feature withdrawn after privacy complaints <span style="color:var(--ink-3)">theverge.com</span></span></span><span class="acts"><span class="act btn ghost sm">Accept</span><span class="act ib" data-x style="width:26px;height:26px"><svg class="i"><use href="#i-x"/></svg></span></span></div>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>Keyboard focus</b>J and K move a 2 px jade ring between items. Focus is the only place the accent rings anything.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:620px;height:420px">
+          <div class="w-brief">
+            <div class="glabel">Challenges <span class="num">1</span></div>
+            <div class="bitem chal"><svg class="i s glyph"><use href="#i-theory"/></svg><span class="t">Agents keep context across months, not sessions<span class="dot chal"></span></span><span class="ev-row"><svg class="i s"><use href="#i-down"/></svg><span>Memory feature withdrawn after privacy complaints <span style="color:var(--ink-3)">theverge.com</span></span></span><span class="why">A major assistant pulled memory after complaints.</span><span class="acts"><span class="act btn ghost sm is-hover">Accept</span><span class="act ib" data-x style="width:26px;height:26px"><svg class="i"><use href="#i-x"/></svg></span></span></div>
+            <div class="glabel">Drafts <span class="num">3</span></div>
+          </div>
+        </div>
+        <svg class="cur" style="left:442.0px;top:171.5px" width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M10.6 6a1.7 1.7 0 0 1 3.4 0v6.6a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0V19c0 3.1-2 5.6-5 5.6h-2.6c-2 0-3.3-.9-4.4-2.4l-3.1-4.1c-.6-.9-.4-2 .5-2.5.8-.4 1.7-.2 2.3.5l1.1 1.4V6Z" fill="#fff" stroke="#000" stroke-width="1.1" stroke-linejoin="round"/><path d="M14 12.6v3.6M16.6 13.3v3M19.2 14v2.6" stroke="#000" stroke-width="1" stroke-linecap="round"/></svg>
+      </div>
+      <figcaption><b>Challenge</b>A plain card. The red dot trails the claim, X sits top right, Accept bottom right. Accepting lowers confidence one step.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:620px;height:420px">
+          <div class="w-pane wide">
+            <div class="ptitle">Most software is made for an audience of one</div>
+            <div class="fields"><span class="k">Confidence</span><span class="conf"><span class="steps"><button type="button" tabindex="-1" class="on" aria-hidden="true"><i></i></button><button type="button" tabindex="-1" class="on" aria-hidden="true"><i></i></button><button type="button" tabindex="-1" class="on" aria-hidden="true"><i></i></button><button type="button" tabindex="-1" class="pre" aria-hidden="true"><i></i></button><button type="button" tabindex="-1" class="" aria-hidden="true"><i></i></button></span><svg class="spark" viewBox="0 0 64 18" aria-hidden="true"><path d="M0 14 L16 14 L26 11 L44 11 L52 8"/><circle cx="52" cy="8" r="2"/></svg></span><span class="k">Happens by</span><span class="year"><span class="ib xs"><svg class="i s"><use href="#i-left"/></svg></span><span class="v">2030</span><span class="ib xs"><svg class="i s"><use href="#i-right"/></svg></span></span></div>
+            <div class="trip"><svg class="i s"><use href="#i-sign"/></svg><span>I'd change my mind if <span class="phrase">most new apps still ship to app stores in 2029</span><span class="dot watch" aria-label="Watching"></span></span></div>
+          </div>
+        </div>
+        <svg class="cur" style="left:209.0px;top:120.5px" width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M10.6 6a1.7 1.7 0 0 1 3.4 0v6.6a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0V19c0 3.1-2 5.6-5 5.6h-2.6c-2 0-3.3-.9-4.4-2.4l-3.1-4.1c-.6-.9-.4-2 .5-2.5.8-.4 1.7-.2 2.3.5l1.1 1.4V6Z" fill="#fff" stroke="#000" stroke-width="1.1" stroke-linejoin="round"/><path d="M14 12.6v3.6M16.6 13.3v3M19.2 14v2.6" stroke="#000" stroke-width="1" stroke-linecap="round"/></svg>
+      </div>
+      <figcaption><b>Confidence</b>Hovering a step previews it in jade; clicking sets it and logs a stance. The breathing grey dot means the tripwire is watching.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:620px;height:420px">
+          <div class="w-pane wide">
+            <div class="trip tripped"><svg class="i s"><use href="#i-sign"/></svg><span>I'd change my mind if <span class="phrase">a major assistant drops memory</span><span class="badge-dash num">1</span></span></div>
+            <div class="hit"><svg class="i s"><use href="#i-pulse"/></svg><span class="g">Memory feature withdrawn after privacy complaints <span class="src">theverge.com</span></span><span class="act ib sm x"><svg class="i s"><use href="#i-x"/></svg></span><span class="act btn ghost sm">Accept</span></div>
+            <div class="evid-h"><svg class="i s"><use href="#i-up"/></svg>Supports <span class="num">8</span></div>
+            <span class="act sig"><span class="glyph"><svg class="i s"><use href="#i-pulse"/></svg></span><span><span class="bar" style="width:220px;margin-top:5px"></span></span></span>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>Tripped</b>The signpost and the wavy underline turn red, and the dashed count opens the matched signal for a decision.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:20px;width:620px;height:420px">
+          <div class="w-pane wide" style="gap:8px;padding-top:16px">
+            <div class="evid-h"><svg class="i s"><use href="#i-up"/></svg>Supports <span class="num">2</span></div>
+            <span class="act sig is-hover"><span class="glyph"><svg class="i s"><use href="#i-pulse"/></svg></span><span>Data-centre power contracts are booked years ahead</span><span class="src">ft.com</span></span>
+            <span class="act sig" aria-expanded="true"><span class="glyph"><svg class="i s"><use href="#i-pulse"/></svg></span><span>Inference prices fell tenfold in a year</span><span class="src">a16z.com</span><span class="more"><div>Filed in Cost of intelligence · from a dump on 28 Oct</div></span></span>
+            <div class="evid-h"><svg class="i s"><use href="#i-down"/></svg>Undermines <span class="num">1</span> <span class="badge-dash num">1</span></div>
+            <span class="act sig suggested"><span class="glyph"><svg class="i s"><use href="#i-pulse"/></svg></span><span>Memory feature withdrawn after privacy complaints</span><span class="src">theverge.com · suggested</span></span>
+          </div>
+        </div>
+        <svg class="cur" style="left:290.0px;top:104.5px" width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M10.6 6a1.7 1.7 0 0 1 3.4 0v6.6a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0V19c0 3.1-2 5.6-5 5.6h-2.6c-2 0-3.3-.9-4.4-2.4l-3.1-4.1c-.6-.9-.4-2 .5-2.5.8-.4 1.7-.2 2.3.5l1.1 1.4V6Z" fill="#fff" stroke="#000" stroke-width="1.1" stroke-linejoin="round"/><path d="M14 12.6v3.6M16.6 13.3v3M19.2 14v2.6" stroke="#000" stroke-width="1" stroke-linecap="round"/></svg>
+      </div>
+      <figcaption><b>Signals</b>Rest, hover, unfolded in place, and suggested (dashed). A suggestion stays dashed until accepted.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:620px;height:420px">
+          <div class="w-pane wide"><div class="ptitle muted"><span class="bar" style="width:70%;margin:4px 0"></span></div><span class="bar" style="width:90%;margin:4px 0"></span><span class="bar" style="width:60%;margin:4px 0"></span><span class="bar" style="width:80%;margin:4px 0"></span></div>
+        </div>
+        <div class="composer static" style="left:auto;right:24px;bottom:22px;top:auto;width:330px">
+          <div class="ctx"><span class="chip"><svg class="i s"><use href="#i-theory"/></svg>Agents run continuously…<span class="xchip"><svg class="i s"><use href="#i-x"/></svg></span></span></div>
+          <div class="ta">Would cheaper tokens change this?</div>
+          <div class="comp-row"><span class="ib round"><svg class="i s"><use href="#i-cross"/></svg></span><span class="ib round"><svg class="i s"><use href="#i-clip"/></svg></span><span class="spacer"></span><span class="ib round"><svg class="i s"><use href="#i-mic"/></svg></span><span class="send"><span><svg class="i"><use href="#i-q"/></svg></span></span></div>
+        </div>
+      </div>
+      <figcaption><b>Ask</b>The pill grows into the composer. A question mark turns the jade send arrow into ask; the context chip shows what it sees.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="right:28px;bottom:28px;width:620px;height:420px">
+          <div class="w-view end"><div class="skelsec"><span class="bar" style="width:150px;height:7px"></span><div class="cards fixed"><span class="card skel"><span class="bar" style="width:78%"></span><span class="bar" style="width:52%"></span></span><span class="card skel"><span class="bar" style="width:66%"></span><span class="bar" style="width:48%"></span></span></div></div></div>
+          <div class="pill static rec" style="right:12px;bottom:12px"><span class="recdot"></span><span class="wave"><i style="height:4px"></i><i style="height:7px"></i><i style="height:12px"></i><i style="height:9px"></i><i style="height:15px"></i><i style="height:18px"></i><i style="height:11px"></i><i style="height:6px"></i><i style="height:9px"></i><i style="height:14px"></i><i style="height:17px"></i><i style="height:10px"></i><i style="height:6px"></i><i style="height:4px"></i><i style="height:8px"></i><i style="height:12px"></i><i style="height:7px"></i><i style="height:5px"></i><i style="height:9px"></i><i style="height:13px"></i><i style="height:8px"></i><i style="height:5px"></i></span><span class="num t">0:07</span><span class="stop"><svg class="i"><use href="#i-stop"/></svg></span></div>
+        </div>
+      </div>
+      <figcaption><b>Recording</b>The pill becomes the take: waveform, time and stop. Stopping drops the note in as a dump.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:620px;height:420px">
+          <div class="w-pane wide">
+            <div class="pbar"><div class="chips"><span class="act chip"><svg class="i s"><use href="#i-theme"/></svg>Agent memory</span></div><span class="act ib is-on"><svg class="i s"><use href="#i-dots"/></svg></span><span class="act ib"><svg class="i s"><use href="#i-expand"/></svg></span><span class="act ib"><svg class="i s"><use href="#i-x"/></svg></span></div>
+            <div class="ptitle" style="max-width:280px">Agents keep context across months, not sessions</div>
+          </div>
+        </div>
+        <div class="menu static" style="right:22px;top:72px">
+          <span class="act mi"><svg class="i s"><use href="#i-plus"/></svg>Link<kbd>L</kbd></span>
+          <span class="act mi is-hover"><svg class="i s"><use href="#i-pencil"/></svg>Rephrase<kbd>R</kbd></span>
+          <span class="act mi is-disabled"><svg class="i s"><use href="#i-merge"/></svg>Merge…</span>
+          <div class="sep"></div>
+          <span class="act mi"><svg class="i s"><use href="#i-retire"/></svg>Retire…</span>
+        </div>
+        <svg class="cur" style="left:422.5px;top:115.7px" width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true"><g transform="translate(10 7)"><path d="m6.148 18.473 1.863-1.003 1.615-.839-2.568-4.816h4.332l-11.379-11.408v16.015l3.316-3.221z" fill="#fff"/><path d="m6.431 17 1.765-.941-2.775-5.202h3.604l-8.025-8.043v11.188l2.53-2.442z" fill="#000"/></g></svg>
+      </div>
+      <figcaption><b>Menu</b>Grows from the ⋯, which keeps its pressed look while open. One row is hovered; Merge is disabled with nothing to merge.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;bottom:28px;width:620px;height:420px">
+          <div class="w-view end"><div class="skelsec"><span class="bar" style="width:150px;height:7px"></span><div class="cards fixed"><span class="card skel"><span class="bar" style="width:78%"></span><span class="bar" style="width:52%"></span></span><span class="card skel"><span class="bar" style="width:66%"></span><span class="bar" style="width:48%"></span></span></div></div></div>
+          <div class="switcher static" style="left:12px;bottom:12px"><span class="hl" style="transform:none"></span><span class="ib" aria-pressed="true"><svg class="i"><use href="#i-rows"/></svg></span><span class="ib is-hover"><svg class="i"><use href="#i-cols"/></svg></span><span class="ib"><svg class="i"><use href="#i-map"/></svg></span><span class="ib"><svg class="i"><use href="#i-scatter"/></svg></span><span class="ib"><svg class="i"><use href="#i-brief"/></svg></span></div>
+        </div>
+        <div class="tip static" style="left:40px;bottom:84px">Columns<kbd>⌘2</kbd></div>
+        <svg class="cur" style="left:78.0px;top:240.5px" width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M10.6 6a1.7 1.7 0 0 1 3.4 0v6.6a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0v.7a1.3 1.3 0 0 1 2.6 0V19c0 3.1-2 5.6-5 5.6h-2.6c-2 0-3.3-.9-4.4-2.4l-3.1-4.1c-.6-.9-.4-2 .5-2.5.8-.4 1.7-.2 2.3.5l1.1 1.4V6Z" fill="#fff" stroke="#000" stroke-width="1.1" stroke-linejoin="round"/><path d="M14 12.6v3.6M16.6 13.3v3M19.2 14v2.6" stroke="#000" stroke-width="1" stroke-linecap="round"/></svg>
+      </div>
+      <figcaption><b>View switcher and tooltip</b>The current view is jade on a white thumb. Tooltips show the name and shortcut: slow the first time, then instant.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="right:28px;bottom:28px;width:620px;height:420px">
+          <div class="w-view end"><div class="skelsec"><span class="bar" style="width:150px;height:7px"></span><div class="cards fixed"><span class="card skel"><span class="bar" style="width:78%"></span><span class="bar" style="width:52%"></span></span><span class="card skel"><span class="bar" style="width:66%"></span><span class="bar" style="width:48%"></span></span></div></div></div>
+          <div class="toast static" style="right:12px;bottom:60px"><span>Draft accepted as yours</span><button type="button">Undo<kbd>⌘Z</kbd></button></div>
+          <div class="pill static" style="right:12px;bottom:12px"><svg class="i"><use href="#i-tray"/></svg><span class="grow">Dump or ask</span><span class="ib round" style="width:32px;height:32px"><svg class="i"><use href="#i-mic"/></svg></span></div>
+        </div>
+      </div>
+      <figcaption><b>Toast</b>Rises just above the pill, holds while hovered, never takes focus. Undo is one key away.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <div class="stg">
+        <div class="win" style="left:28px;top:28px;width:620px;height:420px">
+          <div class="w-view"><div class="skelsec"><span class="bar" style="width:150px;height:7px"></span><div class="cards fixed"><span class="card skel"><span class="bar" style="width:78%"></span><span class="bar" style="width:52%"></span></span><span class="card skel"><span class="bar" style="width:66%"></span><span class="bar" style="width:48%"></span></span><span class="card skel"><span class="bar" style="width:84%"></span><span class="bar" style="width:40%"></span></span></div></div><div class="skelsec"><span class="bar" style="width:150px;height:7px"></span><div class="cards fixed"><span class="card skel"><span class="bar" style="width:78%"></span><span class="bar" style="width:52%"></span></span><span class="card skel"><span class="bar" style="width:66%"></span><span class="bar" style="width:48%"></span></span></div></div></div>
+          <div class="dim"></div>
+        </div>
+        <div class="modal static">
+          <div class="mt">Delete this dump?</div>
+          <p>Removes 4 signals and 2 evidence links. It stays in the bin for 30 days.</p>
+          <div class="row-end"><span class="act btn ghost">Cancel</span><span class="act btn solid-ink">Move to bin</span></div>
+        </div>
+      </div>
+      <figcaption><b>Confirm</b>The only modal. The world dims, the consequence is spelled out, and the destructive action is solid ink, not red.</figcaption>
+    </figure>
+
   </div>
 </section>
 
-<section>
-  <h2>First principles: what each variable is allowed to mean</h2>
-  <p class="lede">The existing encoding map extended, keeping one meaning per variable. Rows marked <span class="tag new-meaning">new meaning</span> are decisions for you, not defaults.</p>
-  <div class="panel scroll-x">
-    <table class="map">
-      <thead><tr><th>Variable</th><th>Means</th><th>Options on this page</th></tr></thead>
-      <tbody>
-        <tr><td>Neutral tint</td><td>Nothing. A trace of hue so greys look chosen</td><td>Radix Gray (none), Tailwind Zinc (trace of cool), Radix Slate (faint blue), Radix Sage (faint green). Shadows and lines take the neutral's darkest step, so they match the tint</td></tr>
-        <tr><td>Accent <span class="tag new-meaning">new meaning</span></td><td>You are acting here: focus ring, primary button, current view. Not selection</td><td>Ink, Teal, Jade, Cyan, Orange. Radix step 9 for fills, 10 for hover, 11 for text, 3 for washes, 7 for rings</td></tr>
-        <tr><td>Object colour <span class="tag new-meaning">new meaning</span></td><td>Object type, doubled with the existing glyph</td><td>Signal cyan, theme jade, theory orange, prototype neutral (Radix step 11), or off</td></tr>
-        <tr><td>Blue, red, green, amber</td><td>Unchanged: new, challenge, confidence rose, confidence fell</td><td>Moved to Radix: blue 9, red 9 (11 for text), grass 9, amber 11. Each dot gets a soft halo so it reads at a glance</td></tr>
-        <tr><td>Shadow</td><td>Height above the base plane, and nothing else</td><td>Crisp: three thin layers. Paper: hard 1 px foot plus soft drop. Soft: wide and diffuse, with a white highlight along the top edge</td></tr>
-        <tr><td>Dashed outline</td><td>Not yet mine (drafts, suggestions)</td><td>Unchanged. Accepting animates the dash away so the object solidifies in place</td></tr>
-        <tr><td>Wash plus 1 px ring</td><td>Selected or open</td><td>One selected style for rows, chips and cards in every combination: white surface, light hairline ring, small lift. Glyphs lose their object colour while selected</td></tr>
-        <tr><td>Press</td><td>"I felt that": a slight shrink, never darker</td><td>Keeps the hover tint and scales to 0.98 in every material; Soft adds its spring on release</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
 
 <section>
-  <h2>The frame</h2>
-  <p class="lede">Theme sections with the object pane open. Click cards to open them in the pane, hover a draft to accept or discard it from its edge, set confidence, step the year, open a signal in place, open the ⋯ menu, switch views, and click the pill to grow the composer (type a "?" to see send turn into ask). Esc closes the last thing opened.</p>
+  <h2>Live</h2>
+  <p class="lede">The whole frame, interactive. Click cards to open them, hover a draft to accept or discard it, set confidence, step the year, unfold a signal, open the ⋯ menu, switch views, and click the pill to grow the composer (type a "?" to see send turn into ask). Esc closes the last thing opened.</p>
   <div class="frame-wrap">
     <div class="ap" id="ap">
       <aside class="side">
@@ -565,7 +762,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
             <div class="year"><button class="act ib" id="yDown" aria-label="Earlier year" data-tip="Earlier"><svg class="i s"><use href="#i-left"/></svg></button><span class="v" id="yVal">2029</span><button class="act ib" id="yUp" aria-label="Later year" data-tip="Later"><svg class="i s"><use href="#i-right"/></svg></button></div>
           </div>
           <div class="body" id="pBody">If tokens are cheap and agents remember, there's no reason to switch them off.</div>
-          <div class="trip"><svg class="i s"><use href="#i-sign"/></svg><span>I'd change my mind if <span class="phrase">agents are still paused between sessions by 2028</span></span></div>
+          <div class="trip"><svg class="i s"><use href="#i-sign"/></svg><span>I'd change my mind if <span class="phrase">agents are still paused between sessions by 2028</span><span class="dot watch" aria-label="Watching"></span></span></div>
           <div class="evid">
             <div class="evid-h"><svg class="i s"><use href="#i-up"/></svg>Supports <span class="num">1</span></div>
             <button class="act sig" aria-expanded="false"><svg class="i s glyph"><use href="#i-pulse"/></svg><span>Data-centre power contracts are booked years ahead</span><span class="src">ft.com</span><span class="more"><div>Filed in Cost of intelligence · from a dump on 28 Oct · also bears on Frontier intelligence stays scarce and expensive</div></span></button>
@@ -579,7 +776,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
         <button class="act mi" role="menuitem"><svg class="i s"><use href="#i-plus"/></svg>Link<kbd>L</kbd></button>
         <button class="act mi" role="menuitem"><svg class="i s"><use href="#i-pencil"/></svg>Rephrase<kbd>R</kbd></button>
         <div class="sep"></div>
-        <button class="act mi danger" role="menuitem"><svg class="i s"><use href="#i-retire"/></svg>Retire…</button>
+        <button class="act mi" role="menuitem"><svg class="i s"><use href="#i-retire"/></svg>Retire…</button>
       </div>
 
       <div class="switcher" id="switcher" role="group" aria-label="Views">
@@ -611,12 +808,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 </section>
 
 <section>
-  <h2>One state model for everything you can act on</h2>
-  <p class="lede">Rest, hover, press, selected, focus and disabled, forced on so they can be compared. Hover is a state layer, never a lift: cards only rise when they are selected or picked up, which keeps "lift is a promise". Focus is always a 2 px ring in the accent, separate from selection.</p>
-  <div class="board scroll-x" id="statesBoard"></div>
-</section>
-
-<section>
   <h2>Interaction moments</h2>
   <p class="lede">The places where Aber can feel alive without slowing anything frequent. Each motion says something: where a thing came from, that it became yours, or that it left.</p>
   <div class="split">
@@ -632,6 +823,33 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
       <div class="mrow"><div>Spring<small id="m3"></small></div><div class="track act" data-m="3" role="button" tabindex="0" aria-label="Play spring timing"><span class="puck"></span></div></div>
       <p style="margin:6px 0 0;font-size:12px;color:var(--ink-3)">Hover and press use the short duration so frequent actions never wait. Anything that moves through space (pane, composer, view highlight, toast) uses the spring and can be interrupted mid-flight. Reduced motion swaps all of it for a cross-fade.</p>
     </div>
+  </div>
+</section>
+
+<section>
+  <h2>Rules</h2>
+  <p class="lede">One meaning per variable. Everything on this page, and in the jig, follows these.</p>
+  <div class="panel scroll-x">
+    <table class="map">
+      <thead><tr><th>Variable</th><th>Means</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Neutrals</td><td>Nothing; greys with a trace of green so they look chosen</td><td>Radix Sage. Ground between steps 2 and 3, sunk 3, ink 12, 11 and 9. Every line and shadow is tinted with sage 12</td></tr>
+        <tr><td>Accent</td><td>You are acting here: focus ring, primary action, current view, recording</td><td>Radix Jade: 9 for fills, 10 for hover, 11 for text, 3 for washes, 7 for rings</td></tr>
+        <tr><td>Object colour</td><td>Off</td><td>The glyph's shape carries object type, so jade never competes with a theme colour</td></tr>
+        <tr><td>Blue, red, green, amber</td><td>New, challenge, confidence rose, confidence fell</td><td>Blue 9, red 9 (11 for text), grass 9, amber 11. Dots and marks only; never a tinted card</td></tr>
+        <tr><td>Selected</td><td>Selected or open</td><td>One style: white surface, 12% hairline, small lift. Never coloured, never darker</td></tr>
+        <tr><td>Hover</td><td>Approach</td><td>A 4.5% sage layer. Nothing lifts on hover</td></tr>
+        <tr><td>Press</td><td>"I felt that"</td><td>Keeps the hover tint and shrinks to 0.98. Never darker</td></tr>
+        <tr><td>Focus</td><td>Keyboard position</td><td>2 px jade ring, 2 px offset. The only ring in the accent</td></tr>
+        <tr><td>Disabled</td><td>Not available now</td><td>40% opacity, no hover or press</td></tr>
+        <tr><td>Hairlines</td><td>Edges</td><td>8 to 12% of sage 12, dashed outlines included</td></tr>
+        <tr><td>Dashed outline</td><td>Not yet mine (drafts, suggestions)</td><td>12% dash, translucent fill, no shadow. Accepting solidifies in place</td></tr>
+        <tr><td>Shadow</td><td>Height above the base plane</td><td>Crisp: thin layered shadows, one token per tier</td></tr>
+        <tr><td>Action placement</td><td>Where actions live on a component</td><td>Discard, dismiss and close (X) top right; positive actions bottom right</td></tr>
+        <tr><td>Trailing marks</td><td>A status after a title</td><td>10 px after the last word, centred on the x-height</td></tr>
+        <tr><td>Type</td><td>Hierarchy by weight and colour</td><td>Geist 13/1.4 at 11, 12, 13 and 20; Geist Mono for keys and times</td></tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
@@ -653,7 +871,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 
 <section>
   <h2>Foundation</h2>
-  <p class="lede">Spacing is shared by all three directions, which is how density stays where it is. Radii are concentric: an inner radius is the outer radius minus the padding between them.</p>
+  <p class="lede">Spacing is a 4 px grid, which is how density stays where it was. Radii are concentric: an inner radius is the outer radius minus the padding between them.</p>
   <div class="board"><div class="found">
     <div class="fx"><h4>Spacing · 4 px grid</h4><div id="spacing" style="display:grid;gap:5px"></div><p>Nine steps replace 158 padding values. Rows 30, controls 28, cards pad 12.</p></div>
     <div class="fx"><h4>Radius · five steps</h4><div class="radii" id="radii"></div><div class="concentric"><span></span><span></span><span></span></div><p>Floating chrome uses the largest step; its buttons take it minus the 6 px inset.</p></div>
@@ -662,22 +880,11 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 </section>
 
 <section>
-  <h2>My read, and what needs your call</h2>
+  <h2>Open questions</h2>
   <div class="cols">
-    <div class="panel"><h3>Recommendation · moderate confidence</h3><p>Crisp, Slate, Ink accent, object colours on. The colour wheel is already crowded: blue, red, green and amber are taken by meanings. Object colours add three more hues, so a coloured accent on top of them starts to compete (the page warns when that happens). Pick one colour system: either objects carry colour and the accent stays ink, or objects stay grey and one brand accent (Teal or Orange) does the work. The first gives colour a job everywhere; the second is calmer.</p></div>
-    <div class="panel"><h3>Decisions for you</h3><ul>
-      <li>Should colour mean object type? It adds a meaning to the encoding map and means prototype status can no longer borrow blue and green.</li>
-      <li>Should the accent mean "you are acting here"? This also splits the focus ring away from the blue "new" dot, which share a tint today.</li>
-      <li>Keep "hover never lifts"? I kept it. Cards rise only when selected or dragged.</li>
-      <li>Which neutral? I would pick Slate or Zinc; Sage leans green next to the jade theme colour.</li>
-      <li>Font: Inter today. Each material shows a candidate: Geist (Crisp), IBM Plex Sans (Paper, already in <code>design/space-and-motion/assets</code>), Figtree (Soft).</li>
-    </ul></div>
-    <div class="panel"><h3>If you pick one, the path</h3><ul>
-      <li>Replace the literal dump in <code>design-tokens.css</code> with about 60 semantic tokens, as on this page.</li>
-      <li>Add one shared <code>.act</code> state model (hover, press, focus, selected, disabled) and delete per-surface hover rules.</li>
-      <li>Move the five shadows and z-indices to tier tokens, then migrate surfaces one file at a time behind screenshot checks.</li>
-      <li>Dark mode becomes one more token block, though it is not needed for v1.</li>
-    </ul></div>
+    <div class="panel"><h3>Destructive actions</h3><p>Red means challenge, so the delete confirmation uses a solid ink button. Is that strong enough, or does destruction deserve its own colour?</p></div>
+    <div class="panel"><h3>Atlas ground</h3><p>The jig's Atlas still uses the warm Paper ground. Should it move to sage like everything else?</p></div>
+    <div class="panel"><h3>Carry over</h3><p>Once the stages settle: update the encoding map in <code>docs/design-model.md</code>, then the app in <code>app/web</code>.</p></div>
   </div>
 </section>
 
@@ -692,16 +899,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const study = $('#study');
   const icon = (id, cls = 'i s') => `<svg class="${cls}"><use href="#i-${id}"/></svg>`;
-
-  const AX = { mat: ['crisp', 'paper', 'soft'], neu: ['gray', 'zinc', 'slate', 'sage'], acc: ['ink', 'teal', 'jade', 'cyan', 'orange'], hue: ['on', 'off'] };
-  const DEF = { mat: 'crisp', neu: 'slate', acc: 'ink', hue: 'on' };
-  const NOTE = {
-    crisp: 'Crisp: thin layered shadows, frosted-glass floating chrome, motion that settles without overshoot.',
-    paper: 'Paper: flatter, smaller radii, a hard 1 px foot under each card like stacked sheets, a small settle in motion.',
-    soft: 'Soft: rounder corners, a white highlight along the top edge of raised surfaces, a soft grey halo around selection, springy press.',
-    gray: 'Radix Gray, no tint.', zinc: 'Tailwind Zinc, a trace of cool.', slate: 'Radix Slate, faintly blue.', sage: 'Radix Sage, faintly green.'
-  };
-  const CLASH = { teal: 'the jade theme colour', jade: 'the jade theme colour', cyan: 'the cyan signal colour', orange: 'the orange theory colour' };
 
   /* ---------- Data (from the seeded example library) ---------- */
   const themes = [
@@ -834,19 +1031,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   document.addEventListener('focusin', e => { const el = e.target.closest('[data-tip]'); if (el && e.target.matches(':focus-visible')) showTip(el); });
   document.addEventListener('focusout', hideTip); document.addEventListener('pointerdown', hideTip); addEventListener('scroll', hideTip, { passive: true });
 
-  /* ---------- States board ---------- */
-  const SB = $('#statesBoard');
-  const cols = [['Rest', ''], ['Hover', 'is-hover'], ['Press', 'is-press'], ['Selected', 'is-sel'], ['Focus', 'is-focus'], ['Disabled', 'is-disabled']];
-  const rowsDef = [
-    ['Icon button', c => `<span class="act ib ${c}">${icon('pencil', 'i')}</span>`],
-    ['Index row', c => `<span class="act row ${c}"><span class="lbl">Agent memory</span><span class="cnt">2</span></span>`],
-    ['Theory card', c => `<span class="act card ${c}">${icon('theory', 'i s claim-icon')}<span class="claim">Code review becomes the bottleneck</span><span class="marks">${conf(4)}<span class="num">+2 −0</span></span></span>`],
-    ['Draft card', c => `<span class="act card draft ${c}"><span class="claim">Review shifts from diffs to intent</span><span class="marks"><span class="num">+1 −0</span></span></span>`],
-    ['Chip', c => `<span class="act chip ${c}">${icon('theme', 'i s glyph')}Agent memory</span>`],
-    ['Primary', c => c === 'is-sel' ? '<span style="font-size:11px;color:var(--ink-3)">n/a</span>' : `<span class="act btn ${c}">Accept</span>`]
-  ];
-  SB.innerHTML = `<div class="states"><span></span>${cols.map(c => `<span class="h">${c[0]}</span>`).join('')}${rowsDef.map(([n, f]) => `<span class="rl">${n}</span>${cols.map(c => `<span class="cell">${f(c[1])}</span>`).join('')}`).join('')}</div>`;
-
   /* ---------- Briefing ---------- */
   const briefItems = [
     { k: 'chal', t: 'Agents keep context across months, not sessions', ev: ['down', 'Memory feature withdrawn after privacy complaints', 'theverge.com'], why: 'A major assistant pulled memory after complaints. Accepting lowers confidence one step.' },
@@ -857,9 +1041,9 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
     $('#brief').innerHTML = briefItems.map((b, i) => `<div class="bitem-wrap"><div><div class="bitem ${b.k === 'chal' ? 'chal' : ''}" tabindex="0" data-i="${i}">
       ${icon('theory', 'i s glyph')}
       <span class="t">${b.t}${b.k === 'chal' ? '<span class="dot chal" aria-label="Challenge"></span>' : ''}</span>
-      <span class="acts"><button class="act btn ghost" data-a style="height:26px">Accept</button><button class="act ib" data-x aria-label="Discard" data-tip="Discard" data-key="X" style="width:26px;height:26px">${icon('x')}</button></span>
       <span class="ev-row">${icon(b.ev[0])}<span>${b.ev[1]} <span style="color:var(--ink-3)">${b.ev[2]}</span></span></span>
       <span class="why">${b.why}</span>
+      <span class="acts"><button class="act btn ghost" data-a style="height:26px">Accept</button><button class="act ib" data-x aria-label="Discard" data-tip="Discard" data-key="X" style="width:26px;height:26px">${icon('x')}</button></span>
     </div></div></div>`).join('');
   }
   renderBrief();
@@ -882,33 +1066,13 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   function paintFoundation() {
     const cs = getComputedStyle(study);
     $('#radii').innerHTML = ['r-1', 'r-2', 'r-3', 'r-4'].map(r => `<div style="border-radius:var(--${r})">${cs.getPropertyValue('--' + r).trim()}</div>`).join('') + '<div style="border-radius:999px;width:70px">pill</div>';
-    const roles = [['ground', 'Ground'], ['surface', 'Surface'], ['sunk', 'Sunk'], ['ink-3', 'Ink 3'], ['ink-2', 'Ink 2'], ['ink', 'Ink'], ['accent', 'Accent · acting'], ['accent-wash', 'Accent wash'], ['new', 'New'], ['challenge', 'Challenge'], ['rose', 'Confidence rose'], ['h-signal', 'Signal'], ['h-theme', 'Theme'], ['h-theory', 'Theory'], ['h-proto', 'Prototype']];
+    const roles = [['ground', 'Ground · sage 2–3'], ['surface', 'Surface'], ['sunk', 'Sunk · sage 3'], ['ink-3', 'Ink 3 · sage 9'], ['ink-2', 'Ink 2 · sage 11'], ['ink', 'Ink · sage 12'], ['accent', 'Accent · jade 9'], ['accent-text', 'Accent text · jade 11'], ['accent-wash', 'Accent wash · jade 3'], ['new', 'New · blue 9'], ['challenge', 'Challenge · red 9'], ['rose', 'Rose · grass 9'], ['fell', 'Fell · amber 11']];
     $('#palette').innerHTML = roles.map(([v, n]) => `<div class="sw"><i style="background:var(--${v})"></i><div><b>${n}</b><span>--${v}</span></div></div>`).join('');
     $('#m1').textContent = cs.getPropertyValue('--dur-1').trim() + ' · ease-out';
     $('#m2').textContent = cs.getPropertyValue('--dur-3').trim() + ' · ease-out';
     $('#m3').textContent = cs.getPropertyValue('--spring-dur').trim() + ' · spring';
   }
 
-  /* ---------- Axis switching ---------- */
-  const segs = $$('.seg[data-axis]');
-  const placeThumb = seg => { const b = $('button[aria-pressed="true"]', seg); const th = $('.thumb', seg); if (!b) return; th.style.width = b.offsetWidth + 'px'; th.style.transform = `translateX(${b.offsetLeft}px)`; };
-  const placeAll = () => segs.forEach(placeThumb);
-  const state = { ...DEF };
-  function apply(save = true) {
-    for (const k in AX) { study.dataset[k] = state[k]; }
-    segs.forEach(seg => $$('button', seg).forEach(b => b.setAttribute('aria-pressed', b.dataset.v === state[seg.dataset.axis])));
-    let note = `${NOTE[state.mat]} ${NOTE[state.neu]}`;
-    if (state.hue === 'on' && CLASH[state.acc]) note += ` Note: this accent sits close to ${CLASH[state.acc]}, so two colour systems compete.`;
-    $('#dirnote').textContent = note; placeAll(); paintFoundation();
-    if (save) { const h = [state.mat, state.neu, state.acc, state.hue].join('-'); try { localStorage.setItem('aber-axes', h); } catch (_) {} if (location.hash !== '#' + h) history.replaceState?.(null, '', '#' + h); }
-  }
-  function parse(h) { const parts = (h || '').split('-'); const out = { ...DEF }; let ok = false; Object.keys(AX).forEach((k, i) => { if (AX[k].includes(parts[i])) { out[k] = parts[i]; ok = true; } }); return ok ? out : null; }
-  segs.forEach(seg => seg.addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (!b) return; state[seg.dataset.axis] = b.dataset.v; apply(); }));
-  addEventListener('hashchange', () => { const p = parse(location.hash.slice(1)); if (p) { Object.assign(state, p); apply(false); } });
-  addEventListener('resize', placeAll);
-  let saved = null; try { saved = localStorage.getItem('aber-axes'); } catch (_) {}
-  Object.assign(state, parse(location.hash.slice(1)) || parse(saved) || DEF);
-  apply(false);
-  if (document.fonts?.ready) document.fonts.ready.then(placeAll);
+  paintFoundation();
 })();
 </script>
