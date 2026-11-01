@@ -41,7 +41,7 @@
 #study {
   --ground: var(--n-ground); --surface: #ffffff; --raised: #ffffff; --sunk: var(--n-sunk); --glass: rgb(255 255 255 / 74%);
   --line: rgb(var(--shc) / 9%); --line-2: rgb(var(--shc) / 5.5%);
-  --state-hover: rgb(var(--shc) / 4.5%); --state-press: rgb(var(--shc) / 8%);
+  --state-hover: rgb(var(--shc) / 4.5%); --state-press: var(--state-hover);   /* press never darkens; it only shrinks */
   --new: #0090ff;                                   /* blue 9 */
   --challenge: #e5484d; --challenge-text: #ce2c31; --challenge-wash: #feebec;   /* red 9, 11, 3 */
   --rose: #46a758;                                  /* grass 9: confidence rose */
@@ -67,7 +67,7 @@
   --sh-modal: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 24px 64px -12px rgb(var(--shc) / 30%);
   --sh-tip: 0 2px 8px rgb(var(--shc) / 22%);
   --dur-1: 90ms; --dur-2: 160ms; --dur-3: 260ms; --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --spring: cubic-bezier(0.16, 1, 0.3, 1); --spring-dur: 380ms; --press: 0.97;
+  --spring: cubic-bezier(0.16, 1, 0.3, 1); --spring-dur: 380ms; --press: 0.98;
 }
 
 /* ---------- Material · Paper ---------- */
@@ -85,7 +85,7 @@
   --sh-tip: 0 2px 6px rgb(var(--shc) / 24%);
   --dur-1: 90ms; --dur-2: 170ms; --dur-3: 280ms; --ease: cubic-bezier(0.25, 0.8, 0.25, 1);
   --spring: linear(0, 0.006, 0.025 2.8%, 0.101 6.1%, 0.539 18.9%, 0.721 25.3%, 0.849 31.5%, 0.937 38.1%, 0.968 41.8%, 0.991 45.7%, 1.006 50.1%, 1.015 55%, 1.017 63.9%, 1.001 85.9%, 1);
-  --spring-dur: 460ms; --press: 0.975;
+  --spring-dur: 460ms; --press: 0.98;
 }
 
 /* ---------- Material · Soft ---------- */
@@ -104,7 +104,7 @@
   --sel-glow: rgb(var(--shc) / 5%);
   --dur-1: 100ms; --dur-2: 180ms; --dur-3: 300ms; --ease: cubic-bezier(0.3, 0.7, 0.2, 1);
   --spring: linear(0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1);
-  --spring-dur: 520ms; --press: 0.95;
+  --spring-dur: 520ms; --press: 0.98;
 }
 
 /* ---------- Accent ("you are acting here"): Radix solid 9, hover 10, text 11, wash 3, ring 7 ---------- */
@@ -177,6 +177,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   transition: background-color var(--dur-1) var(--ease), box-shadow var(--dur-2) var(--ease), transform var(--dur-2) var(--spring), color var(--dur-1) var(--ease); }
 .act:hover, .act.is-hover { background-color: var(--state-hover); }
 .act:active, .act.is-press { background-color: var(--state-press); transform: scale(var(--press)); transition-duration: var(--dur-1); }
+.card:is(:active, .is-press), .chip:is(:active, .is-press) { background-color: var(--surface); }
+.card.draft:is(:active, .is-press) { background-color: color-mix(in oklab, var(--draft-fill) 60%, var(--surface)); }
 .act:focus-visible, .act.is-focus { outline: 2px solid var(--focus); outline-offset: 2px; }
 .act[aria-disabled="true"], .act.is-disabled { opacity: 0.4; pointer-events: none; }
 
@@ -187,6 +189,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   font-weight: 500; font-size: var(--t-12); background: var(--accent); color: var(--accent-ink); box-shadow: var(--hi), 0 1px 2px rgb(0 0 0 / 10%); }
 .btn:hover, .btn.is-hover { background-color: var(--accent-hover); }
 .btn:active, .btn.is-press { background-color: var(--accent-hover); }
+.btn.ghost:is(:active, .is-press) { background: color-mix(in oklab, var(--surface) 94%, var(--ink)); }
 .btn.ghost { background: var(--surface); color: var(--ink); box-shadow: var(--hi), 0 0 0 0.5px var(--line), 0 1px 2px var(--line-2); }
 .btn.ghost:hover, .btn.ghost.is-hover { background: color-mix(in oklab, var(--surface) 94%, var(--ink)); }
 
@@ -514,7 +517,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
         <tr><td>Shadow</td><td>Height above the base plane, and nothing else</td><td>Crisp: three thin layers. Paper: hard 1 px foot plus soft drop. Soft: wide and diffuse, with a white highlight along the top edge</td></tr>
         <tr><td>Dashed outline</td><td>Not yet mine (drafts, suggestions)</td><td>Unchanged. Accepting animates the dash away so the object solidifies in place</td></tr>
         <tr><td>Wash plus 1 px ring</td><td>Selected or open</td><td>One selected style for rows, chips and cards in every combination: white surface, light hairline ring, small lift. Glyphs lose their object colour while selected</td></tr>
-        <tr><td>Press</td><td>"I felt that": scale plus deeper state layer</td><td>0.97 crisp, 0.975 paper, 0.95 soft</td></tr>
+        <tr><td>Press</td><td>"I felt that": a slight shrink, never darker</td><td>Keeps the hover tint and scales to 0.98 in every material; Soft adds its spring on release</td></tr>
       </tbody>
     </table>
   </div>
