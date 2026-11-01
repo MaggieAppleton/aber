@@ -49,7 +49,7 @@ export function DecisionsJig() {
   const ALL = ["world-scale", "compass", "chat", "drafts", ...SIMPLE.map(s => s.id)];
 
   return (
-    <JigPage
+    <JigPage status={<>Superseded by <a href="/decide">/decide</a>; its answers carried over there.</>}
       title="Open questions"
       intro={<p>Section 6 of the design model. The first four block Layer 4. The minis are live: pin, hover, send messages and drag the slider.</p>}
       aside={

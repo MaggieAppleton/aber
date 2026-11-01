@@ -43,7 +43,7 @@ export function DevelopAtlasJig() {
   const picked = decisions["atlas-treatment"]?.choice;
   const pickedSig = decisions["atlas-signals"]?.choice;
   return (
-    <JigPage title="Atlas, developed"
+    <JigPage status={<>Exploration, superseded by <a href="/app">/app</a> (⌘3: circles, Paper, signals revealed on zoom). Kept as reference for treatment and signal details.</>} title="Atlas, developed"
       intro={<>
         <p>Two ways to open a territory or landmark to read and write it without losing the map. Esc steps back one level in each.</p>
         <table className="hm-where" style={{ marginTop: 8 }}><tbody>{ROWS.map(([a, b]) => <tr key={a}><th style={{ width: 160 }}>{a}</th><td>{b}</td></tr>)}</tbody></table>

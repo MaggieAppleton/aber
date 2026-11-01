@@ -7,7 +7,7 @@ export function BoardsJig() {
   const [boards, setBoards] = useState<Board[]>([]);
   useEffect(() => { fetch("/space-and-motion/manifest.json").then(r => r.json()).then(setBoards); }, []);
   return (
-    <JigPage title="Space and motion boards" intro="Wireframes exported from the Claude Design canvas. Click one to open the live board.">
+    <JigPage status={<>Reference only: the first space and motion boards. Superseded by <a href="/app">/app</a>.</>} title="Space and motion boards" intro="Wireframes exported from the Claude Design canvas. Click one to open the live board.">
       <div className="jig-boards">
         {boards.map(b => {
           const name = b.file.replace(".html", "");

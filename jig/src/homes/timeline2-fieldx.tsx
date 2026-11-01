@@ -102,6 +102,14 @@ export function FieldPlot({ scale, width, height = H, bottom = BOTTOM, variant, 
     const kOf = new Map<string, number>();
     const gutters = new Map<number, number>();
     const between = (k: number, a: number, b: number) => k > Math.min(a, b) && k < Math.max(a, b);
+    // The faded (receding) dots are obstacles too. They pack into a grid under each row's label lines, so key them
+    // after any line the row can have (r * 100 + 90 + grid row): a run that crosses the bottom of a row passes them.
+    for (const [key, ts] of cells) {
+      const [yr, r] = key.split(":").map(Number);
+      ts.filter(t => !isVis(t.id)).forEach((t, i) => dots.push({ x: colX(yr) + 8 + (i % perRow) * 16 + DOT / 2, k: r * 100 + 90 + Math.floor(i / perRow), id: t.id }));
+    }
+    /** A vertical run at x between keys lo and hi keeps GAP clear of every dot, labelled or faded. */
+    const runClear = (x: number, lo: number, hi: number, s: string) => !dots.some(d => d.id !== s && Math.abs(d.x - x) < rOf(d.id) + GAP + 1 && between(d.k, lo, hi));
     // Within a column, theories that lead on (with links of their own) take the lower lines, so their runs head away
     // from their siblings instead of past them.
     const outs = (id: string) => edges.filter(([a, b2]) => a === id && isVis(b2)).length;
@@ -130,8 +138,10 @@ export function FieldPlot({ scale, width, height = H, bottom = BOTTOM, variant, 
             // The lane is chosen once, so judge it against every row the source's links will reach, not just this one.
             const rows = edges.filter(([a2, b2]) => a2 === s && isVis(b2)).map(([, b2]) => rowOf(g.by.get(b2)!));
             const lo = Math.min(sk, k, ...rows.map(x => x * 100)), hi = Math.max(sk, k, ...rows.map(x => x * 100 + 99));
-            const blocked = Math.abs(scx - cx) < 4 || dots.some(d => d.id !== s && Math.abs(d.x - scx) < 2 && between(d.k, lo, hi));
-            lane = blocked ? scx - DOT / 2 - GAP - APPROACH - 4 - (gutters.get(Math.round(scx)) ?? 0) * 6 : scx;
+            const blocked = Math.abs(scx - cx) < 4 || !runClear(scx, lo, hi, s);
+            // In the gutter, step further left until the run is clear of every dot it passes (a longer approach is fine).
+            const base = scx - DOT / 2 - GAP - APPROACH - 4 - (gutters.get(Math.round(scx)) ?? 0) * 6;
+            lane = blocked ? (Array.from({ length: 17 }, (_, i) => base - i * 3).find(x => runClear(x, lo, hi, s)) ?? base) : scx;
           }
           const v = vs.get(s), k0 = Math.min(sk, k, v?.k0 ?? sk), k1 = Math.max(sk, k, v?.k1 ?? sk);
           // The vertical run may not cross a label, an arrival or a dot.

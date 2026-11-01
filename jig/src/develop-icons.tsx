@@ -21,7 +21,7 @@ export function DevelopIconsJig() {
   const toggle = (id: string, k: string) => update(id, { choice: decisions[id]?.choice === k ? undefined : k });
 
   return (
-    <JigPage
+    <JigPage status={<>Superseded by <a href="/app">/app</a>. Picks applied in OBJECT_ICONS (atoms.tsx): Pulse, Binoculars, Target, PencilRuler, TrayArrowDown.</>}
       title="Object icons"
       intro={<p>Candidates from Phosphor for signal, theme, theory and prototype. Dump stays a tray. Hover a candidate or a set to see it in place; the right column shows your picks together.</p>}
       aside={<span className="jig-status">{saved ? "Saved" : "Saving"}</span>}

@@ -12,6 +12,8 @@ import { ColumnsDeveloped, columnsWidth } from "./columns2";
 import { AtlasHosted } from "./atlas2";
 import { TimelineHosted } from "./timeline-app";
 import { DumpOrAsk, DOCK_W, PRIOR, escapeDump, useDump, type Sees } from "./pill-study";
+import { BriefingView } from "./briefing-app";
+import { DumpLog, useDumpLog, useLogFromDump } from "./dump-log";
 import "./homes.css";
 import "./panes.css";
 import "./pill-study.css";
@@ -21,28 +23,30 @@ export const APP_W = 1360, APP_H = 820;
 const EASE = [0.16, 1, 0.3, 1] as const;
 const DOCK_T = { type: "spring", duration: 0.5, bounce: 0.08 } as const;
 
-export type View = "current" | "columns" | "atlas" | "timeline";
+export type View = "current" | "columns" | "atlas" | "timeline" | "briefing";
 export const VIEWS: { id: View; name: string; icon: IconName }[] = [
   { id: "current", name: "Theme sections", icon: "sections" },
   { id: "columns", name: "Columns", icon: "columns" },
   { id: "atlas", name: "Atlas", icon: "map" },
   { id: "timeline", name: "Timeline", icon: "timeline" },
+  { id: "briefing", name: "Briefing", icon: "briefing" },
 ];
 type Obj = { kind: ObjKind; id: string };
-type Layer = "pane" | "dump";
+type Layer = "pane" | "dump" | "log";
 
 /* Pane widths. Each view has four stops: compact, half (pane and view share the width evenly), wide (the view's own
    default) and full, where the view folds to a thin strip of itself. The chosen stop is remembered per view. */
 type Snap = "compact" | "half" | "wide" | "full";
 const SNAPS: Snap[] = ["compact", "half", "wide", "full"];
 const SNAP_NAME: Record<Snap, string> = { compact: "Compact", half: "Half", wide: "Wide", full: "Full" };
-/** Half is dropped (merged into its neighbour) when it lands this close to another stop. */
+/** Merge threshold (px). When half lands this close to compact, half wins and compact is dropped (d-half-vs-compact);
+ *  when it lands this close to wide or full, half merges into that stop. */
 const MERGE = 40;
 const COMPACT = 480, PANE_MIN = 400;
 /** What each view keeps at full width: Columns its rails, Current its index, Atlas and Timeline a strip. */
-const STRIP: Record<View, number> = { columns: columnsWidth(undefined, undefined, true), current: 232, atlas: 180, timeline: 200 };
+const STRIP: Record<View, number> = { columns: columnsWidth(undefined, undefined, true), current: 232, atlas: 180, timeline: 200, briefing: 240 };
 /** What each view keeps beside the pane by default. */
-const KEEP: Record<View, number> = { columns: 0, current: 232 + 296, atlas: 420, timeline: 0 };
+const KEEP: Record<View, number> = { columns: 0, current: 232 + 296, atlas: 420, timeline: 0, briefing: 560 };
 const TIMELINE_PANE = 560;
 
 function paneStops(view: View, avail: number, open?: Obj, unfolded?: string): Record<Snap, number> {
@@ -52,12 +56,15 @@ function paneStops(view: View, avail: number, open?: Obj, unfolded?: string): Re
   const wide = clamp(view === "timeline" ? TIMELINE_PANE : avail - keep);
   const compact = Math.min(wide, clamp(COMPACT));
   const even = clamp(avail / 2);
-  const near = [compact, wide, full].find(w => Math.abs(w - even) < MERGE);
+  // Half wins over compact: compact takes half's width and drops out of the order.
+  if (Math.abs(compact - even) < MERGE) return { compact: even, half: even, wide, full };
+  const near = [wide, full].find(w => Math.abs(w - even) < MERGE);
   return { compact, half: near ?? even, wide, full };
 }
-/** The distinct stops, narrowest first (half drops out when it merged into a neighbour). */
+/** The distinct stops, narrowest first. Compact drops out when it merged into half; half drops out when it merged
+ *  into wide or full. */
 function snapOrder(stops: Record<Snap, number>): Snap[] {
-  const keys = SNAPS.filter(k => k !== "half" || ![stops.compact, stops.wide, stops.full].includes(stops.half));
+  const keys = SNAPS.filter(k => k === "compact" ? stops.compact !== stops.half : k !== "half" || stops.half === stops.compact || ![stops.wide, stops.full].includes(stops.half));
   return keys.sort((a, b) => stops[a] - stops[b]);
 }
 /** The stop nearest a width. */
@@ -85,10 +92,14 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
   const [open, setOpenState] = useState<Obj>();
   const [unfolded, setUnfolded] = useState<string>();
   // The pane's width stop per view (in memory, for the session), the stop to restore from full, and a live drag width.
-  const [snaps, setSnaps] = useState<Record<View, Snap>>({ current: "wide", columns: "wide", atlas: "wide", timeline: "wide" });
+  const [snaps, setSnaps] = useState<Record<View, Snap>>({ current: "wide", columns: "wide", atlas: "wide", timeline: "wide", briefing: "wide" });
   const [restore, setRestore] = useState<Partial<Record<View, Snap>>>({});
   const [dragW, setDragW] = useState<number | null>(null);
   const { s, api } = useDump({ ctx: [], thread: PRIOR });
+  // The dump log: every dump and what it became. Rises from the pill; ⌘⇧L.
+  const dumpLog = useDumpLog();
+  useLogFromDump(s, dumpLog.api);
+  const [logOpen, setLogOpenState] = useState(false);
   // One stack of transient surfaces, most recent last: Esc closes from the end.
   const stack = useRef<Layer[]>([]);
   const push = (l: Layer) => { stack.current = [...stack.current.filter(x => x !== l), l]; };
@@ -97,6 +108,16 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
   const openObj = (kind: ObjKind, id: string) => { setUnfolded(undefined); setOpenState(o => { if (!o) push("pane"); return { kind, id }; }); };
   const closeObj = () => { drop("pane"); setUnfolded(undefined); setOpenState(undefined); };
   useEffect(() => { if (s.open) push("dump"); else drop("dump"); }, [s.open]);
+  const setLogOpen = (o: boolean) => { if (o) push("log"); else drop("log"); setLogOpenState(o); };
+  // Opening the dump column closes the log; the log never sits over the open column.
+  useEffect(() => { if (s.open && logOpen) setLogOpen(false); }, [s.open]);
+  // A click anywhere outside the log (other than its own toggle) closes it.
+  useEffect(() => {
+    if (!logOpen) return;
+    const down = (e: PointerEvent) => { const t = e.target as Element; if (!t.closest(".ps-log, [data-log-toggle]")) setLogOpen(false); };
+    window.addEventListener("pointerdown", down, true);
+    return () => window.removeEventListener("pointerdown", down, true);
+  }, [logOpen]);
 
   const dumpW = s.open ? DOCK_W : 0;
   const avail = APP_W - dumpW;
@@ -113,12 +134,13 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
   const toggleFull = () => setSnap(snap === "full" ? (restore[view] ?? "wide") : "full");
   const step = (dir: 1 | -1) => { const k = stepSnap(stops, paneW, dir); if (k) setSnap(k); };
   // Keys: ⌘1–4 switch views, ⌘J toggles dump or ask, Esc closes the most recent surface first.
-  const live = useRef({ s, open, unfolded, step });
-  live.current = { s, open, unfolded, step };
+  const live = useRef({ s, open, unfolded, step, logOpen });
+  live.current = { s, open, unfolded, step, logOpen };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const mod = e.metaKey || e.ctrlKey;
-      if (mod && /^[1-4]$/.test(e.key)) { e.preventDefault(); setView(VIEWS[+e.key - 1].id); return; }
+      if (mod && /^[1-5]$/.test(e.key)) { e.preventDefault(); setView(VIEWS[+e.key - 1].id); return; }
+      if (mod && e.shiftKey && e.key.toLowerCase() === "l") { e.preventDefault(); if (live.current.s.open) api.close(); setLogOpen(!live.current.logOpen); return; }
       if (mod && e.key.toLowerCase() === "j") { e.preventDefault(); live.current.s.open ? api.close() : api.open(); return; }
       // ⌘[ / ⌘] (or ⌥← / ⌥→ outside text) widen or narrow the pane by one stop, while focus is in the pane.
       const inPane = e.target instanceof Element && !!e.target.closest(".as-pane");
@@ -129,6 +151,7 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
       const { s: st, open: o, unfolded: u } = live.current;
       if (st.picking || st.rec != null) { escapeDump(st, api); return; }
       const top = stack.current.at(-1);
+      if (top === "log" && live.current.logOpen) { setLogOpen(false); frame.current?.querySelector<HTMLElement>("[data-log-toggle]")?.focus({ preventScroll: true }); return; }
       if (top === "dump" && st.open) { api.close(); return; }
       if (top === "pane" && o) { if (u) setUnfolded(undefined); else closeObj(); return; }
       if (u) setUnfolded(undefined);
@@ -151,7 +174,8 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
   let body: ReactNode;
   if (view === "current") body = <CurrentHome host={{ open, onOpen: openObj, compact }} />;
   else if (view === "columns") body = <ColumnsDeveloped fold="rails" host={{ open, onOpen: (k, id) => openObj(k as ObjKind, id), onClose: closeObj, unfolded, onUnfold: setUnfolded, compact, onRestore: () => setSnap(restore[view] ?? "wide") }} />;
-  else if (view === "atlas") body = <AtlasHosted open={open} onOpen={openObj} width={contentW} height={APP_H} />;
+  else if (view === "briefing") body = <BriefingView host={{ open, onOpen: openObj, compact, onLog: () => setLogOpen(true) }} />;
+  else if (view === "atlas") body = <AtlasHosted open={open} onOpen={openObj} width={contentW} height={APP_H} mapStyle="circles" treatment="paper" signals="zoom" />;
   else body = <TimelineHosted width={contentW} height={APP_H} open={open} onOpen={openObj} compact={compact} />;
 
   const objKey = open && `${open.kind}:${open.id}`;
@@ -214,12 +238,17 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
           </LayoutGroup>
         </nav>
 
-        <DumpOrAsk s={s} api={api} w={APP_W} h={APP_H} frameRef={frame} sees={sees} keys={false} closeOnClickAway={false} />
+        <DumpOrAsk s={s} api={api} w={APP_W} h={APP_H} frameRef={frame} sees={sees} keys={false} closeOnClickAway={false}
+          log={{ open: logOpen, onToggle: () => setLogOpen(!logOpen), status: logStatus(dumpLog.entries),
+            panel: <DumpLog entries={dumpLog.entries} bin={dumpLog.bin} api={dumpLog.api} onClose={() => setLogOpen(false)} /> }} />
       </div>
     </MotionConfig>
   );
 }
 
+
+/** The pill's log segment carries a dot while a dump is still processing, red when one failed. */
+export const logStatus = (es: { status: string }[]) => es.some(e => e.status === "failed") ? "failed" as const : es.some(e => e.status === "processing") ? "processing" as const : undefined;
 
 /* The pane's left edge: a resize handle. A hairline and grip appear on approach; the edge follows the pointer 1:1,
    then settles with a spring on the stop nearest to where the throw was heading. Arrow keys step between stops. */

@@ -95,3 +95,19 @@ button, textarea, input { font: inherit; color: inherit; }
   .jig-options, .jig-boards { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* A page's standing, one quiet line under its title */
+.jig-standing { font-size: var(--text-sm); color: var(--text-secondary); margin: 0; }
+.jig-header .jig-standing a { font-size: inherit; color: var(--text-primary); text-decoration: underline; text-decoration-color: var(--text-tertiary); text-underline-offset: 2px; }
+
+/* Reference index */
+.rf-table { max-width: 1400px; table-layout: fixed; }
+.rf-table th { width: auto; white-space: normal; }
+.rf-table thead th { color: var(--text-tertiary); font-weight: 500; }
+.rf-table td, .rf-table th { vertical-align: top; }
+.rf-table code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; }
+.rf-links { display: grid; gap: 2px; align-content: start; }
+.rf-links a { color: var(--text-primary); text-underline-offset: 2px; text-decoration-color: var(--text-tertiary); white-space: nowrap; }
+.rf-status { white-space: nowrap; color: var(--text-tertiary); }
+.rf-status[data-status="Canonical"] { color: var(--text-primary); font-weight: 500; }
+.rf-src { display: block; margin-top: 4px; color: var(--text-tertiary); font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; }

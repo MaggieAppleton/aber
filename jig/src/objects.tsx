@@ -19,7 +19,7 @@ export function ObjectsJig() {
     update("counts", { [key]: { ...counts[key], [field]: value } });
 
   return (
-    <JigPage
+    <JigPage status={<>Reference only: context for the object model and its scale.</>}
       title="Objects and how many there are"
       intro={<p>What the interface has to hold before we pick a shape. The numbers are my estimates (low confidence): edit them in place.</p>}
       aside={<div className="jig-status">{saved ? "Saved" : "Saving"}</div>}

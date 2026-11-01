@@ -704,11 +704,16 @@ export function escapeDump(s: DumpState, api: DumpApi) {
  * - `keys`: handle ⌘J and Esc itself (default). Hosts with their own Esc stack pass false and call `escapeDump`.
  * - `closeOnClickAway`: close when the host is clicked outside the panel (default). A docked host passes false.
  * - `onDecide`: a draft in the conversation was accepted or discarded.
+ * - `log`: adds the dump-log segment at the pill's left end (history glyph, a dot while a dump is processing or failed)
+ *   and a slot that grows the log panel up out of it. The host owns open/close and Esc.
+ * - `corner`: sit in the bottom-right corner on any variant (the phone pill in the app).
  */
-export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, force = {}, frameRef, live = true, sees, syncSees = true, keys = true, closeOnClickAway = true, thumb, onDecide }: {
+export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, force = {}, frameRef, live = true, sees, syncSees = true, keys = true, closeOnClickAway = true, thumb, onDecide, log, corner: cornerProp }: {
   variant?: Variant; s: DumpState; api: DumpApi; w: number; h: number; cx?: number; centred?: boolean; force?: Force;
   frameRef: RefObject<HTMLDivElement | null>; live?: boolean; sees: Sees[]; syncSees?: boolean; keys?: boolean; closeOnClickAway?: boolean;
   thumb?: ReactNode; onDecide?: (d: Draft, state: "accepted" | "discarded") => void;
+  log?: { open: boolean; onToggle: () => void; panel: ReactNode; status?: "processing" | "failed" };
+  corner?: boolean;
 }) {
   const reduced = !!useReducedMotion();
   const surfaceRef = useRef<HTMLDivElement>(null);
@@ -749,12 +754,14 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
   const phone = variant === "P";
   const cx = cxProp ?? (phone ? w / 2 : SIDEBAR + (w - SIDEBAR) / 2);
   const ph = phone ? 44 : 40, micW = ph, bottom = phone ? 30 : 24;
-  const corner = variant === "B2" && !centred, docked = variant === "B2";
+  const corner = (variant === "B2" && !centred) || !!cornerProp, docked = variant === "B2";
   const ap = force.approach ?? approach, hv = force.hover ?? hover, pr = force.pressed ?? pressed, fc = force.focus ?? focus;
   void ap;
   const voiceSheet = phone && !s.open && s.rec != null;
-  // The mic is a segment inside the pill, so the closed surface is label + mic.
-  const closedW = pillW + micW;
+  // The mic is a segment inside the pill, so the closed surface is (log +) label + mic. The log segment shows at rest only.
+  const logOn = !!log && !(!s.open && s.rec != null && !phone) && !s.drag;
+  const logW = logOn ? 36 : 0;
+  const closedW = pillW + micW + logW;
   const closedLeft = corner ? w - 20 - closedW : cx - closedW / 2;
   const pillBottom = bottom;
   const pillCx = closedLeft + closedW / 2;
@@ -909,6 +916,26 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
         )}
       </AnimatePresence>
 
+      {/* Dump log: tier 3, grows up out of the pill's log segment and sinks back into it */}
+      {log && (() => {
+        const lw = Math.min(360, w - 16), right = w - (closedLeft + closedW), lb = pillBottom + ph + 10;
+        const lh = Math.min(480, h - lb - (phone ? 56 : 12));
+        return (
+          <div className="ps-log-slot" style={{ right, bottom: lb, width: lw, height: lh, pointerEvents: log.open && !s.open ? undefined : "none" }}>
+            <AnimatePresence>
+              {log.open && !s.open && (
+                <motion.div key="log" className="ps-log" style={{ transformOrigin: `${closedLeft + 18 - (closedLeft + closedW - lw)}px calc(100% + ${ph / 2 + 10}px)` }}
+                  initial={{ opacity: 0, scale: reduced ? 1 : 0.6, y: reduced ? 0 : 12 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: reduced ? 1 : 0.6, y: reduced ? 0 : 10, transition: reduced ? { duration: 0 } : CLOSE_T }}
+                  transition={reduced ? { duration: 0 } : { ...OPEN_T, opacity: { duration: 0.16 } }}>
+                  {log.panel}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        );
+      })()}
+
       {/* Toast: tier 6, rises from the pill and sinks back into it */}
       <div className="ps-toast-slot" style={{ left: Math.min(pillCx - 200, w - 412), bottom: pillBottom + ph + 10, justifyContent: corner ? "flex-end" : "center" }}>
         <AnimatePresence>
@@ -959,7 +986,13 @@ export function DumpOrAsk({ variant = "B2", s, api, w, h, cx: cxProp, centred, f
         {s.drag && <div className="ps-dropcatch" />}
         <AnimatePresence initial={false}>
           {!s.open && !voiceSheet && (
-            <motion.div key="pill" className="ps-pill-layer" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: reduced ? 0 : 0.14, duration: 0.18 } }} exit={{ opacity: 0, transition: { duration: 0.08 } }}>
+            <motion.div key="pill" className="ps-pill-layer" data-log={logOn ? "" : undefined} initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: reduced ? 0 : 0.14, duration: 0.18 } }} exit={{ opacity: 0, transition: { duration: 0.08 } }}>
+              {logOn && (
+                <button type="button" className="ps-logseg" data-log-toggle="" aria-expanded={log!.open} aria-label="Dump log (⌘⇧L)" title="Dump log (⌘⇧L)" onClick={log!.onToggle}>
+                  <span className="ps-logseg-in"><I n="history" size={16} weight={log!.open ? "fill" : "regular"} /></span>
+                  {log!.status && <span className="ps-logseg-dot" data-failed={log!.status === "failed" ? "" : undefined} aria-hidden />}
+                </button>
+              )}
               <PillRows s={s} api={api} recClosed={recClosed} phone={phone} screen={screen} icon={primaryIcon} region={primary?.region ?? "main"} onWidth={setPillW} hitRef={hitRef} time={force.time}
                 onHover={setHover} onPress={setPressed} onFocus={setFocus} />
               <button type="button" className="ps-micseg" data-rec={recClosed ? "" : undefined} data-phone={phone ? "" : undefined} data-target="mic" style={{ width: micW }}

@@ -491,7 +491,7 @@ export function DevelopPillJig() {
   const picks = { get: (g: string) => decisions[g]?.choice, set: (g: string, k: string) => update(g, { choice: decisions[g]?.choice === k ? undefined : k }) };
   return (
     <Picks.Provider value={picks}>
-    <JigPage title="Dump or ask"
+    <JigPage status={<>Reference for details. The pill in <a href="/app">/app</a> is canonical; this page keeps its states, details and walkthrough. Section 5 (phone pill bottom centre) is superseded by <a href="/app#phone">/app#phone</a> (bottom right).</>} title="Dump or ask"
       intro={<p>The pill, everything it does while closed, and how it opens. Every frame is live; Esc, click-away and ⌘J work in whichever frame the pointer is in.</p>}>
       <nav className="hm-toc">
         <a href="#states">States</a><a href="#open">Open</a><a href="#revisions">Revisions</a><a href="#details">Details</a><a href="#walk">Walkthrough</a><a href="#phone">Phone</a>

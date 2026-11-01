@@ -9,7 +9,7 @@ export function HomesJig() {
   const picks = (decisions.homes?.picks ?? []) as string[];
   const toggle = (k: string) => update("homes", { picks: picks.includes(k) ? picks.filter(p => p !== k) : [...picks, k] });
   return (
-    <JigPage title="Homepages"
+    <JigPage status={<>Superseded by <a href="/app">/app</a>: Current became Theme sections, Briefing became a view, Columns and Atlas were developed; Deck and Document are deferred.</>} title="Homepages"
       intro={<p>The current design and the five shapes picked for development, all with the same data and look so only structure differs. Each one is live: click, hover, select.</p>}
       aside={<nav className="hm-toc">{HOMES.map((h, i) => <a key={h.key} href={`#home-${h.key}`} data-picked={picks.includes(h.key) ? "" : undefined}>{i}. {h.name}</a>)}</nav>}>
       {HOMES.map((h, i) => <Home key={h.key} i={i} h={h} picked={picks.includes(h.key)} onPick={() => toggle(h.key)} />)}

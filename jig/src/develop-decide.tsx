@@ -179,6 +179,7 @@ export function DevelopDecideJig() {
       <header className="dc-header">
         <a href="/">Jigs</a>
         <h1>Decide</h1>
+        <p className="jig-standing">Reference only: the record of picks (design/decisions.json). <a href="/app">/app</a> applies them; <a href="/reference">/reference</a> indexes them.</p>
         <p>Everything still open before the build spec. Each has my recommendation; pick or override, add a note.</p>
       </header>
 

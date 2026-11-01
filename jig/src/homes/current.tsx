@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { THEMES, theoriesIn, PROTOTYPES, type Theory } from "./data";
 import { TheoryCard, Pill, Icon, IconButton } from "./atoms";
 import { useEdit } from "./edits";
+import { tripFor } from "./trips";
 import { ThemeName, type ObjKind, type OnOpen } from "./panes";
 
 /** A host (the app shell) can open themes and theories from here into its own pane. */
@@ -10,7 +11,10 @@ export type CurrentHost = { open?: { kind: ObjKind; id: string }; onOpen: OnOpen
 /** A theory card that shows the live (edited) claim and confidence. */
 function LiveCard({ t, hot, onEnter, onLeave, onClick }: { t: Theory; hot?: boolean; onEnter: () => void; onLeave: () => void; onClick?: () => void }) {
   const [e] = useEdit("theory", t.id);
-  return <TheoryCard t={{ ...t, claim: e.claim, confidence: e.confidence }} hot={hot} onEnter={onEnter} onLeave={onLeave} onClick={onClick} />;
+  // Challenged while a tripwire hit is still undecided.
+  const hits = tripFor(t.id).hits;
+  const challenge = hits.length ? hits.some(h => !e.decisions[h.id]) : t.challenge;
+  return <TheoryCard t={{ ...t, claim: e.claim, confidence: e.confidence, challenge }} hot={hot} onEnter={onEnter} onLeave={onLeave} onClick={onClick} />;
 }
 
 /** Baseline: the space-and-motion boards. Docked theme index, theme sections, floating pill. */

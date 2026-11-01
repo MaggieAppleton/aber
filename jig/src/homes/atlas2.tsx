@@ -473,8 +473,8 @@ function useEscape(back: () => void) {
  * Atlas side-pane variant for a host (the app shell) that draws the object pane itself.
  * The map fills the width it is given and centres on the open object's territory.
  */
-export function AtlasHosted({ open, onOpen, width, height, mapStyle = "circles", signals = "scatter", onSignal, selSig }: {
-  open?: { kind: ObjKind; id: string }; onOpen: OnOpen; width: number; height: number; mapStyle?: MapStyle;
+export function AtlasHosted({ open, onOpen, width, height, mapStyle = "circles", treatment, signals = "scatter", onSignal, selSig }: {
+  open?: { kind: ObjKind; id: string }; onOpen: OnOpen; width: number; height: number; mapStyle?: MapStyle; treatment?: Treatment;
   /** How signals show; "scatter" is the current look. With no onSignal, a signal opens the theory (or theme) it belongs to. */
   signals?: SignalEncoding; onSignal?: OnSignal; selSig?: string;
 }) {
@@ -483,7 +483,7 @@ export function AtlasHosted({ open, onOpen, width, height, mapStyle = "circles",
   return (
     <MotionConfig reducedMotion="user">
       <div className="ap a2" data-variant="side" data-hosted="" style={{ width, height }}>
-        <AtlasMap mapStyle={mapStyle} vw={width} vh={height} focus={themeId} selTheme={themeId} selPin={open?.kind === "theory" ? open.id : undefined}
+        <AtlasMap mapStyle={mapStyle} treatment={treatment} vw={width} vh={height} focus={themeId} selTheme={themeId} selPin={open?.kind === "theory" ? open.id : undefined}
           onRegion={id => onOpen("theme", id)} onPin={id => onOpen("theory", id)}
           signals={signals} selSig={selSig} onSignal={onSignal ?? ((_id, th, themeId) => onOpen(th ? "theory" : "theme", th ?? themeId))} />
       </div>

@@ -1,12 +1,14 @@
 import type { ReactNode } from "react";
 import type { Decision as Stored } from "./store";
 
-export function JigPage({ title, intro, children, aside }: { title: string; intro?: ReactNode; children: ReactNode; aside?: ReactNode }) {
+/** `status`: a quiet one-line note under the title saying whether the page is canonical, superseded or reference only. */
+export function JigPage({ title, intro, children, aside, status }: { title: string; intro?: ReactNode; children: ReactNode; aside?: ReactNode; status?: ReactNode }) {
   return (
     <main className="jig">
       <header className="jig-header">
         <a href="/">Jigs</a>
         <h1>{title}</h1>
+        {status && <p className="jig-standing">{status}</p>}
         {intro && <div className="jig-intro">{intro}</div>}
         {aside}
       </header>

@@ -121,7 +121,7 @@ function Table({ head, rows }: { head: string[]; rows: string[][] }) {
 
 export function DevelopDetailsJig() {
   return (
-    <JigPage title="Pane details" intro={<p>Two details of the theory pane, each tried five ways inside a working slice of it: what would change my mind, and how confidence has moved.</p>}>
+    <JigPage status={<>Reference for details. Chosen: tripwire C (<a href="#trip-C">#trip-C</a>) and confidence history A (<a href="#hist-A">#hist-A</a>), both live in the <a href="/app">/app</a> pane. Other variants superseded.</>} title="Pane details" intro={<p>Two details of the theory pane, each tried five ways inside a working slice of it: what would change my mind, and how confidence has moved.</p>}>
       <div className="dt-page">
         <section className="dt-section">
           <h2>Tripwire</h2>

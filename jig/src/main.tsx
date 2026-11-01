@@ -12,12 +12,14 @@ import { DevelopTimelineJig } from "./develop-timeline";
 import { DevelopDetailsJig } from "./develop-details";
 import { DevelopIconsJig } from "./develop-icons";
 import { DevelopDecideJig } from "./develop-decide";
+import { ReferenceJig } from "./reference";
 import "./jig.css";
 import "./minis/wf.css";
 
 const JIGS = {
+  reference: { title: "Reference (start here)", view: ReferenceJig },
+  app: { title: "App (canonical)", view: DevelopAppJig },
   decide: { title: "Decide", view: DevelopDecideJig },
-  app: { title: "App", view: DevelopAppJig },
   details: { title: "Pane details", view: DevelopDetailsJig },
   icons: { title: "Icons", view: DevelopIconsJig },
   timeline: { title: "Timeline", view: DevelopTimelineJig },

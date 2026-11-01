@@ -4,9 +4,9 @@ import { prototypesFor } from "./data";
 
 import {
   MagnifyingGlass, Plus, Minus, Microphone, PencilRuler, TrayArrowDown, Check, X, CaretRight, CaretLeft, CaretDown, Pulse, Link,
-  Waveform, TextAlignLeft, Sun, Target, Compass, MapTrifold, Table, Clock, ArrowUp, ArrowDown, SidebarSimple, Signpost,
+  Waveform, TextAlignLeft, Sun, Target, Binoculars, MapTrifold, Table, Clock, ArrowUp, ArrowDown, SidebarSimple, Signpost,
   ArrowsLeftRight, Paperclip, Stop, Play, Pause, ArrowCounterClockwise, ArrowClockwise, Monitor, Image,
-  PencilSimple, Globe, Question, PushPin, QuestionMark, Crosshair, Rows, Columns, ChartScatter, ArrowsOutSimple, ArrowsInSimple, TreeStructure, ArrowRight, ArrowLeft, ArrowElbowDownRight, ArrowElbowUpRight, type Icon as PhosphorIcon, type IconWeight,
+  PencilSimple, Globe, Question, PushPin, QuestionMark, Crosshair, Rows, Columns, ChartScatter, ArrowsOutSimple, ArrowsInSimple, TreeStructure, ArrowRight, ArrowLeft, ArrowElbowDownRight, ArrowElbowUpRight, ClockCounterClockwise, Trash, ArrowsMerge, ArrowsSplit, Newspaper, type Icon as PhosphorIcon, type IconWeight,
 } from "@phosphor-icons/react";
 
 /** One glyph per object type. Swap an object's icon here and every jig follows.
@@ -14,7 +14,7 @@ import {
 export const OBJECT_ICONS = {
   dump: { icon: TrayArrowDown, nudge: 0 },
   signal: { icon: Pulse, nudge: 0 },
-  theme: { icon: Compass, nudge: 0 },
+  theme: { icon: Binoculars, nudge: 0 },
   theory: { icon: Target, nudge: 0 },
   prototype: { icon: PencilRuler, nudge: 0 },
 } satisfies Record<string, { icon: PhosphorIcon; nudge: number }>;
@@ -68,7 +68,12 @@ const ICONS = {
   arrowLeft: ArrowLeft,
   elbowDown: ArrowElbowDownRight,
   elbowUp: ArrowElbowUpRight,
+  history: ClockCounterClockwise,
+  trash: Trash,
+  merge: ArrowsMerge,
+  split: ArrowsSplit,
   // surfaces
+  briefing: Newspaper,
   sections: Rows,
   columns: Columns,
   timeline: ChartScatter,

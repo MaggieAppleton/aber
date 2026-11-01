@@ -11,7 +11,7 @@ const ROWS: [string, string][] = [
 
 export function DevelopColumnsJig() {
   return (
-    <JigPage title="Columns, developed"
+    <JigPage status={<>Exploration, superseded by <a href="/app">/app</a> (⌘2, rails).</>} title="Columns, developed"
       intro={<>
         <p>Stocks open into space; flows unfold in place. Dumps and signals start folded. Try: open a theory, follow an evidence link, unfold a signal, then click its dump chip.</p>
         <table className="hm-where" style={{ marginTop: 8 }}><tbody>{ROWS.map(([a, b]) => <tr key={a}><th style={{ width: 220 }}>{a}</th><td>{b}</td></tr>)}</tbody></table>

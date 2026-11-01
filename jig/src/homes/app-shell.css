@@ -72,3 +72,14 @@
 .as-pane-scroll > * { min-height: calc(100% + 1px); }
 .as-view > .ap { box-shadow: none; border-radius: 0; }
 .as-switch { left: 20px; }
+
+/* Phone: Briefing, the pane over it, the pill bottom-right */
+.aph-row { display: flex; gap: 48px; padding: 16px 10px 24px; flex-wrap: wrap; }
+.aph { position: relative; overflow: hidden; background: var(--ap-bg); font-family: "Inter", sans-serif; }
+.aph > .br { position: absolute; inset: 0; border-radius: 0; box-shadow: none; }
+.aph-pane { position: absolute; inset: 0; z-index: 3; background: var(--ap-surface); }
+.aph-bar { position: absolute; top: 52px; left: 10px; right: 10px; z-index: 2; display: flex; }
+.aph-scroll { position: absolute; top: 84px; left: 0; right: 0; bottom: 0; }
+.aph .pn-doc { padding: 8px 20px 140px; max-width: none; }
+.aph .pn-grid { grid-template-columns: 1fr; }
+.aph .ps-log { border-radius: 20px; }

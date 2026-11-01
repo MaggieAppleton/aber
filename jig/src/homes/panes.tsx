@@ -104,10 +104,13 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
   const { inline, unfolded, toggle } = useUnfold(nav);
   const { onOpen } = nav;
   const conf = edit.confidence ?? 0;
-  const ev = signalsFor(id);
+  const trip = tripFor(id);
+  // A signal the tripwire matched shows only under the tripwire while it is pending (or once dismissed);
+  // accepting it makes it an ordinary piece of undermining evidence.
+  const ev = signalsFor(id).filter(s => !trip.hits.some(h => h.id === s.id) || edit.decisions[s.id] === "accepted");
+  const accepted = (sid: string) => trip.hits.some(h => h.id === sid) && edit.decisions[sid] === "accepted";
   const leadsTo = THEORIES.filter(x => x.follows.includes(id));
   const protos = prototypesFor(id);
-  const trip = tripFor(id);
   const tripped = tripState(edit.tripwire, trip.hits, edit.decisions) === "tripped";
   return (
     <div className="pn-doc">
@@ -146,7 +149,7 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
               </div>
               {items.map(s => (
                 <SignalRow key={s.id} s={s} context={id} open={inline && unfolded === s.id} current={!inline && unfolded === s.id}
-                  onToggle={() => toggle(s.id)} onOpen={onOpen} suggested={s.evidence.find(x => x.theory === id)!.suggested} />
+                  onToggle={() => toggle(s.id)} onOpen={onOpen} suggested={!accepted(s.id) && s.evidence.find(x => x.theory === id)!.suggested} />
               ))}
             </div>
           );
@@ -279,13 +282,11 @@ function Reveal({ show, children }: { show: boolean; children: ReactNode }) {
   );
 }
 
-/* What would change my mind: the shared sentence tripwire, its words and decisions kept in the edits store. */
-function TheoryTripwire({ id }: { id: string }) {
+/** Decide a tripwire hit: accepting lowers confidence by one step and logs it; undoing restores it. Shared by the
+ *  theory pane's tripwire and the Briefing's challenges, so a decision made in one shows in the other. */
+export function useTripDecide(id: string) {
   const [edit, set] = useEdit("theory", id);
   const trip = tripFor(id);
-  // While the empty blank is being typed into, keep its layout; it becomes a sentence once it loses focus.
-  const [typing, setTyping] = useState(false);
-  const state = typing ? "empty" : tripState(edit.tripwire, trip.hits, edit.decisions);
   const conf = edit.confidence ?? 3;
   const decide = (hid: string, d?: Decision) => {
     const prev = edit.decisions[hid], hit = trip.hits.find(h => h.id === hid)!;
@@ -298,6 +299,15 @@ function TheoryTripwire({ id }: { id: string }) {
       set({ decisions, confidence: Math.min(5, conf + 1), log: edit.log.filter(x => x.id !== `acc-${hid}`) });
     } else set({ decisions });
   };
+  return { edit, set, trip, conf, decide };
+}
+
+/* What would change my mind: the shared sentence tripwire, its words and decisions kept in the edits store. */
+function TheoryTripwire({ id }: { id: string }) {
+  const { edit, set, trip, conf, decide } = useTripDecide(id);
+  // While the empty blank is being typed into, keep its layout; it becomes a sentence once it loses focus.
+  const [typing, setTyping] = useState(false);
+  const state = typing ? "empty" : tripState(edit.tripwire, trip.hits, edit.decisions);
   return <Tripwire state={state} text={edit.tripwire} setText={tripwire => set({ tripwire })} begin={() => setTyping(true)} commit={() => setTyping(false)}
     hits={trip.hits} decisions={edit.decisions} decide={decide} conf={conf} date={trip.date} />;
 }

@@ -61,7 +61,7 @@ function Direction({ id, title, line, children, pickKey = KEY, start = "now" }: 
 export function DevelopTimelineJig() {
   install();
   return (
-    <JigPage title="Timeline"
+    <JigPage status={<>Exploration. Field 2 (Morph, <a href="#chain-morph">#chain-morph</a>) is canonical, hosted in <a href="/app">/app</a> (⌘4). River is dropped (d-river); the other variants are superseded.</>} title="Timeline"
       intro={<>
         <p>Three structures for seeing what I believe will happen when, how sure I am, what rests on what, and where theories compete; each switches between 15 theories and 60 to test scale.</p>
         <table className="hm-where t2p-table" style={{ marginTop: 8 }}>
@@ -75,7 +75,7 @@ export function DevelopTimelineJig() {
       <Direction id="lanes" title="B. Lanes" line="Each theme as a lane through time. Fold the lanes you are not thinking about.">
         {scale => <Lanes key={scale} scale={scale} />}
       </Direction>
-      <Direction id="river" title="C. River" line="Time runs down from now. Rivals sit beside each other; a chain is drawn in the margin when I pick a theory.">
+      <Direction id="river" title="C. River (dropped)" line="Time runs down from now. Rivals sit beside each other; a chain is drawn in the margin when I pick a theory.">
         {scale => <River key={scale} scale={scale} />}
       </Direction>
       <section className="hm" id="chains">
@@ -89,19 +89,19 @@ export function DevelopTimelineJig() {
       <Direction id="chain-hop" pickKey="timeline-chain" start="year1" title="Field 1. One hop at a time" line="Direct causes and consequences only, labelled on their own dots. A count opens the next level; Esc closes the last one.">
         {scale => <FieldChains key={scale} scale={scale} variant="hop" />}
       </Direction>
-      <Direction id="chain-morph" pickKey="timeline-chain" start="year1" title="Field 2. Morph into a chain" line="One hop at a time, plus Follow chain: the field rearranges into columns by depth, and back on Esc.">
+      <Direction id="chain-morph" pickKey="timeline-chain" start="year1" title="Field 2. Morph into a chain (canonical, in /app)" line="One hop at a time, plus Follow chain: the field rearranges into columns by depth, and back on Esc.">
         {scale => <FieldChains key={scale} scale={scale} variant="morph" />}
       </Direction>
       <Direction id="chain-bundle" pickKey="timeline-chain" start="year1" title="Field 3. Bundle and summarise" line="Direct links only, sharing a trunk along the row lanes. Anything further is a count on the theory it runs through.">
         {scale => <FieldChains key={scale} scale={scale} variant="bundle" />}
       </Direction>
-      <Direction id="chain-r-outline" pickKey="timeline-chain-river" start="year1" title="River 1. One hop, as an outline" line="Direct causes above, consequences nested below, in time order. A count opens the next level under its row; Esc closes the last one.">
+      <Direction id="chain-r-outline" pickKey="timeline-chain-river" start="year1" title="River 1. One hop, as an outline (dropped)" line="Direct causes above, consequences nested below, in time order. A count opens the next level under its row; Esc closes the last one.">
         {scale => <RiverChains key={scale} scale={scale} variant="outline" />}
       </Direction>
-      <Direction id="chain-r-morph" pickKey="timeline-chain-river" start="year1" title="River 2. Morph into a chain" line="The outline, plus Follow chain: the rows rearrange into columns by depth, and back on Esc.">
+      <Direction id="chain-r-morph" pickKey="timeline-chain-river" start="year1" title="River 2. Morph into a chain (dropped)" line="The outline, plus Follow chain: the rows rearrange into columns by depth, and back on Esc.">
         {scale => <RiverChains key={scale} scale={scale} variant="morph" />}
       </Direction>
-      <Direction id="chain-r-trunk" pickKey="timeline-chain-river" start="year1" title="River 3. One trunk" line="Only direct neighbours stay in the river, joined by a single trunk in the margin. Anything further is a count on the row it runs through.">
+      <Direction id="chain-r-trunk" pickKey="timeline-chain-river" start="year1" title="River 3. One trunk (dropped)" line="Only direct neighbours stay in the river, joined by a single trunk in the margin. Anything further is a count on the row it runs through.">
         {scale => <RiverChains key={scale} scale={scale} variant="trunk" />}
       </Direction>
       <section className="hm" id="changed">
