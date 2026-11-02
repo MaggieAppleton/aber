@@ -36,6 +36,8 @@ const JIGS = {
   boards: { title: "Space and motion boards", view: BoardsJig },
 };
 
+const LOCAL = ["localhost", "127.0.0.1", "::1", "[::1]"].includes(location.hostname);
+
 function App() {
   const id = location.pathname.replace(/^\/|\/$/g, "") as keyof typeof JIGS;
   const jig = JIGS[id];
@@ -49,8 +51,8 @@ function App() {
           </nav>
         </main>
       )}
-      {/* Hidden on the talk deck unless ?feedback is in the URL, so it never shows while presenting. */}
-      {(id !== "deck" || new URLSearchParams(location.search).has("feedback")) && <Agentation appName={`Aber jig: ${jig?.title ?? "index"}`} />}
+      {/* Only on a local machine, and hidden on the talk deck unless ?feedback is in the URL. */}
+      {LOCAL && (id !== "deck" || new URLSearchParams(location.search).has("feedback")) && <Agentation appName={`Aber jig: ${jig?.title ?? "index"}`} />}
     </>
   );
 }
