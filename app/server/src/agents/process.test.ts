@@ -12,7 +12,7 @@ const person = { kind: 'person' as const, id: 'maggie' };
 beforeEach(() => {
   process.env.AGENT_MODE = 'fake'; process.env.DAILY_SPEND_CAP_USD = '5';
   db = createDatabase(); migrate(db); tools = createTools(db);
-  db.prepare('INSERT INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', new Date().toISOString());
+  db.prepare('INSERT OR IGNORE INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', new Date().toISOString());
   tools.call('writeTheme', { name: 'Cost of intelligence' }, person);
 });
 afterEach(() => db.close());
@@ -94,7 +94,7 @@ it('records a bounded-input failure for an oversized article without silently tr
   expect(db.prepare('SELECT COUNT(*) n FROM signals').get()).toEqual({ n: 0 });
 });
 it('reproduces the live provider’s twenty-result multi-read pattern without a false input limit', async () => {
-  seed(db);
+  db.close(); db = createDatabase(); seed(db); tools = createTools(db);
   const dump = capture('A small studio reports local coding models complete routine refactors without a hosted model. Senior engineers spend more time reviewing changes than writing code.');
   let providerBytes = 0;
   const result = await processDump(db, tools, dump.id, { model: scriptedModel([

@@ -7,7 +7,7 @@ import { enqueue } from './queue.js';
 
 it('settles a retried child job to done without rerunning the completed parent', async () => {
   const db = createDatabase(); migrate(db);
-  db.prepare('INSERT INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', new Date().toISOString());
+  db.prepare('INSERT OR IGNORE INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', new Date().toISOString());
   const tools = createTools(db);
   const dump = tools.call('captureDump', { text: 'A child-job retry fixture' }, { kind: 'person', id: 'maggie' });
   db.prepare("UPDATE jobs SET status='done' WHERE kind='process_dump'").run();

@@ -25,7 +25,7 @@ beforeEach(() => {
   vi.stubEnv('OPENAI_API_KEY', '');
   vi.stubEnv('ANTHROPIC_API_KEY', '');
   db = createDatabase(); migrate(db); tools = createTools(db);
-  db.prepare('INSERT INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', new Date().toISOString());
+  db.prepare('INSERT OR IGNORE INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', new Date().toISOString());
 });
 afterEach(() => { db.close(); vi.restoreAllMocks(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
 

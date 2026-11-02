@@ -6,7 +6,7 @@ it('finds all five material kinds including dump text and transcripts, without l
   const db = createDatabase(); migrate(db); const tools = createTools(db);
   const person = { kind: 'person' as const, id: 'maggie' };
   try {
-    for (const id of ['maggie', 'alice']) db.prepare('INSERT INTO people(id,name,created_at) VALUES(?,?,?)').run(id, id, new Date().toISOString());
+    for (const id of ['maggie', 'alice']) db.prepare('INSERT OR IGNORE INTO people(id,name,created_at) VALUES(?,?,?)').run(id, id, new Date().toISOString());
     const theme = tools.call('writeTheme', { name: 'Quartz theme' }, person);
     tools.call('retireTheme', { id: theme.id, reason: 'superseded' }, person);
     const theory = tools.call('writeTheory', { claim: 'Quartz theory' }, person);

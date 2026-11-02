@@ -7,7 +7,7 @@ let tools: ReturnType<typeof createTools>;
 const person = { kind: 'person' as const, id: 'maggie' };
 beforeEach(() => {
   db = createDatabase(); migrate(db); tools = createTools(db);
-  db.prepare('INSERT INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', new Date().toISOString());
+  db.prepare('INSERT OR IGNORE INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', new Date().toISOString());
 });
 afterEach(() => db.close());
 
@@ -54,7 +54,7 @@ it('keeps distinct commands and unkeyed reaffirmations as separate deliberate st
 
 it('scopes a command identity to its person, owner and theory', () => {
   const alice = { kind: 'person' as const, id: 'alice' };
-  db.prepare('INSERT INTO people(id,name,created_at,owner_id) VALUES(?,?,?,?)').run('alice', 'Alice', new Date().toISOString(), 'alice');
+  db.prepare('INSERT OR IGNORE INTO people(id,name,created_at,owner_id) VALUES(?,?,?,?)').run('alice', 'Alice', new Date().toISOString(), 'alice');
   const first = tools.call('writeTheory', { claim: 'First theory' }, person);
   const second = tools.call('writeTheory', { claim: 'Second theory' }, person);
   const other = tools.call('writeTheory', { claim: 'Another owner theory' }, alice);

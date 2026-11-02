@@ -13,7 +13,7 @@ const signal = (dumpId: string, gist: string, url: string) => tools.call('create
 const read = (id: string) => getObject(db, 'signal', id)!;
 beforeEach(() => {
   db = createDatabase(); migrate(db); tools = createTools(db);
-  db.prepare("INSERT INTO people(id,name,created_at) VALUES('maggie','Maggie',?)").run(new Date().toISOString());
+  db.prepare("INSERT OR IGNORE INTO people(id,name,created_at) VALUES('maggie','Maggie',?)").run(new Date().toISOString());
   for (const [id, job] of [['review-process', 'process_dump'], ['review-evidence', 'link_evidence'], ['review-other', 'process_dump']]) {
     db.prepare('INSERT INTO agent_runs(id,job,provider,model,prompt_version,status,started_at) VALUES(?,?,?,?,?,?,?)')
       .run(id, job, 'fake', 'fake', 'v1', 'running', new Date().toISOString());

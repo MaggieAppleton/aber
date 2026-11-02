@@ -6,7 +6,7 @@ import { startWorker, recoverStaleJobs } from './runner.js';
 it('recovers a crashed lock even when the app restarted before it became stale', async () => {
   vi.useFakeTimers();
   const db = createDatabase(); migrate(db);
-  db.prepare('INSERT INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', new Date().toISOString());
+  db.prepare('INSERT OR IGNORE INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', new Date().toISOString());
   const tools = createTools(db);
   const dump = tools.call('captureDump', { text: 'A quick restart fixture' }, { kind: 'person', id: 'maggie' });
   let now = new Date();
@@ -25,7 +25,7 @@ it('recovers a crashed lock even when the app restarted before it became stale',
 
 it('shows a terminal crashed attempt as failed in the dump log', () => {
   const db = createDatabase(); migrate(db);
-  db.prepare('INSERT INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', new Date().toISOString());
+  db.prepare('INSERT OR IGNORE INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', new Date().toISOString());
   const tools = createTools(db);
   const dump = tools.call('captureDump', { text: 'A third-attempt crash fixture' }, { kind: 'person', id: 'maggie' });
   db.prepare("UPDATE dumps SET status='processing'").run();

@@ -10,7 +10,7 @@ const databases: Database[] = [];
 afterEach(() => { for (const db of databases.splice(0)) db.close(); vi.unstubAllGlobals(); });
 function setup(path?: string) {
   const db = createDatabase(path); databases.push(db); migrate(db);
-  db.prepare('INSERT INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', '2026-11-03');
+  db.prepare('INSERT OR IGNORE INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', '2026-11-03');
   const tools = createTools(db);
   const capture = (text: string) => {
     const dump = tools.call('captureDump', { text }, { kind: 'person', id: 'maggie' }) as { id: string };

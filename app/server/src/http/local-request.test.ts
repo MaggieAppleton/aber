@@ -7,7 +7,7 @@ let db: Database;
 let app: ReturnType<typeof createApp>;
 beforeEach(() => {
   db = createDatabase(); migrate(db);
-  db.prepare('INSERT INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Synthetic reviewer', new Date().toISOString());
+  db.prepare('INSERT OR IGNORE INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Synthetic reviewer', new Date().toISOString());
   const tools = createTools(db);
   tools.call('captureDump', { text: 'Private capture sentinel' }, { kind: 'person', id: 'maggie' });
   app = createApp(db, tools);

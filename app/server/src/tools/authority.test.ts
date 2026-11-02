@@ -7,7 +7,7 @@ const agent = { kind: 'agent', job: 'process_dump', runId: 'run1' } as const;
 let db: Database; let tools: ReturnType<typeof createTools>;
 beforeEach(() => {
  db = createDatabase(); migrate(db); tools = createTools(db);
- db.prepare("INSERT INTO people(id,name,created_at) VALUES('maggie','Maggie',?)").run(new Date().toISOString());
+ db.prepare("INSERT OR IGNORE INTO people(id,name,created_at) VALUES('maggie','Maggie',?)").run(new Date().toISOString());
  for (const id of ['run1','run2']) db.prepare("INSERT INTO agent_runs(id,job,provider,model,prompt_version,status,started_at) VALUES(?,'process_dump','fake','fake','v1','running',?)").run(id,new Date().toISOString());
 });
 afterEach(() => db.close());

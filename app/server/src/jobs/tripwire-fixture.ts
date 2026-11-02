@@ -7,7 +7,7 @@ export function tripwireFixture() {
   process.env.AGENT_MODE = 'fake'; process.env.DAILY_SPEND_CAP_USD = '5';
   const db = createDatabase(); migrate(db); const tools = createTools(db); const now = new Date();
   const person = { kind: 'person' as const, id: 'maggie' };
-  db.prepare('INSERT INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', now.toISOString());
+  db.prepare('INSERT OR IGNORE INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', now.toISOString());
   const theory = tools.call('writeTheory', { claim: 'Agents keep project memory across months' }, person);
   const addSignal = (date: Date, gist = 'A new assistant memory feature was withdrawn after privacy complaints.') => {
     const id = ulid(); const at = date.toISOString();

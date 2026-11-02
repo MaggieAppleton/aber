@@ -12,6 +12,8 @@ import { actorString } from './tools/authority.js';
 export function seed(db:Database):void {
  migrate(db);
  if(db.prepare("SELECT 1 FROM events WHERE id='seed-jig-world'").get())return;
+ // Example material only goes into an empty database, never on top of real captures.
+ if(db.prepare('SELECT 1 FROM dumps UNION ALL SELECT 1 FROM themes UNION ALL SELECT 1 FROM theories UNION ALL SELECT 1 FROM signals UNION ALL SELECT 1 FROM prototypes LIMIT 1').get())throw new Error('Refusing to seed example data into a database that already has real content. Use an empty ABER_DATA_DIR for example data.');
  db.transaction(()=>{
   const now=new Date().toISOString();
   const createdAt=(index:number)=>new Date(Date.parse(now)-1000+index).toISOString();

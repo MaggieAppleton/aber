@@ -271,7 +271,7 @@ it('propagates daily budget exhaustion before any model request', async () => {
 
 function setupMerge() {
   const tools = createTools(db);
-  db.prepare("INSERT INTO people(id,name,created_at) VALUES('maggie','Maggie',?)").run(new Date().toISOString());
+  db.prepare("INSERT OR IGNORE INTO people(id,name,created_at) VALUES('maggie','Maggie',?)").run(new Date().toISOString());
   db.prepare("INSERT INTO agent_runs(id,job,provider,model,prompt_version,status,started_at) VALUES('fixture-run','process_dump','fake','fake','v1','done',?)").run(new Date().toISOString());
   const actor = { kind: 'agent' as const, job: 'process_dump', runId: 'fixture-run' };
   const dump = tools.call('captureDump', { text: 'Atlas price announcement.' }, person);

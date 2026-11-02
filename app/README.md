@@ -16,7 +16,7 @@ npm run dev
 
 Open [Aber](http://127.0.0.1:5174). The API and background worker run on port 3000; the canonical jig remains on 5181. Port 5174 avoids another project already using 5173.
 
-The seed is fictional material from the design jigs. Seeding is idempotent and does not replace existing captures. `app/data/aber.db` and `app/data/media/` contain local data. Set `ABER_DATA_DIR` to use another directory.
+The seed is fictional material from the design jigs. It only goes into an empty database: reseeding an example database does nothing, and seeding a database that already holds real captures is refused. Without the seed, the app starts empty, which is how the deployed version runs. `app/data/aber.db` and `app/data/media/` contain local data. Set `ABER_DATA_DIR` to use another directory, for example one folder for example data and another for real use.
 
 `OPENAI_API_KEY` enables agents, transcription and embeddings. `ANTHROPIC_API_KEY` enables Claude alternatives and comparison evals. Models live in `server/src/agents/models.ts`. `AGENT_MODE=fake` runs deterministic scripted models; `live` uses providers. `DAILY_SPEND_CAP_USD` defaults to 5.
 
@@ -104,7 +104,7 @@ curl -sS http://127.0.0.1:3000/api/dumps \
 
 Capture returns a dump ID immediately. The background worker fetches links, transcribes audio and files signals; the Dump log shows progress and retry status. Reuse an idempotency key only for retries of the same capture. Media uploads may total up to 250 MB.
 
-The Apple Shortcut is later and optional. It needs reachable hosting and authentication; see [hosting guide step 6b](../docs/hosting-guide.md#6b-the-dump-shortcut). This build listens only on the laptop.
+The Apple Shortcut is later and optional. It needs reachable hosting and authentication; see [hosting guide step 8b](../docs/hosting-guide.md#8b-the-dump-shortcut). This build listens only on the laptop.
 
 See [verification results](../docs/verification.md) and [build decisions](../docs/build-notes.md). Three design critique rounds and a final screenshot recheck are retained in `reports/` at the repository root. TypeSafe screenshot export was approved, but its full review received an API context-limit error and returned no valid judgement. Details are in `reports/design-check/summary.md`; current UI corrections and verification are in `docs/ui-issues.md`.
 

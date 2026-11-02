@@ -15,7 +15,7 @@ let now: Date;
 beforeEach(() => {
   process.env.AGENT_MODE = 'fake'; process.env.DAILY_SPEND_CAP_USD = '5';
   db = createDatabase(); migrate(db); tools = createTools(db); now = new Date();
-  db.prepare('INSERT INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', now.toISOString());
+  db.prepare('INSERT OR IGNORE INTO people(id,name,created_at) VALUES(?,?,?)').run('maggie', 'Maggie', now.toISOString());
 });
 afterEach(() => db.close());
 const person = { kind: 'person' as const, id: 'maggie' };
