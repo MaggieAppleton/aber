@@ -12,7 +12,7 @@
 | [design/decisions.json](../design/decisions.json) | Every pick, with Maggie's notes | Record only; already folded into the model and this spec |
 | [agent-architecture-research.md](agent-architecture-research.md) | Why the agent stack is AI SDK 7 + an own SQLite queue, model prices, the per-job model plan | Decided 1 Nov 2026; section 5 here is the build version |
 | [reference/interface-grammar.md](reference/interface-grammar.md) | Maggie's design method | Use the review gate before calling a slice done |
-| [hosting-guide.md](hosting-guide.md) | Tailscale, Litestream, B2 and Shortcut steps | **Not used this round.** Deployment is in section 13, Later |
+| [hosting-guide.md](hosting-guide.md) | Coolify deployment, Tailscale, secrets, Litestream, B2 and Shortcut steps | **Not used this round.** Deployment is in section 13 and the guide (rewritten for Coolify on 2 Nov) |
 
 Run the jigs: `cd jig && bun install && bun run dev`, then open http://localhost:5181. `/reference` lists every canonical route and the constants that drive them.
 
@@ -463,7 +463,7 @@ curl -X POST http://127.0.0.1:3000/api/dumps -H 'Content-Type: application/json'
 curl -X POST http://127.0.0.1:3000/api/dumps -F from=shortcut -F file=@note.m4a
 ```
 
-The Apple Shortcut (hosting guide, step 6b) posts the same body. It only works when the phone can reach the laptop, which needs the server bound beyond localhost and some auth (section 13), so phone capture is later and optional.
+The Apple Shortcut (hosting guide, Step 8b) posts the same body. It only works when the phone can reach the laptop, which needs the server bound beyond localhost and some auth (section 13), so phone capture is later and optional.
 
 ### 4.8 Transcription
 
@@ -927,7 +927,7 @@ Each slice is a vertical cut that works end to end, ends with its Playwright spe
 | Acceptance criterion | Check |
 | --- | --- |
 | `app/README.md` shows the `curl` captures (text, links, an audio file) and they produce dumps that process like any other | `e2e/11-capture.spec.ts` runs the same requests |
-| `app/README.md` notes the Apple Shortcut as later and optional, linking hosting guide 6b | Review |
+| `app/README.md` notes the Apple Shortcut as later and optional, linking hosting guide 8b | Review |
 | At 390 × 844, `/` opens Briefing; theories open full-screen in the pane; no other view is reachable | `e2e/11-narrow.spec.ts` |
 | Tap targets are at least 40 × 40 px | e2e measures them |
 | `npm run backup` writes a consistent copy of the database and media to `backups/<date>/`; the copy opens and holds the latest dump | `scripts/backup.test.ts` |
@@ -1006,17 +1006,17 @@ Keep the jigs running beside it (`cd jig && bun run dev`, port 5181) to compare.
 
 ## 13. Later: deployment
 
-Out of scope this round. Kept here so nothing decided is lost. The eventual target is the **team Coolify server** (design model, Implementation notes), which makes Aber a work tool.
+Out of scope this round. Kept here so nothing decided is lost. The target is the **team Coolify server** (design model, Implementation notes), which makes Aber a work tool. The personal-server route was discarded on 2 Nov; the step-by-step version of this section, including where secrets live and how the deployed database starts empty, is the [hosting guide](hosting-guide.md).
 
 | Piece | Notes from the earlier plan |
 | --- | --- |
 | Containers | Multi-stage `Dockerfile` (build `web` with Vite; runtime `node:22-slim` or later with `ffmpeg`; one process on port 3000). `compose.yaml` with `app` (volume `./data:/app/data`, healthcheck `/healthz`), `litestream` and `media-backup` sidecars on the same volume |
-| Coolify | Builds from the Git repo. Don't attach a public domain. Bind to `127.0.0.1` or the internal network: Docker's published ports bypass host firewalls (hosting guide, 4b). Confirm with the server's owner that Compose with a persistent volume works, and how the server joins Tailscale |
+| Coolify | Builds from the Git repo. Don't attach a public domain. Bind to `127.0.0.1` or the internal network: Docker's published ports bypass host firewalls (hosting guide, Step 3). Confirm with the server's owner that Compose with a persistent volume works, and how the server joins Tailscale |
 | Work-tool implications | Data sits on work infrastructure under work policies; anyone with access to the host can read the volume. Nothing in Aber should be more private than work notes. Moving later is a database file and a media folder |
-| Network | Reachable only over Tailscale, never the public internet (hosting guide, steps 1, 3 and 4c) |
-| Auth | Web: visit `/login#<token>` once per device; the page posts the fragment to `POST /api/session`, which sets an `HttpOnly; Secure; SameSite=Strict` cookie signed with `ABER_SESSION_SECRET`. Capture: `Authorization: Bearer $ABER_CAPTURE_TOKEN`. Required on every route but `/healthz`, even on the tailnet |
-| Database backup | Litestream streams `data/aber.db` to a private Backblaze B2 bucket (hosting guide, step 5); quarterly restore drill (5c) |
+| Network | Reachable only over Tailscale, never the public internet (hosting guide, Steps 2 and 6) |
+| Auth | Web: visit `/login#<ABER_LOGIN_TOKEN>` once per device; the page posts the fragment to `POST /api/session`, which sets an `HttpOnly; Secure; SameSite=Strict` cookie signed with `ABER_SESSION_SECRET`. Capture: `Authorization: Bearer $ABER_CAPTURE_TOKEN`. Required on every route but `/healthz`, even on the tailnet |
+| Database backup | Litestream streams `data/aber.db` to a private Backblaze B2 bucket (hosting guide, Step 7), with a quarterly restore drill |
 | Media backup | `data/media/` to B2 hourly; `restic` rather than `rclone sync`, because a sync mirrors deletions (judgement, moderate) |
-| Phone | The Apple Shortcut posting to `/api/dumps` with the bearer token; Tailscale VPN On Demand for `*.ts.net` (hosting guide, step 6). Then the responsive Briefing and pane become reachable on the phone |
+| Phone | The Apple Shortcut posting to `/api/dumps` with the bearer token; Tailscale VPN On Demand for `*.ts.net` (hosting guide, Step 8). Then the responsive Briefing and pane become reachable on the phone |
 | Checks to write then | `docker compose up --build` smoke test against a MinIO stand-in for B2; a restore drill script; review that nothing listens publicly |
 

@@ -1,482 +1,258 @@
-# Aber — Hosting & Tailscale Guide
+# Aber — Hosting Guide (team Coolify server)
 
-Oct 31, 2026 · @Maggie Appleton
+2 Nov 2026 · @Maggie Appleton. Replaces the 31 Oct personal-server guide (DigitalOcean), which was discarded.
 
 ## Summary
 
-You'll rent a small server in a London data centre that runs the app around the clock. It's reachable **only** from your two MacBooks and your iPhone, through Tailscale. There's no public website, no domain to buy, and no login page facing the internet.
+Aber runs on the **team Coolify server** as a Docker Compose app. It's reachable **only** from your MacBook and iPhone, through Tailscale, and every request needs your token. There's no public domain, no public port and no login page facing the internet.
 
 ```mermaid
 flowchart LR
-  subgraph tailnet["Your tailnet: private to your three devices"]
-    mac1[Personal MacBook]
-    mac2[Work MacBook]
+  subgraph you["Your devices · Tailscale on"]
+    mac[MacBook]
     phone[iPhone + Shortcut]
-    subgraph server["aber-server (VPS, London) · no inbound ports open"]
-      serve["Serve<br/>tailnet HTTPS"] --> app["App<br/>in Docker"] --> db["Database<br/>SQLite file"]
-    end
-    mac1 --> serve
-    mac2 --> serve
-    phone --> serve
   end
-  app -->|API calls| ai["AI APIs<br/>Anthropic, OpenAI"]
-  db -->|Litestream| b2["Off-site backup<br/>Backblaze B2"]
+  subgraph server["Team Coolify server · no public port for Aber"]
+    serve["Tailscale Serve<br/>tailnet HTTPS"] --> app["Aber app<br/>Docker, token auth"] --> data["data/ volume<br/>SQLite + media"]
+    secrets["Coolify env vars<br/>API keys, tokens"] -.->|runtime| app
+  end
+  mac --> serve
+  phone --> serve
+  app -->|API calls| ai["OpenAI, Anthropic"]
+  data -->|Litestream, restic| b2["Backblaze B2<br/>private bucket"]
 ```
 
-Requests only travel inwards through your tailnet. The server makes outgoing calls to the AI APIs and copies the database to an off-site backup; nothing on the public internet can start a connection to it.
+Two locks, both required:
 
-**Recommended setup** (moderate confidence): DigitalOcean server in London, Tailscale for private access, Docker to run the app, Litestream copying the database to Backblaze B2. **About $13–14 a month** all in, before any VAT (breakdown under Costs). **Time:** an afternoon.
-
-**The steps:**
-
-1. Tailscale on your three devices
-2. Rent the server
-3. Put Tailscale on the server and close every public door
-4. Run the app and give it a private HTTPS address
-5. Backups
-6. iPhone capture
-
-Prices were checked on 31 October 2026. Several changed during 2026, so recheck before you sign up.
-
-## Where to put the app
-
-It needs a computer that's **always on**, so background agents can work overnight, and **always online**, so your phone can reach it from anywhere. Neither MacBook qualifies: laptops sleep and travel.
-
-| Option | Cost | Where | Good | Bad |
-| --- | --- | --- | --- | --- |
-| **DigitalOcean** Basic Droplet, 1 GiB RAM, 25 GiB disk ([pricing](https://www.digitalocean.com/pricing/droplets)) | $6/mo, plus 20% for weekly backups | London (LON1) is [available](https://docs.digitalocean.com/platform/regional-availability/) | Simple control panel, browser emergency console, one-click resize, in stock | Less RAM per pound than Hetzner; USD billing |
-| **Hetzner** CX23, 2 vCPU, 4 GB ([price changes](https://docs.hetzner.com/general/infrastructure-and-availability/price-adjustment/)) | €5.49/mo + €0.50 for an IPv4 address, ex-VAT | Germany or Finland | Most RAM for the money | **Listed as currently unavailable** on [Hetzner's page](https://www.hetzner.com/cloud/cost-optimized/); prices rose twice in 2026; new accounts [may need ID verification](https://docs.hetzner.com/general/security-and-identify/fraud-prevention-faq/) |
-| **Fly.io**, 512 MB machine + 1 GB volume ([pricing](https://fly.io/pricing)) | About $3.84/mo (my arithmetic from their rates) | London available | Cheapest; deploys with one command | Apps are public by default. Keeping it Tailscale-only means running Tailscale *inside* the app container, which is noticeably fiddlier |
-| **Railway** Hobby ([pricing](https://railway.com/pricing)) | $5/mo including $5 usage; likely $5–8 | Region choice varies | Very easy deploys | Same public-by-default problem as Fly; usage-based bills are harder to predict |
-| **Mac mini at home** | About £899 one-off for the current base model (from third-party listings; not confirmed on apple.com/uk) | Your house | No monthly fee; plenty of power | Big upfront cost; goes down with home power or broadband; lives on your home network |
-
-### Recommendation: DigitalOcean, London, $6 plan
-
-Moderate confidence. It's the option where the guide's steps work as written, the server is in stock today, it's close to you, and there's a browser console to rescue you if you lock yourself out.
-
-- **Is 1 GiB enough?** Probably, for one person and a few agents making API calls (moderate confidence). The heavy work happens at Anthropic and OpenAI, not on your server. Step 2 adds a swap file as a safety margin.
-- **If it struggles**, for example when building the app: resize to the $12 plan (2 GiB) from the control panel. It takes a few minutes and keeps your data.
-- **Switch to Hetzner later** if its cheap servers come back in stock and you want more headroom per pound. The steps are almost identical.
-
-## Estimated costs
-
-### Running costs (monthly, USD, before VAT)
-
-| Service | What it's for | Monthly | Source |
-| --- | --- | --- | --- |
-| Tailscale Personal | Private network for your devices | $0 | [pricing](https://tailscale.com/pricing) |
-| DigitalOcean Droplet, 1 GiB, London | The server | $6.00 | [pricing](https://www.digitalocean.com/pricing/droplets) |
-| DigitalOcean weekly backups | Whole-server snapshot, 20% of server price | $1.20 | same page |
-| Backblaze B2 | Off-site database copy | $0 (first 10 GB free) | [pricing](https://www.backblaze.com/cloud-storage/pricing) |
-| Domain name | Not needed: Tailscale provides the address | $0 | — |
-| Apple Shortcuts | iPhone capture | $0 | — |
-| **Fixed subtotal** |  | **$7.20** |  |
-| Claude Sonnet 5.5 | Processing dumps | $3.60 | [Claude pricing](https://platform.claude.com/docs/en/about-claude/pricing) |
-| Claude Haiku 5.5 | Overnight agents | $1.35 | same page |
-| OpenAI transcription | Voice dumps | $0.90–$1.80 | [OpenAI pricing](https://developers.openai.com/api/docs/pricing) |
-| OpenAI embeddings | Similarity for clustering and linking | about $0.01 | [model page](https://developers.openai.com/api/docs/models/text-embedding-3-small) |
-| **AI subtotal** |  | **$5.86–$6.76** |  |
-| **Total** |  | **about $13–14** |  |
-
-**VAT.** DigitalOcean [says it applies taxes in some countries](https://www.digitalocean.com/pricing/droplets). Expect UK VAT on top of the server cost (not confirmed for your account; check at sign-up).
-
-### How the AI estimate was worked out
-
-These usage assumptions are guesses; your real usage decides the bill.
-
-| Line | Assumption | Arithmetic | Cost |
-| --- | --- | --- | --- |
-| Dump processing | 60 dumps a month, \~15k tokens in and \~3k out each | 0.9M × $2 + 0.18M × $10 | $3.60 |
-| Overnight jobs | 30 nights, \~300k tokens in and \~30k out per night, each request under 100k tokens | 9M × $0.10 + 0.9M × $0.50 | $1.35 |
-| Transcription | 300 minutes a month | 300 × $0.003 (`gpt-4o-mini-transcribe`) to 300 × $0.006 (`gpt-4o-transcribe`) | $0.90–$1.80 |
-| Embeddings | 3,000 signals × \~100 tokens | 0.3M × $0.02 | $0.006 |
-
-The Claude prices were checked against Anthropic's pricing page on 31 Oct 2026. The transcription per-minute figures are OpenAI's estimates for token-priced models.
-
-### Three things that change the AI bill
-
-1. **Haiku's 100k cliff.** Haiku 5.5 costs five times more per token when a single request exceeds 100,000 tokens. If the overnight jobs send one giant prompt instead of several smaller ones, that line rises from $1.35 to about $6.75, and the total to about $20. Ask your coding agent to keep each request under 100k.
-2. **Batch discount.** Anthropic's Batch API is 50% off. Overnight jobs don't need instant answers, so they're natural candidates.
-3. **Spending limits.** Set a monthly cap in both the Anthropic and OpenAI consoles before connecting the app, so a looping agent can't surprise you.
-
-### One-off costs
-
-None are required. If you later prefer a home server, a Mac mini starts at around £899 (third-party listings; not confirmed on Apple's UK store).
-
-## Step 1: Set up Tailscale on your three devices
-
-Tailscale makes your devices behave as if they're on one private network, wherever they are. Nothing outside that network can see the app.
-
-**Time:** about 15 minutes. **Cost:** free. The [Personal plan](https://tailscale.com/pricing) is free, for up to 6 users and unlimited user devices.
-
-### 1a. Create the account
-
-1. Go to [tailscale.com](https://tailscale.com) and choose **Get started**.
-2. Sign in with a **personal** identity (a personal Google, Apple or GitHub account), not your work account. This network is yours, and you don't want it tied to an employer login.
-3. Skip any "invite teammates" prompts.
-
-### 1b. Install on each MacBook
-
-1. Install Tailscale from the Mac App Store, or from [tailscale.com/download](https://tailscale.com/download).
-2. Open it, choose **Log in**, and sign in with the same account.
-3. Allow the VPN configuration when macOS asks.
-
-> **Work laptop check** (moderate confidence this matters): company-managed Macs sometimes block VPN apps or already run a corporate VPN that conflicts with Tailscale. Check your employer's policy before installing it there. If it's not allowed, use the app from your personal laptop and phone only.
-
-### 1c. Install on the iPhone
-
-1. Install **Tailscale** from the App Store.
-2. Sign in with the same account.
-3. Tap **Allow** when iOS asks to add a VPN configuration.
-
-### 1d. Check it worked
-
-Open the [Machines page](https://login.tailscale.com/admin/machines) in the admin console. You should see all three devices, each with a `100.x.x.x` address. That's your private network, called a **tailnet**.
-
-### 1e. Two settings to switch on now
-
-In the admin console's **DNS** page:
-
-1. **MagicDNS** → Enable. Devices get names instead of numbers.
-2. **HTTPS Certificates** → Enable. The app can then use a proper `https://` address, which iPhone Shortcuts and browsers prefer.
-
-Both are [required for serving the app](https://tailscale.com/docs/use-cases/application-testing/share-local-dev-server-with-team) and are on by default for new tailnets.
-
-> **Naming caution:** turning on HTTPS [publishes machine names and your tailnet name in public certificate logs](https://tailscale.com/kb/1153/enabling-https). Give machines neutral names, such as `aber-server` rather than something revealing.
-
-The default access policy already lets all your own devices reach each other, so you don't need to edit any access rules ([Tailscale ACL docs](https://tailscale.com/kb/1018/acls)).
-
-## Step 2: Rent the server
-
-**Time:** about 20 minutes. **Cost:** $6/month plus $1.20 for backups. Button labels in DigitalOcean's control panel may differ slightly from these.
-
-### 2a. Make an SSH key on your laptop (if you don't have one)
-
-An SSH key is a pair of files: a private one that stays on your laptop, and a public one you give to the server. It's only used for the very first login; Tailscale SSH replaces it afterwards.
-
-In Terminal, check whether you already have one:
-
-```
-ls ~/.ssh/id_ed25519.pub
-```
-
-If that says "No such file", create one. Press Enter to accept the default location, and choose a passphrase:
-
-```
-ssh-keygen -t ed25519 -C "aber"
-```
-
-Copy the public half to your clipboard:
-
-```
-pbcopy < ~/.ssh/id_ed25519.pub
-```
-
-### 2b. Create the DigitalOcean account
-
-1. Sign up at [digitalocean.com](https://www.digitalocean.com) and add a payment method.
-2. Turn on **two-factor authentication** in your account settings. Do the same for every account in this guide: Tailscale's sign-in provider, Backblaze, Anthropic and OpenAI.
-3. Set a **billing alert**, for example at $15, so you hear about surprises.
-
-### 2c. Create the server (a "Droplet")
-
-**Create → Droplets**, then:
-
-| Setting | Choose |
+| Lock | Stops |
 | --- | --- |
-| Region | **London** (LON1) |
-| Image | **Ubuntu**, the newest **LTS** version offered (26.04 if listed, otherwise 24.04) |
-| Size | **Basic → Regular**, the **$6/mo** plan (1 GiB RAM, 25 GiB disk) |
-| Authentication | **SSH Key → New SSH Key**, paste from your clipboard |
-| Backups | **On, weekly** |
-| Hostname | `aber-server` |
+| **Network:** Tailscale only, no public domain, port bound to `127.0.0.1` | Everyone on the internet |
+| **App:** token auth on every route but `/healthz` | Anyone else who can reach the server on the tailnet |
 
-Click **Create Droplet**. After a minute it shows a **public IPv4 address**. Note it down; Step 3 uses it once and then never again.
+**What it can't stop** (high confidence): people with root on the server or admin rights in Coolify can read Aber's volume and its environment variables. That's the price of a shared work server. Treat Aber as a work tool: nothing in it should be more private than your work notes. See [Who can see what](#who-can-see-what).
 
-### 2d. Add a swap file (after your first login in Step 3a)
+## The steps
 
-Swap is overflow memory on disk. It stops the small server crashing if a build briefly needs more than 1 GiB. Run this once on the server:
+1. Questions for the server's owner
+2. Tailscale on your devices
+3. Make the app deployable (code work, done by your coding agent)
+4. Keys and tokens
+5. Create the app in Coolify
+6. Private HTTPS address with Tailscale Serve
+7. Backups
+8. iPhone capture
+9. Security checklist
 
-```
-fallocate -l 2G /swapfile
-chmod 600 /swapfile
-mkswap /swapfile
-swapon /swapfile
-echo '/swapfile none swap sw 0 0' >> /etc/fstab
-```
+## Step 1: Questions for the server's owner
 
-The last line keeps it after reboots. Check it with `free -h`; the Swap row should show 2.0Gi.
+Ask these before anything else. The answers change steps 2, 5 and 6.
 
-## Step 3: Put Tailscale on the server and lock it down
+| Question | Why it matters |
+| --- | --- |
+| Is the server on Tailscale, and whose tailnet: the company's or a team one? | Decides how your phone and MacBook reach it (Step 2) |
+| If it's a shared tailnet, can the ACLs limit Aber's port to your devices? | Without that, everyone on the tailnet can reach the login page. Token auth still protects it, but fewer doors is better |
+| Can I run `tailscale serve` on the host, or does a Tailscale sidecar container work better here? | Step 6 assumes host access |
+| Does Coolify support a Docker Compose app with a persistent volume on this server? | Aber keeps its SQLite file and media on disk |
+| Can the Coolify proxy be skipped for this app (no domain)? | The app must not get a public route |
+| Who has root on the host, and who is an admin in Coolify? | They can read Aber's data and keys |
+| Is there a policy on API keys: personal keys, or a work-provided OpenAI/Anthropic account? | Decides whose keys go in Step 4 |
+| Are server backups taken, and is Coolify's `APP_KEY` backed up? | Coolify encrypts stored variables with it; losing it loses the variables |
 
-After this step the server has **no doors open to the public internet**. Only your three devices can reach it.
+## Step 2: Tailscale on your devices
 
-**Time:** about 30 minutes. Do the steps in order: the order is what stops you locking yourself out.
+How you join depends on the answer about tailnets in Step 1:
 
-### 3a. Log in to the server the first time
+- **The server is on a tailnet you can join:** install Tailscale on the MacBook ([download](https://tailscale.com/download)) and the iPhone (App Store), and sign in to that tailnet.
+- **The server is on the company tailnet, and you'd rather not put your phone on it:** the owner can [share the server machine](https://tailscale.com/kb/1084/sharing) into your personal tailnet. Moderate confidence this fits; confirm with the owner.
 
-On your laptop, open Terminal and run (replace the address with the server's public IP from Step 2):
+Then check that MagicDNS and HTTPS certificates are on in the tailnet's admin console (DNS page). Serve needs both. Turning HTTPS on [publishes machine names in public certificate logs](https://tailscale.com/kb/1153/enabling-https), so keep names neutral.
 
-```
-ssh root@203.0.113.10
-```
+> **Work laptop check:** if the MacBook is company-managed, check it may run Tailscale alongside any corporate VPN.
 
-Type `yes` when asked whether to trust the server. You're now typing commands *on the server*.
+## Step 3: Make the app deployable (code work)
 
-### 3b. Update it
+None of this exists in the repo yet. Ask your coding agent to do it on a branch, then test locally with `docker compose up --build`.
 
-```
-apt update && apt upgrade -y
-```
+| Change | Detail |
+| --- | --- |
+| Configurable host | `app/server/src/config.ts` hard-codes `127.0.0.1`. Inside a container that makes the app unreachable through the published port. Read `HOST` from the environment; default `127.0.0.1` for local use, `0.0.0.0` in the container |
+| Token auth | Web: visit `/login#<token>` once per device. The page posts the fragment to `POST /api/session`, which sets an `HttpOnly; Secure; SameSite=Strict` cookie signed with `ABER_SESSION_SECRET`. Capture: `Authorization: Bearer $ABER_CAPTURE_TOKEN`. Required on every route but `/healthz` |
+| Replace the local-only guard | `app/server/src/http/app.ts` rejects any `Host` that isn't `localhost` or `127.0.0.1`. Tailscale Serve is reported to forward the `*.ts.net` name as `Host` ([test write-up](https://dev.classmethod.jp/articles/use-tailscale-builtin-reverse-proxy/); moderate confidence), so the guard would block every request. Replace it with token auth plus an allowed-hosts list (`ABER_ALLOWED_HOSTS`). Don't simply delete it |
+| `Dockerfile` | Multi-stage: build `web` with Vite; runtime `node:22-slim` or later with `ffmpeg`; one process on port 3000; runs as a non-root user |
+| `.dockerignore` | Excludes `.env`, `app/data/`, `app/backups/`, `reports/`, `node_modules` so no key or data ends up in an image |
+| `compose.yaml` | `app` service with volume `./data:/app/data`, healthcheck `GET /healthz`, port `"127.0.0.1:3000:3000"`. Sidecars `litestream` and `media-backup` share the volume (Step 7) |
+| Fail closed | The server refuses to start if `ABER_SESSION_SECRET` or `ABER_CAPTURE_TOKEN` is missing or short when `HOST` isn't loopback |
+| Checks | `docker compose up --build` smoke test against MinIO standing in for B2; a restore-drill script; a check that nothing listens publicly |
 
-### 3c. Install Tailscale and turn on Tailscale SSH
+> **Why `127.0.0.1:` matters** (high confidence): Docker's published ports bypass host firewalls such as UFW. `"3000:3000"` would expose Aber on the server's public address. `"127.0.0.1:3000:3000"` keeps it inside the server, where Tailscale Serve picks it up.
 
-These commands are from the [Linux install guide](https://tailscale.com/kb/1031/install-linux) and the [CLI reference](https://tailscale.com/kb/1080/cli):
+## Step 4: Keys and tokens
 
-```
-curl -fsSL https://tailscale.com/install.sh | sh
-tailscale up --ssh
-```
+### What there is
 
-The second command prints a link. Open it on your laptop and sign in with **the same personal account** as Step 1. Sign in interactively; don't use an auth key or tag, because the default SSH rule only covers devices you own.
-
-**Tailscale SSH** lets you log in to the server through your tailnet using your Tailscale identity, with no passwords or SSH keys to manage.
-
-### 3d. Tidy the server's entry in the admin console
-
-On the [Machines page](https://login.tailscale.com/admin/machines), click **…** on the server's row:
-
-1. **Edit machine name** → `aber-server` (or another neutral name).
-2. **Disable key expiry.** Otherwise the server drops off your tailnet every few months until you re-authenticate it ([key expiry docs](https://tailscale.com/kb/1028/key-expiry)).
-
-### 3e. Prove the private route works before closing the public one
-
-Open a **new** Terminal window on your laptop and run:
-
-```
-ssh root@aber-server
-```
-
-The [default policy](https://tailscale.com/kb/1193/tailscale-ssh) uses "check mode", so a browser window may ask you to confirm it's you. That's expected, and it may ask again periodically. **Don't continue until this works.**
-
-### 3f. Close the public doors
-
-Two layers: the server's own firewall, then the hosting provider's.
-
-**Server firewall (UFW).** Adapted from [Tailscale's Ubuntu hardening guide](https://tailscale.com/kb/1077/secure-server-ubuntu), reordered so the Tailscale rule exists before anything is blocked. Run these in the Tailscale SSH session from 3e:
-
-```
-ufw allow in on tailscale0
-ufw default deny incoming
-ufw default allow outgoing
-ufw enable
-ufw status verbose
-```
-
-The last line should show incoming denied, with one allow rule on `tailscale0`.
-
-**Provider firewall.** In your host's control panel, create a firewall with **no inbound rules** and attach it to the server. Tailscale [needs no inbound ports](https://tailscale.com/kb/1082/firewall-ports); it connects outwards, and falls back to Tailscale's relays if a direct path isn't possible.
-
-### 3g. Check from outside
-
-From your laptop, try the **public** address again:
-
-```
-ssh root@203.0.113.10
-```
-
-It should now hang or time out. That's the goal: the only way in is through your tailnet.
-
-> **If you lock yourself out:** every host has a browser-based emergency console in its control panel. Log in there, run `ufw disable`, and redo 3e–3f. Your data isn't affected.
-
-## Step 4: Run the app and give it a private HTTPS address
-
-The app doesn't exist yet, so this step describes the shape. Your coding agent writes the specific files when it builds the app.
-
-### 4a. Install Docker
-
-Docker packages the app and everything it needs into one box that runs the same way everywhere, and restarts it if it crashes. On the server:
-
-```
-curl -fsSL https://get.docker.com | sh
-```
-
-### 4b. Put the app in a folder
-
-Use `/opt/aber`, with three things in it:
-
-| Item | What it is | Note |
+| Variable | Secret? | Where it comes from |
 | --- | --- | --- |
-| `compose.yaml` | Tells Docker how to run the app | The agent writes this |
-| `.env` | Secrets: API keys | **Never commit it to git.** Run `chmod 600 .env` so only root can read it |
-| `data/` | The SQLite database file | The only thing you must back up |
+| `OPENAI_API_KEY` | Yes | OpenAI console: a key made only for Aber |
+| `ANTHROPIC_API_KEY` | Yes | Anthropic console: a key made only for Aber |
+| `ABER_SESSION_SECRET` | Yes | Generate: `openssl rand -base64 48` |
+| `ABER_CAPTURE_TOKEN` | Yes | Generate: `openssl rand -base64 32` |
+| `ABER_LOGIN_TOKEN` | Yes | Generate: `openssl rand -base64 32`. Used once per device at `/login#<token>` |
+| `LITESTREAM_ACCESS_KEY_ID`, `LITESTREAM_SECRET_ACCESS_KEY` | Yes | Backblaze application key for one bucket (Step 7) |
+| `RESTIC_PASSWORD` | Yes | Generate. Without it the media backup can't be restored |
+| `AGENT_MODE`, `DAILY_SPEND_CAP_USD`, `HOST`, `ABER_ALLOWED_HOSTS`, `ABER_DATA_DIR` | No | Settings |
 
-The important part of `compose.yaml` looks like this:
+### Where they live
 
-```
-services:
-  app:
-    build: .
-    restart: unless-stopped
-    ports:
-      - "127.0.0.1:3000:3000"
-    volumes:
-      - ./data:/app/data
-    env_file: .env
-```
+1. **Source of truth: your password manager.** Keep every value above there first. If the server or Coolify is lost, this is how you rebuild.
+2. **On the server: Coolify's environment variables for the Aber app.** Coolify stores them encrypted in its database and injects them when the container starts ([Coolify docs](https://coolify.io/docs/applications/configuration/environment-variables); the encryption key is the instance's `APP_KEY`).
+   - **Lock** every secret. Unlocked values have been reported printed in plain text in deployment logs ([coolify#7235](https://github.com/coollabsio/coolify/issues/7235)).
+   - **Don't** tick **Build Variable** for any secret. The keys are only needed at runtime; build variables can end up in image layers and build logs.
+3. **Never in git, never in the image.** `.env` stays git-ignored and `.dockerignore` keeps it out of builds.
 
-> **Why `127.0.0.1:` matters** (high confidence): Docker opens ports with its own firewall rules, which **bypass UFW**. Writing `"3000:3000"` would quietly expose the app to the internet, with only the provider firewall in the way. `127.0.0.1:3000` keeps it reachable only from inside the server itself, where Tailscale picks it up.
+### Who can see what
 
-Start it:
+Be clear-eyed about this (moderate–high confidence):
 
-```
-cd /opt/aber
-docker compose up -d --build
-```
+- Locking hides a value in Coolify's interface, but Coolify still writes the variables to a `.env` file on the host to start the container (reported in community guides; confirm with the owner). Anyone with root on the host can read it, and anyone who can exec into the container can read its environment.
+- Coolify admins on the team can likely see or change the app's variables. Coolify says team roles can restrict secret visibility; whether admins are included isn't clear from its docs.
 
-### 4c. Give it an HTTPS address on your tailnet
+So the protection that actually matters is **limiting what a leaked key can do**:
 
-From [Tailscale Serve](https://tailscale.com/docs/features/tailscale-serve) ([command examples](https://tailscale.com/blog/reintroducing-serve-funnel)):
+- Make a **separate key for Aber only**: a dedicated OpenAI project and Anthropic workspace, if your accounts allow it. Never reuse a key from elsewhere.
+- Set a **monthly spending limit** on both, plus Aber's own `DAILY_SPEND_CAP_USD`.
+- Rotate the keys if someone with server access leaves, or if anything looks off in usage.
+- If work provides API access, use that instead of personal keys, so a work server holds work credentials.
+
+## Step 5: Create the app in Coolify
+
+Coolify's labels move between versions; follow what your instance shows.
+
+1. **Connect the repo.** Add `maggieappleton/aber` (private) through Coolify's GitHub App or a read-only [deploy key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys).
+2. **New resource → Docker Compose**, pointing at `compose.yaml` on `main`.
+3. **No domain.** Leave the domain empty so the Coolify proxy creates no public route.
+4. **Environment variables:** add everything from Step 4, lock the secrets, and set `HOST=0.0.0.0` and `ABER_ALLOWED_HOSTS=aber.<tailnet>.ts.net` (the address from Step 6).
+5. **Persistent storage:** make sure `./data` maps to a persistent volume, not a temporary folder.
+6. **Deploy.** Then, on the server, `curl -s http://127.0.0.1:3000/healthz` should return 200. From your laptop *without* Tailscale, the server's public address on port 3000 must not answer.
+7. **Updates:** push to `main` and redeploy from Coolify, or turn on auto-deploy from the GitHub webhook.
+
+### Real data starts empty
+
+The deployed app starts with an **empty database**: no example themes, theories or signals.
+
+- The server never seeds by itself. Migrations create only the tables and your owner record. Nothing in the `Dockerfile` or Coolify start command should run `npm run seed` or `seed:demo`.
+- If someone runs `npm run seed` against real data by mistake, it refuses, because the database already has content.
+- Don't copy your laptop's `app/data/aber.db` to the server. That's the example database.
+
+### Example data for testing
+
+Keep example data on your laptop, in its own folder. Any empty `ABER_DATA_DIR` works:
+
+| Want | Run (from `app/`) |
+| --- | --- |
+| The example world from the design jigs | `ABER_DATA_DIR=~/aber-example npm run seed`, then `AGENT_MODE=fake ABER_DATA_DIR=~/aber-example npm start` |
+| The richer authored demo | `npm run seed:demo -- --dir /private/tmp/aber-demo` (see `app/README.md`) |
+| Automated tests | Nothing to do: unit and browser tests each create their own temporary database |
+
+## Step 6: Private HTTPS address with Tailscale Serve
+
+On the server, assuming host access ([Tailscale Serve](https://tailscale.com/docs/features/tailscale-serve)):
 
 ```
 tailscale serve --bg 3000
 ```
 
-It prints your app's address, in the form `https://aber-server.<your-tailnet-name>.ts.net`. That address:
+It prints an address like `https://<machine>.<tailnet>.ts.net`. That address:
 
-- works on your MacBooks and iPhone whenever Tailscale is on;
-- is invisible to everyone else (Serve is tailnet-only; the public version is a separate command, `funnel`, which you don't want);
-- has a real HTTPS certificate, renewed automatically;
+- works on your MacBook and iPhone while Tailscale is on;
+- is invisible outside the tailnet. Serve is tailnet-only; its public version, `funnel`, must **not** be used;
+- has a real HTTPS certificate, renewed automatically, which the `Secure` cookie needs;
 - survives reboots, because of `--bg`.
 
-On the iPhone, open it in Safari and choose **Share → Add to Home Screen** for an app-like icon.
+If the server already serves something else on 443, ask the owner for another HTTPS port (`--https=8443`) or a Tailscale sidecar container with its own machine name, such as `aber`. A neutral name of its own is the tidier option if the owner agrees.
 
-### 4d. Shipping updates
+**First login on each device:** open `https://<address>/login#<ABER_LOGIN_TOKEN>`. The token stays in the fragment, so it's never sent in a URL to the server or written to logs; the page posts it once and you get a cookie. On the iPhone, then use **Share → Add to Home Screen**.
 
-The simplest routine (moderate confidence it's the right fit for v1):
+## Step 7: Backups
 
-1. The code lives in a **private** GitHub repo.
-2. On the server, clone it once into `/opt/aber`, using a read-only [deploy key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/managing-deploy-keys).
-3. To update: `cd /opt/aber && git pull && docker compose up -d --build`.
+Your theories, signals and dumps live in one SQLite file, and media in `data/media/`.
 
-Ask your coding agent to wrap step 3 in a `deploy.sh` script. Your laptop can reach the server through Tailscale SSH, so an agent on your laptop can run the deploy for you.
+| Layer | What | How |
+| --- | --- | --- |
+| Litestream → Backblaze B2 | Database, copied continuously | [Litestream](https://litestream.io/) sidecar reading the keys from Coolify variables |
+| restic → B2 | `data/media/`, hourly | `restic` rather than `rclone sync`, because a sync copies deletions too (moderate confidence) |
+| Server backups | Whatever the owner already takes | Ask (Step 1) |
 
-## Step 5: Backups
+1. Create a [Backblaze B2](https://www.backblaze.com/cloud-storage/pricing) account (first 10 GB free) with two-factor authentication.
+2. Make a **private** bucket, such as `aber-backups-` plus random letters.
+3. Make an **application key restricted to that bucket** and put it straight into the password manager and Coolify. Backblaze shows it once.
+4. **Restore drill** now and then every quarter: restore the latest copy to your laptop and check your newest dump is in it. A backup you've never restored is a hope, not a backup.
 
-Your theories, signals and dumps all live in one SQLite file. Two layers protect it:
+## Step 8: Capture from the iPhone
 
-| Layer | What it saves | How far back | Protects against |
-| --- | --- | --- | --- |
-| DigitalOcean weekly backups (switched on in Step 2c) | The whole server | Up to a week old | A broken server, a bad update |
-| **Litestream → Backblaze B2** | Just the database, copied continuously | Seconds old | Losing the server, a bad deploy, DigitalOcean itself having a problem |
+### 8a. Make Tailscale connect by itself
 
-Weekly server backups alone could lose up to a week of thinking, and they sit with the same company. Litestream is the one that matters.
+In the Tailscale app: **profile picture → VPN On Demand**. Turn it on, set the Wi-Fi and Cellular rules to **Do Nothing**, and match **`*.ts.net`** hostnames. Hostname matching [only works with "Do Nothing" rules](https://tailscale.com/kb/1291/ios-vpn-on-demand). Test that it triggers from a Shortcut.
 
-### 5a. Set up Backblaze B2
+### 8b. The "Dump" Shortcut
 
-1. Create an account at [backblaze.com](https://www.backblaze.com/cloud-storage/pricing) (first 10 GB free; your database will be far smaller).
-2. Create a **private** bucket, named something like `aber-backups-` plus a few random letters. Bucket names must be unique across all customers.
-3. Create an **application key** restricted to that one bucket. Copy the key ID and key straight into the server's `.env` file; Backblaze shows the key only once.
-
-### 5b. Add Litestream
-
-[Litestream](https://litestream.io/) is a small, actively maintained tool that watches the SQLite file and streams every change to B2. It has a [Backblaze B2 guide](https://litestream.io/guides/). Its repository still labels it beta; it's widely used, but the restore drill below is how you know it works for you.
-
-Ask your coding agent to add Litestream to `compose.yaml` as a second service that shares the `data/` folder, following that guide and reading the keys from `.env`. Then run `docker compose up -d`.
-
-### 5c. The restore drill (do it once now, then quarterly)
-
-A backup you've never restored is a hope, not a backup.
-
-1. Ask your agent to restore the latest Litestream copy **to your laptop**.
-2. Open the restored file with a SQLite viewer and check that your most recent dump is in it.
-3. Tick the box in the security checklist.
-
-If the drill fails, fix it before putting more thinking into the tool.
-
-## Step 6: Capture from the iPhone
-
-Web apps can't appear in the iPhone share sheet, but an Apple Shortcut can. The Shortcut sends whatever you share to the app's dump endpoint.
-
-### 6a. Make Tailscale connect by itself
-
-Without this, you'd have to remember to switch Tailscale on before every capture.
-
-1. Open the Tailscale app, tap your **profile picture** (top right), then **VPN On Demand**.
-2. Turn it on, and set the **Wi-Fi** and **Cellular** rules to **Do Nothing**.
-3. Turn on matching for **`*.ts.net`** hostnames.
-
-Hostname matching [only works when the interface rules are "Do Nothing"](https://tailscale.com/kb/1291/ios-vpn-on-demand). The phone will then bring Tailscale up automatically whenever something, such as your Shortcut, tries to reach your `ts.net` address. High confidence the feature exists; **test** that it triggers from a Shortcut specifically.
-
-### 6b. The "Dump" Shortcut
-
-The app needs a dump endpoint first. Ask your coding agent for one: a `POST /api/dumps` that accepts text, URLs or an audio file and stores them immediately.
-
-In the Shortcuts app, build a shortcut with these actions:
-
-1. **Receive** URLs, Text and Files **from Share Sheet**. If there's no input, **Ask For** text, so you can also run it from the home screen.
+1. **Receive** URLs, Text and Files **from Share Sheet**; if there's no input, **Ask For** text.
 2. *(Optional)* **Ask for Input**: "Add a note?"
-3. **Get Contents of URL**: method **POST**, URL `https://aber-server.<tailnet>.ts.net/api/dumps`, and a body containing the shared item plus the note.
+3. **Get Contents of URL**: **POST** to `https://<address>/api/dumps`, header `Authorization: Bearer <ABER_CAPTURE_TOKEN>`, body with the shared item plus the note.
 4. **If** the result isn't a success → **Show Alert** "Not saved" and copy the input to the clipboard, so a capture is never lost silently.
 5. Otherwise → **Show Notification** "Dumped".
 
-In the shortcut's settings, enable **Show in Share Sheet**. It will then appear when you tap Share in X, Safari or any other app.
+Enable **Show in Share Sheet** in the shortcut's settings. The token lives inside the Shortcut, so don't share the Shortcut with anyone.
 
-### 6c. Voice dumps
+### 8c. Voice dumps
 
-| Route | Cost | Trade-off |
-| --- | --- | --- |
-| Record in **Voice Memos**, share the file to the Dump shortcut; the server transcribes it | About $0.003–$0.006 per minute (see Costs) | Most reliable for long rambles. Keeps the original audio (moderate confidence on sharing audio files from Voice Memos to a Shortcut; test it) |
-| Shortcut's **Dictate Text** action | No API fee | Reported to stop after pauses and to cut off long dictation ([Apple Community thread](https://discussions.apple.com/thread/253800615)); not confirmed by Apple. Fine for short notes |
-| Record inside the web app | Same as the first row | Needs a recording button in the app; one tap from the home screen icon |
+Record in **Voice Memos** and share the file to the Dump shortcut; the server transcribes it (about $0.003–$0.006 a minute). Shortcuts' **Dictate Text** is free but [reported](https://discussions.apple.com/thread/253800615) to stop on pauses, so it's for short notes only.
 
-Recommendation (moderate confidence): **Voice Memos → share → Dump** for long thinking-out-loud sessions, typing or pasting in the web app for links plus prose.
-
-## Security checklist and maintenance
+## Step 9: Security checklist
 
 ### Before you put real thoughts in it
 
-- [ ] Public SSH times out (Step 3g)
-- [ ] Provider firewall has no inbound rules, and it's attached to the server
-- [ ] `ufw status` shows incoming denied, with an allow rule only on `tailscale0`
-- [ ] Docker port is bound to `127.0.0.1` (Step 4b)
-- [ ] The app opens on the phone with Tailscale on, and **doesn't** open with Tailscale off and VPN On Demand disabled
-- [ ] `.env` is `chmod 600` and not in git
-- [ ] Key expiry is disabled for the server only, not for your laptops or phone
-- [ ] A backup has been **restored** successfully at least once (Step 5)
-- [ ] Spending limits are set on the AI API accounts
+- [ ] Aber has no domain in Coolify, and Coolify's proxy shows no route for it
+- [ ] The compose port is `127.0.0.1:3000:3000`; the public address on 3000 doesn't answer
+- [ ] The `*.ts.net` address works with Tailscale on and doesn't with Tailscale off
+- [ ] Every route but `/healthz` returns 401 without the cookie or bearer token
+- [ ] Every secret is a **locked** Coolify variable, none is a build variable, and all are in your password manager
+- [ ] `.env` isn't in git and isn't in the image (`docker run --rm <image> ls -a /app`)
+- [ ] The API keys are Aber-only, with spending limits set
+- [ ] A backup has been **restored** successfully at least once
+- [ ] You know who has root and Coolify admin on the server
 
 ### Routine
 
-| When | Task | How |
-| --- | --- | --- |
-| Automatic | Security updates | Ubuntu's `unattended-upgrades` installs them by default (moderate–high confidence). Check with `systemctl status unattended-upgrades` |
-| Automatic | Tailscale updates | The install script added Tailscale's package source, so ordinary updates include it |
-| Monthly | Reboot to apply kernel updates | `reboot` over Tailscale SSH; Docker and Serve come back by themselves |
-| Monthly | Glance at disk space | `df -h` |
-| Quarterly | Practise a restore | See Step 5 |
-| Once a year | Read the host's and Tailscale's pricing pages | Prices in this guide were checked on 31 Oct 2026 |
+| When | Task |
+| --- | --- |
+| Monthly | Check API usage against what you expect |
+| Quarterly | Restore drill |
+| When someone with server access leaves | Rotate the API keys and Aber's tokens |
+| Once a year | Recheck Tailscale, Backblaze and API pricing |
 
-> **A good habit:** ask your coding agent to run the monthly tasks with you over Tailscale SSH and explain what it sees. That's a low-stakes way to build up server confidence.
+## AI costs
+
+The server is the team's, so Aber's own bill is the AI APIs. These are estimates from usage guesses; your real usage decides the bill. Prices were checked on 31 Oct 2026.
+
+| Line | Assumption | Monthly |
+| --- | --- | --- |
+| Dump processing | 60 dumps, ~15k tokens in, ~3k out each | ~$3.60 |
+| Overnight jobs | 30 nights, ~300k in, ~30k out per night | ~$1.35 |
+| Transcription | 300 minutes | $0.90–$1.80 |
+| Embeddings | 3,000 signals × ~100 tokens | ~$0.01 |
+| Backblaze B2 | First 10 GB free | $0 |
+
+**Haiku's 100k cliff.** Claude Haiku 5.5 costs five times more per token when one request exceeds 100,000 tokens. Keep every request under 100k. Anthropic's Batch API is 50% off and suits overnight jobs.
 
 ## Glossary
 
 | Term | Plain meaning |
 | --- | --- |
-| **Server / VPS** | A computer in a data centre that's always on. A VPS (virtual private server) is a rented slice of a bigger machine |
-| **SSH** | Typing commands on another computer from your Terminal |
-| **Tailscale SSH** | SSH that goes through your tailnet and uses your Tailscale login instead of passwords or keys |
-| **Tailnet** | Your private network of devices on Tailscale. Addresses start with `100.` |
-| **MagicDNS** | Gives tailnet devices names (`aber-server`) instead of numbers |
-| **Serve** | Tailscale feature that gives an app on the server an `https://…ts.net` address visible only on your tailnet |
-| **Funnel** | Serve's public cousin; makes something visible to the whole internet. Not used here |
-| **Firewall** | Rules about what traffic may come in. You have two: UFW on the server, and the provider's in its control panel |
-| **UFW** | "Uncomplicated Firewall", the server's own firewall |
-| **Port** | A numbered door on a computer. The app listens on 3000; SSH normally uses 22 |
-| **Docker / container** | A sealed box holding the app and everything it needs, so it runs the same everywhere |
-| **Compose** | A file listing how Docker should run the app (ports, folders, secrets) |
-| **`.env`** | A file of secrets, such as API keys, read by the app at start-up |
-| **Key expiry** | Tailscale makes devices re-log-in periodically. Turned off for the server so it never drops off |
-| **Off-site backup** | A copy kept with a different company, so losing the server doesn't lose the data |
-| **Litestream** | A small tool that continuously copies a SQLite database to cloud storage |
-| **Deploy key** | A key that lets the server read one GitHub repo and nothing else |
+| **Coolify** | Self-hosted deployment tool on the team server: builds the app from GitHub and runs it in Docker |
+| **Tailnet** | A private Tailscale network of devices |
+| **Serve** | Tailscale feature giving a local app a `https://…ts.net` address visible only on the tailnet |
+| **Funnel** | Serve's public version. Not used |
+| **Locked variable** | A Coolify environment variable hidden in the interface and redacted from logs |
+| **Build variable** | A variable available while building the image. Never use it for secrets |
+| **Litestream** | Copies a SQLite database continuously to cloud storage |
+| **restic** | Backup tool that keeps snapshots, so deleting a file doesn't delete its backup |

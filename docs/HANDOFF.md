@@ -24,7 +24,7 @@ The local v1 app is implemented in `app/`: React/Vite, a Node API, SQLite and Ve
 | [design/decisions.json](../design/decisions.json) | Every pick and note, made on the jigs. Already folded into the model and spec |
 | [jig/](../jig/) | Interactive jigs. `cd jig && bun install && bun run dev`, then http://localhost:5181. **[`/app`](http://localhost:5181/app) is canonical** for the whole app; **[`/reference`](http://localhost:5181/reference)** indexes every canonical route and its constants; [`/decide`](http://localhost:5181/decide) holds the decisions |
 | [docs/design-exploration.md](design-exploration.md) | History: what was tried, decided and rejected up to 31 Oct. Read it before proposing anything, so you don't re-propose rejected ideas. Where it disagrees with the model, the model wins |
-| [docs/hosting-guide.md](hosting-guide.md) | Tailscale, Litestream, B2 and the iPhone Shortcut, written for a personal server. Not used this round; section 13 of the build spec says what changes on Coolify, later |
+| [docs/hosting-guide.md](hosting-guide.md) | **Deployment.** The team Coolify server, Tailscale-only access, token auth, where API keys live, backups and the iPhone Shortcut. The personal-server (DigitalOcean) route was discarded on 2 Nov |
 | [docs/reference/interface-grammar.md](reference/interface-grammar.md) | Maggie's design method. **Follow it.** |
 | [design/space-and-motion/index.html](../design/space-and-motion/index.html) | The earlier space-and-motion boards. Historical: superseded by `/app` where they differ |
 
@@ -68,7 +68,7 @@ The full method is in `reference/interface-grammar.md`. The essentials:
 1. **Review the working local app:** all v1 slices have been implemented. Evidence and deliberate exceptions are in [verification](verification.md); do not rebuild the app from scratch.
 2. **Personal-material evals:** 36 synthetic fixtures, the original provider comparison and targeted follow-ups are retained in `app/evals/`. Five separately versioned processing cases add full articles, a long transcript, physical robotics and revision/dedup checks. Add Maggie's real dumps later without rewriting the historical scores.
 3. **Review in the morning:** screenshots in `app/test-results/parity/` and `reports/`, plus `docs/build-notes.md`. The optional authored demo runs on port 3001 with its own database; reproduction instructions are in `app/README.md`. Architecture/security follow-ups and their fixes are in `reports/overnight/`. TypeSafe export was approved; its full review hit the API context limit and returned no valid judgement. See the checker report and current UI issue ledger.
-4. **Later:** deployment to the team Coolify server, backups to B2, auth and phone capture (build spec, section 13). Confirm with the server's owner how it joins Tailscale first.
+4. **Now:** deployment to the team Coolify server, following [the hosting guide](hosting-guide.md). Start with its Step 1 questions for the server's owner, then its Step 3 code work (configurable host, token auth, Dockerfile, compose). The deployed database starts empty; example data stays on the laptop.
 
 ## Things not to redo
 
