@@ -87,6 +87,20 @@ Status values are `observed`, `scoped`, `exploring`, `decided` and `done`.
 **Exploration:** [`design/explorations/di-002-dialogs/`](../design/explorations/di-002-dialogs/index.html) compares the current dialog with a shadcn-style modal, creation in the docked pane using an empty editable `.pn-doc`, and inline creation at the trigger. It repeats that comparison for New prototype, State a theory and New theme. It also gives a policy for each dialog type.
 **Decision:** none yet.
 
+### Refinement: missing-name error
+
+Maggie, on the "Needs a name" line in the docked creation view: "we need a better error state than this".
+
+The current state appears when you close an unnamed prototype (or a theory with no claim) that has notes. A grey line under the title reads "Name it to keep it." and shakes. It isn't attached to the field, and its only action, Discard, throws the notes away.
+
+The exploration ([`#name-error`](../design/explorations/di-002-dialogs/index.html#name-error)) keeps that as Current and applies three design suggestions to both prototypes and theories:
+
+- **A, field-level.** The Name field carries the error: an ink underline (not red, which means a challenge) and helper text with an icon under it ("Add a name to keep this prototype."). The field gets `aria-invalid` and `aria-describedby`, focus returns to it, a polite live region reads the message, and there's no shake. Typing clears the error. Closing is still blocked.
+- **B, never block (recommended).** Closing without a name keeps the object as "Untitled prototype" or "Untitled theory". Its sidebar row or card shows that in muted placeholder text, and a toast reads "Saved as Untitled" with Undo (also announced). Undo reopens it with the notes intact. Nothing is lost, and this also answers the open "Untitled" question.
+- **C, foot bar in the pane, not a modal.** A bar rises from the pane's foot: "This prototype has notes but no name." Discard sits on the left and the primary "Keep as Untitled" on the right (DI-009). Focus moves to Name, typing a name removes the bar, and a live region announces it.
+
+**Decision:** none yet.
+
 ---
 
 ## DI-003 · Sidebar navigation: prototypes sit at the bottom and rows misuse chevrons

@@ -66,16 +66,31 @@
 @keyframes jx-card-in { from { opacity: 0; transform: scale(0.96); } }
 /* A refusal nudge for an empty name. Uses `translate` so it composes with transforms that position the element. */
 /* Proposals only: "building" uses the primary green instead of the app's blue. Current stays faithful. */
-.jig-option:not([data-alt="current"]) .ap-proto[data-status="building"] { color: var(--ab-accent); }
-.jig-option:not([data-alt="current"]) .pn-status button[aria-label="building"][aria-checked="true"] { box-shadow: var(--ap-shadow-1), inset 0 0 0 1px color-mix(in srgb, var(--ab-accent) 45%, transparent); }
-.jig-option:not([data-alt="current"]) .pn-status button[aria-label="building"][aria-checked="true"] .pn-status-name { color: var(--ab-accent); }
+.jig-option:not([data-alt="current"]:not([data-proposal])) .ap-proto[data-status="building"] { color: var(--ab-accent); }
+.jig-option:not([data-alt="current"]:not([data-proposal])) .pn-status button[aria-label="building"][aria-checked="true"] { box-shadow: var(--ap-shadow-1), inset 0 0 0 1px color-mix(in srgb, var(--ab-accent) 45%, transparent); }
+.jig-option:not([data-alt="current"]:not([data-proposal])) .pn-status button[aria-label="building"][aria-checked="true"] .pn-status-name { color: var(--ab-accent); }
 /* Proposals only: an agent draft's Discard/Accept are labelled, Discard left of Accept, no keys (replaces the X/✓ edge minis). */
 .jx-edge-acts { position: absolute; right: var(--size-px-6); bottom: var(--size-px-6); z-index: 2; display: flex; gap: var(--size-px-4); opacity: 0; pointer-events: none; transition: opacity 160ms var(--ab-ease); }
 .jx-edge-acts .ap-btn { height: var(--size-px-24); font-size: var(--size-px-12); background: var(--ap-surface); }
 :is(.ab-edge-host, .cd-item):is(:hover, :focus-within) .jx-edge-acts { opacity: 1; pointer-events: auto; }
 /* Proposals only (DI-003 option A): prototype rows navigate, so no chevron; status glyph trails, names align with themes. */
-.jig-option:not([data-alt="current"]) .cur-prototype-row[data-jx-row] :is(.cur-sidebar-label, .jx-inline-input) { flex: 1; min-width: 0; }
-.jig-option:not([data-alt="current"]) .cur-prototype-row[data-jx-row] .ap-proto svg { color: inherit; }
+.jig-option:not([data-alt="current"]:not([data-proposal])) .cur-prototype-row[data-jx-row] :is(.cur-sidebar-label, .jx-inline-input) { flex: 1; min-width: 0; }
+.jig-option:not([data-alt="current"]:not([data-proposal])) .cur-prototype-row[data-jx-row] .ap-proto svg { color: inherit; }
+/* Refinement: missing-name error. Ink, not red (red means a challenge). */
+.jx-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.pn-title[aria-invalid="true"] { box-shadow: inset 0 calc(-1 * var(--size-px-2)) 0 var(--ap-ink); }
+.jx-field-help { display: flex; align-items: center; gap: var(--size-px-6); margin: var(--size-px-6) 0 0; font-size: var(--size-px-13); color: var(--ap-ink); }
+.jx-field-help svg { flex-shrink: 0; }
+[data-untitled] { color: var(--ap-ink-3); }
+.jx-footbar { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--size-px-8) var(--size-px-12);
+  padding: var(--size-px-12) var(--size-px-16); background: var(--ap-surface); box-shadow: 0 var(--size-px-neg-0-5) 0 var(--ap-line);
+  transform: translateY(100%); transition: transform 200ms var(--ap-ease); }
+.jx-footbar[data-open] { transform: none; }
+.jx-footbar p { margin: 0; font-size: var(--size-px-13); color: var(--ap-ink); }
+.jx-footbar-acts { display: flex; gap: var(--size-px-8); margin-left: auto; }
+@media (prefers-reduced-motion: reduce) { .jx-footbar { transition: none; } }
+/* Narrow: the pane covers the view switcher, so the bar's actions sit above it */
+@media (max-width: 720px) { .jx-footbar { padding-bottom: var(--size-px-64); } }
 .jx-shake { animation: jx-shake 280ms ease-out; }
 @keyframes jx-shake { 20% { translate: -4px 0; } 40% { translate: 4px 0; } 60% { translate: -3px 0; } 80% { translate: 2px 0; } }
 .jx-inline-input[aria-invalid="true"]::placeholder { color: var(--ap-ink-2); }
@@ -247,6 +262,74 @@
   <div class="jig-decision" data-decision="new-prototype" data-question="New prototype: which approach?" data-options="Current|A|B|C|B from sidebar + C from a theory"></div>
 </section>
 
+<section class="jig-section jx-wide" id="name-error">
+  <h2>Refinement: missing-name error</h2>
+  <p>Maggie, on the “Name it to keep it.” line in B: <q>we need a better error state than this</q>. These are design suggestions; she hasn't chosen one. Each is shown for the prototype and for the theory's claim. Use the pills to trigger the error, correct it, and close or undo; Esc closes the pane as the X does.</p>
+  <h3>Prototype</h3>
+  <div class="jig-compare" data-flow="nameProto">
+    <div class="jig-option" data-alt="current" data-proposal>
+      <div class="jig-label" data-current><b>Now</b>Current: loose line + Discard</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 600px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">The jig's own B behaviour today (the app still uses a modal). Close an unnamed prototype that has notes. A grey line appears under the name and shakes. It isn't tied to the field, and its only action, Discard, throws the notes away.</p>
+    </div>
+    <div class="jig-option" data-alt="A">
+      <div class="jig-label"><b>A</b>Field-level error</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 600px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">The name field carries the error: an ink underline plus an icon and helper text under it. The field is <code>aria-invalid</code> with <code>aria-describedby</code> pointing at the help, focus returns to it, and a polite live region reads it out. No shake. Typing clears it; emptying it again brings it back.</p>
+      <ul class="jig-tradeoffs"><li>+ The problem sits on the field that fixes it.</li><li>− Still blocks closing, and offers no way to leave without naming.</li></ul>
+    </div>
+    <div class="jig-option" data-alt="B">
+      <div class="jig-label"><b>B</b>Never block (recommended)</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 600px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">Closing without a name keeps it as “Untitled prototype”. Its row shows that in muted placeholder text, and a toast reads “Saved as Untitled” with Undo (also announced). Undo reopens it unsaved with the notes intact; clicking the row reopens it to rename.</p>
+      <ul class="jig-tradeoffs"><li>+ Nothing is lost and nothing fails; answers the open “Untitled” question.</li><li>+ No Discard needed here: retiring or deleting it stays where it always is.</li><li>− Untitled objects can pile up; the muted row is the only nudge.</li></ul>
+    </div>
+    <div class="jig-option" data-alt="C">
+      <div class="jig-label"><b>C</b>Foot bar in the pane</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 600px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">A bar rises from the pane's foot (not a modal): “This prototype has notes but no name.” with Discard on the left and Keep as Untitled as the primary on the right. Focus moves to the name; typing one removes the bar. Announced politely.</p>
+      <ul class="jig-tradeoffs"><li>+ Fixing (type the name) and leaving (Discard / Keep) are clearly separate.</li><li>− One more stop before you can leave.</li></ul>
+    </div>
+  </div>
+
+  <h3>Theory</h3>
+  <div class="jig-compare" data-flow="nameTheory">
+    <div class="jig-option" data-alt="current" data-proposal>
+      <div class="jig-label" data-current><b>Now</b>Current: loose line + Discard</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 520px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">The jig's own B behaviour today (the app still uses a modal). Close an unnamed theory that has notes. A grey line appears under the claim and shakes. It isn't tied to the field, and its only action, Discard, throws the notes away.</p>
+    </div>
+    <div class="jig-option" data-alt="A">
+      <div class="jig-label"><b>A</b>Field-level error</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 520px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">The claim field carries the error: an ink underline plus an icon and helper text under it. The field is <code>aria-invalid</code> with <code>aria-describedby</code> pointing at the help, focus returns to it, and a polite live region reads it out. No shake. Typing clears it; emptying it again brings it back.</p>
+      <ul class="jig-tradeoffs"><li>+ The problem sits on the field that fixes it.</li><li>− Still blocks closing, and offers no way to leave without naming.</li></ul>
+    </div>
+    <div class="jig-option" data-alt="B">
+      <div class="jig-label"><b>B</b>Never block (recommended)</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 520px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">Closing without a claim keeps it as “Untitled theory”. Its row shows that in muted placeholder text, and a toast reads “Saved as Untitled” with Undo (also announced). Undo reopens it unsaved with the notes intact; clicking the row reopens it to rename.</p>
+      <ul class="jig-tradeoffs"><li>+ Nothing is lost and nothing fails; answers the open “Untitled” question.</li><li>+ No Discard needed here: retiring or deleting it stays where it always is.</li><li>− Untitled objects can pile up; the muted row is the only nudge.</li></ul>
+    </div>
+    <div class="jig-option" data-alt="C">
+      <div class="jig-label"><b>C</b>Foot bar in the pane</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 520px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">A bar rises from the pane's foot (not a modal): “This theory has notes but no claim.” with Discard on the left and Keep as Untitled as the primary on the right. Focus moves to the claim; typing one removes the bar. Announced politely.</p>
+      <ul class="jig-tradeoffs"><li>+ Fixing (type the claim) and leaving (Discard / Keep) are clearly separate.</li><li>− One more stop before you can leave.</li></ul>
+    </div>
+  </div>
+
+  <div class="jig-decision" data-decision="name-error" data-question="Missing name: which treatment?" data-options="Current|A field-level|B never block|C foot bar|A for theories, B for prototypes"></div>
+</section>
+
 <section class="jig-section jx-wide" id="state-theory">
   <h2>State a theory</h2>
   <p>Triggered by + on the “Agent memory” heading. The theme is already known, so every option carries it.</p>
@@ -360,7 +443,7 @@
 <section class="jig-section" id="questions">
   <h2>Open questions</h2>
   <ol class="jig-tradeoffs" style="font-size:14px">
-    <li><b>When does a new object exist?</b> B/C assume it's saved as soon as it has a name, and a nameless, untouched one is discarded silently. Should a nameless one with notes be kept as “Untitled” instead of asking?</li>
+    <li><b>When does a new object exist?</b> B/C assume it's saved as soon as it has a name, and a nameless, untouched one is discarded silently. Should a nameless one with notes be kept as “Untitled” instead of asking? See <a href="#name-error">missing-name error</a>, option B.</li>
     <li><b>Not a draft.</b> “Draft” and the dashed outline mean “the agent made it, not yet mine”. A prototype I'm still naming is mine, so B and C use solid material and the verb Discard, not “Discard draft”.</li>
     <li><b>Validation colour.</b> Red means a challenge, so a missing name shows as ink‑2 text plus a nudge, not a red field. OK?</li>
     <li><b>Superseded by what?</b> Retiring as superseded could ask for the replacing theory (a rival link). Out of scope here.</li>

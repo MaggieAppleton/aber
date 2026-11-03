@@ -57,10 +57,11 @@
   /* Proposals never use X to reject: Discard/Dismiss become labelled buttons left of the primary, with no key. */
   /* Proposals follow DI-003 option A: prototype rows navigate, so no chevron; the status glyph sits at the trailing edge
      and there's no leading type icon. Fixture statuses are illustrative. The section header keeps its expand chevron. */
+  const appFaithful = (n) => { const o = n.closest(".jig-option"); return o?.dataset.alt === "current" && !o.hasAttribute("data-proposal"); };
   const ROW_STATUS = { "Intent review": "building", "Token budget meter": "idea", "One-person app kit": "built", "Memory inspector": "building", "Recovery rehearsal": "shelved" };
   function trailingStatusRows(root) {
     $$(".cur-prototype-row:not([data-jx-row])", root).forEach((row) => {
-      if (row.closest(".jig-option")?.dataset.alt === "current") return;
+      if (appFaithful(row)) return;
       const name = $(".cur-sidebar-label", row)?.textContent.trim();
       if (name === "New prototype") return;
       row.dataset.jxRow = "";
@@ -69,7 +70,7 @@
     });
   }
   function noXReject(root) {
-    if (root.closest(".jig-option")?.dataset.alt === "current") return;
+    if (appFaithful(root)) return;
     const labelled = (b, label) => { const n = el(`<button type="button" class="ap-btn ab-btn-ghost">${label}</button>`); b.replaceWith(n); return n; };
     $$(".ab-edge-acts", root).forEach((g) => {
       const strip = el(`<span class="jx-edge-acts"><button type="button" class="ap-btn ab-btn-ghost">Discard</button><button type="button" class="ap-btn">Accept</button></span>`);
@@ -545,6 +546,177 @@
     esc() { if (this.draft) { this.closePane(); return true; } if (!$(".as-pane", this.app).hasAttribute("data-closed")) { setPane(this.app, false); return true; } },
   };
 
+  /* ════ Refinement: missing-name error (design suggestions; nothing chosen) ════ */
+  const WARN = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-8-80V80a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,172Z"></path></svg>`;
+  let nameSeq = 0;
+  function quietly(fn) {
+    const x = scrollX, y = scrollY;
+    fn();
+    if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
+    scrollTo(x, y);
+  }
+  function announce(stage, msg) {
+    const r = $(".jx-live", stage); if (!r) return;
+    r.textContent = "";
+    setTimeout(() => (r.textContent = msg), 60);
+  }
+  const NAME_KINDS = {
+    proto: {
+      base: protoB, untitled: "Untitled prototype", fix: "Recall timeline",
+      helper: "Add a name to keep this prototype.", bar: "This prototype has notes but no name.",
+      filled: (d) => !!text($(".pn-body", d.doc)),
+      fill: (d) => { $(".pn-body", d.doc).textContent = "Shows what the agent remembers, and when it learned it."; },
+      mirror: (d) => $(".cur-sidebar-label", d.row),
+      hit: (d) => d.row,
+      unsave(c, d) { d.row.classList.add("jx-row-new", "jx-active"); },
+      discard(c) { c.discard(); },
+    },
+    theory: {
+      base: theoryB, untitled: "Untitled theory", fix: "Agents forget on purpose",
+      helper: "Add a claim to keep this theory.", bar: "This theory has notes but no claim.",
+      filled: (d) => !!(text($(".pn-body", d.doc)) || text($(".tw-tc-phrase", d.doc))),
+      fill: (d) => { $(".tw-tc-phrase", d.doc).textContent = "an assistant ships memory that decays by default"; },
+      mirror: (d) => $(".ap-card-claim", d.card),
+      hit: (d) => $(".ap-card", d.card),
+      unsave(c, d) { $(".ap-card", d.card).setAttribute("data-hot", ""); },
+      discard(c) { const d = c.draft; c.draft = null; animateOut(d.card); setPane(c.app, false); },
+    },
+  };
+
+  function nameErr(kindId, alt) {
+    const K = NAME_KINDS[kindId], B = K.base;
+    const c = Object.create(B);
+    const sidebar = (fn) => { if (kindId !== "proto") return fn(); const s = protoScenario; protoScenario = "sidebar"; try { return fn(); } finally { protoScenario = s; } };
+    c.reset = function () {
+      this.saved = null; this.untitled = false; this.errored = false;
+      sidebar(() => B.reset.call(this));
+      this.stage.append(el(`<div class="jx-live jx-sr" role="status" aria-live="polite"></div>`));
+    };
+    c.open = function (o) { sidebar(() => B.open.call(this, o)); if (alt !== "current") this.wire(this.draft); };
+    c.trigger = function () { this.open({}); K.fill(this.draft); this.closePane(); };
+    c.initial = function () { quietly(() => this.trigger()); };
+    c.correct = function () { typeInto(this.draft.title, K.fix); };
+    const fixLabel = kindId === "proto" ? "Needs a name" : "Needs a claim";
+
+    if (alt === "current") {
+      c.controls = function () { return [["Reset", () => this.reset()], "|", [fixLabel, () => this.trigger()], ["Corrected", () => { this.trigger(); this.correct(); }], ["Closed", () => { this.trigger(); this.correct(); this.closePane(); }]]; };
+      return c;
+    }
+
+    c.wire = function (d) {
+      d.title.addEventListener("input", () => {
+        const has = !!text(d.title);
+        if (alt === "A" && this.errored) has ? this.clearErr(d) : this.showErr(d, false);
+        if (alt === "C" && has) this.removeBar(d);
+        if (this.untitled) { const m = K.mirror(d); if (has) delete m.dataset.untitled; else { m.textContent = K.untitled; m.dataset.untitled = ""; } }
+      });
+    };
+    const blocked = (d) => d && !text(d.title) && K.filled(d);
+
+    if (alt === "A") {
+      c.controls = function () { return [["Reset", () => this.reset()], "|", [fixLabel, () => this.trigger()], ["Corrected", () => { this.trigger(); this.correct(); }], ["Closed", () => { this.trigger(); this.correct(); this.closePane(); }]]; };
+      c.closePane = function () {
+        const d = this.draft;
+        if (!blocked(d)) return B.closePane.call(this);
+        this.showErr(d, true);
+        placeCaret(d.title);
+      };
+      c.showErr = function (d, say) {
+        d.errId ||= `jx-name-help-${++nameSeq}`;
+        if (!$("#" + d.errId, d.doc)) d.title.after(el(`<p class="jx-field-help" id="${d.errId}">${WARN}<span>${K.helper}</span></p>`));
+        d.title.setAttribute("aria-invalid", "true");
+        d.title.setAttribute("aria-describedby", d.errId);
+        this.errored = true;
+        if (say) announce(this.stage, K.helper);
+      };
+      c.clearErr = function (d) {
+        $("#" + d.errId, d.doc)?.remove();
+        d.title.removeAttribute("aria-invalid");
+        d.title.removeAttribute("aria-describedby");
+      };
+      return c;
+    }
+
+    /* B and C share "keep as Untitled". */
+    c.keepUntitled = function ({ toast }) {
+      const d = this.draft;
+      this.untitled = true;
+      const m = K.mirror(d); m.textContent = K.untitled; m.dataset.untitled = "";
+      d.title.dataset.placeholder = K.untitled;
+      this.saved = d;
+      B.keep.call(this);
+      if (!d.bound) { d.bound = true; K.hit(d).addEventListener("click", () => this.reopen()); }
+      if (kindId === "theory") setTimeout(() => scrollMainTo(this.app, section(this.app, THEME)), 260);
+      if (toast) this.showToast(); else announce(this.stage, `Saved as ${K.untitled}.`);
+    };
+    c.reopen = function () {
+      const d = this.saved; if (!d || this.draft) return;
+      this.hideToast();
+      this.draft = d;
+      paneDoc(this.app, d.doc);
+      setPane(this.app, true);
+      placeCaret(d.title);
+    };
+    c.showToast = function () {
+      this.hideToast(true);
+      const t = el(`<div class="ap jx-toast">Saved as Untitled<button type="button" class="ap-btn">Undo</button></div>`);
+      this.app.append(t); void t.offsetWidth; t.setAttribute("data-open", "");
+      $("button", t).addEventListener("click", () => this.undo());
+      this.toast = t;
+      announce(this.stage, `Saved as ${K.untitled}. Undo is available.`);
+      clearTimeout(this.toastT); this.toastT = setTimeout(() => this.hideToast(), 8000);
+    };
+    c.hideToast = function (now) {
+      const t = this.toast; if (!t) return; this.toast = null; clearTimeout(this.toastT);
+      if (now) return t.remove();
+      t.removeAttribute("data-open"); setTimeout(() => t.remove(), 200);
+    };
+    c.undo = function () {
+      const d = this.saved; if (!d) return;
+      this.untitled = false;
+      const m = K.mirror(d); m.textContent = ""; delete m.dataset.untitled;
+      K.unsave(this, d);
+      this.reopen();
+      this.saved = null;
+      announce(this.stage, "Not saved yet. Your notes are still here.");
+    };
+
+    if (alt === "B") {
+      c.controls = function () { return [["Reset", () => this.reset()], "|", ["Saved as Untitled", () => this.trigger()], ["Undo", () => { this.trigger(); this.undo(); }], ["Renamed", () => { this.trigger(); this.reopen(); this.correct(); }]]; };
+      c.closePane = function () {
+        const d = this.draft;
+        if (!blocked(d)) return B.closePane.call(this);
+        this.keepUntitled({ toast: true });
+      };
+      return c;
+    }
+
+    /* C: a foot bar inside the pane. */
+    c.controls = function () { return [["Reset", () => this.reset()], "|", [fixLabel, () => this.trigger()], ["Corrected", () => { this.trigger(); this.correct(); }], ["Kept as Untitled", () => { this.trigger(); $("[data-keep]", this.app).click(); }], ["Discarded", () => { this.trigger(); $("[data-discard]", this.app).click(); }]]; };
+    c.closePane = function () {
+      const d = this.draft;
+      if (!blocked(d)) { if (d) this.removeBar(d); return B.closePane.call(this); }
+      if (!d.bar) {
+        const id = `jx-footbar-${++nameSeq}`;
+        const bar = el(`<div class="jx-footbar" role="group" aria-labelledby="${id}"><p id="${id}">${K.bar}</p><div class="jx-footbar-acts"><button type="button" class="ap-btn ab-btn-ghost" data-discard>Discard</button><button type="button" class="ap-btn ab-btn-ink" data-keep>Keep as Untitled</button></div></div>`);
+        $(".as-pane", this.app).append(bar);
+        requestAnimationFrame(() => bar.setAttribute("data-open", ""));
+        d.bar = bar;
+        d.title.setAttribute("aria-describedby", id);
+        $("[data-discard]", bar).addEventListener("click", () => { this.removeBar(d); K.discard(this); });
+        $("[data-keep]", bar).addEventListener("click", () => { this.removeBar(d); this.keepUntitled({ toast: false }); });
+      }
+      announce(this.stage, `${K.bar} Name it, discard it, or keep it as Untitled.`);
+      placeCaret(d.title);
+    };
+    c.removeBar = function (d) {
+      const bar = d?.bar; if (!bar) return;
+      d.bar = null; d.title.removeAttribute("aria-describedby");
+      bar.removeAttribute("data-open"); setTimeout(() => bar.remove(), 200);
+    };
+    return c;
+  }
+
   const theoryC = {
     controls() { return [["Reset", () => this.reset()], "|", ["Empty", () => this.open()], ["Typing", () => this.open({ type: "Agents forget on purpose" })], ["Needs a claim", () => { this.open(); this.commit(); }], ["Saved", () => { this.open({ type: "Agents forget on purpose" }); this.commit(); }]]; },
     reset() {
@@ -885,6 +1057,8 @@
       theme: { current: themeDialogFlow("current"), A: themeDialogFlow("A"), B: themeB, C: themeC },
       retire: { current: retireCurrent, A: retireA, B: retireB },
       delete: { current: deleteCurrent, A: deleteA },
+      nameProto: Object.fromEntries(["current", "A", "B", "C"].map((a) => [a, nameErr("proto", a)])),
+      nameTheory: Object.fromEntries(["current", "A", "B", "C"].map((a) => [a, nameErr("theory", a)])),
     };
     await raf2();
     for (const [flow, alts] of Object.entries(flows)) for (const [alt, ctrl] of Object.entries(alts)) register(flow, alt, ctrl);
