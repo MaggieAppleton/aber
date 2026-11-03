@@ -88,6 +88,14 @@
 .x-head .ap-iconbtn:hover { color: var(--ap-ink); }
 @media (hover: none) { .x-chev { opacity: 1; } }
 
+/* ── Chosen · A's stacked sections with C's band headers ──
+   Leading type icon, label one step bolder and darker, count one step smaller. */
+.x-app[data-variant="ac"] .x-head-btn { color: var(--ap-ink-2); font-size: var(--size-px-13) !important; font-weight: 600 !important; }
+.x-app[data-variant="ac"] .x-head-btn:hover { color: var(--ap-ink); }
+.x-app[data-variant="ac"] .x-head-btn > svg { flex-shrink: 0; color: var(--ap-ink-3); }
+.x-app[data-variant="ac"] .x-head-btn .ap-num { font-size: var(--size-px-11) !important; font-weight: 400; color: var(--ap-ink-3); }
+.jig-label[data-chosen] b { background: var(--ab-accent, #29a383); }
+
 /* ── B · Tabs ── */
 .x-seg { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: var(--size-px-2); border-radius: var(--size-px-8); background: var(--ap-hover); flex: none; }
 .x-seg-thumb { position: absolute; top: var(--size-px-2); bottom: var(--size-px-2); left: var(--size-px-2); width: calc(50% - var(--size-px-2)); border-radius: var(--size-px-6); background: var(--ap-surface); box-shadow: var(--ap-shadow-1); transition: transform 260ms var(--ap-ease); }
@@ -169,10 +177,21 @@
   </ul>
 </section>
 
+<section class="jig-section x-wide" id="opt-chosen">
+  <div class="jig-label" data-chosen><b>A+C</b> Chosen direction: stacked sections with band headers</div>
+  <p class="jig-note">Maggie's pick: A's layout and behaviour with C's header treatment. One scroll, <em>Themes</em> then <em>Prototypes</em>, both top-aligned. Each header collapses its section and sticks, docking at the bottom when its section is below the fold. As in C, each header has the type icon on the left, a slightly bolder label and a smaller count, with + on the right. The chevron appears only on approach or while collapsed, because the header really does collapse. C's independently scrolling bands are not carried over.</p>
+  <div class="x-local"><label><input type="checkbox" data-local="aSticky" checked> Sticky section headers (applies to A as well)</label></div>
+  <div class="x-scrollx"><div class="jig-stage" style="--jig-stage-h:680px" data-stage="ac"></div></div>
+  <ul class="jig-tradeoffs">
+    <li>The icons and labels on the two headers match the type icons used in Columns, so a Theme or Prototype is recognisable in both views.</li>
+    <li>The count is 11px against a 13px label (C's size, up from A's 12px), so it reads as a count rather than a second label.</li>
+    <li>Prototype rows have no chevron. The trailing status glyph, building shown in green, is their only trailing mark.</li>
+  </ul>
+</section>
+
 <section class="jig-section x-wide" id="opt-a">
-  <div class="jig-label"><b>A</b> Stacked sections, top-aligned</div>
+  <div class="jig-label"><b>A</b> Stacked sections, top-aligned <span class="jig-note">(the chosen layout; reference)</span></div>
   <p class="jig-note">One scroll, two labelled sections: <em>Themes 8</em> then <em>Prototypes 5</em>, each with its own + . The header collapses its section, so its chevron is legitimate (shown at rest only while collapsed; on approach otherwise). Headers stick: a section below the fold docks its header at the bottom edge, and clicking a docked header scrolls to it instead of collapsing.</p>
-  <div class="x-local"><label><input type="checkbox" data-local="aSticky" checked> Sticky section headers</label></div>
   <div class="x-scrollx"><div class="jig-stage" style="--jig-stage-h:680px" data-stage="a"></div></div>
   <ul class="jig-tradeoffs">
     <li>Both populations visible at once; prototypes sit directly under themes instead of being pushed to the floor.</li>
@@ -195,7 +214,7 @@
 </section>
 
 <section class="jig-section x-wide" id="opt-c">
-  <div class="jig-label"><b>C</b> Bands, after Columns</div>
+  <div class="jig-label"><b>C</b> Bands, after Columns <span class="jig-note">(the chosen headers; reference)</span></div>
   <p class="jig-note">Columns' grammar turned 90°: each type gets a band with Columns' header (type icon, name, count, +) and its own scroll, raw to refined from top to bottom. Short lists sit top-aligned; long ones share the height, so the Prototypes band never leaves the screen. No collapse, so no chevrons at all.</p>
   <div class="x-scrollx"><div class="jig-stage" style="--jig-stage-h:680px" data-stage="c"></div></div>
   <ul class="jig-tradeoffs">
@@ -220,7 +239,7 @@
 
 <section class="jig-section x-wide">
   <h2>Decisions</h2>
-  <div class="jig-decision" data-decision="structure" data-question="Overall sidebar structure" data-options="Current|A stacked sections|B tabs|C bands|D section of the view"></div>
+  <div class="jig-decision" data-decision="structure" data-question="Overall sidebar structure" data-default="A stacked sections with C headers (chosen)" data-options="A stacked sections with C headers (chosen)|Current|A stacked sections|B tabs|C bands|D section of the view"></div>
   <div class="jig-decision" data-decision="row-identity" data-question="Row identity: where the type icon and prototype status live" data-options="Leading status glyph on prototype rows|Trailing status glyph (names align with themes)|Header carries the type; rows plain"></div>
   <div class="jig-decision" data-decision="proto-affordance" data-question="How a prototype row signals that it opens in the pane" data-options="Hover paint, then the selection ring when open|Status glyph is the only trailing mark|Keep a trailing navigation mark (not a chevron)"></div>
 </section>
@@ -328,7 +347,7 @@
 
   function head(st, key, label, count, newLabel) {
     const open = !st.closed[key];
-    return `<div class="x-sentinel" data-sentinel="${key}"></div><div class="x-head" data-head="${key}"><button type="button" class="x-head-btn" data-act="section" data-section="${key}" aria-expanded="${open}" aria-controls="${st.uid}-${key}"><span>${label}</span><span class="ap-num">${count}</span><span class="x-chev">${svg("chevron", 12)}</span></button>${iconBtn("plus", newLabel, "noop")}</div>`;
+    return `<div class="x-sentinel" data-sentinel="${key}"></div><div class="x-head" data-head="${key}"><button type="button" class="x-head-btn" data-act="section" data-section="${key}" aria-expanded="${open}" aria-controls="${st.uid}-${key}">${st.variant === "ac" ? svg(key === "themes" ? "theme" : "proto", 13) : ""}<span>${label}</span><span class="ap-num">${count}</span><span class="x-chev">${svg("chevron", 12)}</span></button>${iconBtn("plus", newLabel, "noop")}</div>`;
   }
   const region = (st, key, inner) => `<div class="x-collapse" id="${st.uid}-${key}" role="region" aria-label="${key}"${st.closed[key] ? " data-closed inert" : ""}><div class="x-clip">${inner}</div></div>`;
 
@@ -365,7 +384,7 @@
     </div>`;
   }
 
-  const BODIES = { current: bodyCurrent, a: bodyA, b: bodyB, c: bodyC, d: bodyD };
+  const BODIES = { current: bodyCurrent, ac: bodyA, a: bodyA, b: bodyB, c: bodyC, d: bodyD };
 
   function mini(st) {
     const plus = st.variant === "current" ? iconBtn("plus", "New theme", "noop") : "";
@@ -590,7 +609,7 @@
     else if (act === "mini") {
       const sec = el.dataset.section;
       if (st.variant === "b") st.tab = sec;
-      if (st.variant === "a") st.closed[sec] = false;
+      if (st.variant === "a" || st.variant === "ac") st.closed[sec] = false;
       if (st.variant === "current" && sec === "prototypes") st.protosOpen = true;
       st.overlay = sec; render(st);
       const target = st.host.querySelector(sec === "prototypes"
@@ -634,7 +653,7 @@
   }));
   document.querySelectorAll("[data-local]").forEach(c => c.addEventListener("change", () => {
     G[c.dataset.local] = c.checked;
-    stages.filter(s => s.variant === "a").forEach(render);
+    stages.filter(s => s.variant === "a" || s.variant === "ac").forEach(render);
   }));
 
   /* ── Boot: read captured fixtures, then build stages ── */
@@ -658,10 +677,10 @@
     };
     syncControls();
     const rails = document.getElementById("rails");
-    const LABELS = { current: ["Current", "Bottom accordion"], a: ["A", "Stacked sections"], b: ["B", "Tabs"], c: ["C", "Bands"], d: ["D", "Section of the view"] };
-    for (const v of ["current", "a", "b", "c", "d"]) {
+    const LABELS = { current: ["Current", "Bottom accordion"], ac: ["A+C", "Chosen: stacked, band headers"], a: ["A", "Stacked sections"], b: ["B", "Tabs"], c: ["C", "Bands"], d: ["D", "Section of the view"] };
+    for (const v of ["current", "ac", "a", "b", "c", "d"]) {
       const opt = document.createElement("div"); opt.className = "jig-option";
-      opt.innerHTML = `<div class="jig-label"${v === "current" ? " data-current" : ""}><b>${LABELS[v][0]}</b> ${LABELS[v][1]}</div><div class="jig-stage" style="--jig-stage-h:680px; min-height:680px"></div>`;
+      opt.innerHTML = `<div class="jig-label"${v === "current" ? " data-current" : v === "ac" ? " data-chosen" : ""}><b>${LABELS[v][0]}</b> ${LABELS[v][1]}</div><div class="jig-stage" style="--jig-stage-h:680px; min-height:680px"></div>`;
       rails.append(opt);
       makeStage(opt.querySelector(".jig-stage"), v, true);
     }

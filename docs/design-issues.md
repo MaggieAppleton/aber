@@ -91,7 +91,7 @@ Status values are `observed`, `scoped`, `exploring`, `decided` and `done`.
 
 ## DI-003 · Sidebar navigation: prototypes sit at the bottom and rows misuse chevrons
 
-**Status:** exploring
+**Status:** direction chosen (jig only; app unchanged)
 **Concepts:** Theme, Prototype
 **Surfaces:** the Theme sections sidebar (`aside.cur-rail`, `current-sidebar.tsx`), with the Columns view as a reference
 
@@ -113,7 +113,16 @@ Status values are `observed`, `scoped`, `exploring`, `decided` and `done`.
 - a compact layout derived from Columns
 
 It includes a long-population stress test.
-**Decision:** none yet.
+
+**Maggie's choice (verbatim):** "I like the A stacked sections option, but I prefer the headers shown in C bands. I think it's clearer to have the icon to the left of the section header, with the header slightly bolder and the count to the right. I would make the count a little smaller — it currently looks large relative to the text size. So: the headers from C, but the behavior and layout of stacked sections."
+
+**Decision:** A's layout and behaviour, with C's section headers.
+- **Layout (from A):** one scroll with Themes then Prototypes, both top-aligned. Each header collapses its section, sticks, and docks at the bottom edge when its section is below the fold. Each section has its own +.
+- **Headers (from C):** the type icon on the left, then a bolder label (13px, weight 600, `--ap-ink-2`), then the count on the right in a smaller size (11px `--size-px-11`, `--ap-ink-3`).
+- **Not carried over:** C's independently scrolling bands.
+- **Chevrons:** prototype rows end in their status glyph and have no chevron. The header's chevron appears only on approach or while the section is collapsed.
+
+The jig shows this as the preselected "A+C" option (`#opt-chosen`, screenshots `chosen-ac.png` and `chosen-ac-long.png`). The production change waits for implementation approval.
 
 ---
 

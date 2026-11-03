@@ -8,6 +8,7 @@
   const decisions = [...document.querySelectorAll(".jig-decision[data-decision]")];
   for (const el of decisions) {
     const id = el.dataset.decision, state = load(id);
+    if (state.choice === undefined && el.dataset.default) state.choice = el.dataset.default;
     const q = document.createElement("div"); q.className = "jig-decision-q"; q.textContent = el.dataset.question || "Choose";
     const row = document.createElement("div"); row.className = "jig-choices"; row.setAttribute("role", "group"); row.setAttribute("aria-label", q.textContent);
     for (const option of (el.dataset.options || "").split("|")) {
