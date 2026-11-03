@@ -243,7 +243,38 @@ It includes a long-population stress test.
 - Dismissing marks the challenge `discarded`.
 - The effect on confidence is currently stated only in the button's `title` tooltip.
 
-**Inventory:** _being compiled._
+**Inventory:** checked against the code on 2026-11-03. There are **10 violating surfaces** and **2 borderline cases**.
+
+The violation types are:
+
+- **a**: an X discards a suggestion or a draft
+- **b**: Accept and Dismiss are in the wrong order
+- **c**: an icon-only dismiss button with no label
+
+| Code location | Surface | Kind | Current | Types |
+| --- | --- | --- | --- | --- |
+| `ui/tripwire.tsx:45–47` | Tripwire hit in the theory pane and Columns | challenge; accepting lowers confidence by 1 and can be undone | Accept (effect shown only in a tooltip), then an X | a b c |
+| `ui/panes.tsx:143` | Theory pane, Draft row | draft theory | check icon "Accept (A)", then X "Discard (X)" | a b c |
+| `ui/panes.tsx:202` | Theme pane chips | draft theme | Accept, then X "Discard draft theme" | a b c |
+| `ui/panes.tsx:288` | Prototype pane chips | draft prototype | Accept, then X "Discard draft prototype" | a b c |
+| `ui/briefing-app.tsx:90` | Briefing decision row | challenge, evidence, revision, merge or draft | Accept, then X "Dismiss/Discard (X)" | a b c |
+| `ui/briefing-app.tsx:90`, with line 39 | Briefing "New signals" group | **signals that already exist**; the X runs `discardSignal` on the whole group | Accept, then X "Discard (X)" | a b c |
+| `ui/suggestion-review.tsx:27` | Suggestion review, both in the pane (`suggestion-preview.tsx:54`) and in Briefing "Review" | evidence, revision or merge (a merge can't be undone) | Accept, then a Rephrase icon, then an X | a b c |
+| `chat/object-card.tsx:24` | Chat proposal card | draft theory, theme or prototype | Accept, then a Rephrase icon, then an X | a b c |
+| `ui/pill-study.tsx:297–298, 316` | Pill DraftView (`.ps-draft-edge`) | draft theory or revision | check icon, then X | a b c |
+| `ui/draft-edge.tsx:55–58` | Draft edge on cards, shown on hover in Current (`current.tsx:24`) and Columns (`columns2.tsx:219`) | draft theory | X at the top-right, check icon at the bottom-right, stacked | a c |
+
+**Borderline cases:**
+
+- `suggestion-review.tsx:24`: in rephrase mode, "Accept wording" comes first and an X labelled "Cancel rephrase" sits to its right. The X is in the wrong position, and it uses X for an edit mode inside a persisted card.
+- `briefing-app.tsx:90`: for a near-duplicate merge, "Undo merge" (labelled) sits on the left and "Keep merge" is a check icon on the right. The order is right, but the primary action has only an icon.
+
+**Related:**
+
+- The dialog footer's Cancel X (`app/dialogs.tsx:44`, also used by Rephrase draft) is tracked in DI-002.
+- The **X keyboard shortcut** means discard (`app-shell.tsx:191–193`, `briefing-app.tsx:55`, `draft-edge.tsx:50`). Should the shortcut letter change too?
+- Wording question: the model's verb is **Discard** for drafts and signals, while Maggie said **Dismiss** for suggestions. Keep both verbs by object type, or use one label?
+- Ten X uses were checked and are legitimate, because they close a transient pane, panel or banner (for example `columns2.tsx:113`, `atlas2.tsx:350`, `app-shell.tsx:257` and `:285`). Other X uses remove a chip or clear a filter. The remove and clear uses (`timeline2-shared.tsx:117`, `panes.tsx:113` "Remove evidence", attachment chips in `pill-study.tsx`) are outside this rule but worth reviewing.
 
 **Exploration:** none needed, because the rule is decided. Any open questions about Dismiss styling or the density of the suggestion card go into the DI-004 (expansion) and DI-006 (markers) jigs.
 **Decision:** the rule is set. Next, fix every inventory row.
