@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DI-004 / DI-005 · Expanding a Signal and a Dump</title>
+<title>DI-004 / DI-005: Expanding a Signal and a Dump</title>
 <link rel="stylesheet" href="../../../app/web/src/design-tokens.css">
 <link rel="stylesheet" href="../../../app/web/src/app/base.css">
 <link rel="stylesheet" href="../../../app/web/src/ui/homes.css">
@@ -29,8 +29,8 @@
   <p>This jig rebuilds the current inline expansion from the React source. It compares it with three structures, each shown in the Columns view at the real 290px column, in the theme pane's signal feed, and in the Dumps column. Everything is live: expand, edit the note, file, unfile, discard, follow provenance. Nothing touches the app's data.</p>
   <blockquote class="x-quote">“This entire outer component, the one that expands a signal inline, is extremely vibe-coded and poor AI design… when [dumps] are expanded, they're extremely long and hard to read… Both of these need significant rethinks from the ground up.”</blockquote>
   <div class="x-issues">
-    <div class="x-issue"><h3>DI-004 · Expanded Signal, every reuse</h3><p>A Signal is a distilled observation with provenance (an origin dump, often an external source). It is filed into Themes and used as evidence for Theories. Expanding it should show those relationships and let Maggie act on them.</p></div>
-    <div class="x-issue"><h3>DI-005 · Expanded Dump</h3><p>A Dump is Maggie's raw capture (a voice note, text or links). Agents distil it into Signals. Expanding it should first answer “what did this become?”, and then let her read her own words comfortably.</p></div>
+    <div class="x-issue"><h3>DI-004: Expanded Signal, every reuse</h3><p>A Signal is a distilled observation with provenance (an origin dump, often an external source). It is filed into Themes and used as evidence for Theories. Expanding it should show those relationships and let Maggie act on them.</p></div>
+    <div class="x-issue"><h3>DI-005: Expanded Dump</h3><p>A Dump is Maggie's raw capture (a voice note, text or links). Agents distil it into Signals. Expanding it should first answer “what did this become?”, and then let her read her own words comfortably.</p></div>
   </div>
   <p><b>What's wrong now</b>, read from <code>SignalDetail</code> (panes.tsx:93) and <code>DumpDetail</code> (columns2.tsx:261):</p>
   <ul class="x-diag">
@@ -50,15 +50,15 @@
   <table class="jig-table">
     <thead><tr><th>Where</th><th>File:line</th><th>Shows today</th></tr></thead>
     <tbody>
-      <tr><td>Columns · Signals column (the target)</td><td><code>ui/columns2.tsx:146</code>, <code>:215–233</code></td><td><code>.cd-item</code> → <code>.cd-detail</code> → <code>SignalDetail</code>. Height animates over 0.3s. <code>unfold</code> calls markRead (<code>:70</code>). The origin chip unfolds the dump in the Dumps column.</td></tr>
-      <tr><td>Columns · Dumps column</td><td><code>ui/columns2.tsx:145</code>, <code>DumpDetail :261</code></td><td>Playback, full text and transcripts as <code>.cd-transcript</code> (12px), attachments, then the produced items as <code>.cd-link</code></td></tr>
+      <tr><td>Columns: Signals column (the target)</td><td><code>ui/columns2.tsx:146</code>, <code>:215–233</code></td><td><code>.cd-item</code> → <code>.cd-detail</code> → <code>SignalDetail</code>. Height animates over 0.3s. <code>unfold</code> calls markRead (<code>:70</code>). The origin chip unfolds the dump in the Dumps column.</td></tr>
+      <tr><td>Columns: Dumps column</td><td><code>ui/columns2.tsx:145</code>, <code>DumpDetail :261</code></td><td>Playback, full text and transcripts as <code>.cd-transcript</code> (12px), attachments, then the produced items as <code>.cd-link</code></td></tr>
       <tr><td>Signal row (shared)</td><td><code>ui/panes.tsx:69</code> <code>SignalRow</code></td><td>base-ui Accordion, <code>.pn-sig</code> › <code>.pn-ev</code> › <code>.pn-detail</code>. Opening it calls markRead.</td></tr>
       <tr><td>Signal detail (shared)</td><td><code>ui/panes.tsx:93</code> <code>SignalDetail</code></td><td>Editable gist, Note, evidence links, a mixed themes/origin chip row, a source chip (labelled with the gist), and merge / − / + / trash icons</td></tr>
-      <tr><td>Theme pane · signal feed</td><td><code>ui/panes.tsx:212</code>, <code>FeedLine :83</code></td><td><code>SignalRow feed</code> with a glyph, the gist over its source, and the theory chips it moves. Detail indented under the glyph.</td></tr>
-      <tr><td>Theory pane · evidence grid</td><td><code>ui/panes.tsx:174</code></td><td><code>SignalRow</code> in the Supports and Undermines halves of <code>.pn-grid</code>, adding an x “Remove evidence” button</td></tr>
-      <tr><td>Briefing · new signals</td><td><code>ui/briefing-app.tsx:109</code></td><td><code>.br-siglist-button</code> swaps for a full <code>SignalRow open</code></td></tr>
-      <tr><td>Atlas · theme listing</td><td><code>ui/atlas2.tsx:428</code></td><td><code>SignalRow</code></td></tr>
-      <tr><td>Chat · signal list</td><td><code>chat/parts.tsx:36</code></td><td><code>SignalRow</code></td></tr>
+      <tr><td>Theme pane: signal feed</td><td><code>ui/panes.tsx:212</code>, <code>FeedLine :83</code></td><td><code>SignalRow feed</code> with a glyph, the gist over its source, and the theory chips it moves. Detail indented under the glyph.</td></tr>
+      <tr><td>Theory pane: evidence grid</td><td><code>ui/panes.tsx:174</code></td><td><code>SignalRow</code> in the Supports and Undermines halves of <code>.pn-grid</code>, adding an x “Remove evidence” button</td></tr>
+      <tr><td>Briefing: new signals</td><td><code>ui/briefing-app.tsx:109</code></td><td><code>.br-siglist-button</code> swaps for a full <code>SignalRow open</code></td></tr>
+      <tr><td>Atlas: theme listing</td><td><code>ui/atlas2.tsx:428</code></td><td><code>SignalRow</code></td></tr>
+      <tr><td>Chat: signal list</td><td><code>chat/parts.tsx:36</code></td><td><code>SignalRow</code></td></tr>
       <tr><td>Dump viewer (outside Columns)</td><td><code>app/dialogs.tsx:99</code> <code>inspectDump</code></td><td>Read-only modal, <code>max-height: 65dvh; overflow: auto</code> (an inner scroll). Text, transcripts and attachments, with no “what it made”.</td></tr>
       <tr><td>Merge</td><td><code>app/signal-merge.tsx</code></td><td>Two-step dialog: pick a candidate, then review with <code>SourceReview</code> and a reason</td></tr>
       <tr><td>Signal mini-card</td><td><code>ui/signal-card.tsx</code> (tripwire.tsx:42, briefing-app.tsx:94, suggestion-preview.tsx:40)</td><td><code>.ab-sigcard</code>, doesn't expand. It's out of scope but should reuse the same field names.</td></tr>
@@ -73,7 +73,7 @@
   <table class="jig-table">
     <thead><tr><th>Rung</th><th>Signal</th><th>Dump</th></tr></thead>
     <tbody>
-      <tr><td><b>Row</b> (scan)</td><td>New mark, gist, source domain</td><td>Kind glyph, first line, time · <b>made N</b> (new in A–C)</td></tr>
+      <tr><td><b>Row</b> (scan)</td><td>New mark, gist, source domain</td><td>Kind glyph, first line, time, then <b>made N</b> (new in A–C)</td></tr>
       <tr><td><b>Expanded</b> (glance)</td><td>Editable gist (replacing the row, not repeating it), note, themes, theories, from, source</td><td>What it made, named, then playback and the opening of the text</td></tr>
       <tr><td><b>On demand</b></td><td>Maggie's original passage; the full dump; the external post</td><td>The full transcript, in readable paragraphs, in place (A, C) or as a document (B)</td></tr>
       <tr><td><b>Verbs</b></td><td>Relationship verbs on their own field, always labelled: Unfile, + File, + Use as evidence. × only closes fleeting surfaces (pickers, menus, the pane). Object verbs (merge, discard) apart, with consequences.</td><td>Open what it made. (Delete stays in the Dump log.)</td></tr>
@@ -81,86 +81,86 @@
   </table>
 </section>
 
-<section class="jig-section" style="--jig-min: 520px">
-  <h2>1 · A signal in the Columns view (290px column)</h2>
+<section class="jig-section" style="--jig-min: var(--size-px-520)">
+  <h2>1: A signal in the Columns view (290px column)</h2>
   <p>The target from the screenshot: <i>Design studio ships a canvas-style agent UI</i>, which comes from a 4-minute voice note. Dumps sit on the left so you can follow “From”. Each column list is the only scroller: no expansion scrolls inside itself.</p>
   <div class="jig-compare">
     <div class="jig-option">
       <div class="jig-label" data-current><b>Current</b> Rebuilt from SignalDetail <button class="x-reset" data-reset="c-cur">Reset</button></div>
       <p class="jig-note">Real classes and order. Try the trash icon: it discards at once.</p>
-      <div class="jig-stage x-stage" style="--jig-stage-h: 780px" data-stage="c-cur" data-surface="columns" data-option="current"></div>
+      <div class="jig-stage x-stage" style="--jig-stage-h: calc(var(--size-px-760) + var(--size-px-20))" data-stage="c-cur" data-surface="columns" data-option="current"></div>
     </div>
     <div class="jig-option">
       <div class="jig-label"><b>A</b> Field sheet, in place <button class="x-reset" data-reset="c-a">Reset</button></div>
-      <p class="jig-note">The row becomes the object. The gist itself turns editable, and under it a labelled sheet: Note, Themes, Theories, From, Source. Each relationship carries its own verb. Themes has an <b>Edit</b> mode that lists each theme with a labelled <b>Unfile</b>, so chips stay clean at 274px and nothing removes on a stray tap. “From” opens Maggie's passage (marked <i>illustrative</i>, with a toggle to today's data); “Open in dump” jumps there. The foot puts Discard… on the left and Merge… on the right; Discard shows its consequences before it acts.</p>
-      <div class="jig-stage x-stage" style="--jig-stage-h: 780px" data-stage="c-a" data-surface="columns" data-option="A"></div>
+      <p class="jig-note">The row becomes the object. The gist itself turns editable, and under it a labelled sheet: Note, Themes, Theories, From, Source. Each relationship carries its own verb. Themes has an <b>Edit</b> mode that lists each theme with a labelled <b>Unfile</b>, so chips stay clean at 274px and nothing removes on a stray tap. “From” opens Maggie's passage (marked <i>illustrative</i>, with a toggle to today's data); “Open in dump” jumps there. The foot puts Discard on the left and Merge on the right; Discard shows its consequences before it acts.</p>
+      <div class="jig-stage x-stage" style="--jig-stage-h: calc(var(--size-px-760) + var(--size-px-20))" data-stage="c-a" data-surface="columns" data-option="A"></div>
       <div class="x-optmeta"><div><h4>Long content</h4><p>The sheet grows with real data; there are no clamps. A long note wraps. The passage is one paragraph and only appears when asked for.</p></div><div><h4>Versus the pane</h4><p>Uses the same field names and order as the <code>.pn-meta</code> list in a pane doc, so promoting a signal to a pane is the same thing, bigger.</p></div></div>
     </div>
     <div class="jig-option x-wide">
       <div class="jig-label"><b>B</b> Select, then read in the docked pane <button class="x-reset" data-reset="c-b">Reset</button></div>
       <p class="jig-note">Rows never expand. Selecting one keeps it to a single line, rings it, and opens the object as a <code>.pn-doc</code> in the existing pane: title, meta, note, what the source says, and the passage from the voice note. Each theme chip has a labelled <b>Unfile</b> beside it, revealed on hover or focus and always shown on touch. The pane's × closes the pane, nothing else. “From” pushes the dump document, and the back crumb returns. Escape closes. At narrow widths the pane becomes a full-screen sheet.</p>
-      <div class="jig-stage x-stage" style="--jig-stage-h: 780px" data-stage="c-b" data-surface="columns" data-option="B"></div>
+      <div class="jig-stage x-stage" style="--jig-stage-h: calc(var(--size-px-760) + var(--size-px-20))" data-stage="c-b" data-surface="columns" data-option="B"></div>
       <div class="x-optmeta"><div><h4>Long content</h4><p>The best case for long reading: 15px at line-height 1.65 with a 68ch measure, and room for a long note.</p></div><div><h4>Versus the pane</h4><p>This <i>is</i> the pane. Signals and Dumps become first-class pane objects, like Theories and Themes.</p></div><div><h4>Cost</h4><p>Scanning several signals means repeated selects. The column stays narrow, but the pane takes about 55% of the width.</p></div></div>
     </div>
     <div class="jig-option">
-      <div class="jig-label"><b>C</b> Provenance trail <button class="x-reset" data-reset="c-c">Reset</button></div>
-      <p class="jig-note">The expansion reads top to bottom as lineage: what the world said, then what Maggie said about it (her extracted words), then this signal and its note, then where it's filed, then what it's evidence for. Object verbs live in a ⋯ menu, so the trail stays clean. Theme chips follow the same grammar: each opens a small menu with “Open theme” and “Unfile from &lt;theme&gt;”. The quoted words are <i>illustrative</i>; the toggle shows what today's data supports.</p>
-      <div class="jig-stage x-stage" style="--jig-stage-h: 780px" data-stage="c-c" data-surface="columns" data-option="C"></div>
+      <div class="jig-label"><b>C</b> Provenance trail <span class="x-chosen">Chosen</span> <button class="x-reset" data-reset="c-c">Reset</button></div>
+      <p class="jig-note">Maggie chose this. After the detail pass, the expansion reads top to bottom as lineage: the source, Maggie's words in the origin dump, this signal and its note, the themes it's filed in, then the theories it's evidence for. Every row uses one rhythm: a 16px icon on the trail line, 14px text, and one 40px icon-button style (<code>.ap-iconbtn</code>) for the link out, the ⋯ menu and the chevron. Each theory row is the claim, with its stance (“Supports”, “Undermines, suggested”) on its own line beneath, and an arrow to open the theory. Object verbs live in the ⋯ menu, which grows from its trigger at the float elevation. Discard confirms in place and lists the consequences, with Cancel on the left and a neutral, not red, Discard as the commit. Theme chips open a menu with “Open theme” and “Unfile from &lt;theme&gt;”. The quoted words are <i>illustrative</i>; the toggle shows what today's data supports.</p>
+      <div class="jig-stage x-stage" style="--jig-stage-h: calc(var(--size-px-760) + var(--size-px-20))" data-stage="c-c" data-surface="columns" data-option="C"></div>
       <div class="x-optmeta"><div><h4>Long content</h4><p>Quotes are the extracted span, so they're short. The full passage and the dump are one click away.</p></div><div><h4>Needs</h4><p>Agents to record the quoted span for each signal. Today there are only origin dump ids.</p></div></div>
     </div>
   </div>
 </section>
 
-<section class="jig-section" style="--jig-min: 520px">
-  <h2>2 · The same signal in the theme pane's feed</h2>
+<section class="jig-section" style="--jig-min: var(--size-px-520)">
+  <h2>2: The same signal in the theme pane's feed</h2>
   <p><i>Novel agent interfaces</i> → Signals. In this context the current detail hides the theme you're in, so you can't unfile from here without a modal. The alternatives show it as “this theme”, with each option's labelled Unfile control. Opening the dump from here uses the pane in every alternative, and the current modal.</p>
   <div class="jig-compare">
     <div class="jig-option">
       <div class="jig-label" data-current><b>Current</b> SignalRow feed <button class="x-reset" data-reset="f-cur">Reset</button></div>
       <p class="jig-note">Click the origin chip to see the <code>inspectDump</code> modal, which scrolls inside itself.</p>
-      <div class="jig-stage x-stage" style="--jig-stage-h: 640px" data-stage="f-cur" data-surface="feed" data-option="current"></div>
+      <div class="jig-stage x-stage" style="--jig-stage-h: calc(var(--size-px-600) + var(--size-px-40))" data-stage="f-cur" data-surface="feed" data-option="current"></div>
     </div>
     <div class="jig-option">
       <div class="jig-label"><b>A</b> Field sheet <button class="x-reset" data-reset="f-a">Reset</button></div>
       <p class="jig-note">The same sheet, with a wider label rail. The glyph keeps the row's left edge.</p>
-      <div class="jig-stage x-stage" style="--jig-stage-h: 640px" data-stage="f-a" data-surface="feed" data-option="A"></div>
+      <div class="jig-stage x-stage" style="--jig-stage-h: calc(var(--size-px-600) + var(--size-px-40))" data-stage="f-a" data-surface="feed" data-option="A"></div>
     </div>
     <div class="jig-option">
       <div class="jig-label"><b>B</b> Push the signal document <button class="x-reset" data-reset="f-b">Reset</button></div>
       <p class="jig-note">Clicking a row replaces the theme doc with the signal doc, and a back crumb returns to the theme. You lose sight of the feed while reading.</p>
-      <div class="jig-stage x-stage" style="--jig-stage-h: 640px" data-stage="f-b" data-surface="feed" data-option="B"></div>
+      <div class="jig-stage x-stage" style="--jig-stage-h: calc(var(--size-px-600) + var(--size-px-40))" data-stage="f-b" data-surface="feed" data-option="B"></div>
     </div>
     <div class="jig-option">
-      <div class="jig-label"><b>C</b> Provenance trail <button class="x-reset" data-reset="f-c">Reset</button></div>
-      <p class="jig-note">At pane width the trail has room. Try ⋯ (arrow keys work in the menu) and Escape.</p>
-      <div class="jig-stage x-stage" style="--jig-stage-h: 640px" data-stage="f-c" data-surface="feed" data-option="C"></div>
+      <div class="jig-label"><b>C</b> Provenance trail <span class="x-chosen">Chosen</span> <button class="x-reset" data-reset="f-c">Reset</button></div>
+      <p class="jig-note">The same trail at pane width, with the same sizes and controls as the column. Try ⋯ (arrow keys work in the menu) and Escape.</p>
+      <div class="jig-stage x-stage" style="--jig-stage-h: calc(var(--size-px-600) + var(--size-px-40))" data-stage="f-c" data-surface="feed" data-option="C"></div>
     </div>
   </div>
 </section>
 
-<section class="jig-section" style="--jig-min: 520px">
-  <h2>3 · A dump in the Columns view (DI-005)</h2>
+<section class="jig-section" style="--jig-min: var(--size-px-520)">
+  <h2>3: A dump in the Columns view (DI-005)</h2>
   <p><i>Voice note, 4 min: review is the new bottleneck</i>: 8 paragraphs, about 560 words, three signals. The first passage is spoken scene-setting. The transcript is authored for the jig, because the seed stores only the first line.</p>
   <div class="jig-compare">
     <div class="jig-option">
       <div class="jig-label" data-current><b>Current</b> Rebuilt from DumpDetail <button class="x-reset" data-reset="d-cur">Reset</button></div>
       <p class="jig-note">Playback is approximated with the <code>.cd-play</code> and <code>.cd-wave</code> classes from homes.css; the app uses <code>VoicePlayback</code>. The transcript is one <code>&lt;p&gt;</code>. What it made comes last.</p>
-      <div class="jig-stage x-stage" style="--jig-stage-h: 820px" data-stage="d-cur" data-surface="dumps" data-option="current"></div>
+      <div class="jig-stage x-stage" style="--jig-stage-h: var(--size-px-820)" data-stage="d-cur" data-surface="dumps" data-option="current"></div>
     </div>
     <div class="jig-option">
       <div class="jig-label"><b>A</b> Made first, text on demand <button class="x-reset" data-reset="d-a">Reset</button></div>
-      <p class="jig-note">The order is a heading with the time and size, then <b>Made</b> (each signal named with its themes, opening in Signals), then playback, the opening passage at 13px, and an explicit “Read the full transcript · 7 more paragraphs · 480 words”. The full text expands in place, as real paragraphs.</p>
-      <div class="jig-stage x-stage" style="--jig-stage-h: 820px" data-stage="d-a" data-surface="dumps" data-option="A"></div>
+      <p class="jig-note">The order is a heading with the time and size, then <b>Made</b> (each signal named with its themes, opening in Signals), then playback, the opening passage at 13px, and an explicit “Read the full transcript, 7 more paragraphs, 480 words”. The full text expands in place, as real paragraphs.</p>
+      <div class="jig-stage x-stage" style="--jig-stage-h: var(--size-px-820)" data-stage="d-a" data-surface="dumps" data-option="A"></div>
     </div>
     <div class="jig-option x-wide">
       <div class="jig-label"><b>B</b> Dump document in the pane <button class="x-reset" data-reset="d-b">Reset</button></div>
       <p class="jig-note">The dump is a document: meta, Made, playback, and the transcript at reading size. Passages that made something carry a signal mark in the margin, and the extracted words are underlined. Both are <i>illustrative</i>: passage positions and quote spans aren't stored, and the toggle shows the plain transcript today's data supports. This replaces the <code>inspectDump</code> modal everywhere.</p>
-      <div class="jig-stage x-stage" style="--jig-stage-h: 820px" data-stage="d-b" data-surface="dumps" data-option="B"></div>
+      <div class="jig-stage x-stage" style="--jig-stage-h: var(--size-px-820)" data-stage="d-b" data-surface="dumps" data-option="B"></div>
     </div>
     <div class="jig-option">
-      <div class="jig-label"><b>C</b> Passages interleaved with what they made <button class="x-reset" data-reset="d-c">Reset</button></div>
-      <p class="jig-note">Each productive passage shows the signal it made directly beneath it, with the extracted words underlined. Passages that made nothing fold into counted disclosures (“2 passages, nothing extracted · 81 words”), so nothing is hidden silently. The pairing is <i>illustrative</i>: with today's data (toggle) C falls back to the Made list and the plain transcript.</p>
-      <div class="jig-stage x-stage" style="--jig-stage-h: 820px" data-stage="d-c" data-surface="dumps" data-option="C"></div>
+      <div class="jig-label"><b>C</b> Passages interleaved with what they made <span class="x-chosen">Chosen</span> <button class="x-reset" data-reset="d-c">Reset</button></div>
+      <p class="jig-note">Each productive passage shows the signal it made directly beneath it, with the extracted words underlined. Passages that made nothing fold into counted disclosures (“2 passages, nothing extracted, 81 words”), so nothing is hidden silently. The pairing is <i>illustrative</i>: with today's data (toggle) C falls back to the Made list and the plain transcript.</p>
+      <div class="jig-stage x-stage" style="--jig-stage-h: var(--size-px-820)" data-stage="d-c" data-surface="dumps" data-option="C"></div>
     </div>
   </div>
 </section>
@@ -168,7 +168,7 @@
 <section class="jig-section">
   <h2>Tradeoffs</h2>
   <table class="jig-table">
-    <thead><tr><th></th><th>Current</th><th>A · Field sheet</th><th>B · Docked pane</th><th>C · Provenance trail</th></tr></thead>
+    <thead><tr><th></th><th>Current</th><th>A: Field sheet</th><th>B: Docked pane</th><th>C: Provenance trail</th></tr></thead>
     <tbody>
       <tr><td>Scanning a list</td><td>Expansion pushes the list down; grey card</td><td>Same as now; one row open per column</td><td>Best: rows never move</td><td>Like A, but taller</td></tr>
       <tr><td>Reading long dumps</td><td>One 12px block, 1,300px tall</td><td>Opening plus explicit reveal; 13px; still 250px wide</td><td>Best: 15px, 68ch, margin marks</td><td>Good: text arrives with its meaning; unproductive passages folded</td></tr>
@@ -190,8 +190,8 @@
     <p><b>Shared grammar: yes, by rungs, not by layout.</b> A row, then a labelled sheet, then the source on demand. The same field names appear in pane meta. Signal and Dump keep different sheets.</p>
     <p><b>Action placement:</b> relationship verbs on their fields; object verbs at the sheet's foot as labelled buttons; Discard always shows its consequences inline, with Undo afterwards.</p>
   </div>
-  <div class="jig-decision" data-decision="signal-structure" data-question="How should a Signal expand?" data-options="Current|A field sheet|B docked pane|C provenance trail|A + C passage"></div>
-  <div class="jig-decision" data-decision="dump-structure" data-question="How should a Dump expand?" data-options="Current|A made-first in place|B pane document|C interleaved passages|A in place + B for full read"></div>
+  <div class="jig-decision" data-decision="signal-structure" data-default="C provenance trail" data-question="How should a Signal expand?" data-options="Current|A field sheet|B docked pane|C provenance trail|A + C passage"></div>
+  <div class="jig-decision" data-decision="dump-structure" data-default="C interleaved passages" data-question="How should a Dump expand?" data-options="Current|A made-first in place|B pane document|C interleaved passages|A in place + B for full read"></div>
   <div class="jig-decision" data-decision="shared-grammar" data-question="Share one summary-to-detail grammar (row → labelled sheet → source on demand) across Signal and Dump?" data-options="Yes|No"></div>
   <div class="jig-decision" data-decision="action-placement" data-question="Where do actions live?" data-options="Current bottom icon row|Verbs on fields + labelled foot|Pane header toolbar|⋯ overflow menu"></div>
 </section>

@@ -194,7 +194,41 @@ The jig shows this as the preselected "A+C" option (`#opt-chosen`, screenshots `
 - Destructive consequences must be visible when an action is invoked.
 
 **Exploration:** [`design/explorations/di-004-expansion/`](../design/explorations/di-004-expansion/index.html), shared with DI-005.
-**Decision:** none yet.
+**Decision:** option C (provenance trail), Maggie. In her words: "For the first choice in expanding Signal and Dump design, I like the provenance trail (option C). But if you look at the actual layout of this, it's still kind of fucked up. … You need to look at all the details. Some things are too small; there are multiple type sizes in use. There are inconsistent icon buttons."
+
+### Detail pass on C
+
+Before and after screenshots are in `design/explorations/di-004-expansion/screenshots/` (`c-before-*.png`, `c-after-*.png`). The design-check results are recorded under item 17.
+
+1. **Evidence-for layout.** "suggested · undermines" was crammed beside the claim with a separate stance arrow, and "Use as evidence" sat in a stray div. Each theory row is now the claim with its stance on its own line beneath ("Undermines, suggested"), and the add action is a trail row like the others. *Fixed.*
+2. **Type sizes.** 13, 12, 11 and 10px were mixed. The trail now uses 14px for all text and 26px only for the gist title. *Fixed.*
+3. **Small icons.** The 10px glyphs and 10px mini links are now 16px. *Fixed.*
+4. **Inconsistent icon buttons.** The ⋯ menu, collapse chevron, external link, "Open →", "+ File" and "+ Use as evidence" were all styled differently. Icon controls now use one `.ap-iconbtn` variant with a 40px hit area, and "add" actions are full-width trail rows. *Fixed.*
+5. **Dot separators.** Every ` · ` and `•` has been removed from C, the jig and its headings (which now use colons). *Fixed.*
+6. **Menu.** It was clipped, sat at the wrong elevation and grew from its centre. It now uses the tier-4 `--ap-shadow-float` token, grows from its trigger (`transform-origin` set to the ⋯ corner), scrolls into view inside the column, and keeps every item to a single 40px line. *Fixed.*
+7. **Trailing ellipses.** These were on "Discard…", "Merge…", "File…" and "Rephrase…". Every action and menu label is now ellipsis-free. "Merge with another signal" fits on one line. *Fixed.*
+8. **Illustrative note.** It was too heavy relative to the content. It is now quiet secondary text with an underlined "Show today's data" toggle. *Fixed.*
+9. **Trail rhythm.** Dots and labels were misaligned and the spacing between nodes was uneven. Each node now has a 16px icon in a fixed 24px tile centred on the trail line, a label row, and one consistent gap. *Fixed.*
+10. **Discard.** It was red, but red means a challenge. Discard is now neutral. The confirm lists its consequences in place, with Cancel on the left and Discard as the commit on the right. *Fixed.*
+11. **Chevrons.** A chevron appeared only once an item was expanded, and carets sat on menu chips. On every collapsible row, the chevron is now visible in both states, points to the current state, stays in the same corner, and sits on a control with `aria-expanded`. Carets have been removed from menu and picker triggers. *Fixed in A, B and C. Current still has none, faithful to the app.*
+12. **Dump collapse.** An expanded C dump had a separate "Fold" control instead of the row chevron. It now collapses with the same chevron as signals, and collapsed titles wrap instead of clipping. *Fixed.*
+13. **Hit areas.** Trail controls were under 40px. Every control is now at least 40px. *Fixed.*
+14. **Overflow at 390px.** The jig's inventory table scrolled the page horizontally. It now wraps. *Fixed.*
+15. **Picker focus.** Opening a picker in C didn't focus its first item. It now does. *Fixed.*
+16. **Accessible names.** The source link's name was its title, which contains a colon that the checker's aria-snapshot parser misreads. The link now has its own name, "Open source on theverge.com", with the title as its description (`aria-describedby`). *Fixed.*
+17. **Title tile (confirm round).** The editable title showed the app's `.pn-edit` hover tint, which stopped short of the ⋯ and chevron and looked like a half-selected header. In C the title has no tint: the text cursor signals that it's editable, and the editing ring appears on focus. *Fixed.*
+18. **"This signal" node (confirm round).** Its icon sat on a solid black tile while every other node is pale, which added emphasis the encoding map doesn't explain. It now matches the other nodes. The header already identifies the signal. *Fixed.*
+19. **Icon-button rest state (confirm round).** ⋯ was a faint bare glyph while the chevron sat on a grey tile, because the app gives an expanded `.ap-iconbtn` a pressed tile. Every icon button in C now rests transparent in ink-2, and trailing row glyphs (⋯ on theme rows, ↗, →) use the same ink. The tile appears only on hover, or on ⋯ while its menu is open. The chevron shows state by direction, so it stays bare when expanded. *Fixed.*
+20. **Illustrative note (confirm round).** In Columns it rendered as a grey box, which was the whole-note button's hover state and heavier than the quote. On every surface it is now plain secondary text with a separate underlined "Show today's data" button. *Fixed.*
+21. **Trail rhythm (confirm round).** Rows inside a node (for example "Agent memory" to "File in a theme") were 25px apart, almost the 27px between nodes. Spacing now has three clear steps: 15px from a label to its content, 23px between rows, and 35px between nodes. *Fixed.*
+22. **design-check.** All exact rules pass; the Jev review is still incomplete.
+    - Command: `agent-kit design check --project <session>/files/design-check-di004`, run with `--exact-only` and then with the Aber `.env`.
+    - Before: `readable-type` 135, `hit-area` 33, `accessible-name` 4, `responsive-overflow` 2.
+    - After: 0 failures. `readable-type`, `hit-area`, `accessible-name`, `type-size-count`, `row-padding`, `transition-properties` and the source rules all pass.
+    - Jev: TypeSafe answered `HTTP 400 {"error_type":"max_tokens_exceeded"}`. The request was over its input-token limit, which is about 38–40k tokens. The cause was not image count or the key name.
+      - The full design model (35k characters) pushes the Columns cases over the limit. The DI-004 config now sends a 16k-character excerpt with the Brief, Concepts, matrix and Surface sections. With it, `c-columns` completed (36k input tokens), but Jev returned "uncertain" on 45 rules.
+      - `c-columns-menu` has 3 frames of about 100 nodes each and exceeds the limit even with no design model. Completing it needs narrower case selectors (a case change, which I didn't make) or a kit change, such as one request per frame.
+    - *Open.*
 
 ## DI-005 · Expanded Dumps are long, hard to read and poorly designed
 
@@ -205,7 +239,7 @@ The jig shows this as the preselected "A+C" option (`#opt-chosen`, screenshots `
 **Maggie's observation (verbatim):** "I'd extend that to the dumps area: when those are expanded, they're extremely long and hard to read and generally poorly designed. … Both of these need significant rethinks from the ground up."
 
 **Exploration:** shared with DI-004. It looks for one summary-to-detail grammar that keeps the different roles of Dump and Signal and their source relationships.
-**Decision:** none yet.
+**Decision:** option C (passages interleaved with what they made), chosen alongside DI-004's provenance trail. The DI-004 detail pass covers both.
 
 ---
 

@@ -2,7 +2,7 @@
 // Every stage owns a small state object and re-renders itself; focus and scroll are restored by data-key / data-scroll.
 (() => {
   const W = window.WORLD, P = window.ICON_PATHS;
-  const ic = (n, s = 12, style = "") => `<svg width="${s}" height="${s}" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"${style ? ` style="${style}"` : ""}>${P[n] || ""}</svg>`;
+  const ic = (n, s = 12, style = "") => `<svg data-icon="${n}" width="${s}" height="${s}" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"${style ? ` style="${style}"` : ""}>${P[n] || ""}</svg>`;
   const esc = t => String(t ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
   const dumpIcon = d => d.kind === "voice" ? "waveform" : d.kind === "link" ? "link" : "text-align-left";
@@ -62,17 +62,17 @@
   const linksOf = d => (d.links || []).map(u => `<a class="cd-link" href="https://${u}" target="_blank" rel="noreferrer">${ic("link")}<span>${esc(u)}</span></a>`).join("");
   const madeRow = (id, ctx = "") => {
     const s = W.signal(id);
-    if (s) return `<button class="xa-made" data-act="goto-signal" data-id="${id}" data-key="made:${ctx}${id}">${ic("pulse")}<span>${esc(s.gist)}<small>${s.themes.map(theme).join(" · ")}</small></span></button>`;
+    if (s) return `<button class="xa-made" data-act="goto-signal" data-id="${id}" data-key="made:${ctx}${id}">${ic("pulse")}<span>${esc(s.gist)}<small>${s.themes.map(theme).join(", ")}</small></span></button>`;
     const t = W.THEORIES[id];
     return t ? `<button class="xa-made" data-draft data-act="open-theory" data-t="${id}">${ic("target")}<span>${esc(t.claim)}<small>Draft theory, suggested</small></span></button>` : "";
   };
-  const evLink = (e, cls = "") => `<button class="pn-link ${cls}" ${e.suggested ? "data-suggested" : ""} data-act="open-theory" data-t="${e.theory}" title="${e.stance === "supports" ? "Supports" : "Undermines"}">${ic(e.stance === "supports" ? "arrow-up" : "arrow-down")}<span>${esc(claim(e.theory))}</span>${cls ? `<span class="xa-stance">${e.suggested ? "suggested · " : ""}${e.stance}</span>` : ""}</button>`;
+  const evLink = (e, cls = "") => `<button class="pn-link ${cls}" ${e.suggested ? "data-suggested" : ""} data-act="open-theory" data-t="${e.theory}" title="${e.stance === "supports" ? "Supports" : "Undermines"}">${ic(e.stance === "supports" ? "arrow-up" : "arrow-down")}<span>${esc(claim(e.theory))}</span>${cls ? `<span class="xa-stance">${e.suggested ? "suggested, " : ""}${e.stance}</span>` : ""}</button>`;
 
   /* Theme relationships. No × on chips: × only closes fleeting surfaces. Each option unfiles with a labelled control that names the theme. */
-  const themeName = (t, ctx) => `${esc(theme(t))}${t === ctx ? ` <span class="ap-muted">· this theme</span>` : ""}`;
+  const themeName = (t, ctx) => `${esc(theme(t))}${t === ctx ? ` <span class="ap-muted">(this theme)</span>` : ""}`;
   function themeChips(st, s, ctx) {
     const ts = themesOf(st, s), pickOpen = st.picker?.id === s.id && st.picker.kind === "file";
-    const add = `<button class="xa-add" data-act="picker" data-pk="file" data-id="${s.id}" data-key="pick:file:${s.id}" aria-expanded="${pickOpen}">${ic("plus", 10)} File</button>`;
+    const add = `<button class="xa-add" data-act="picker" data-pk="file" data-id="${s.id}" data-key="pick:file:${s.id}" aria-haspopup="dialog" aria-expanded="${pickOpen}">${ic("plus", 10)} File</button>`;
     const tail = `${flash(st, s, "themes")}${pickOpen ? filePicker(st, s) : ""}`;
     const none = ts.length ? "" : `<span class="xa-none">Not filed</span>`;
     if (st.opt === "A") {
@@ -84,7 +84,7 @@
     }
     if (st.opt === "C") {
       // C: object verbs live in menus; each chip opens a small menu.
-      return `<div class="xa-chips">${ts.map(t => { const id = `chip:${s.id}:${t}`, open = st.menu === id; return `<span class="xc-menu-wrap"><button class="pn-chip xc-chipbtn" aria-haspopup="menu" aria-expanded="${open}" data-act="menu" data-id="${id}" data-key="menu:${id}">${ic("binoculars")}<span>${themeName(t, ctx)}</span>${ic("caret-down", 10)}</button>${open ? `<div class="xc-menu xc-chipmenu" role="menu" aria-label="${esc(theme(t))}"><button role="menuitem" data-act="open-theme" data-t="${t}" data-key="menu-first">${ic("arrow-right")} Open theme</button><button role="menuitem" data-act="unfile" data-id="${s.id}" data-t="${t}">${ic("minus")} Unfile from ${esc(theme(t))}</button></div>` : ""}</span>`; }).join("")}${none}${add}</div>${tail}`;
+      return `<div class="xa-chips">${ts.map(t => { const id = `chip:${s.id}:${t}`, open = st.menu === id; return `<span class="xc-menu-wrap"><button class="pn-chip xc-chipbtn" aria-haspopup="menu" aria-expanded="${open}" data-act="menu" data-id="${id}" data-key="menu:${id}">${ic("binoculars")}<span>${themeName(t, ctx)}</span></button>${open ? `<div class="xc-menu xc-chipmenu" role="menu" aria-label="${esc(theme(t))}"><button role="menuitem" data-act="open-theme" data-t="${t}" data-key="menu-first">${ic("arrow-right")} Open theme</button><button role="menuitem" data-act="unfile" data-id="${s.id}" data-t="${t}">${ic("minus")} Unfile from ${esc(theme(t))}</button></div>` : ""}</span>`; }).join("")}${none}${add}</div>${tail}`;
     }
     // B: the pane has room; a labelled Unfile sits beside the chip, revealed on hover or focus and always shown on touch.
     return `<div class="xa-chips">${ts.map(t => `<span class="xb-chiprow"><button class="pn-chip" data-act="open-theme" data-t="${t}">${ic("binoculars")}<span>${themeName(t, ctx)}</span></button><button class="xa-text-btn xb-unfile" data-act="unfile" data-id="${s.id}" data-t="${t}" data-key="unfile:${s.id}:${t}" aria-label="Unfile from ${esc(theme(t))}">Unfile</button></span>`).join("")}${none}${add}</div>${tail}`;
@@ -92,22 +92,22 @@
   function evidenceRows(st, s) {
     const ev = evOf(st, s);
     return `${ev.length ? ev.map(e => evLink(e, "xa-ev")).join("") : `<span class="xa-none">Not evidence for a theory yet</span>`}
-      <div><button class="xa-add" data-act="picker" data-pk="link" data-id="${s.id}" data-key="pick:link:${s.id}" aria-expanded="${st.picker?.id === s.id && st.picker.kind === "link"}">${ic("plus", 10)} Use as evidence</button></div>
+      <div><button class="xa-add" data-act="picker" data-pk="link" data-id="${s.id}" data-key="pick:link:${s.id}" aria-haspopup="dialog" aria-expanded="${st.picker?.id === s.id && st.picker.kind === "link"}">${ic("plus", 10)} Use as evidence</button></div>
       ${flash(st, s, "evidence")}${st.picker?.id === s.id && st.picker.kind === "link" ? linkPicker(st, s) : ""}`;
   }
   const flash = (st, s, field) => { const f = st.flash[s.id]; return f && f.field === field ? `<div class="xa-flash" role="status">${esc(f.msg)} <button class="xa-link-btn" data-act="undo" data-id="${s.id}" data-key="undo:${s.id}">Undo</button></div>` : ""; };
   function filePicker(st, s) {
     const have = themesOf(st, s);
-    return `<div class="xa-picker" role="group" aria-label="File in a theme"><div class="xa-picker-head">File in a theme <button class="xa-x" data-act="picker-close" data-id="${s.id}" aria-label="Close">${ic("x", 10)}</button></div>
+    return `<div class="xa-picker" role="dialog" aria-label="File in a theme"><div class="xa-picker-head">File in a theme <button class="xa-x" data-act="picker-close" data-id="${s.id}" aria-label="Close">${ic("x", 10)}</button></div>
       ${Object.keys(W.THEMES).filter(t => !have.includes(t)).map((t, i) => `<button class="xa-pick" data-act="file" data-id="${s.id}" data-t="${t}"${i === 0 ? ` data-key="picker-first"` : ""}>${ic("binoculars")}${esc(theme(t))}</button>`).join("")}</div>`;
   }
   function linkPicker(st, s) {
     const have = evOf(st, s).map(e => e.theory);
-    return `<div class="xa-picker" role="group" aria-label="Use as evidence"><div class="xa-picker-head">Evidence for which theory? <button class="xa-x" data-act="picker-close" data-id="${s.id}" aria-label="Close">${ic("x", 10)}</button></div>
+    return `<div class="xa-picker" role="dialog" aria-label="Use as evidence"><div class="xa-picker-head">Evidence for which theory? <button class="xa-x" data-act="picker-close" data-id="${s.id}" aria-label="Close">${ic("x", 10)}</button></div>
       ${Object.keys(W.THEORIES).filter(t => !W.THEORIES[t].draft && !have.includes(t)).map((t, i) => `<div class="xa-pick-row"><span>${esc(claim(t))}</span><button class="xa-x" data-act="link" data-stance="supports" data-id="${s.id}" data-t="${t}" aria-label="Supports: ${esc(claim(t))}"${i === 0 ? ` data-key="picker-first"` : ""}>${ic("arrow-up", 11)}</button><button class="xa-x" data-act="link" data-stance="undermines" data-id="${s.id}" data-t="${t}" aria-label="Undermines: ${esc(claim(t))}">${ic("arrow-down", 11)}</button></div>`).join("")}</div>`;
   }
   function sourceLinks(st, s) {
-    const srcs = s.sources.map(x => `<a class="xa-src" href="${x.url}" target="_blank" rel="noreferrer"><span class="xa-src-by"><b>${esc(x.domain)}</b> · ${esc(x.author)} · ${esc(x.date)} ${ic("arrow-square-out", 10)}</span><span class="xa-src-text">${esc(x.title)}</span></a>`).join("");
+    const srcs = s.sources.map(x => `<a class="xa-src" href="${x.url}" target="_blank" rel="noreferrer"><span class="xa-src-by"><b>${esc(x.domain)}</b> ${esc(x.author)}, ${esc(x.date)} ${ic("arrow-square-out", 10)}</span><span class="xa-src-text">${esc(x.title)}</span></a>`).join("");
     return (srcs || `<span class="xa-none">Your own observation, no external source</span>`) + merged(st, s);
   }
   const merged = (st, s) => s.merged && !st.unmerged[s.id] ? `<div class="xa-merged">${ic("arrows-merge", 10)} Merged from “${esc(s.merged.from)}”, ${esc(s.merged.at)} <button class="xa-link-btn" data-act="unmerge" data-id="${s.id}">Undo merge</button></div>` : "";
@@ -152,11 +152,11 @@
         <div class="xa-f"><dt>Note</dt><dd>${editable("xa-note", "note", s.id, noteOf(st, s), "Note", "Add a note")}</dd></div>
         <div class="xa-f"><dt>Themes</dt><dd>${themeChips(st, s, ctx)}</dd></div>
         <div class="xa-f"><dt>Theories</dt><dd>${evidenceRows(st, s)}</dd></div>
-        <div class="xa-f"><dt>From</dt><dd><button class="xa-from" aria-expanded="${peek}" data-act="peek" data-id="${s.id}" data-key="peek:${s.id}">${ic(dumpIcon(d))}<span>${esc(d.first)} <span class="ap-muted">· ${esc(when(d))}</span></span><span class="xa-caret-sm">${ic("caret-right", 10)}</span></button>
-          ${peek ? illus(st) + (p ? `<blockquote class="xa-passage">${markQuote(p.text, p.quote)}</blockquote><div class="xa-passage-foot"><span class="ap-num">Passage ${pi + 1} of ${d.paras.length}</span>·<button class="xa-link-btn" data-act="open-dump" data-d="${d.id}" data-para="${pi}">Open in dump</button></div>` : `<blockquote class="xa-passage">${esc(d.paras[0].text)}</blockquote><div class="xa-passage-foot"><span>Opening of the dump</span>·<button class="xa-link-btn" data-act="open-dump" data-d="${d.id}">Open dump</button></div>`) : ""}</dd></div>
+        <div class="xa-f"><dt>From</dt><dd><button class="xa-from" aria-expanded="${peek}" data-act="peek" data-id="${s.id}" data-key="peek:${s.id}">${ic(dumpIcon(d))}<span>${esc(d.first)} <span class="ap-muted">${esc(when(d))}</span></span><span class="xa-caret-sm">${ic("caret-right", 10)}</span></button>
+          ${peek ? illus(st) + (p ? `<blockquote class="xa-passage">${markQuote(p.text, p.quote)}</blockquote><div class="xa-passage-foot"><span class="ap-num">Passage ${pi + 1} of ${d.paras.length}</span><button class="xa-link-btn" data-act="open-dump" data-d="${d.id}" data-para="${pi}">Open in dump</button></div>` : `<blockquote class="xa-passage">${esc(d.paras[0].text)}</blockquote><div class="xa-passage-foot"><span>Opening of the dump</span><button class="xa-link-btn" data-act="open-dump" data-d="${d.id}">Open dump</button></div>`) : ""}</dd></div>
         <div class="xa-f"><dt>Source</dt><dd>${sourceLinks(st, s)}</dd></div>
       </dl>
-      ${st.discard[s.id] === "confirm" ? consequence(st, s) : `<div class="xa-acts"><button class="ap-btn x-danger" data-act="discard" data-id="${s.id}" data-key="discard:${s.id}">${ic("trash")} Discard…</button><span class="xa-spacer"></span><button class="ap-btn" data-act="merge">${ic("arrows-merge")} Merge…</button></div>`}
+      ${st.discard[s.id] === "confirm" ? consequence(st, s) : `<div class="xa-acts"><button class="ap-btn x-danger" data-act="discard" data-id="${s.id}" data-key="discard:${s.id}">${ic("trash")} Discard</button><span class="xa-spacer"></span><button class="ap-btn" data-act="merge">${ic("arrows-merge")} Merge</button></div>`}
     </div>`;
   }
   function aDumpBody(st, d) {
@@ -167,35 +167,90 @@
       ${voiceRow(d)}${d.links ? `<section class="xa-sec"><div class="ap-label">Links <span class="ap-num">${d.links.length}</span></div>${linksOf(d)}</section>` : ""}
       <section class="xa-sec"><div class="ap-label">${d.kind === "voice" ? "Transcript" : "Text"}</div>
         <div class="xa-text">${para(d.paras[0], 0)}${full ? rest.map((p, i) => para(p, i + 1)).join("") : ""}</div>
-        ${rest.length ? `<button class="xa-more" aria-expanded="${full}" data-act="full" data-d="${d.id}" data-key="full:${d.id}">${ic(full ? "caret-down" : "caret-right", 10)} ${full ? "Show less" : "Read the full transcript"}${full ? "" : `<span class="ap-muted ap-num">${plural(rest.length, "more paragraph")} · ${restWords} words</span>`}</button>` : ""}
+        ${rest.length ? `<button class="xa-more" aria-expanded="${full}" data-act="full" data-d="${d.id}" data-key="full:${d.id}">${ic(full ? "caret-down" : "caret-right", 10)} ${full ? "Show less" : "Read the full transcript"}${full ? "" : `<span class="ap-muted ap-num">${plural(rest.length, "more paragraph")}, ${restWords} words</span>`}</button>` : ""}
       </section></div>`;
   }
 
-  /* ── C: provenance trail ── */
-  const menu = (st, s) => `<span class="xc-menu-wrap"><button class="ap-iconbtn" aria-haspopup="menu" aria-expanded="${st.menu === s.id}" aria-label="More actions" data-act="menu" data-id="${s.id}" data-key="menu:${s.id}">${ic("dots-three", 16)}</button>
-    ${st.menu === s.id ? `<div class="xc-menu" role="menu" aria-label="Signal actions"><button role="menuitem" data-act="merge" data-key="menu-first">${ic("arrows-merge")} Merge with another signal…</button><button role="menuitem" data-act="picker" data-pk="file" data-id="${s.id}">${ic("plus")} File in a theme…</button><button role="menuitem" data-act="picker" data-pk="link" data-id="${s.id}">${ic("target")} Use as evidence…</button><button role="menuitem" class="x-danger" data-act="discard" data-id="${s.id}">${ic("trash")} Discard…</button></div>` : ""}</span>`;
+  /* ── C: provenance trail ──
+     One type size (14px). Hierarchy comes from weight and ink. Every trail control is one row variant (.xc-row, 40px min)
+     and every icon button is .ap-iconbtn at a 40px hit area. Trailing icons say what a row does:
+     arrow-right opens an object here, arrow-square-out leaves the app, dots-three opens a menu. Chevrons only expand or collapse. */
+  const cLabel = (name, aside = "") => `<div class="xc-k"><span>${name}</span>${aside ? `<span class="ap-num">${aside}</span>` : ""}</div>`;
+  const cDot = (name, self) => `<span class="xc-dot"${self ? " data-self" : ""}>${ic(name, 16)}</span>`;
+  const cItem = (attrs, icon, text, first) => `<button role="menuitem" ${attrs}${first ? ` data-key="menu-first"` : ""}>${ic(icon, 16)}<span>${text}</span></button>`;
+  const cMenu = (label, items, align = "end", pick = false) => `<div class="xc-menu" role="menu" aria-label="${esc(label)}" data-align="${align}"${pick ? " data-pick" : ""}>${items}</div>`;
+  const cChev = (open, key, noun) => `<button class="ap-iconbtn xc-ib x-tog" aria-expanded="${open}" aria-label="${open ? "Collapse" : "Expand"} ${noun}" title="${open ? "Collapse" : "Expand"} (Esc)" data-act="toggle" data-k="${key}" data-key="tog:${key}">${ic(open ? "caret-down" : "caret-right", 16)}</button>`;
+  const cMore = (st, s) => {
+    const open = st.menu === s.id;
+    return `<span class="xc-menu-wrap"><button class="ap-iconbtn xc-ib" aria-haspopup="menu" aria-expanded="${open}" aria-label="More actions" title="More actions" data-act="menu" data-id="${s.id}" data-key="menu:${s.id}">${ic("dots-three", 16)}</button>${open ? cMenu("Signal actions",
+      cItem(`data-act="merge"`, "arrows-merge", "Merge with another signal", true) + `<div class="xc-sep" role="separator"></div>` + cItem(`data-act="discard" data-id="${s.id}"`, "trash", "Discard signal")) : ""}</span>`;
+  };
+  const cFlash = (st, s, field) => { const f = st.flash[s.id]; return f && f.field === field ? `<div class="xc-flash" role="status"><span>${esc(f.msg)}</span><button class="xc-textbtn" data-act="undo" data-id="${s.id}" data-key="undo:${s.id}">Undo</button></div>` : ""; };
+  const cMerged = (st, s) => s.merged && !st.unmerged[s.id] ? `<div class="xc-flash"><span>Merged from “${esc(s.merged.from)}”, ${esc(s.merged.at)}</span><button class="xc-textbtn" data-act="unmerge" data-id="${s.id}">Undo merge</button></div>` : "";
+  const cIllus = (st, d) => `<p class="xc-illus"><span>${st.real ? `Today's data links a signal to its whole ${d.kind === "voice" ? "voice note" : "dump"}.` : "Illustrative. Quote spans aren't stored yet."}</span> <button class="xc-textbtn" data-act="illus" data-key="illus" aria-pressed="${st.real}">${st.real ? "Show proposed" : "Show today's data"}</button></p>`;
+  const cAdd = (st, s, kind, text, menuHtml) => {
+    const open = st.picker?.id === s.id && st.picker.kind === kind;
+    return `<div class="xc-menu-wrap" data-block><button class="xc-row" data-quiet aria-haspopup="menu" aria-expanded="${open}" data-act="picker" data-pk="${kind}" data-id="${s.id}" data-key="pick:${kind}:${s.id}">${ic("plus", 16)}<span class="xc-row-text">${text}</span></button>${open ? menuHtml() : ""}</div>`;
+  };
+  function cThemes(st, s, ctx) {
+    const rows = themesOf(st, s).map(t => {
+      const id = `chip:${s.id}:${t}`, open = st.menu === id;
+      return `<div class="xc-menu-wrap" data-block><button class="xc-row" aria-haspopup="menu" aria-expanded="${open}" data-act="menu" data-id="${id}" data-key="menu:${id}"><span class="xc-row-text"><span>${esc(theme(t))}</span>${t === ctx ? `<span class="xc-sub">This theme</span>` : ""}</span>${ic("dots-three", 16)}</button>${open ? cMenu(theme(t),
+        cItem(`data-act="open-theme" data-t="${t}"`, "arrow-right", "Open theme", true) + cItem(`data-act="unfile" data-id="${s.id}" data-t="${t}" aria-label="Unfile from ${esc(theme(t))}"`, "minus", "Unfile"), "start") : ""}</div>`;
+    }).join("");
+    const menu = () => cMenu("File in a theme", Object.keys(W.THEMES).filter(t => !themesOf(st, s).includes(t)).map((t, i) => cItem(`data-act="file" data-id="${s.id}" data-t="${t}"`, "binoculars", esc(theme(t)), i === 0)).join(""), "start", true);
+    return `${rows || `<p class="xc-none">Not filed in a theme</p>`}${cAdd(st, s, "file", "File in a theme", menu)}${cFlash(st, s, "themes")}`;
+  }
+  function cEvidence(st, s) {
+    const ev = evOf(st, s), stance = st.stance || "supports";
+    const rows = ev.map(e => `<button class="xc-row" data-ev${e.suggested ? " data-suggested" : ""} data-act="open-theory" data-t="${e.theory}"><span class="xc-row-text"><span>${esc(claim(e.theory))}</span><span class="xc-sub xc-stance">${ic(e.stance === "supports" ? "arrow-up" : "arrow-down", 16)}${e.stance === "supports" ? "Supports" : "Undermines"}${e.suggested ? ", suggested" : ""}</span></span>${ic("arrow-right", 16)}</button>`).join("");
+    const menu = () => cMenu("Use as evidence", `<div class="xc-seg" role="group" aria-label="Stance">${["supports", "undermines"].map((v, i) => `<button role="menuitemradio" aria-checked="${stance === v}" data-act="stance" data-v="${v}" data-key="${i === 0 ? "menu-first" : `stance:${v}`}">${v === "supports" ? "Supports" : "Undermines"}</button>`).join("")}</div><div class="xc-sep" role="separator"></div>`
+      + Object.keys(W.THEORIES).filter(t => !W.THEORIES[t].draft && !ev.some(e => e.theory === t)).map(t => cItem(`data-act="link" data-stance="${stance}" data-id="${s.id}" data-t="${t}"`, stance === "supports" ? "arrow-up" : "arrow-down", esc(claim(t)))).join(""), "start", true);
+    return `${rows || `<p class="xc-none">Not evidence for a theory yet</p>`}${cAdd(st, s, "link", "Use as evidence", menu)}${cFlash(st, s, "evidence")}`;
+  }
+  const cConfirm = (st, s) => {
+    const ts = themesOf(st, s), ev = evOf(st, s), d = W.dump(s.dump);
+    return `<div class="xc-confirm" role="group" aria-labelledby="cf-${st.id}-${s.id}"><p id="cf-${st.id}-${s.id}"><b>Discard this signal?</b></p><ul>
+      <li>${ts.length ? `Leaves ${ts.map(t => esc(theme(t))).join(", ")}` : "It isn't filed in any theme"}</li>
+      <li>${ev.length ? `Stops counting as evidence for ${plural(ev.length, "theory", "theories")}; their confidence is recalculated` : "Not evidence for any theory"}</li>
+      <li>Agents won't extract it from “${esc(d.first)}” again</li></ul>
+      <div class="xc-confirm-acts"><button class="ap-btn xc-btn" data-act="discard-no" data-id="${s.id}" data-key="discard-no:${s.id}">Cancel</button><button class="ap-btn xc-btn" data-primary data-act="discard-yes" data-id="${s.id}">Discard</button></div></div>`;
+  };
   function cSignalBody(st, s, ctx) {
-    const d = W.dump(s.dump), p = passageOf(st, s), pi = d.paras.indexOf(p);
-    const srcNodes = s.sources.length ? s.sources.map(x => `<li class="xc-node"><span class="xc-dot">${ic("link")}</span><div class="xc-main"><div class="xc-k"><b>${esc(x.domain)}</b> · ${esc(x.author)} · ${esc(x.date)}<a class="xc-mini" href="${x.url}" target="_blank" rel="noreferrer" aria-label="Open source on ${esc(x.domain)}">${ic("arrow-square-out", 10)}</a></div><p class="xc-quote">${esc(x.title)}</p></div></li>`).join("")
-      : `<li class="xc-node"><span class="xc-dot">${ic("pencil-ruler")}</span><div class="xc-main"><div class="xc-k"><b>Your own observation</b></div></div></li>`;
-    return `<div class="xc-body">${st.discard[s.id] === "confirm" ? consequence(st, s) : ""}<ol class="xc-trail" aria-label="Where this signal came from and where it goes">
-      ${srcNodes}
-      <li class="xc-node"><span class="xc-dot">${ic(dumpIcon(d))}</span><div class="xc-main"><div class="xc-k"><b>You, ${d.kind === "voice" ? "voice note" : "dump"}</b> · ${esc(when(d))}<button class="xc-mini" data-act="open-dump" data-d="${d.id}" data-para="${pi}">Open ${ic("arrow-right", 10)}</button></div>${illus(st, "The passage and quote")}${p ? `<p class="xc-quote" data-own>${esc(p.quote || p.text)}</p>` : `<p class="xc-quote">${esc(d.paras[0].text)}</p>`}</div></li>
-      <li class="xc-node" data-self><span class="xc-dot">${ic("pulse")}</span><div class="xc-main"><div class="xc-k"><b>This signal</b> · ${esc(s.day)}</div>${merged(st, s)}${editable("xa-note", "note", s.id, noteOf(st, s), "Note", "Why it matters to you")}</div></li>
-      <li class="xc-node"><span class="xc-dot">${ic("binoculars")}</span><div class="xc-main"><div class="xc-k"><b>Filed in</b></div>${themeChips(st, s, ctx)}</div></li>
-      <li class="xc-node"><span class="xc-dot">${ic("target")}</span><div class="xc-main"><div class="xc-k"><b>Evidence for</b></div>${evidenceRows(st, s)}</div></li>
+    const d = W.dump(s.dump), p = passageOf(st, s), pi = d.paras.indexOf(p), dk = d.kind === "voice" ? "voice note" : "dump";
+    const src = s.sources.length
+      ? s.sources.map((x, i) => `<li class="xc-node">${cDot("link")}<div class="xc-main">${cLabel(esc(x.author), esc(x.date))}<a class="xc-row" href="${x.url}" target="_blank" rel="noreferrer" aria-label="Open source on ${esc(x.domain)}" aria-describedby="src-${st.id}-${s.id}-${i}"><span class="xc-row-text"><span id="src-${st.id}-${s.id}-${i}">${esc(x.title)}</span><span class="xc-sub">${esc(x.domain)}</span></span>${ic("arrow-square-out", 16)}</a></div></li>`).join("")
+      : `<li class="xc-node">${cDot("pencil-ruler")}<div class="xc-main">${cLabel("Your own observation")}</div></li>`;
+    const passage = p
+      ? `<button class="xc-row" data-act="open-dump" data-d="${d.id}" data-para="${pi}"><span class="xc-row-text"><span class="xc-quote">${esc(p.quote || p.text)}</span><span class="x-sr">Open in the ${dk}</span></span>${ic("arrow-right", 16)}</button>`
+      : `<button class="xc-row" data-act="open-dump" data-d="${d.id}"><span class="xc-row-text"><span>${esc(d.first)}</span><span class="x-sr">Open the ${dk}</span></span>${ic("arrow-right", 16)}</button>`;
+    return `<div class="xc-body">${st.discard[s.id] === "confirm" ? cConfirm(st, s) : ""}<ol class="xc-trail" aria-label="Where this signal came from and where it goes">
+      ${src}
+      <li class="xc-node">${cDot(dumpIcon(d))}<div class="xc-main">${cLabel(kindName(d), esc(when(d)))}${passage}${cIllus(st, d)}</div></li>
+      <li class="xc-node">${cDot("pulse")}<div class="xc-main">${cLabel("This signal", esc(s.day))}${cMerged(st, s)}${editable("xc-note", "note", s.id, noteOf(st, s), "Note", "Why it matters to you")}</div></li>
+      <li class="xc-node">${cDot("binoculars")}<div class="xc-main">${cLabel("Filed in")}${cThemes(st, s, ctx)}</div></li>
+      <li class="xc-node">${cDot("target")}<div class="xc-main">${cLabel("Evidence for")}${cEvidence(st, s)}</div></li>
     </ol></div>`;
   }
+  const cMade = (id, ctx) => {
+    const s = W.signal(id);
+    if (s) return `<button class="xc-row" data-act="goto-signal" data-id="${id}" data-key="made:${ctx}${id}">${ic("pulse", 16)}<span class="xc-row-text"><span>${esc(s.gist)}</span><span class="xc-sub">${s.themes.map(theme).join(", ")}</span></span>${ic("arrow-right", 16)}</button>`;
+    const t = W.THEORIES[id];
+    return t ? `<button class="xc-row" data-suggested data-act="open-theory" data-t="${id}">${ic("target", 16)}<span class="xc-row-text"><span>${esc(t.claim)}</span><span class="xc-sub">Draft theory, suggested</span></span>${ic("arrow-right", 16)}</button>` : "";
+  };
+  const cVoice = d => d.kind !== "voice" ? "" : `<div class="xc-voice"><button class="cd-play xc-play" aria-label="Play voice note" title="Play" data-act="play">${ic("play", 12)}</button><span class="cd-wave" aria-hidden="true">${wave(30)}</span><span class="ap-num">${d.duration}</span></div>`;
+  const cLinks = d => (d.links || []).map(u => `<a class="xc-row" href="https://${u}" target="_blank" rel="noreferrer">${ic("link", 16)}<span class="xc-row-text">${esc(u)}</span>${ic("arrow-square-out", 16)}</a>`).join("");
   function cDumpBody(st, d) {
+    const top = `${cVoice(d)}${cLinks(d)}${cIllus(st, d)}`;
+    if (st.real) return `<div class="xc-body">${top}<section class="xc-sec">${cLabel("Made", `${d.produced.length}`)}${d.produced.map(id => cMade(id, d.id + ":")).join("")}</section><div class="xc-text">${d.paras.map((p, i) => `<p data-para="${d.id}:${i}">${esc(p.text)}</p>`).join("")}</div></div>`;
     const segs = []; let run = null;
     d.paras.forEach((p, i) => { if (p.made) { run = null; segs.push({ made: true, i }); } else { if (!run) { run = { start: i, idx: [] }; segs.push(run); } run.idx.push(i); } });
     const body = segs.map(sg => {
-      if (sg.made) { const p = d.paras[sg.i]; return `<li class="xc-p" data-para="${d.id}:${sg.i}"${st.hl === `${d.id}:${sg.i}` ? " data-hl" : ""}><p>${markQuote(p.text, p.quote)}</p><div class="xc-yield">${p.made.map(id => madeRow(id, d.id + ":")).join("")}</div></li>`; }
+      if (sg.made) { const p = d.paras[sg.i]; return `<li class="xc-p" data-para="${d.id}:${sg.i}"${st.hl === `${d.id}:${sg.i}` ? " data-hl" : ""}><p>${markQuote(p.text, p.quote)}</p><div class="xc-yield">${p.made.map(id => cMade(id, d.id + ":")).join("")}</div></li>`; }
       const key = `${d.id}:${sg.start}`, open = st.runs.has(key), words = sg.idx.reduce((n, i) => n + W.words(d.paras[i].text), 0);
-      return `<li class="xc-p" data-quiet><button class="xc-run" aria-expanded="${open}" data-act="run" data-run="${key}" data-key="run:${key}">${ic(open ? "caret-down" : "caret-right", 10)} ${open ? "Fold" : ""} ${plural(sg.idx.length, "passage")}, nothing extracted <span class="ap-muted ap-num" style="margin-left:auto">${words} words</span></button>${open ? sg.idx.map(i => `<p data-para="${d.id}:${i}">${esc(d.paras[i].text)}</p>`).join("") : ""}</li>`;
+      return `<li class="xc-p" data-quiet><button class="xc-row xc-run" aria-expanded="${open}" data-act="run" data-run="${key}" data-key="run:${key}">${ic(open ? "caret-down" : "caret-right", 16)}<span class="xc-row-text">${plural(sg.idx.length, "passage")}, nothing extracted</span><span class="ap-num xc-aside">${words} words</span></button>${open ? sg.idx.map(i => `<p data-para="${d.id}:${i}">${esc(d.paras[i].text)}</p>`).join("") : ""}</li>`;
     }).join("");
-    if (st.real) return `<div class="xc-body">${voiceRow(d)}${d.links ? linksOf(d) : ""}${illus(st)}<section class="xa-sec"><div class="ap-label">Made <span class="ap-num">${d.produced.length}</span></div>${d.produced.map(id => madeRow(id, d.id + ":")).join("")}</section><div class="xa-text">${d.paras.map((p, i) => `<p data-para="${d.id}:${i}">${esc(p.text)}</p>`).join("")}</div></div>`;
-    return `<div class="xc-body">${voiceRow(d)}${d.links ? linksOf(d) : ""}${illus(st, "Passage-to-signal pairing and highlights")}<ol class="xc-pass" aria-label="Passages and what they made">${body}</ol></div>`;
+    return `<div class="xc-body">${top}<ol class="xc-pass" aria-label="Passages and what they made">${body}</ol></div>`;
   }
 
   /* ── B: documents in the object pane ── */
@@ -205,7 +260,7 @@
     return `<div class="pn-doc">${st.discard[s.id] === "confirm" ? consequence(st, s) : ""}
       ${editable("pn-title", "gist", s.id, gistOf(st, s), "Signal gist")}
       <dl class="pn-meta">
-        ${metaRow("Source", s.sources.length ? s.sources.map(x => `<a class="pn-chip" href="${x.url}" target="_blank" rel="noreferrer">${ic("link")}${esc(x.domain)} · ${esc(x.author)}</a>`).join("") : `<span class="ap-muted">Your own observation</span>`)}
+        ${metaRow("Source", s.sources.length ? s.sources.map(x => `<a class="pn-chip" href="${x.url}" target="_blank" rel="noreferrer">${ic("link")}${esc(x.domain)}, ${esc(x.author)}</a>`).join("") : `<span class="ap-muted">Your own observation</span>`)}
         ${metaRow("From", `<button class="pn-chip pn-origin" data-act="open-dump" data-d="${d.id}" data-para="${pi}">${ic(dumpIcon(d))}<span>${esc(d.first)}</span></button>`)}
         ${metaRow("Themes", `<div style="display:grid;gap:4px;width:100%">${themeChips(st, s, ctx)}</div>`)}
         ${metaRow("Theories", `<div style="display:grid;gap:2px;width:100%">${evidenceRows(st, s)}</div>`)}
@@ -219,8 +274,8 @@
   function dumpDoc(st, d) {
     return `<div class="pn-doc">
       <h1 class="pn-title" style="font-size:22px">${esc(d.first)}</h1>
-      <dl class="pn-meta">${metaRow("Captured", esc(when(d)))}${metaRow("Kind", `<span class="ap-num">${kindName(d)}${d.duration ? ` · ${d.duration}` : ""} · ${wordsOf(d)} words</span>`)}</dl>
-      <section class="xb-sec"><div class="ap-label">Made <span class="ap-muted">· ${esc(madeSummary(d))}</span></div><div class="xb-made">${d.produced.map(id => madeRow(id, "doc:")).join("")}</div></section>
+      <dl class="pn-meta">${metaRow("Captured", esc(when(d)))}${metaRow("Kind", `<span class="ap-num">${kindName(d)}${d.duration ? `, ${d.duration}` : ""}, ${wordsOf(d)} words</span>`)}</dl>
+      <section class="xb-sec"><div class="ap-label">Made <span class="ap-muted">${esc(madeSummary(d))}</span></div><div class="xb-made">${d.produced.map(id => madeRow(id, "doc:")).join("")}</div></section>
       ${voiceRow(d)}${d.links ? `<section class="xb-sec"><div class="ap-label">Links</div>${linksOf(d)}</section>` : ""}
       <section class="xb-sec"><div class="ap-label">${d.kind === "voice" ? "Transcript" : "Text"}</div>${illus(st, "Margin marks and underlines")}<div class="xb-text">${d.paras.map((p, i) => `<p data-para="${d.id}:${i}"${st.hl === `${d.id}:${i}` ? " data-hl" : ""}>${p.made && !st.real ? `<button class="ap-iconbtn xb-gut" data-act="goto-signal" data-id="${p.made[0]}" aria-label="Made: ${esc(W.signal(p.made[0])?.gist)}" title="Made: ${esc(W.signal(p.made[0])?.gist)}">${ic("pulse", 13)}</button>` : ""}${markQ(st, p.text, p.quote)}</p>`).join("")}</div></section>
     </div>`;
@@ -238,23 +293,25 @@
     const label = top.k === "signal" ? "Signal" : top.k === "dump" ? "Dump" : "Theme";
     const backLabel = back && (back.k === "theme" ? theme(back.id) : back.k === "dump" ? W.dump(back.id).first : W.signal(back.id).gist);
     const doc = top.k === "signal" ? signalDoc(st, W.signal(top.id), st.surface === "feed" ? FEED.theme : null) : top.k === "dump" ? dumpDoc(st, W.dump(top.id)) : themeDoc(st);
-    const acts = top.k === "signal" && st.discard[top.id] !== "confirm" ? `<button class="ap-btn x-danger" data-act="discard" data-id="${top.id}" data-key="discard:${top.id}">${ic("trash")} Discard…</button><button class="ap-btn" data-act="merge">${ic("arrows-merge")} Merge…</button>` : "";
+    const acts = top.k === "signal" && st.discard[top.id] !== "confirm" ? `<button class="ap-btn x-danger" data-act="discard" data-id="${top.id}" data-key="discard:${top.id}">${ic("trash")} Discard</button><button class="ap-btn" data-act="merge">${ic("arrows-merge")} Merge</button>` : "";
     const close = inStage ? "" : `<button class="ap-iconbtn" aria-label="Close pane" data-act="close" data-key="close">${ic("x", 14)}</button>`;
     const bar = top.k === "theme" ? "" : `<div class="xb-bar">${back ? `<button class="xb-back" data-act="back" data-key="back">${ic("arrow-right", 12, "rotate:180deg")}<span>${esc(backLabel)}</span></button>` : `<span class="ap-label">${ic(top.k === "signal" ? "pulse" : "tray-arrow-down")} ${label}</span>`}<span class="xb-sp"></span>${acts}${close}</div>`;
     return `<aside class="${inStage ? "" : "xb-pane"}" aria-label="${label}" tabindex="-1" data-key="pane"${inStage ? "" : ` data-scroll="pane"`}>${bar}${doc}</aside>`;
   }
 
   /* ── Rows ── */
+  // A and C rows expand in place, so the chevron is always visible: caret-right at rest, caret-down when open, same corner.
+  const rowChev = o => `<span class="x-chev" aria-hidden="true">${ic("caret-right", o === "C" ? 16 : 14)}</span>`;
   function signalItem(st, s) {
     const key = `signal:${s.id}`, open = st.open.has(key), o = st.opt;
     if (st.discard[s.id] === "done") return tomb(st, s, o === "current");
     const face = `<span class="cd-line">${o === "current" || !open ? fresh(s) : ""}<span>${esc(gistOf(st, s))}</span></span><span class="ap-muted cd-sub">${esc(s.source)}</span>`;
     if (o === "current") return `<div class="cd-item" data-item="${key}"${open ? " data-open" : ""}><button class="cd-item-btn" data-act="toggle" data-k="${key}" data-key="tog:${key}">${face}</button>${open ? grow(st, key, curSignalDetail(st, s), "cd-detail") : ""}</div>`;
     if (o === "B") { const cur = paneTop(st)?.k === "signal" && paneTop(st).id === s.id; return `<div class="cd-item" data-item="${key}"${cur ? " data-current" : ""}><button class="cd-item-btn" data-act="openpane" data-k="${key}" data-key="tog:${key}" aria-controls="pane-${st.id}"${cur ? ` aria-current="true"` : ""}>${face}</button></div>`; }
-    if (!open) return `<div class="cd-item" data-x="${o}" data-item="${key}"><button class="cd-item-btn x-tog" aria-expanded="false" data-act="toggle" data-k="${key}" data-key="tog:${key}">${face}<span class="x-sr">, expand</span></button></div>`;
+    if (!open) return `<div class="cd-item" data-x="${o}" data-item="${key}"><button class="cd-item-btn x-tog" aria-expanded="false" data-act="toggle" data-k="${key}" data-key="tog:${key}">${face}${rowChev(o)}<span class="x-sr">, expand</span></button></div>`;
     const caret = `<button class="ap-iconbtn x-tog" aria-expanded="true" aria-label="Collapse signal" data-act="toggle" data-k="${key}" data-key="tog:${key}">${ic("caret-down", 14)}</button>`;
     const gist = editable("xa-gist", "gist", s.id, gistOf(st, s), "Signal gist");
-    const head = o === "A" ? `<div class="xa-head">${gist}${caret}</div>` : `<div class="xc-head">${gist}${menu(st, s)}${caret}</div>`;
+    const head = o === "A" ? `<div class="xa-head">${gist}${caret}</div>` : `<div class="xc-head">${gist}${cMore(st, s)}${cChev(true, key, "signal")}</div>`;
     return `<div class="cd-item" data-x="${o}" data-open data-item="${key}">${head}${grow(st, key, o === "A" ? aSignalBody(st, s) : cSignalBody(st, s))}</div>`;
   }
   function feedRow(st, s) {
@@ -265,28 +322,31 @@
     const face = `${glyph}<span class="pn-feed-text"><span>${esc(gistOf(st, s))}</span><span class="ap-muted">${esc(s.source)}</span></span>${ev.length ? `<span class="pn-feed-to">${ev.map(e => `<span class="pn-feed-chip"${e.suggested ? " data-suggested" : ""}>${ic(e.stance === "supports" ? "arrow-up" : "arrow-down")}<span>${esc(claim(e.theory))}</span></span>`).join("")}</span>` : ""}`;
     if (o === "current") return `<div class="pn-sig" data-item="${key}"${open ? " data-open" : ""}><button class="pn-ev" data-act="toggle" data-k="${key}" data-key="tog:${key}">${face}</button>${open ? grow(st, key, curSignalDetail(st, s, FEED.theme), "pn-detail") : ""}</div>`;
     if (o === "B") return `<div class="pn-sig" data-item="${key}"><button class="pn-ev" data-act="openpane" data-k="${key}" data-key="tog:${key}">${face}</button></div>`;
-    if (!open) return `<div class="pn-sig" data-x="${o}" data-item="${key}"><button class="pn-ev x-tog" aria-expanded="false" data-act="toggle" data-k="${key}" data-key="tog:${key}">${face}<span class="x-sr">, expand</span></button></div>`;
+    if (!open) return `<div class="pn-sig" data-x="${o}" data-item="${key}"><button class="pn-ev x-tog" aria-expanded="false" data-act="toggle" data-k="${key}" data-key="tog:${key}">${face}${rowChev(o)}<span class="x-sr">, expand</span></button></div>`;
     const caret = `<button class="ap-iconbtn x-tog" aria-expanded="true" aria-label="Collapse signal" data-act="toggle" data-k="${key}" data-key="tog:${key}">${ic("caret-down", 14)}</button>`;
     const gist = editable("xa-gist", "gist", s.id, gistOf(st, s), "Signal gist");
-    const head = o === "A" ? `<div class="xa-head">${glyph}${gist}${caret}</div>` : `<div class="xc-head">${glyph}${gist}${menu(st, s)}${caret}</div>`;
+    const head = o === "A" ? `<div class="xa-head">${glyph}${gist}${caret}</div>` : `<div class="xc-head">${glyph}${gist}${cMore(st, s)}${cChev(true, key, "signal")}</div>`;
     return `<div class="pn-sig" data-x="${o}" data-open data-item="${key}">${head}${grow(st, key, o === "A" ? aSignalBody(st, s, FEED.theme) : cSignalBody(st, s, FEED.theme))}</div>`;
   }
   function dumpItem(st, d) {
     const key = `dump:${d.id}`, open = st.open.has(key), o = st.opt;
-    const sub = `${esc(d.day === "Today" ? d.time : d.day)}${o === "current" ? "" : ` · made ${d.produced.length}`}`;
-    const face = `<span class="cd-line">${ic(dumpIcon(d), 14)}<span class="cd-clip">${esc(d.first)}</span></span><span class="ap-muted ap-num cd-sub">${sub}</span>`;
+    const sub = `${esc(d.day === "Today" ? d.time : d.day)}${o === "current" ? "" : `, made ${d.produced.length}`}`;
+    const face = `<span class="cd-line">${ic(dumpIcon(d), o === "C" ? 16 : 14)}<span${o === "C" ? "" : ` class="cd-clip"`}>${esc(d.first)}</span></span><span class="ap-muted ap-num cd-sub">${sub}</span>`;
     if (o === "current") return `<div class="cd-item" data-item="${key}"${open ? " data-open" : ""}><button class="cd-item-btn" data-act="toggle" data-k="${key}" data-key="tog:${key}">${face}</button>${open ? grow(st, key, curDumpDetail(st, d), "cd-detail") : ""}</div>`;
     if (o === "B") { const cur = paneTop(st)?.k === "dump" && paneTop(st).id === d.id; return `<div class="cd-item" data-item="${key}"${cur ? " data-current" : ""}><button class="cd-item-btn" data-act="openpane" data-k="${key}" data-key="tog:${key}" aria-controls="pane-${st.id}"${cur ? ` aria-current="true"` : ""}>${face}</button></div>`; }
-    if (!open) return `<div class="cd-item" data-x="${o}" data-item="${key}"><button class="cd-item-btn x-tog" aria-expanded="false" data-act="toggle" data-k="${key}" data-key="tog:${key}">${face}<span class="x-sr">, expand</span></button></div>`;
-    const head = `<div class="${o === "A" ? "xa-head" : "xc-head"}" data-dump>${ic(dumpIcon(d), 14)}<div class="xa-title">${esc(d.first)}</div><button class="ap-iconbtn x-tog" aria-expanded="true" aria-label="Collapse dump" data-act="toggle" data-k="${key}" data-key="tog:${key}">${ic("caret-down", 14)}</button></div>
-      <div class="xa-meta ap-muted ap-num">${kindName(d)}${d.duration ? ` · ${d.duration}` : ""} · ${wordsOf(d)} words · ${esc(when(d))}</div>`;
+    if (!open) return `<div class="cd-item" data-x="${o}" data-item="${key}"><button class="cd-item-btn x-tog" aria-expanded="false" data-act="toggle" data-k="${key}" data-key="tog:${key}">${face}${rowChev(o)}<span class="x-sr">, expand</span></button></div>`;
+    const head = o === "C"
+      ? `<div class="xc-head" data-dump>${ic(dumpIcon(d), 16)}<div class="xa-title">${esc(d.first)}</div>${cChev(true, key, "dump")}</div>
+      <div class="xc-meta ap-num"><span>${kindName(d)}${d.duration ? `, ${d.duration}` : ""}, ${wordsOf(d)} words</span><span>${esc(when(d))}</span></div>`
+      : `<div class="xa-head" data-dump>${ic(dumpIcon(d), 14)}<div class="xa-title">${esc(d.first)}</div><button class="ap-iconbtn x-tog" aria-expanded="true" aria-label="Collapse dump" data-act="toggle" data-k="${key}" data-key="tog:${key}">${ic("caret-down", 14)}</button></div>
+      <div class="xa-meta ap-muted ap-num">${kindName(d)}${d.duration ? `, ${d.duration}` : ""}, ${wordsOf(d)} words, ${esc(when(d))}</div>`;
     return `<div class="cd-item" data-x="${o}" data-open data-item="${key}">${head}${grow(st, key, o === "A" ? aDumpBody(st, d) : cDumpBody(st, d))}</div>`;
   }
   function column(st, kind) {
     const name = kind === "dump" ? "Dumps" : "Signals", icon = kind === "dump" ? "tray-arrow-down" : "pulse";
     const shown = st.show.has(kind);
     const items = kind === "dump" ? W.DUMPS.map(d => dumpItem(st, d)) : W.SIGNALS.map(s => signalItem(st, s));
-    return `<div class="cd-col" data-kind="${kind}"${shown ? " data-show" : ""}><div class="cd-inner"><header class="cd-head">${ic(icon, 14)}<span>${name}</span><button class="cd-colhead-toggle" data-act="showcol" data-col="${kind}" aria-expanded="${shown}">${shown ? "Hide" : "Show"}</button></header>
+    return `<div class="cd-col" data-kind="${kind}"${shown ? " data-show" : ""}><div class="cd-inner"><header class="cd-head">${ic(icon, 14)}<span>${name}</span><button class="cd-colhead-toggle" data-act="showcol" data-col="${kind}" aria-expanded="${shown}">${ic(shown ? "caret-down" : "caret-right", 16)}<span>${shown ? "Hide" : "Show"}</span></button></header>
       <div class="cd-list-wrap"><div class="cd-list ap-scroll" data-scroll="col-${kind}">${items.join("")}</div></div></div></div>`;
   }
   function modal(st) {
@@ -308,7 +368,15 @@
     st.el.querySelectorAll("[data-scroll]").forEach(x => { if (saved[x.dataset.scroll] != null) x.scrollTop = saved[x.dataset.scroll]; });
     if (focusKey) st.el.querySelector(`[data-key="${CSS.escape(focusKey)}"]`)?.focus({ preventScroll: true });
     if (st.scrollTo) { const t = st.el.querySelector(st.scrollTo); if (t) reveal(t); st.scrollTo = null; }
+    if (st.opt === "C") { const m = st.el.querySelector(".xc-menu, .xc-confirm"); if (m) nearest(m); }
     st.enter = null;
+  }
+  function nearest(t) {
+    const sc = t.closest("[data-scroll]");
+    if (!sc || sc.scrollHeight <= sc.clientHeight + 1 || getComputedStyle(sc).overflowY === "visible") return;
+    const s = sc.getBoundingClientRect(), pad = 8, top = t.getBoundingClientRect().top, r = { top, bottom: top + t.offsetHeight };
+    if (r.bottom > s.bottom - pad) sc.scrollTop += Math.min(r.bottom - s.bottom + pad, r.top - s.top - pad);
+    else if (r.top < s.top + pad) sc.scrollTop -= s.top + pad - r.top;
   }
   function reveal(t) {
     const sc = t.closest("[data-scroll]");
@@ -367,7 +435,7 @@
     full: (st, b) => { const id = b.dataset.d, was = st.full.has(id); was ? st.full.delete(id) : st.full.add(id); render(st, `full:${id}`); if (was) reveal(st.el.querySelector(`[data-key="full:${id}"]`)); },
     run: (st, b) => { const k = b.dataset.run; st.runs.has(k) ? st.runs.delete(k) : st.runs.add(k); render(st, `run:${k}`); },
     showcol: (st, b) => { const c = b.dataset.col; st.show.has(c) ? st.show.delete(c) : st.show.add(c); render(st); },
-    picker: (st, b) => { const id = b.dataset.id, kind = b.dataset.pk; st.menu = null; st.picker = st.picker?.id === id && st.picker.kind === kind ? null : { id, kind }; render(st, st.picker ? "picker-first" : `pick:${kind}:${id}`); },
+    picker: (st, b) => { const id = b.dataset.id, kind = b.dataset.pk; st.menu = null; st.picker = st.picker?.id === id && st.picker.kind === kind ? null : { id, kind }; render(st, st.picker ? (st.opt === "C" ? "menu-first" : "picker-first") : `pick:${kind}:${id}`); },
     "picker-close": (st, b) => { const p = st.picker; st.picker = null; render(st, p ? `pick:${p.kind}:${p.id}` : null); },
     file: (st, b) => { const s = W.signal(b.dataset.id); st.themes[s.id] = [...themesOf(st, s), b.dataset.t]; st.picker = null; st.flash[s.id] = { field: "themes", msg: `Filed in ${theme(b.dataset.t)}.`, undo: { type: "unfile", t: b.dataset.t } }; render(st, `undo:${s.id}`); },
     illus: st => { st.real = !st.real; st.hl = st.real ? null : st.hl; render(st, "illus"); },
@@ -379,6 +447,7 @@
       if (u.type === "unfile") st.themes[s.id] = themesOf(st, s).filter(x => x !== u.t);
       if (u.type === "unlink") st.evidence[s.id] = evOf(st, s).filter(e => e.theory !== u.t);
       delete st.flash[s.id]; render(st, `pick:file:${s.id}`); },
+    stance: (st, b) => { st.stance = b.dataset.v; render(st, b.dataset.v === "supports" ? "menu-first" : "stance:undermines"); },
     menu: (st, b) => { const id = b.dataset.id; st.menu = st.menu === id ? null : id; render(st, st.menu ? "menu-first" : `menu:${id}`); },
     discard: (st, b) => { st.menu = null; st.picker = null; st.discard[b.dataset.id] = "confirm"; render(st, `discard-no:${b.dataset.id}`); },
     "discard-no": (st, b) => { delete st.discard[b.dataset.id]; render(st, st.opt === "C" ? `menu:${b.dataset.id}` : `discard:${b.dataset.id}`); },
@@ -410,8 +479,8 @@
   document.addEventListener("animationend", e => { e.target.removeAttribute?.("data-enter"); });
   document.addEventListener("keydown", e => {
     const stEl = e.target.closest?.("[data-stage]"); const st = stEl && STATES.get(stEl); if (!st) return;
-    if (e.target.matches('[role="menuitem"]') && /^Arrow(Up|Down)$/.test(e.key)) {
-      const items = [...e.target.parentElement.querySelectorAll('[role="menuitem"]')], i = items.indexOf(e.target);
+    if (e.target.matches('[role^="menuitem"]') && /^Arrow(Up|Down)$/.test(e.key)) {
+      const items = [...e.target.closest('[role="menu"]').querySelectorAll('[role^="menuitem"]')], i = items.indexOf(e.target);
       items[(i + (e.key === "ArrowDown" ? 1 : -1) + items.length) % items.length].focus(); e.preventDefault(); return;
     }
     if (e.key !== "Escape") return;
