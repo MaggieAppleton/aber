@@ -1,10 +1,12 @@
 import { validateUIMessages, type UIMessage } from 'ai';
 import { streamAgent } from './run.js';
 import { agentTools } from './tools.js';
-import { DISPLAY_TOOLS, READ_TOOLS, type AgentDatabase, type ToolLayer } from './types.js';
+import { DISPLAY_TOOLS, READ_TOOLS, type AgentDatabase, type RunContext, type ToolLayer } from './types.js';
 import { scriptedModel, type ScriptStep } from './scripted-model.js';
 import { promptFor } from './prompts.js';
 import { readTool, type Row } from './jobs/context.js';
+import { jevMode } from './jev.js';
+import { chatShortcutModel, resolveChatShortcut } from './chat-shortcuts.js';
 
 export interface ChatBody {
   messages: UIMessage[];
@@ -30,7 +32,7 @@ function fakeChatModel(text: string, context: NonNullable<ChatBody['context']>, 
 }
 
 /** Capture always completes before the first model request. Existing voice dumps are reused. */
-export async function createChatResponse(db: AgentDatabase, tools: ToolLayer, rawBody: unknown): Promise<Response> {
+export async function createChatResponse(db: AgentDatabase, tools: ToolLayer, rawBody: unknown, ctx: RunContext = {}): Promise<Response> {
   if (!rawBody || typeof rawBody !== 'object') throw new Error('Chat body must be an object');
   const body = rawBody as ChatBody;
   if (!Array.isArray(body.messages) || !body.messages.length || body.messages.length > 100) throw new Error('Chat needs between 1 and 100 messages');
@@ -47,20 +49,23 @@ export async function createChatResponse(db: AgentDatabase, tools: ToolLayer, ra
   }
   const dump = await readTool<Row | null>(tools, 'getDump', { id: dumpId }, 'chat');
   if (!dump || dump.deleted_at || dump.deletedAt) throw new Error('Chat dump not found');
-  const activeContext = context.length ? context : dump.context ?? [];
+  const activeContext = body.context === undefined ? dump.context ?? [] : context;
   const [themes, theories] = await Promise.all([
     readTool<Row[]>(tools, 'listThemes', {}, 'chat'),
     readTool<Row[]>(tools, 'listTheories', {}, 'chat'),
   ]);
   const prompt = promptFor('chat');
+  const mode = jevMode('chat');
+  const decision = mode === 'off' ? null : await resolveChatShortcut(db, { messages: body.messages, context: activeContext, themes, theories, dumpId }, ctx);
+  const shortcut = mode === 'on' ? decision : null;
   const response = await streamAgent(db, {
     job: 'chat', ...prompt,
     system: `${prompt.system}\n\nOpen context: ${JSON.stringify(activeContext)}\nCaptured dump: ${dumpId}`,
     maxSteps: 7, maxInputTokens: 99_000,
-    ...(process.env.AGENT_MODE === 'fake' ? { model: fakeChatModel(text, activeContext, themes, theories) } : {}),
+    ...(shortcut ? { model: chatShortcutModel(shortcut) } : process.env.AGENT_MODE === 'fake' ? { model: fakeChatModel(text, activeContext, themes, theories) } : {}),
     tools: runId => agentTools(tools, [...READ_TOOLS, ...DISPLAY_TOOLS], 'chat', runId, dumpId, { db }),
   }, { messages: body.messages }, {
-    dumpId,
+    ...ctx, dumpId,
     onReply: async (parts, runId) => { await tools.call('reply', { dumpId, parts }, { kind: 'agent', job: 'chat', runId, dumpId }); },
   });
   response.headers.set('X-Aber-Dump-Id', dumpId);

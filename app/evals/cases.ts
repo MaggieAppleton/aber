@@ -9,6 +9,7 @@ import { dumpFixtures, evidenceFixtures, tripwireFixtures } from './fixtures/syn
 import { observeContext, traceDiagnostics, type ModelContext } from './diagnostics.js';
 import { novelEvidenceFixtures, novelEvidenceProvenance } from './fixtures/novel-evidence-v1.js';
 import { processingCases } from './processing.js';
+import { retainEvaluation } from './jev-observation.js';
 
 export type EvalCase = { id: string; job: string; fixture?: { version: string; text: string; expected: Record<string, unknown>; provenance: string; [key: string]: unknown }; run: (provider: ProviderName) => Promise<EvalResult> };
 export interface EvalResult { id: string; job: string; provider: ProviderName; pass: boolean; checks: Record<string, boolean>; inputTokens: number; outputTokens: number; costUsd: number; error?: string; diagnostics: ReturnType<typeof traceDiagnostics> & ModelContext & Record<string, unknown> }
@@ -34,7 +35,7 @@ async function evaluate(id: string, job: string, provider: ProviderName, action:
     checks.noAuthorityErrors = rows.every(row => !row.trace_json?.includes('AuthorityError'));
     const diagnostics = { ...traceDiagnostics(rows, job), ...context, ...state.details };
     return { id, job, provider, checks, pass: Object.values(checks).every(Boolean), inputTokens: rows.reduce((sum, row) => sum + (row.input_tokens ?? 0), 0), outputTokens: rows.reduce((sum, row) => sum + (row.output_tokens ?? 0), 0), costUsd: rows.reduce((sum, row) => sum + (row.cost_usd ?? 0), 0), diagnostics, ...(error ? { error } : {}) };
-  } finally { restoreModel(); state.db.close(); }
+  } finally { restoreModel(); try { retainEvaluation(state.db); } finally { state.db.close(); } }
 }
 
 export function cases(): EvalCase[] {

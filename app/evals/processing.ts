@@ -12,6 +12,7 @@ import { traceDiagnostics } from './diagnostics.js';
 import { processingFixtures, processingProvenance, type ProcessingFixture } from './fixtures/processing-v2.js';
 import { processingReplay } from './processing-replay.js';
 import { scoreProcessing, type ProcessingSnapshot } from './processing-score.js';
+import { retainEvaluation } from './jev-observation.js';
 type Row = Record<string, any>;
 const person = { kind: 'person' as const, id: 'maggie' };
 const rows = (db: Database, sql: string, ...args: unknown[]) => db.prepare(sql).all(...args) as Row[];
@@ -86,7 +87,7 @@ async function evaluateProcessing(fixture: ProcessingFixture, provider: Provider
     const runRows = rows(db, "SELECT * FROM agent_runs WHERE provider NOT IN ('seed','synthetic') ORDER BY started_at,id");
     const diagnostics = traceDiagnostics(runRows, 'process_dump');
     return { id: fixture.id, job: 'process_dump', provider, pass: false, checks: { completed: false, noAuthorityErrors: diagnostics.authorityErrors.length === 0 }, inputTokens: runRows.reduce((n, row) => n + (row.input_tokens ?? 0), 0), outputTokens: runRows.reduce((n, row) => n + (row.output_tokens ?? 0), 0), costUsd: runRows.reduce((n, row) => n + (row.cost_usd ?? 0), 0), error: message, diagnostics: { ...diagnostics, ...details } };
-  } finally { db.close(); }
+  } finally { try { retainEvaluation(db); } finally { db.close(); } }
 }
 
 export function processingCases(): EvalCase[] {

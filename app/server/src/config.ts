@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { parseEnv } from 'node:util';
 export const appDir = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 export const repoDir = resolve(appDir, '..');
-const envFile = resolve(repoDir, '.env');
+const envFile = process.env.ABER_ENV_FILE ? resolve(process.env.ABER_ENV_FILE) : resolve(repoDir, '.env');
+if (process.env.ABER_ENV_FILE && !existsSync(envFile)) throw new Error('ABER_ENV_FILE does not exist');
 if (existsSync(envFile)) {
   const values = parseEnv(readFileSync(envFile, 'utf8'));
   for (const [key, value] of Object.entries(values)) if (process.env[key] === undefined) process.env[key] = value;

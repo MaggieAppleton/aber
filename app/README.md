@@ -20,6 +20,26 @@ The seed is fictional material from the design jigs. Seeding is idempotent and d
 
 `OPENAI_API_KEY` enables agents, transcription and embeddings. `ANTHROPIC_API_KEY` enables Claude alternatives and comparison evals. Models live in `server/src/agents/models.ts`. `AGENT_MODE=fake` runs deterministic scripted models; `live` uses providers. `DAILY_SPEND_CAP_USD` defaults to 5.
 
+`TYPESAFE_API_KEY` is required for the server-side Jev decision paths in live mode. Following the evaluated rollout, **evidence linking, tripwires (including lookback), processing and read-only chat shortcuts default to on; near-duplicate decisions default to off** and keep the original checker. Set `JEV_LINK_EVIDENCE_MODE`, `JEV_TRIPWIRE_MODE`, `JEV_PROCESS_DUMP_MODE` or `JEV_CHAT_MODE` to `off` to restore that workflow's original generative behavior, or `shadow` to record Jev judgments without applying them. `JEV_NEAR_DUP_MODE` remains independently switchable. Explicit per-job flags take precedence over `JEV_MODE`, which can override defaults globally for jobs without a flag. Existing explicit off settings are respected, not rewritten. Restart the server/worker after changing environment settings. `JEV_MODEL` defaults to pinned `jev-1.14.0`; moving aliases are rejected. Jev does not write prose or decide permissions.
+
+The focused cascade batches independent judgments, then resolves only uncertain fields rather than replaying a whole capture. Evidence explanations use attributed observation templates; ambiguous chat targets ask for clarification without displaying unrelated objects. Processing in **on** mode uses the existing cheaper evidence-job model for extraction and prose, with source, finding-boundary, filing and draft checks around its writes. Off/shadow keep the original processing model. Traces record the selected model and its actual configured prices, as well as Jev distributions, versions and fallback use. Neither a typed answer nor a fallback can bypass the domain tools' authority checks.
+
+Worktrees can reuse an existing local environment file by exporting `ABER_ENV_FILE=/absolute/path/to/.env`. The server and eval runner read that file without copying or changing it; exported environment variables take precedence, and a missing explicitly selected file is an error. Never commit the file or print its keys. See [evaluation guidance](evals/README.md) for offline scripts and explicitly budgeted live comparisons.
+
+## Check processing quality
+
+The approved processing rollout favors its lower cost despite slower completion. Regularly review a small sample rather than treating Jev confidence or fake eval passes as proof of accurate gists and filings:
+
+```sh
+cd app
+umask 077
+npm run --silent review:processing -- --limit 10 --pool 100 --seed 2026-11-03 > /tmp/aber-processing-review.json
+```
+
+This read-only, no-network script samples up to ten of the most recent 100 completed non-chat captures (including captures that created no signals). The seed makes selection repeatable for the same pool; change it for a new sample. Use `--db /absolute/path/to/aber.db` for a specific database; otherwise it reads `ABER_DATA_DIR/aber.db`. A missing database is an error, never a new file.
+
+The local JSON includes original capture/transcript/link material, saved source text, current gists/notes and theme filings with provenance, the theme catalog for spotting missed filings, draft/tool events, and full processing run traces including Jev decisions, versions and fallback results. For each capture, compare the source to the gists, check independent findings and missing/incorrect filings, and fill the `review` booleans/notes in a local copy. Current rows may include later edits; inspect their provenance. Empty pools and missing traces are explicit. It is a manual review aid, not an automated semantic score, and does not change application data or add automatic actions. **Reports may contain private material; keep them local and out of git.**
+
 For one production process:
 
 ```sh

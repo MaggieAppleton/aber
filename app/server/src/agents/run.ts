@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { modelFor, tokenCost, choiceFor } from './models.js';
 import type { AgentDatabase, AgentInput, AgentSpec, ChatInput, RunContext, RunResult, ProviderName } from './types.js';
 import { projectToolMessages } from './projection.js';
+import { reserveSpend } from './spend-budget.js';
 
 export class BudgetExceededError extends Error {
   constructor() { super('Daily agent spend cap reached; queued work waits until tomorrow'); this.name = 'BudgetExceededError'; }
@@ -25,7 +26,7 @@ export function assertBudget(db: AgentDatabase, now = new Date()): void {
 }
 
 /** A conservative byte bound (plus framing) keeps even unusual Unicode <100k tokens. */
-export function assertInputLimit(system: string, input: unknown, tools: Record<string, Tool>, max = 99_000): void {
+export function assertInputLimit(system: string, input: unknown, tools: Record<string, Tool>, max = 99_000): number {
   let imageAllowance = 0;
   const serialised = JSON.stringify(input, (key, value) => {
     if (value && typeof value === 'object' && value.type === 'file' && typeof value.mediaType === 'string' && value.mediaType.startsWith('image/')) {
@@ -44,6 +45,7 @@ export function assertInputLimit(system: string, input: unknown, tools: Record<s
     const sizes = messages.map(message => ({ role: message.role, bytes: Buffer.byteLength(JSON.stringify(message)) }));
     throw new Error(`Agent input exceeds its ${Math.min(max, 100_000)} token safety bound (${Buffer.byteLength(serialised)} context bytes, ${schemaBytes} schema bytes; messages ${JSON.stringify(sizes)}); narrow the context`);
   }
+  return bytes;
 }
 
 function modelId(model: LanguageModel): string { return typeof model === 'string' ? model : model.modelId; }
@@ -51,16 +53,23 @@ function modelId(model: LanguageModel): string { return typeof model === 'string
 function openRun(db: AgentDatabase, spec: AgentSpec, input: unknown, ctx: RunContext) {
   const runId = ulid();
   const now = ctx.now ?? (() => new Date());
-  const provider: ProviderName = spec.provider ?? (process.env.AGENT_MODE === 'fake' ? 'fake' : 'openai');
-  const model = spec.model ?? modelFor(spec.job, provider);
+  const provider: ProviderName = spec.provider ?? (process.env.AGENT_MODE === 'fake' ? 'fake' : spec.modelConfig?.provider ?? 'openai');
+  const pricing = spec.modelConfig;
+  if (pricing && (![pricing.inputPerMillion, pricing.outputPerMillion].every(rate => Number.isFinite(rate) && rate >= 0)
+    || (provider !== 'fake' && provider !== pricing.provider))) throw new Error('Invalid agent model configuration or provider pricing');
+  const model = spec.model ?? (process.env.AGENT_MODE !== 'fake' ? pricing?.model : undefined) ?? modelFor(spec.job, provider);
   if (typeof model === 'string') throw new Error('Agent models must be provider objects, never Gateway model strings');
   const tools = spec.tools(runId);
   db.prepare('INSERT INTO agent_runs (id,job_id,job,attempt,provider,model,prompt_version,status,started_at,trace_json,cost_usd) VALUES (?,?,?,?,?,?,?,?,?,?,?)')
     .run(runId, ctx.jobId ?? null, spec.job, ctx.attempt ?? 1, provider, modelId(model), spec.promptVersion, 'running', now().toISOString(), '[]', 0);
   let inputTokens = 0, outputTokens = 0, cachedInputTokens = 0;
-  const trace: unknown[] = [];
+  const trace: unknown[] = pricing ? [{ type: 'model_config', provider: pricing.provider, inputPerMillion: pricing.inputPerMillion, outputPerMillion: pricing.outputPerMillion }] : [];
+  let reservation: ReturnType<typeof reserveSpend> | undefined;
   let terminal: { status: 'done' | 'failed'; error: string | null; finishedAt: string } | undefined;
-  const snapshot = () => ({ runId, inputTokens, outputTokens, costUsd: tokenCost(spec.job, inputTokens, outputTokens, provider), trace });
+  const cost = (input: number, output: number) => provider === 'fake' ? 0 : pricing
+    ? (input * pricing.inputPerMillion + output * pricing.outputPerMillion) / 1_000_000
+    : tokenCost(spec.job, input, output, provider);
+  const snapshot = () => ({ runId, inputTokens, outputTokens, costUsd: cost(inputTokens, outputTokens), trace });
   const persist = (status: 'running' | 'done' | 'failed', error: string | null = null) => {
     const nextTerminal = terminal ?? (status === 'running' ? undefined : { status, error, finishedAt: now().toISOString() });
     const stats = snapshot();
@@ -71,6 +80,7 @@ function openRun(db: AgentDatabase, spec: AgentSpec, input: unknown, ctx: RunCon
   };
   const fail = (error: unknown) => {
     if (terminal) return;
+    reservation?.unknown(); reservation = undefined;
     const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
     trace.push({ type: 'error', message });
     persist('failed', message);
@@ -85,9 +95,19 @@ function openRun(db: AgentDatabase, spec: AgentSpec, input: unknown, ctx: RunCon
       return value;
     })));
     persist('running');
+    const pending = reservation; reservation = undefined;
+    if (result.usage.inputTokens === undefined || result.usage.outputTokens === undefined) pending?.unknown();
+    else pending?.settle(cost(result.usage.inputTokens, result.usage.outputTokens));
     if ((result.usage.inputTokens ?? 0) >= Math.min(spec.maxInputTokens, 100_000)) throw new Error('Provider reported input over the 100k safety limit');
   };
-  const prepare = (messages: unknown) => { assertInputLimit(spec.system, messages, tools, spec.maxInputTokens); assertBudget(db, now()); };
+  const prepare = (messages: unknown, dispatch = false) => {
+    const inputUpperBound = assertInputLimit(spec.system, messages, tools, spec.maxInputTokens);
+    assertBudget(db, now());
+    if (dispatch) {
+      if (reservation) throw new Error('Previous model step has not reported its billable usage');
+      reservation = reserveSpend(cost(inputUpperBound, spec.maxOutputTokens ?? 4000));
+    }
+  };
   try { prepare(input); } catch (error) { fail(error); throw error; }
   return { runId, model, tools, step, prepare, snapshot, persist, fail, now, isRunning: () => !terminal };
 }
@@ -99,7 +119,7 @@ export async function runAgent(db: AgentDatabase, spec: AgentSpec, input: AgentI
       model: run.model, system: spec.system, ...input, tools: run.tools,
       stopWhen: stepCountIs(spec.maxSteps), maxOutputTokens: spec.maxOutputTokens ?? 4000, maxRetries: 0, abortSignal: ctx.signal,
       toolCallConcurrency: 1,
-      prepareStep: ({ messages }) => { const projected = projectToolMessages(messages); run.prepare(projected); return { messages: projected }; },
+      prepareStep: ({ messages }) => { const projected = projectToolMessages(messages); run.prepare(projected, true); return { messages: projected }; },
       onStepFinish: run.step,
     });
     run.persist('done');
@@ -115,7 +135,7 @@ export async function streamAgent(db: AgentDatabase, spec: AgentSpec, input: Cha
       model: run.model, system: spec.system, messages, tools: run.tools,
       stopWhen: stepCountIs(spec.maxSteps), maxOutputTokens: spec.maxOutputTokens ?? 4000, maxRetries: 0, abortSignal: ctx.signal,
       toolCallConcurrency: 1,
-      prepareStep: ({ messages: current }) => { const projected = projectToolMessages(current); run.prepare(projected); return { messages: projected }; },
+      prepareStep: ({ messages: current }) => { const projected = projectToolMessages(current); run.prepare(projected, true); return { messages: projected }; },
       onStepFinish: run.step,
       onError: ({ error }) => { run.fail(error); },
       onAbort: () => { run.fail(new Error('Chat stream aborted')); },

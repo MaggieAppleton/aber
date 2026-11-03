@@ -1,6 +1,7 @@
 import type Database from 'better-sqlite3';
 import type { LanguageModel, ModelMessage, Tool, UIMessage } from 'ai';
 import type { z } from 'zod';
+import type { ModelChoice } from './models.js';
 
 export type AgentJob = 'transcribe' | 'process_dump' | 'link_evidence' | 'tripwire' | 'near_dup' | 'chat';
 export type ProviderName = 'openai' | 'anthropic' | 'fake';
@@ -24,6 +25,7 @@ export interface AgentSpec {
   maxInputTokens: number;
   maxOutputTokens?: number;
   model?: LanguageModel;
+  modelConfig?: ModelChoice;
   provider?: ProviderName;
 }
 
