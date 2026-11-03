@@ -369,7 +369,7 @@ One meaning per variable, everywhere.
 | Use the concept names exactly, everywhere | This model |
 | **X only closes a fleeting surface** (a modal, popover, toast or transient card). It never discards, dismisses or rejects a suggestion, draft or proposal. A modal's close X always sits top-right | Maggie, DI-002 and DI-009 |
 | **Decisions read Dismiss, then Accept.** Rejecting a model's suggestion or draft uses a labelled secondary **Dismiss** button on the left. The primary **Accept** (or Save or Confirm) sits on the right. This pair is the one exception to "at most one text button per surface" | Maggie, DI-009 |
-| **The X key doesn't discard.** X is no longer a shortcut for discarding, dismissing or rejecting. Whether a different single key could do that is undecided; see DI-009 | Maggie, DI-009 |
+| **No keyboard shortcut for Dismiss or Discard.** The X shortcut is removed and nothing replaces it. Rejecting a suggestion or discarding a draft always goes through the labelled button. A (Accept) and U (Undo merge) stay | Maggie, DI-009 |
 | **Chevrons only expand and collapse.** They never mean "go to this object" | Maggie, DI-003 |
 
 ## Implementation notes

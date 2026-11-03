@@ -278,9 +278,14 @@ The violation types are:
     - `ui/briefing-app.tsx:49, 55`: the current Briefing item is decided as `discarded`, and that item can be any suggestion, a draft or a group of new signals.
     - `ui/draft-edge.tsx:47–53`: a focused draft-edge card is discarded.
   - Tooltips advertise "(X)" at `panes.tsx:143, 202, 288`, `briefing-app.tsx:90`, `pill-study.tsx:298` and `draft-edge.tsx:55–58`.
-  - **Maggie's decision:** X will no longer discard. Whether to remove the shortcut or change it to another key is still open.
-  - **Recommendation, pending her decision:** remove the X binding everywhere, and don't give discarding any other single key. Dismiss stays reachable by Tab, since it comes before Accept in the DOM, and an undo follows the discard. Drop "(X)" from the tooltips. Keep A for Accept, and keep U for "Undo merge" on near-duplicates.
-  - **Still open:** remove the shortcut, or replace it? If she replaces it, the options are a different single key or a modified key such as ⇧D or ⌘⌫. Our recommendation is to remove it.
+  - **Maggie's decisions:**
+    1. X no longer discards.
+    2. Nothing replaces it: there is no keyboard shortcut for dismissing a suggestion or discarding a draft. (She chose "No replacement shortcut" on 2026-11-03.)
+  - **For implementation, not yet done:**
+    - Remove the X binding from all three handlers.
+    - Drop "(X)" from the tooltips.
+    - Keep A for Accept, and keep U for "Undo merge" on near-duplicates.
+    - Dismiss stays reachable by Tab, since it comes before Accept in the DOM.
 - Wording question: the model's verb is **Discard** for drafts and signals, while Maggie said **Dismiss** for suggestions. Keep both verbs by object type, or use one label?
 - Ten X uses were checked and are legitimate, because they close a transient pane, panel or banner (for example `columns2.tsx:113`, `atlas2.tsx:350`, `app-shell.tsx:257` and `:285`). Other X uses remove a chip or clear a filter. The remove and clear uses (`timeline2-shared.tsx:117`, `panes.tsx:113` "Remove evidence", attachment chips in `pill-study.tsx`) are outside this rule but worth reviewing.
 
