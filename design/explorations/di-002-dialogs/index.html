@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DI-002 Dialogs: create in place, modals only where they earn it</title>
+<link rel="stylesheet" href="../../../app/web/src/design-tokens.css">
+<link rel="stylesheet" href="../../../app/web/src/app/base.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/homes.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/panes.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/pill-study.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/app-shell.css">
+<link rel="stylesheet" href="../../../app/web/src/app/production.css">
+<link rel="stylesheet" href="../../../app/web/src/app/hit-areas.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/surface-patterns.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/tripwire.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/suggestion-review.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/suggestion-preview.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/current-sidebar.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/confidence-spark.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/tooltip.css">
+<link rel="stylesheet" href="../_shell/jig.css">
+<script src="../_shell/jig.js" defer></script>
+<script src="di002.js" defer></script>
+<style>
+/* ── Jig-only scaffolding (not proposals) ─────────────────────────────── */
+.jig-head blockquote { margin: 12px 0 0; padding: 0; max-width: 78ch; color: #3d3a34; font-style: italic; }
+.jig-section > h3 { margin: 24px 0 8px; font-size: 16px; font-weight: 650; }
+.jx-wide { --jig-min: 900px; }
+.jig-stage.jx-stage { height: var(--jig-stage-h, 600px); min-height: 0; isolation: isolate; }
+.jx-stage > .ap.as { position: absolute; inset: 0; width: 100%; height: 100%; }
+.jx-controls { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; color: #5d5850; }
+.jx-controls button { font: inherit; padding: 3px 10px; border-radius: 999px; border: 1px solid #cfc9bf; background: #fff; color: #2b2925; cursor: pointer; }
+.jx-controls button:hover { background: #f6f4f0; }
+.jx-controls .jx-sep { width: 1px; height: 16px; background: #d6d1c9; margin: 0 4px; }
+.jx-scenario { display: inline-flex; gap: 6px; align-items: center; margin: 0 0 14px; font-size: 13px; color: #5d5850; }
+.jx-scenario button { font: inherit; padding: 4px 12px; border-radius: 999px; border: 1px solid #cfc9bf; background: #fff; cursor: pointer; }
+.jx-scenario button[aria-pressed="true"] { background: #2b2925; color: #fff; border-color: #2b2925; }
+.jig-table td:nth-child(4) { white-space: nowrap; font-weight: 600; }
+.jig-table tr[data-policy="create"] td:nth-child(4) { color: #1f6e4a; }
+.jig-table tr[data-policy="popover"] td:nth-child(4) { color: #2d5aa8; }
+.jig-table tr[data-policy="modal"] td:nth-child(4) { color: #8a4b12; }
+.jig-table tr[data-policy="inline"] td:nth-child(4) { color: #6a3fa0; }
+.jx-table-wrap { overflow-x: auto; border-radius: 10px; }
+.jx-proposed-trigger { outline: 1px dashed #b9b2a6; outline-offset: 2px; }
+.jx-temp { font-size: 12px; color: #8a847a; }
+/* The live app positions dialogs against the viewport; inside a jig stage they are contained instead. */
+.jx-stage .ab-backdrop, .jx-stage .ab-dialog.ap { position: absolute; }
+.jx-stage .ab-dialog.ap { max-height: calc(100% - 40px); }
+@media (max-width: 639px) {
+  .jig-stage .ab-production .as-pane { width: 100% !important; }
+  .jig-head, .jig-section { padding-left: 16px; padding-right: 16px; }
+}
+
+/* ── Shared jig motion for the docked pane (mirrors the app: slides from the right edge, pushes the view) ── */
+.jx-stage .as-content, .jx-stage .as-view { transition: width 360ms var(--ap-ease); }
+.jx-stage .as-pane { transition: transform 360ms var(--ap-ease); }
+.jx-stage .as-pane[data-closed] { transform: translateX(100%) !important; }
+.jx-doc-in { animation: jx-doc-in 220ms var(--ap-ease) both; }
+@keyframes jx-doc-in { from { opacity: 0; transform: translateY(6px); } }
+.jx-grow { overflow: hidden; animation: jx-grow 260ms var(--ap-ease) both; }
+@keyframes jx-grow { from { height: 0; opacity: 0; } }
+.jx-shrink { overflow: hidden; animation: jx-shrink 200ms var(--ap-ease) both; }
+@keyframes jx-shrink { to { height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; margin: 0; } }
+.jx-card-in { animation: jx-card-in 260ms var(--ap-ease) both; }
+@keyframes jx-card-in { from { opacity: 0; transform: scale(0.96); } }
+/* A refusal nudge for an empty name. Uses `translate` so it composes with transforms that position the element. */
+/* Proposals only: "building" uses the primary green instead of the app's blue. Current stays faithful. */
+.jig-option:not([data-alt="current"]) .ap-proto[data-status="building"] { color: var(--ab-accent); }
+.jig-option:not([data-alt="current"]) .pn-status button[aria-label="building"][aria-checked="true"] { box-shadow: var(--ap-shadow-1), inset 0 0 0 1px color-mix(in srgb, var(--ab-accent) 45%, transparent); }
+.jig-option:not([data-alt="current"]) .pn-status button[aria-label="building"][aria-checked="true"] .pn-status-name { color: var(--ab-accent); }
+/* Proposals only: an agent draft's Discard/Accept are labelled, Discard left of Accept, no keys (replaces the X/✓ edge minis). */
+.jx-edge-acts { position: absolute; right: var(--size-px-6); bottom: var(--size-px-6); z-index: 2; display: flex; gap: var(--size-px-4); opacity: 0; pointer-events: none; transition: opacity 160ms var(--ab-ease); }
+.jx-edge-acts .ap-btn { height: var(--size-px-24); font-size: var(--size-px-12); background: var(--ap-surface); }
+:is(.ab-edge-host, .cd-item):is(:hover, :focus-within) .jx-edge-acts { opacity: 1; pointer-events: auto; }
+.jx-shake { animation: jx-shake 280ms ease-out; }
+@keyframes jx-shake { 20% { translate: -4px 0; } 40% { translate: 4px 0; } 60% { translate: -3px 0; } 80% { translate: 2px 0; } }
+.jx-inline-input[aria-invalid="true"]::placeholder { color: var(--ap-ink-2); }
+@media (prefers-reduced-motion: reduce) {
+  .jx-shake { animation: none; }
+  .jx-stage .as-content, .jx-stage .as-view, .jx-stage .as-pane { transition: none; }
+  .jx-doc-in, .jx-grow, .jx-card-in { animation: jx-fade 150ms ease-out both; }
+  .jx-shrink { animation: jx-fade-out 150ms ease-out both; }
+  @keyframes jx-fade { from { opacity: 0; } }
+  @keyframes jx-fade-out { to { opacity: 0; } }
+}
+
+/* ── Proposal A: shadcn Dialog anatomy, in Aber tokens ─────────────────
+   DialogContent: grid, gap 16, padding 20, radius 12, hairline + modal shadow.
+   Close: absolute top-right, equally inset (16) from both edges, tighter than the content padding (20).
+   DialogHeader: title + description, gap 4. DialogFooter: outline Cancel, primary action, right-aligned; stacked on narrow.
+   Temporary value: title 15px (between the 13 body and 20 pane-title sizes). */
+.jx-backdrop { position: absolute; inset: 0; z-index: 50; background: rgb(var(--ab-shc) / 22%); opacity: 0; transition: opacity 150ms ease-out; }
+.jx-backdrop[data-open] { opacity: 1; transition-duration: 200ms; }
+.ap.jx-dialog { position: absolute; z-index: 51; left: 50%; top: 50%; width: min(var(--size-px-440), calc(100% - var(--size-px-32))); height: auto;
+  display: grid; gap: var(--size-px-16); padding: var(--size-px-20); border-radius: var(--size-px-12); background: var(--ap-surface);
+  box-shadow: 0 0 0 var(--size-px-0-5) rgb(var(--ab-shc) / 12%), 0 var(--size-px-16) var(--size-px-40) rgb(var(--ab-shc) / 16%);
+  transform: translate(-50%, -50%) scale(0.95); opacity: 0; transition: transform 150ms ease-in, opacity 150ms ease-in; }
+.ap.jx-dialog[data-open] { transform: translate(-50%, -50%) scale(1); opacity: 1; transition: transform 200ms var(--ap-ease), opacity 200ms ease-out; }
+.ap.jx-dialog[data-size="sm"] { width: min(var(--size-px-400), calc(100% - var(--size-px-32))); }
+.jx-dialog-close.ap-iconbtn { position: absolute; top: var(--size-px-16); right: var(--size-px-16); }
+.jx-dialog-header { display: grid; gap: var(--size-px-4); padding-right: var(--size-px-32); }
+.jx-dialog-title { margin: 0; font-size: var(--size-px-15); line-height: var(--size-px-28); font-weight: 600; letter-spacing: -0.005em; color: var(--ap-ink); }
+.jx-dialog-desc { margin: 0; font-size: var(--size-px-13); line-height: 1.5; color: var(--ap-ink-2); }
+.jx-dialog-desc .pn-chip { vertical-align: middle; }
+.jx-dialog form { display: grid; gap: var(--size-px-16); }
+.jx-field { display: grid; gap: var(--size-px-6); }
+.jx-field > .ap-label { color: var(--ap-ink-2); }
+.jx-input { width: 100%; height: var(--size-px-34); padding: 0 var(--size-px-10); border: 0; border-radius: var(--size-px-7); background: var(--ap-surface); color: var(--ap-ink); font: inherit; font-size: var(--size-px-13);
+  box-shadow: inset 0 0 0 var(--size-px-1) var(--color-gray-0-a-14); transition: box-shadow 120ms ease-out; }
+.jx-input:focus { outline: none; box-shadow: inset 0 0 0 var(--size-px-1) var(--ab-focus), 0 0 0 var(--size-px-3) color-mix(in oklab, var(--ab-focus) 20%, transparent); }
+.jx-input[aria-invalid="true"] { box-shadow: inset 0 0 0 var(--size-px-1-5) var(--ap-ink-2); }
+.jx-field-msg { margin: 0; font-size: var(--size-px-12); color: var(--ap-ink-2); }
+.jx-dialog-footer.ab-dialog-actions { margin: 0; gap: var(--size-px-8); }
+.jx-dialog-footer .ap-btn { height: var(--size-px-30); }
+.jx-dialog .ab-dialog-actions .ab-btn-ink:disabled { opacity: 0.4; }
+.jx-reasons { display: grid; gap: var(--size-px-2); margin: 0 calc(var(--size-px-8) * -1); }
+.jx-reason { display: grid; grid-template-columns: var(--size-px-16) 1fr; gap: var(--size-px-2) var(--size-px-10); align-items: center; padding: var(--size-px-8); border-radius: var(--size-px-7); cursor: pointer; }
+.jx-reason:hover { background: var(--ap-hover); }
+.jx-reason input { margin: 0; accent-color: var(--ab-ink); }
+.jx-reason b { font-weight: 500; }
+.jx-reason small { grid-column: 2; color: var(--ap-ink-2); font-size: var(--size-px-12); }
+.jx-reason:has(input:checked) { background: var(--ap-sunk); }
+@media (max-width: 639px) {
+  .jx-dialog-footer.ab-dialog-actions { flex-direction: column-reverse; align-items: stretch; }
+  .jx-dialog-footer .ap-btn { height: var(--size-px-36); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ap.jx-dialog, .ap.jx-dialog[data-open] { transform: translate(-50%, -50%); transition: opacity 150ms ease-out; }
+}
+
+/* ── Proposal B: creation in the docked object pane ── */
+.jx-row-new .cur-sidebar-label:empty::before, .jx-index-new > span:first-child:empty::before { content: attr(data-placeholder); color: var(--ap-ink-3); }
+.cur-prototype-row.jx-active, .cur-index a.jx-active { background: var(--ap-surface); color: var(--ap-ink); box-shadow: var(--ap-shadow-1); }
+.jx-inline-msg { display: flex; align-items: center; gap: var(--size-px-10); margin: var(--size-px-6) 0 0; font-size: var(--size-px-13); color: var(--ap-ink-2); }
+.jx-inline-msg .ap-btn { height: var(--size-px-26); }
+.ap-card .ap-card-claim[contenteditable] { outline: none; }
+.ap-card .ap-card-claim[contenteditable]:empty::before { content: attr(data-placeholder); color: var(--ap-ink-3); font-weight: 600; }
+.ap-card.jx-editing { box-shadow: var(--ap-shadow-selected); }
+
+/* ── Proposal C: creation at the trigger ── */
+.cur-prototype-row.jx-editing, .cur-index a.jx-editing { background: var(--ap-surface); box-shadow: var(--ap-shadow-1); color: var(--ap-ink); cursor: text; }
+.jx-inline-input { flex: 1; min-width: 0; border: 0; outline: none; padding: 0; background: transparent; font: inherit; color: var(--ap-ink); }
+.jx-inline-input::placeholder { color: var(--ap-ink-3); }
+.pn-chip.jx-editing { background: var(--ap-surface); box-shadow: var(--ap-shadow-1); cursor: text; min-width: var(--size-px-200); }
+.cur-theme .cur-theme-name[contenteditable] { outline: none; cursor: text; min-width: var(--size-px-120); text-align: left; }
+.cur-theme .cur-theme-name[contenteditable]:empty::before { content: attr(data-placeholder); color: var(--ap-ink-3); }
+.cur-section.jx-editing .cur-theme { border-radius: var(--size-px-6); }
+.jx-empty-hint { color: var(--ap-ink-3); font-size: var(--size-px-12); }
+
+/* ── Retire B: a tethered menu that grows from the Retire button (tier 4) ── */
+.ap.jx-menu { position: absolute; z-index: 40; width: var(--size-px-260); height: auto; padding: var(--size-px-4); border-radius: var(--size-px-10); background: var(--ap-surface);
+  box-shadow: 0 0 0 var(--size-px-0-5) rgb(var(--ab-shc) / 12%), 0 var(--size-px-6) var(--size-px-16) rgb(var(--ab-shc) / 14%);
+  transform-origin: top right; transform: scale(0.96); opacity: 0; transition: transform 120ms ease-in, opacity 120ms ease-in; }
+.ap.jx-menu[data-open] { transform: scale(1); opacity: 1; transition: transform 180ms var(--ap-ease), opacity 140ms ease-out; }
+.jx-menu-label { padding: var(--size-px-6) var(--size-px-8) var(--size-px-4); }
+.jx-menu button { display: grid; width: 100%; gap: var(--size-px-2); padding: var(--size-px-6) var(--size-px-8); border: 0; border-radius: var(--size-px-6); background: none; text-align: left; cursor: pointer; font: inherit; color: var(--ap-ink); }
+.jx-menu button:hover, .jx-menu button:focus-visible { background: var(--ap-hover); outline: none; }
+.jx-menu button small { color: var(--ap-ink-2); font-size: var(--size-px-12); }
+.ap.jx-toast { position: absolute; z-index: 45; left: 50%; bottom: var(--size-px-16); height: auto; display: flex; align-items: center; gap: var(--size-px-12); padding: var(--size-px-8) var(--size-px-8) var(--size-px-8) var(--size-px-14);
+  border-radius: var(--size-px-10); background: var(--ap-surface); box-shadow: 0 0 0 var(--size-px-0-5) rgb(var(--ab-shc) / 12%), 0 var(--size-px-4) var(--size-px-12) rgb(var(--ab-shc) / 14%);
+  transform: translate(-50%, 8px); opacity: 0; transition: transform 200ms var(--ap-ease), opacity 160ms ease-out; }
+.ap.jx-toast[data-open] { transform: translate(-50%, 0); opacity: 1; }
+.pn-doc[data-retired] .pn-title { color: var(--ap-ink-3); text-decoration: line-through; text-decoration-thickness: 1px; }
+@media (prefers-reduced-motion: reduce) { .ap.jx-menu, .ap.jx-menu[data-open] { transform: none; } }
+</style>
+</head>
+<body class="jig" data-jig="di-002">
+
+<header class="jig-head">
+  <h1>DI-002 · Dialogs</h1>
+  <p>Every dialog in Aber goes through one <code>ask()</code> host: a 480 px box at 20% from the top, a 13 px title, and the close control as a small X <em>beside</em> the primary button at the bottom right. This jig takes each creation dialog out of the modal and into the object it makes, and gives the few modals that stay a shadcn‑style anatomy.</p>
+  <blockquote>“We should never have a close button that is not in the top-right corner for a modal. I also tend to avoid modals wherever I can… If I'm creating an object, it should look like the final object.”</blockquote>
+  <ol class="jig-rules">
+    <li><b>A modal's close button is always top‑right.</b></li>
+    <li><b>Avoid modals wherever possible.</b> A tethered menu, the pane, or the row itself first.</li>
+    <li><b>Creating an object looks like the final object.</b> No isolated form.</li>
+  </ol>
+  <p class="jx-temp">Every stage below is the app's real markup (captured DOM) styled by the app's real CSS. Proposal styles use <code>--ap-*</code> and <code>--size-px-*</code> tokens; the one temporary value is the 15 px modal title. Click the real triggers inside each stage. Esc closes. The pills under each stage force a state.</p>
+</header>
+
+<section class="jig-section" id="inventory">
+  <h2>Inventory and policy</h2>
+  <p>Fourteen prompts share one dialog. Grouped by what they do, three policies cover all of them, and only two remain modal.</p>
+  <div class="jx-table-wrap">
+  <table class="jig-table">
+    <thead><tr><th>Dialog</th><th>Type</th><th>Trigger (source)</th><th>Recommendation</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr data-policy="create"><td>New prototype</td><td>Creation</td><td>Sidebar › Prototypes › “New prototype” row <code>current-sidebar.tsx:97</code></td><td>Create in place</td><td>Opens the prototype page in the pane, empty and editable (B), or names it in its own sidebar row first (C). It looks like the prototype from the first keystroke.</td></tr>
+      <tr data-policy="create"><td>State a theory</td><td>Creation</td><td>Theme heading + <code>current.tsx:63</code>; theme pane “State a theory” tile <code>panes.tsx:205</code></td><td>Create in place</td><td>A new theory card appears in the theme you pressed + on, and the claim is typed into the card (C) or the theory page (B). The theme is already known, so it isn't asked for.</td></tr>
+      <tr data-policy="create"><td>New theme</td><td>Creation</td><td>Sidebar brand + <code>current-sidebar.tsx:74</code>, <code>:81</code></td><td>Create in place</td><td>A new section heading appears in Theme sections with its index row, marked open (hollow ring) because it has no theory yet.</td></tr>
+      <tr data-policy="create"><td>Rephrase draft</td><td>Creation (edit)</td><td>Chat object card <code>chat/object-card.tsx:18</code></td><td>Create in place</td><td>Edit the draft's wording on the card itself. Accept keeps its existing edge actions. The text is already on screen, so copying it into a modal adds nothing.</td></tr>
+      <tr data-policy="popover"><td>Theory relationships (2 steps)</td><td>Picker</td><td>Theory pane + <code>panes.tsx:137</code> → <code>dialogs.tsx:69</code></td><td>Popover combobox</td><td>Belongs to the + button: a tethered menu (tier 4) of Theme / Rival / Follows from / Prototype, whose second step filters in the same popover. Grows from the button and returns to it.</td></tr>
+      <tr data-policy="popover"><td>Add supporting / undermining evidence</td><td>Picker</td><td>Theory pane, Supports/Undermines + <code>panes.tsx:171</code> → <code>dialogs.tsx:69</code></td><td>Popover combobox</td><td>Anchored to the + on that column, so the stance stays visible. Typing filters signals.</td></tr>
+      <tr data-policy="popover"><td>File in a theme / Unfile</td><td>Picker</td><td>Signal detail <code>panes.tsx:113</code></td><td>Popover combobox</td><td>A short theme list belongs to the chip row it changes. Unfile is one click on the chip's ×, with no prompt.</td></tr>
+      <tr data-policy="popover"><td>Merge signal: choose</td><td>Picker</td><td>Signal detail <code>signal-merge.tsx:15</code></td><td>Popover combobox</td><td>Picking the duplicate is a lookup next to the signal.</td></tr>
+      <tr data-policy="inline"><td>Merge signal: confirm (+ reason)</td><td>Confirmation</td><td><code>signal-merge.tsx:17</code></td><td>Inline confirm</td><td>The merge can be undone, so it applies straight away with an Undo toast. A reason, if wanted, goes on the merged signal. A modal adds nothing.</td></tr>
+      <tr data-policy="popover"><td>Retire theory / theme (reason)</td><td>Confirmation + choice</td><td>Pane trash <code>panes.tsx:137</code>, <code>:198</code> → <code>dialogs.tsx:81</code></td><td>Tethered menu</td><td>Three reasons, one click, and the theory keeps its history, so Undo replaces a confirmation. A filter field over three choices (today) is noise. See section 5, option B.</td></tr>
+      <tr data-policy="modal"><td>Delete dump</td><td>Destructive confirmation</td><td>Dump log row <code>dump-log.tsx:35</code> → <code>dialogs.tsx:94</code></td><td>Keep modal (shadcn)</td><td>This is the one destructive action: signals and evidence go with the dump. The model already names it the only modal. It gets an X top‑right, a title, the spelled‑out consequence, and Cancel + Move to bin.</td></tr>
+      <tr data-policy="modal"><td>Find (⌘K)</td><td>Search</td><td>Sidebar search, ⌘K <code>app-shell.tsx:151</code> → <code>dialogs.tsx:51</code></td><td>Keep modal (shadcn command)</td><td>An app‑wide jump has no object to anchor to. Keep the centred command palette, but put the X at the right end of the search row. Esc stays.</td></tr>
+      <tr data-policy="inline"><td>Dump viewer</td><td>Viewer</td><td>Signal origin chip <code>panes.tsx:110</code> → <code>dialogs.tsx:102</code></td><td>Unfold in place</td><td>Read‑only content shouldn't block. Unfold the dump under its chip, or open its row in the dump log (the model's “unfolds from its row”). Today's “Close” submit button goes away.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="jig-decision" data-decision="policy" data-question="Per-type policy: creation in place, pickers as popovers, retire as a tethered menu, only Delete dump and Find stay modal?" data-options="As recommended|Keep Retire as a modal|Keep pickers modal too|Other (note)"></div>
+</section>
+
+<section class="jig-section jx-wide" id="new-prototype">
+  <h2>New prototype</h2>
+  <p>Today the sidebar's “New prototype” opens a bare Name field, then jumps to the prototype page. Option A keeps a modal with better anatomy. B and C make the prototype first and name it where it lives.</p>
+  <div class="jx-scenario" role="group" aria-label="Started from">Started from
+    <button type="button" data-scenario="sidebar" aria-pressed="true">Sidebar</button>
+    <button type="button" data-scenario="theory" aria-pressed="false">A theory (Tests prefilled)</button>
+  </div>
+  <div class="jig-compare" data-flow="prototype">
+    <div class="jig-option" data-alt="current">
+      <div class="jig-label" data-current><b>Now</b>Current: <code>ask()</code> dialog</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 600px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">X sits next to Create at the bottom; 13 px title; no context. From a theory, the new prototype isn't linked to it.</p>
+    </div>
+    <div class="jig-option" data-alt="A">
+      <div class="jig-label"><b>A</b>shadcn anatomy modal</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 600px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">Header (title + context), X top‑right, one field, footer with Cancel + Create. Centred, scale 0.95 → 1 in 200 ms, exits in reverse in 150 ms.</p>
+      <ul class="jig-tradeoffs"><li>+ One anatomy for every modal that stays; the cheapest change (restyle the one <code>DialogHost</code>).</li><li>− Still an isolated form that doesn't look like a prototype, against rule 3.</li><li>− Status, Tests and notes still need a second stop on the page.</li></ul>
+    </div>
+    <div class="jig-option" data-alt="B">
+      <div class="jig-label"><b>B</b>Create in the docked pane</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 600px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">The pane opens on a blank prototype page: name focused, status <i>idea</i>, Tests prefilled from the theory, notes ready. A row grows in the sidebar and mirrors the name as you type. Saved once named. Closing an untouched one discards it silently. Closing one with notes but no name asks for a name, with Discard beside it.</p>
+      <ul class="jig-tradeoffs"><li>+ The thing you make is the thing you see, with every field in reach (rule 3).</li><li>+ No new surface: the pane already slides from the right and closes top‑right.</li><li>− Replaces whatever was open in the pane (the theory you came from becomes a chip on Tests).</li><li>− Needs a rule for a nameless prototype (shown: “Name it to keep it”).</li></ul>
+    </div>
+    <div class="jig-option" data-alt="C">
+      <div class="jig-label"><b>C</b>Name it at the trigger, then open</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 600px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">The “New prototype” row turns into the new prototype's row with a name field. Enter commits and opens its page in the pane with the notes focused. From a theory, the chip in the theory's links becomes the new prototype in place, and the theory stays open.</p>
+      <ul class="jig-tradeoffs"><li>+ Fastest; the list grows by the row you're typing in, as in Linear or Finder.</li><li>+ From a theory you keep your place: it's created and linked without leaving.</li><li>− Two steps for a full page (name, then pane).</li><li>− Empty Enter only nudges; nothing to explain why.</li></ul>
+    </div>
+  </div>
+  <div class="jig-decision" data-decision="new-prototype" data-question="New prototype: which approach?" data-options="Current|A|B|C|B from sidebar + C from a theory"></div>
+</section>
+
+<section class="jig-section jx-wide" id="state-theory">
+  <h2>State a theory</h2>
+  <p>Triggered by + on the “Agent memory” heading. The theme is already known, so every option carries it.</p>
+  <div class="jig-compare" data-flow="theory">
+    <div class="jig-option" data-alt="current">
+      <div class="jig-label" data-current><b>Now</b>Current: Claim dialog</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 520px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">Doesn't say which theme it files into.</p>
+    </div>
+    <div class="jig-option" data-alt="A">
+      <div class="jig-label"><b>A</b>shadcn anatomy modal</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 520px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">Description names the theme as a chip; primary reads “State theory”.</p>
+    </div>
+    <div class="jig-option" data-alt="B">
+      <div class="jig-label"><b>B</b>Theory page in the pane</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 520px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">Theme chip, empty claim focused, unset confidence, Happens by preset to two years out (the app's default), tripwire and evidence ready. The card appears in the section, selected, and mirrors the claim.</p>
+      <ul class="jig-tradeoffs"><li>+ Prompts for the tripwire early, which is the core of a theory.</li><li>− Heavier when you just want to jot a claim.</li></ul>
+    </div>
+    <div class="jig-option" data-alt="C">
+      <div class="jig-label"><b>C</b>Type into a new card</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 520px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">A blank card opens at the top of the section with the claim focused. Enter settles it (confidence unset, +0 −0) and opens it in the pane. Esc removes it.</p>
+      <ul class="jig-tradeoffs"><li>+ It's a theory card from the start, in its theme.</li><li>+ Quick for several claims in a row.</li><li>− Long claims wrap inside a narrow card while you type.</li></ul>
+    </div>
+  </div>
+  <div class="jig-decision" data-decision="state-theory" data-question="State a theory: which approach?" data-options="Current|A|B|C"></div>
+</section>
+
+<section class="jig-section jx-wide" id="new-theme">
+  <h2>New theme</h2>
+  <p>Triggered by + in the sidebar's brand row.</p>
+  <div class="jig-compare" data-flow="theme">
+    <div class="jig-option" data-alt="current">
+      <div class="jig-label" data-current><b>Now</b>Current: Name dialog</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 500px"></div>
+      <div class="jx-controls"></div>
+    </div>
+    <div class="jig-option" data-alt="A">
+      <div class="jig-label"><b>A</b>shadcn anatomy modal</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 500px"></div>
+      <div class="jx-controls"></div>
+    </div>
+    <div class="jig-option" data-alt="B">
+      <div class="jig-label"><b>B</b>Theme page in the pane</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 500px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">Empty theme page: name focused, Signals 0, and the “State a theory” tile as its only card. The index row grows and mirrors the name.</p>
+    </div>
+    <div class="jig-option" data-alt="C">
+      <div class="jig-label"><b>C</b>A new section heading</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 500px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">A section appears at the top of Theme sections with its heading editable and the hollow “open” ring. Enter commits and moves focus to its + (State a theory). An open theme invites a theory, so creation flows into the next step.</p>
+      <ul class="jig-tradeoffs"><li>+ Looks exactly like a theme in the view you're in; chains into C for theories.</li><li>− Only in Theme sections; Columns and Atlas need B as the fallback.</li></ul>
+    </div>
+  </div>
+  <div class="jig-decision" data-decision="new-theme" data-question="New theme: which approach?" data-options="Current|A|B|C"></div>
+</section>
+
+<section class="jig-section jx-wide" id="kept-modals">
+  <h2>Modals that stay: shadcn anatomy</h2>
+  <p>Retire is shown three ways (it may not need a modal at all). Delete dump is the model's one true modal.</p>
+  <h3>Retire theory</h3>
+  <div class="jig-compare" data-flow="retire">
+    <div class="jig-option" data-alt="current">
+      <div class="jig-label" data-current><b>Now</b>Current: picker with Find</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 480px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">A filter field over three reasons, no consequence, and no visible close (Esc or click outside only).</p>
+    </div>
+    <div class="jig-option" data-alt="A">
+      <div class="jig-label"><b>A</b>shadcn modal with reasons</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 480px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">Title as a question, the consequence as description, reasons as radio rows, Retire disabled until one is picked. X top‑right.</p>
+    </div>
+    <div class="jig-option" data-alt="B">
+      <div class="jig-label"><b>B</b>Tethered menu + Undo</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 480px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">Grows from the trash button (tier 4). One click retires with that reason; a toast offers Undo. It isn't a modal, so it has no X; Esc or clicking outside closes it.</p>
+      <ul class="jig-tradeoffs"><li>+ One click; follows “avoid modals” and Retire's own rule (being wrong keeps its history).</li><li>− Easier to misclick; relies on Undo.</li></ul>
+    </div>
+  </div>
+  <div class="jig-decision" data-decision="retire" data-question="Retire theory / theme" data-options="Current|A|B"></div>
+
+  <h3>Delete dump (destructive)</h3>
+  <div class="jig-compare" data-flow="delete" style="--jig-min: 480px">
+    <div class="jig-option" data-alt="current">
+      <div class="jig-label" data-current><b>Now</b>Current: confirm variant</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 380px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">No close control at all; 320 px.</p>
+    </div>
+    <div class="jig-option" data-alt="A">
+      <div class="jig-label"><b>A</b>shadcn alert anatomy + X</div>
+      <div class="jig-stage jx-stage" style="--jig-stage-h: 380px"></div>
+      <div class="jx-controls"></div>
+      <p class="jig-note">shadcn's AlertDialog omits the X; Maggie's rule adds it. The action stays solid ink, not red, because red means a challenge in Aber.</p>
+    </div>
+  </div>
+  <div class="jig-decision" data-decision="modal-anatomy" data-question="Anatomy for every modal that stays (Delete dump, Find, and any others kept)" data-options="Current|A|A with a 13px title (no temporary 15px size)"></div>
+</section>
+
+<section class="jig-section" id="questions">
+  <h2>Open questions</h2>
+  <ol class="jig-tradeoffs" style="font-size:14px">
+    <li><b>When does a new object exist?</b> B/C assume it's saved as soon as it has a name, and a nameless, untouched one is discarded silently. Should a nameless one with notes be kept as “Untitled” instead of asking?</li>
+    <li><b>Not a draft.</b> “Draft” and the dashed outline mean “the agent made it, not yet mine”. A prototype I'm still naming is mine, so B and C use solid material and the verb Discard, not “Discard draft”.</li>
+    <li><b>Validation colour.</b> Red means a challenge, so a missing name shows as ink‑2 text plus a nudge, not a red field. OK?</li>
+    <li><b>Superseded by what?</b> Retiring as superseded could ask for the replacing theory (a rival link). Out of scope here.</li>
+    <li><b>Modal title size.</b> A uses a temporary 15 px title for hierarchy; the scale has 13 and 20. Add 15 to the scale or keep 13 and rely on weight?</li>
+  </ol>
+</section>
+
+</body>
+</html>
