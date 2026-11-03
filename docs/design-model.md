@@ -369,6 +369,7 @@ One meaning per variable, everywhere.
 | Use the concept names exactly, everywhere | This model |
 | **X only closes a fleeting surface** (a modal, popover, toast or transient card). It never discards, dismisses or rejects a suggestion, draft or proposal. A modal's close X always sits top-right | Maggie, DI-002 and DI-009 |
 | **Decisions read Dismiss, then Accept.** Rejecting a model's suggestion or draft uses a labelled secondary **Dismiss** button on the left. The primary **Accept** (or Save or Confirm) sits on the right. This pair is the one exception to "at most one text button per surface" | Maggie, DI-009 |
+| **No single-key discard.** The X key never discards, dismisses or rejects anything. The keyboard can accept, but rejecting needs the labelled Dismiss button | Maggie, DI-009 |
 | **Chevrons only expand and collapse.** They never mean "go to this object" | Maggie, DI-003 |
 
 ## Implementation notes
