@@ -1,0 +1,134 @@
+[
+ {
+  "cls": "ap-mark",
+  "kind": "fresh",
+  "parent": "cd-line cd-spread",
+  "idx": 1,
+  "sibs": 2,
+  "text": "Cost of intelligence",
+  "bg": "rgb(41, 163, 131)",
+  "color": "rgb(23, 23, 23)",
+  "w": 7
+ },
+ {
+  "cls": "ap-mark",
+  "kind": "open",
+  "parent": "cd-line cd-spread",
+  "idx": 1,
+  "sibs": 2,
+  "text": "Novel agent interfaces",
+  "bg": "rgba(0, 0, 0, 0)",
+  "color": "rgb(23, 23, 23)",
+  "w": 8
+ },
+ {
+  "cls": "ap-mark",
+  "kind": "open",
+  "parent": "cd-line cd-spread",
+  "idx": 1,
+  "sibs": 2,
+  "text": "Agent identity",
+  "bg": "rgba(0, 0, 0, 0)",
+  "color": "rgb(23, 23, 23)",
+  "w": 8
+ },
+ {
+  "cls": "ap-mark",
+  "kind": "fresh",
+  "parent": "cd-line cd-spread",
+  "idx": 1,
+  "sibs": 2,
+  "text": "Robotics",
+  "bg": "rgb(41, 163, 131)",
+  "color": "rgb(23, 23, 23)",
+  "w": 7
+ },
+ {
+  "cls": "ap-ghost-badge",
+  "kind": "",
+  "parent": "cd-line",
+  "idx": 1,
+  "sibs": 2,
+  "text": "1",
+  "bg": "rgba(0, 0, 0, 0)",
+  "color": "rgb(82, 82, 82)",
+  "w": 18
+ },
+ {
+  "cls": "ap-mark",
+  "kind": "challenge",
+  "parent": "cd-line",
+  "idx": 1,
+  "sibs": 3,
+  "text": "3",
+  "bg": "rgb(229, 72, 77)",
+  "color": "rgb(23, 23, 23)",
+  "w": 7
+ },
+ {
+  "cls": "ap-ghost-badge",
+  "kind": "",
+  "parent": "cd-line",
+  "idx": 2,
+  "sibs": 3,
+  "text": "3",
+  "bg": "rgba(0, 0, 0, 0)",
+  "color": "rgb(82, 82, 82)",
+  "w": 18
+ },
+ {
+  "cls": "ap-proto",
+  "kind": "building",
+  "parent": "cd-line",
+  "idx": 0,
+  "sibs": 2,
+  "text": "Intent review",
+  "bg": "rgba(0, 0, 0, 0)",
+  "color": "rgb(47, 111, 237)",
+  "w": 14
+ },
+ {
+  "cls": "ap-proto",
+  "kind": "idea",
+  "parent": "cd-line",
+  "idx": 0,
+  "sibs": 2,
+  "text": "Token budget meter",
+  "bg": "rgba(0, 0, 0, 0)",
+  "color": "rgb(104, 104, 104)",
+  "w": 14
+ },
+ {
+  "cls": "ap-proto",
+  "kind": "built",
+  "parent": "cd-line",
+  "idx": 0,
+  "sibs": 2,
+  "text": "One-person app kit",
+  "bg": "rgba(0, 0, 0, 0)",
+  "color": "rgb(23, 23, 23)",
+  "w": 14
+ },
+ {
+  "cls": "ap-proto",
+  "kind": "shelved",
+  "parent": "cd-line",
+  "idx": 0,
+  "sibs": 2,
+  "text": "Memory inspector",
+  "bg": "rgba(0, 0, 0, 0)",
+  "color": "rgb(104, 104, 104)",
+  "w": 14
+ },
+ {
+  "cls": "ap-proto",
+  "kind": "idea",
+  "parent": "cd-line",
+  "idx": 0,
+  "sibs": 2,
+  "text": "Recovery rehearsal",
+  "bg": "rgba(0, 0, 0, 0)",
+  "color": "rgb(104, 104, 104)",
+  "w": 14
+ }
+]

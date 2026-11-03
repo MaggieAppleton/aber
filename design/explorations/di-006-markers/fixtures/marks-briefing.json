@@ -1,0 +1,35 @@
+[
+ {
+  "cls": "ap-mark",
+  "kind": "challenge",
+  "parent": "br-open",
+  "idx": 0,
+  "sibs": 1,
+  "text": "Agents keep context across months, not sessions",
+  "bg": "rgb(229, 72, 77)",
+  "color": "rgb(23, 23, 23)",
+  "w": 7
+ },
+ {
+  "cls": "ap-mark",
+  "kind": "fresh",
+  "parent": "br-open",
+  "idx": 0,
+  "sibs": 1,
+  "text": "Cost of intelligence",
+  "bg": "rgb(41, 163, 131)",
+  "color": "rgb(23, 23, 23)",
+  "w": 7
+ },
+ {
+  "cls": "ap-mark",
+  "kind": "fresh",
+  "parent": "br-open",
+  "idx": 0,
+  "sibs": 1,
+  "text": "Robotics",
+  "bg": "rgb(41, 163, 131)",
+  "color": "rgb(23, 23, 23)",
+  "w": 7
+ }
+]

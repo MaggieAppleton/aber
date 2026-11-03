@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DI-001 · Telling objects apart</title>
+<link rel="stylesheet" href="../../../app/web/src/design-tokens.css">
+<link rel="stylesheet" href="../../../app/web/src/app/base.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/homes.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/app-shell.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/panes.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/surface-patterns.css">
+<link rel="stylesheet" href="../../../app/web/src/app/production.css">
+<link rel="stylesheet" href="../../../app/web/src/app/hit-areas.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/current-sidebar.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/confidence-spark.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/tooltip.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/briefing-app.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/dump-log.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/suggestion-review.css">
+<link rel="stylesheet" href="../_shell/jig.css">
+<script src="../_shell/jig.js" defer></script>
+<style>
+/* ── Jig-only layout. Values marked "temp" exist so app surfaces fit a comparison stage. ── */
+/* app base.css locks html/body to the viewport; a jig page must scroll */
+html, body.jig { height: auto; overflow: visible; }
+body.jig { background: #e9e6e1; }
+.jig-section.x-wide { max-width: 1400px; }
+.jig-head { max-width: 1400px; }
+.jig-stage { min-height: 0; }
+.jig-stage > .ap.x-ap { height: auto; min-height: 100%; border-radius: 0; box-shadow: none; overflow: visible; }
+.x-ap.x-surface { background: var(--ap-surface); }
+.x-quote { margin: 14px 0 12px; padding: 10px 16px; border-left: 3px solid #2b2925; background: #f6f4f0; max-width: 72ch; color: #2b2925; }
+.x-quote cite { display: block; margin-top: 4px; font-style: normal; color: #8a847a; font-size: 13px; }
+.x-why { font-size: 13px; color: #3d3a34; margin: 6px 0 0; max-width: 72ch; }
+.x-pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
+.x-pills span { padding: 2px 8px; border-radius: 6px; background: #f6f4f0; font-size: 12px; color: #5d5850; }
+
+/* Specimen inventory */
+.x-spec-table td:first-child { width: 92px; font-weight: 650; }
+.x-spec-table td:nth-child(2) { width: 220px; }
+.x-spec-table td:nth-child(3) code { white-space: nowrap; }
+.x-spec { height: auto !important; overflow: visible !important; border-radius: 6px !important; box-shadow: none !important; padding: 8px; background: var(--ap-bg); max-width: 380px; }
+.x-spec.x-white { background: var(--ap-surface); }
+.x-spec-why { color: #8a847a; font-size: 12px; display: block; margin-top: 2px; }
+
+/* Strategy summary cards */
+.x-strat { background: #fff; border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; align-content: start; }
+.x-strat h3 { margin: 0; font-size: 15px; }
+.x-strat p { margin: 0; font-size: 13px; color: #3d3a34; }
+.x-strat .x-k { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #8a847a; font-weight: 650; }
+
+/* Shared helpers */
+.x-slot { display: inline-grid; place-items: center; flex-shrink: 0; width: 14px; color: var(--ap-ink-3); }
+.x-slot[data-size="12"] { width: 12px; }
+.x-slot[data-size="13"] { width: 13px; }
+.x-rel { color: var(--ap-ink-3); flex-shrink: 0; }
+.x-grid { display: grid; grid-template-columns: 14px minmax(0, 1fr); column-gap: 8px; align-items: start; }
+.x-grid > .x-slot { height: 1.4em; }
+.x-grid > .x-body { display: grid; gap: var(--size-px-3); min-width: 0; }
+.x-lead { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.x-lead > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Pane: temp padding so the document fits a ~560px stage (app: 40 48 120). */
+.x-doc.pn-doc { padding: 24px 24px 28px; max-width: none; }
+.x-ap .pn-links .pn-chip, .x-ap .pn-rivals .pn-chip { max-width: 100%; }
+.x-ap .pn-chip > span:not(.x-slot):not(.ap-proto) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.x-ap .pn-rival > span:not(.x-slot):not(.ap-proto) { white-space: normal; }
+.pn-rival > .x-slot { align-self: flex-start; height: 18px; }
+.x-note-text { color: var(--ap-ink-2); font-size: 12px; }
+
+/* A: relation glyph sits outside the chip so the type mark keeps the leading slot */
+.x-a-rel { display: inline-flex; align-items: center; gap: 3px; color: var(--ap-ink-3); max-width: 100%; min-width: 0; }
+.x-a-link { align-items: flex-start; }
+.x-a-link > .x-slot { height: 18px; }
+.x-a-link > .x-rel { margin-top: 3px; margin-left: auto; padding-left: 6px; }
+
+/* B: each type has a form. Temp values, not tokens yet. */
+.ap .x-b-pill, .x-b-pill { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 10px; border: 0; border-radius: 999px; background: var(--ap-sunk); box-shadow: inset 0 0 0 var(--size-px-0-5) var(--ap-line); font-weight: 500; font-size: var(--size-px-12); color: var(--ap-ink); white-space: nowrap; cursor: pointer; max-width: 100%; }
+.x-b-pill > .ap-num { color: var(--ap-ink-3); font-weight: 400; }
+.x-b-pill:hover { background: var(--ap-hover); }
+.x-b-pill:focus-visible, .x-b-claim:focus-visible, .x-b-art:focus-visible { outline: var(--size-px-1-5) solid var(--ap-ink-3); outline-offset: var(--size-px-neg-1-5); }
+.x-b-pill[data-draft] { background: transparent; box-shadow: none; outline: var(--size-px-1) dashed var(--color-gray-0-a-28); outline-offset: var(--size-px-neg-1); color: var(--ap-ink-2); }
+.ap .x-b-claim, .x-b-claim { display: block; max-width: 100%; text-align: left; border: 0; padding: 6px 10px; border-radius: 6px; background: var(--ap-surface); box-shadow: var(--ap-shadow-1); font-weight: 600; font-size: var(--size-px-12); line-height: 1.35; color: var(--ap-ink); cursor: pointer; text-wrap: pretty; }
+.x-b-claim:hover { background: var(--ap-hover); }
+.x-b-claim[data-draft] { background: transparent; box-shadow: none; outline: var(--size-px-1) dashed var(--color-gray-0-a-28); outline-offset: var(--size-px-neg-1); color: var(--ap-ink-2); }
+.x-b-stackdd > .x-b-claim { width: fit-content; }
+.x-b-stackdd { flex-direction: column; align-items: stretch !important; gap: 4px !important; }
+.ap .x-b-art, .x-b-art { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 8px 0 6px; border: 0; border-radius: 3px; background: var(--ap-surface); box-shadow: inset 0 0 0 var(--size-px-0-5) var(--ap-line), inset 0 -2px 0 var(--ap-sunk); font-weight: 500; font-size: var(--size-px-12); cursor: pointer; }
+.x-b-art:hover { background: var(--ap-hover); }
+.x-b-quote { display: grid; gap: var(--size-px-2); padding-left: 9px; box-shadow: inset 2px 0 0 var(--color-gray-0-a-14); }
+.x-b-quote .pn-line > span:last-child { font-weight: 400; }
+.x-b-relrow { display: grid; gap: 4px; }
+.x-b-count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 6px; border-radius: 999px; background: var(--ap-sunk); box-shadow: inset 0 0 0 var(--size-px-0-5) var(--ap-line); font-size: 11px; color: var(--ap-ink-3); flex-shrink: 0; }
+.x-b-stack { box-shadow: var(--ap-shadow-1), 3px 3px 0 -0.5px var(--ap-surface), 3px 3px 0 0 var(--color-gray-0-a-10); }
+.x-b-stack[data-draft] { box-shadow: 3px 3px 0 -1px var(--ap-bg), 3px 3px 0 0 var(--color-gray-0-a-20); }
+.x-b-links .pn-meta { row-gap: 8px; }
+
+/* C: container labels */
+.x-c-head { cursor: default; color: var(--ap-ink-2); }
+.x-c-head:hover { background: transparent !important; }
+.x-c-lab { display: flex; align-items: center; gap: 6px; padding: 0 2px 4px; color: var(--ap-ink-3); }
+
+/* Draft count tokens (the misused Target) */
+.x-dtok { display: inline-flex; align-items: center; gap: 3px; height: 20px; padding: 0 6px; border-radius: 6px; outline: var(--size-px-1) dashed var(--color-gray-0-a-30); outline-offset: var(--size-px-neg-1); color: var(--ap-ink-2); font-size: var(--size-px-12); white-space: nowrap; }
+.x-dtok + .x-dtok { margin-left: 2px; }
+.x-dcount { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 5px; outline: var(--size-px-1) dashed var(--color-gray-0-a-30); outline-offset: var(--size-px-neg-1); font-size: var(--size-px-12); color: var(--ap-ink-2); }
+.x-sigtok { display: inline-flex; align-items: center; gap: 3px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--ap-sunk); color: var(--ap-ink-2); font-size: var(--size-px-12); white-space: nowrap; }
+
+/* Columns: temp sizing so three columns share a stage (app: user-sized columns). */
+.x-cd.cd { height: 430px; }
+.x-cd .cd-col { flex: 1 1 0; min-width: 150px; }
+.x-cd .cd-list { padding-bottom: 12px; }
+.x-cd-scroll { overflow-x: auto; }
+
+/* Briefing: temp, no absolute scroll container. */
+.x-br .br-col { padding: 20px 20px 16px; max-width: none; }
+/* DI-009: proposals use a labelled Dismiss/Discard left of Accept; Current stays faithful. */
+.ap-btn.x-quiet { background: transparent; box-shadow: none; color: var(--ap-muted, #6b6b6b); }
+.ap-btn.x-quiet:hover { color: var(--ap-ink, #1a1a1a); }
+.x-br .br-acts { opacity: 0.0; }
+.x-br .br-item[data-cursor] .br-acts { opacity: 1; }
+.x-dlwrap { margin: 4px 20px 20px; padding-top: 12px; border-top: var(--size-px-0-5) solid var(--ap-line); display: grid; gap: 6px; }
+.x-dlwrap .dl-row { background: var(--ap-surface); border-radius: 8px; padding: 8px 10px; box-shadow: var(--ap-shadow-1); }
+
+/* Sidebar + Theme section: temp, no viewport height. */
+.x-cur.cur { height: auto; grid-template-columns: 208px minmax(0, 1fr); }
+.x-cur .cur-rail { padding: 12px 8px; }
+.x-cur .cur-main { padding: 18px 18px 22px; }
+.x-cur .cur-cards { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+.x-cur .cur-section + .cur-section { margin-top: 18px; }
+.x-theme-head { display: flex; align-items: center; gap: 8px; }
+
+/* Chat */
+.x-chat { padding: 18px; display: grid; gap: 10px; max-width: 460px; }
+.x-msg { margin: 0; color: var(--ap-ink); }
+.x-chat .ab-chat-theory { display: grid; gap: 6px; }
+
+/* Forced interaction states for the states strip */
+.x-states { display: grid; grid-template-columns: 74px repeat(5, minmax(0, 1fr)); gap: 10px 10px; padding: 16px; align-items: start; }
+.x-states > .ap-label { padding-top: 4px; }
+.x-states .x-colh { font-size: 11px; color: var(--ap-ink-3); }
+.x-force.is-hover { background: var(--ap-hover) !important; color: var(--ap-ink) !important; }
+.x-force.is-focus { outline: var(--size-px-1-5) solid var(--ap-ink-3) !important; outline-offset: var(--size-px-neg-1-5) !important; }
+.x-force.is-sel { box-shadow: var(--ap-shadow-selected) !important; background: var(--ap-surface) !important; }
+.x-states .pn-chip, .x-states .x-b-claim, .x-states .x-b-pill { max-width: 100%; }
+.x-states .pn-col { min-width: 0; }
+
+@media (max-width: 700px) {
+  .ab-sigcard { flex-wrap: wrap; }
+  .ab-sigcard-text { flex: 1 1 140px; }
+  .x-states { grid-template-columns: 60px repeat(5, minmax(96px, 1fr)); overflow-x: auto; }
+  .x-cur.cur { grid-template-columns: 1fr; }
+  .x-cur .cur-rail { border-right: 0; border-bottom: var(--size-px-0-5) solid var(--ap-line); }
+  .x-spec-table thead { display: none; }
+  .x-spec-table, .x-spec-table tbody, .x-spec-table tr, .x-spec-table td { display: block; width: auto !important; }
+  .x-spec-table td { border: 0; padding: 4px 12px; }
+  .x-spec-table td:empty { display: none; }
+  .x-spec-table tr { border-bottom: 1px solid #eee9e2; padding: 6px 0; }
+  .x-spec-table td:nth-child(3) code { white-space: normal; }
+}
+</style>
+</head>
+<body class="jig" data-jig="di-001">
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+<symbol id="i-target" viewBox="0 0 256 256"><path d="M221.87,83.16A104.1,104.1,0,1,1,195.67,49l22.67-22.68a8,8,0,0,1,11.32,11.32l-96,96a8,8,0,0,1-11.32-11.32l27.72-27.72a40,40,0,1,0,17.87,31.09,8,8,0,1,1,16-.9,56,56,0,1,1-22.38-41.65L184.3,60.39a87.88,87.88,0,1,0,23.13,29.67,8,8,0,0,1,14.44-6.9Z"/></symbol>
+<symbol id="i-pulse" viewBox="0 0 256 256"><path d="M240,128a8,8,0,0,1-8,8H204.94l-37.78,75.58A8,8,0,0,1,160,216h-.4a8,8,0,0,1-7.08-5.14L95.35,60.76,63.28,131.31A8,8,0,0,1,56,136H24a8,8,0,0,1,0-16H50.85L88.72,36.69a8,8,0,0,1,14.76.46l57.51,151,31.85-63.71A8,8,0,0,1,200,120h32A8,8,0,0,1,240,128Z"/></symbol>
+<symbol id="i-binoculars" viewBox="0 0 256 256"><path d="M237.2,151.87v0a47.1,47.1,0,0,0-2.35-5.45L193.26,51.8a7.82,7.82,0,0,0-1.66-2.44,32,32,0,0,0-45.26,0A8,8,0,0,0,144,55V80H112V55a8,8,0,0,0-2.34-5.66,32,32,0,0,0-45.26,0,7.82,7.82,0,0,0-1.66,2.44L21.15,146.4a47.1,47.1,0,0,0-2.35,5.45v0A48,48,0,1,0,112,168V96h32v72a48,48,0,1,0,93.2-16.13ZM76.71,59.75a16,16,0,0,1,19.29-1v73.51a47.9,47.9,0,0,0-46.79-9.92ZM64,200a32,32,0,1,1,32-32A32,32,0,0,1,64,200ZM160,58.74a16,16,0,0,1,19.29,1l27.5,62.58A47.9,47.9,0,0,0,160,132.25ZM192,200a32,32,0,1,1,32-32A32,32,0,0,1,192,200Z"/></symbol>
+<symbol id="i-pencil-ruler" viewBox="0 0 256 256"><path d="M208,32H160a16,16,0,0,0-16,16V208a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H160V176h24a8,8,0,0,0,0-16H160V136h24a8,8,0,0,0,0-16H160V96h24a8,8,0,0,0,0-16H160V48h48V208ZM77.66,26.34a8,8,0,0,0-11.32,0l-32,32A8,8,0,0,0,32,64V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V64a8,8,0,0,0-2.34-5.66ZM48,176V80H64v96ZM80,80H96v96H80ZM72,43.31,92.69,64H51.31ZM48,208V192H96v16Z"/></symbol>
+<symbol id="i-tray-arrow-down" viewBox="0 0 256 256"><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,16V152h-28.7A15.86,15.86,0,0,0,168,156.69L148.69,176H107.31L88,156.69A15.86,15.86,0,0,0,76.69,152H48V48Zm0,160H48V168H76.69L96,187.31A15.86,15.86,0,0,0,107.31,192h41.38A15.86,15.86,0,0,0,160,187.31L179.31,168H208v40ZM90.34,125.66a8,8,0,0,1,11.32-11.32L120,132.69V72a8,8,0,0,1,16,0v60.69l18.34-18.35a8,8,0,0,1,11.32,11.32l-32,32a8,8,0,0,1-11.32,0Z"/></symbol>
+<symbol id="i-arrows-left-right" viewBox="0 0 256 256"><path d="M213.66,181.66l-32,32a8,8,0,0,1-11.32-11.32L188.69,184H48a8,8,0,0,1,0-16H188.69l-18.35-18.34a8,8,0,0,1,11.32-11.32l32,32A8,8,0,0,1,213.66,181.66Zm-139.32-64a8,8,0,0,0,11.32-11.32L67.31,88H208a8,8,0,0,0,0-16H67.31L85.66,53.66A8,8,0,0,0,74.34,42.34l-32,32a8,8,0,0,0,0,11.32Z"/></symbol>
+<symbol id="i-caret-left" viewBox="0 0 256 256"><path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"/></symbol>
+<symbol id="i-caret-right" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></symbol>
+<symbol id="i-arrow-up" viewBox="0 0 256 256"><path d="M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z"/></symbol>
+<symbol id="i-arrow-down" viewBox="0 0 256 256"><path d="M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z"/></symbol>
+<symbol id="i-arrow-right" viewBox="0 0 256 256"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></symbol>
+<symbol id="i-link" viewBox="0 0 256 256"><path d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/></symbol>
+<symbol id="i-text-align-left" viewBox="0 0 256 256"><path d="M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,48H168a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm176,24H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm-48,40H40a8,8,0,0,0,0,16H168a8,8,0,0,0,0-16Z"/></symbol>
+<symbol id="i-plus" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"/></symbol>
+<symbol id="i-x" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></symbol>
+<symbol id="i-check" viewBox="0 0 256 256"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></symbol>
+<symbol id="i-trash" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"/></symbol>
+<symbol id="i-magnifying-glass" viewBox="0 0 256 256"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></symbol>
+<symbol id="i-sidebar-simple" viewBox="0 0 256 256"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40ZM40,56H80V200H40ZM216,200H96V56H216V200Z"/></symbol>
+<symbol id="i-waveform" viewBox="0 0 256 256"><path d="M56,96v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0ZM88,24a8,8,0,0,0-8,8V224a8,8,0,0,0,16,0V32A8,8,0,0,0,88,24Zm40,32a8,8,0,0,0-8,8V192a8,8,0,0,0,16,0V64A8,8,0,0,0,128,56Zm40,32a8,8,0,0,0-8,8v64a8,8,0,0,0,16,0V96A8,8,0,0,0,168,88Zm40-16a8,8,0,0,0-8,8v96a8,8,0,0,0,16,0V80A8,8,0,0,0,208,72Z"/></symbol>
+<symbol id="i-pencil-simple" viewBox="0 0 256 256"><path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"/></symbol>
+<symbol id="i-minus" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128Z"/></symbol>
+<symbol id="i-caret-down" viewBox="0 0 256 256"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/></symbol>
+</svg>
+
+<header class="jig-head">
+  <h1>DI-001 · Telling objects apart</h1>
+  <blockquote class="x-quote">“There are a lot of issues with being able to tell the difference between different objects. Sometimes there's an inconsistent display of objects within the system. If you look at the interface grammar material in this repo, we have a clear set of nouns and verbs defined, but they don't always show up consistently in the interface, which is a problem.”<cite>Maggie</cite></blockquote>
+  <p>The model gives each object type one icon (Dump, Signal, Theme, Theory and Prototype). A Theory still appears in about nine forms, and only some of them carry its Target glyph. The same Target also stands for "drafts" in general. The question is not "add the icon everywhere". The question is which rule decides when a reference must say its type, and what form it says it in.</p>
+  <p class="x-why">Out of scope here (owned by <code>di-006-markers</code>): freshness and challenge markers, and the prototype status colours. They are left exactly as they are in every context below.</p>
+  <div class="x-pills"><span>Concepts: Dump · Signal · Theme · Theory · Prototype</span><span>Dashed = not yet mine</span><span>Field labels persist on expanded surfaces</span><span>Sample data from the live preview; the rival claim is invented</span></div>
+</header>
+
+<section class="jig-section x-wide">
+  <h2>What exists now: every rendering, by type</h2>
+  <p>Real app markup and CSS, one row per form. Read across a type to see how many shapes it takes. Read down the Specimen column to see how often the glyph carries the type and how often it carries something else.</p>
+  <table class="jig-table x-spec-table" id="spec"><thead><tr><th>Type</th><th>Rendering</th><th>Where</th><th>Specimen</th></tr></thead><tbody></tbody></table>
+</section>
+
+<section class="jig-section x-wide">
+  <h2>Three strategies</h2>
+  <p>These are rules, not skins. A decides how a type is marked: always, with the same glyph. B decides it by giving each type a form. C decides when to mark: only where the surrounding container leaves the type ambiguous.</p>
+  <div class="jig-compare" style="--jig-min: 300px" id="strats"></div>
+</section>
+
+<section class="jig-section x-wide">
+  <h2>1 · Theory pane: the densest mixed context</h2>
+  <p>A theory references a theme, a rival theory, signals (as evidence), and, inside an unfolded signal, another theory, a theme and its dump. It also references theories it follows from or leads to, and its prototypes. Today the same theory reference appears as four chip variants with three different glyphs.</p>
+  <div class="jig-compare" style="--jig-min: 520px" data-ctx="pane"></div>
+  <div class="jig-decision" data-decision="relationship-chips" data-question="How should a relationship to another object be drawn?" data-options="Current: relation glyph replaces type|A: type glyph in chip, relation glyph outside|B: labelled rows of type-shaped forms|C: labelled meta rows, plain chips"></div>
+</section>
+
+<section class="jig-section x-wide">
+  <h2>2 · Columns: a homogeneous context</h2>
+  <p>Each column header already names its type. This is where an "always mark" rule costs the most and earns the least.</p>
+  <div class="jig-compare" style="--jig-min: 520px" data-ctx="cols"></div>
+</section>
+
+<section class="jig-section x-wide">
+  <h2>3 · Briefing and the dump log: mixed lists and the draft count</h2>
+  <p>The Drafts group mixes theories, a theme and a prototype. The flow line and the dump log use Target to mean "drafts of any type", which teaches the wrong meaning for Target.</p>
+  <div class="jig-compare" style="--jig-min: 520px" data-ctx="brief"></div>
+  <div class="jig-decision" data-decision="draft-count-glyph" data-question="What stands for a count of drafts (flow line and dump log)?" data-options="Current: dashed Target|A: split by type, dashed tokens|B: dashed count only, tooltip lists types|C: dashed token with the word 'drafts'"></div>
+</section>
+
+<section class="jig-section x-wide">
+  <h2>4 · Sidebar and Theme section</h2>
+  <p>The sidebar lists themes with no header and no glyph, and lists prototypes under a PencilRuler header, each with a plain PencilRuler (status lost). In the Theme section a theme is a bold heading and its theories are cards.</p>
+  <div class="jig-compare" style="--jig-min: 520px" data-ctx="side"></div>
+</section>
+
+<section class="jig-section x-wide">
+  <h2>5 · Chat: objects inside prose</h2>
+  <p>Chat shows any type the assistant mentions, in the order it mentions them. Today a theory is the only card without an icon, so it is the hardest one to identify there.</p>
+  <div class="jig-compare" style="--jig-min: 420px" data-ctx="chat"></div>
+  <div class="jig-decision" data-decision="per-type-marker" data-question="How does a reference say its type?" data-options="Current|A: glyph in a fixed leading slot, everywhere|B: a form per type, glyph only in mixed lists|C: glyph slot only where the container is mixed"></div>
+</section>
+
+<section class="jig-section x-wide">
+  <h2>6 · States: rest, hover, focus, selected, draft</h2>
+  <p>A theory reference in its chip form and a signal in its row form. Hover and focus are forced so they can be compared side by side. Check that the type mark survives every state, especially the dashed draft.</p>
+  <div class="jig-compare" style="--jig-min: 560px" data-ctx="states"></div>
+</section>
+
+<section class="jig-section x-wide">
+  <h2>Recommendation</h2>
+  <div class="jig-tradeoffs" id="rec"></div>
+  <div class="jig-decision" data-decision="overall-strategy" data-question="Which strategy should the app adopt?" data-options="Current|A: one mark, every reference|B: each type has a form|C: the container names the type|C for when + A's slot for how"></div>
+</section>
+
+<script>
+/* ───────────── primitives (mirror atoms.tsx) ───────────── */
+const I=(n,s=14,cls='')=>`<svg${cls?` class="${cls}"`:''} width="${s}" height="${s}" fill="currentColor" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const ICON={theory:'target',theme:'binoculars',signal:'pulse',prototype:'pencil-ruler',dump:'tray-arrow-down'};
+const proto=(st,s=14)=>`<span class="ap-proto" role="img" data-status="${st}" title="${st}" aria-label="${st}">${I('pencil-ruler',s)}</span>`;
+const MARK={fresh:'New since you last looked',challenge:'Challenged',open:'No theory yet'};
+const mark=k=>k?`<span class="ap-mark" role="img" data-kind="${k}" title="${MARK[k]}" aria-label="${MARK[k]}"></span>`:'';
+const ghost=n=>`<span class="ap-ghost-badge" role="img" title="${n} suggestions" aria-label="${n} suggestions">${n}</span>`;
+const conf=n=>`<span class="ap-conf" role="img" aria-label="Confidence ${n} of 5">${[1,2,3,4,5].map(i=>`<i${i<=n?' data-on':''}></i>`).join('')}</span>`;
+const bal=(p,n)=>`<span class="ap-balance" role="img" aria-label="${p} supporting, ${n} undermining"><span class="ap-num">+${p}</span><span class="ap-num ap-neg">−${n}</span></span>`;
+const slot=(t,s=14,st='idea')=>`<span class="x-slot" data-size="${s}" data-type="${t}">${t==='prototype'?proto(st,s):I(ICON[t],s)}</span>`;
+const row=(l,dd,cls='')=>`<div class="pn-meta-row"><dt class="ap-label">${l}</dt><dd${cls?` class="${cls}"`:''}>${dd}</dd></div>`;
+const claimB=(t,draft)=>`<button class="x-b-claim"${draft?' data-draft':''}>${t}</button>`;
+const artB=(st,n)=>`<button class="x-b-art">${proto(st)}<span>${n}</span></button>`;
+const pillB=(n,c,draft,tag='button')=>`<${tag} class="x-b-pill"${draft?' data-draft':''}>${n}${c?`<span class="ap-num">${c}</span>`:''}</${tag}>`;
+
+const T={
+  t1:'Tokens become nearly free for routine work',
+  t2:'Frontier intelligence stays scarce and expensive',
+  t3:'Agents keep context across months, not sessions',
+  t4:'Code review becomes the bottleneck, not writing',
+  t7:'Agents run continuously in the background by default',
+  d1:'Local models absorb most everyday agent work',
+  d2:'Software is priced per outcome, not per seat',
+  d3:'Review shifts from diffs to intent',
+  d4:'Warehouse picking robots still need human recovery at least weekly in 2028',
+  rival:'Memory stays per project; nothing follows you between tools',
+  ld:'People want to inspect what an agent remembers before they trust it',
+};
+const S4=['cur','A','B','C'];
+const NAME={cur:'Current',A:'One mark, every reference',B:'Each type has a form',C:'The container names the type'};
+
+/* ───────────── 1 · theory pane ───────────── */
+function sig(S,{gist,src,fresh,open,suggested,detail}){
+  const body=`<span class="pn-line">${fresh?mark('fresh'):''}<span>${gist}</span></span><span class="ap-muted">${src}</span>`;
+  const face=S==='A'?`<span class="x-grid">${slot('signal')}<span class="x-body">${body}</span></span>`:S==='B'?`<span class="x-b-quote">${body}</span>`:body;
+  return `<div class="pn-sig"${open?' data-open':''}${suggested?' data-suggested':''}><button class="pn-ev" aria-expanded="${!!open}">${face}</button>${open?`<div class="pn-detail"><div class="pn-detail-inner">${detail}</div></div>`:''}</div>`;
+}
+function sigDetail(S){
+  const note=`<div class="pn-note x-note-text">Same agent, same repo, 31 days apart; it cited a decision from week one.</div>`;
+  const link={
+    cur:`<button class="pn-link" title="Supports">${I('arrow-up',12)}<span>${T.t4}</span></button>`,
+    A:`<button class="pn-link x-a-link" title="Supports">${slot('theory',12)}<span>${T.t4}</span>${I('arrow-up',12,'x-rel')}</button>`,
+    B:`<div class="x-b-relrow"><span class="ap-label">Also supports</span>${claimB(T.t4)}</div>`,
+    C:`<button class="pn-link" title="Supports">${I('arrow-up',12)}${I('target',12)}<span>${T.t4}</span></button>`}[S];
+  const themeChip=S==='B'?pillB('Code review after agents',2):`<button class="pn-chip" title="Theme">${I('binoculars',12)}<span>Code review after agents</span></button>`;
+  const dumpGlyph=S==='cur'?'waveform':'tray-arrow-down';
+  const dump=`<button class="pn-chip pn-origin" title="Voice note">${I(dumpGlyph,12)}<span>${S==='cur'?'':'Voice note · '}Memory across the month</span></button>`;
+  return note+link+`<div class="pn-chips">${themeChip}${dump}</div>`;
+}
+function pane(S){
+  const themeChip=S==='B'?pillB('Agent memory',2):`<button class="pn-chip" title="Theme">${I('binoculars',12)}<span class="pn-chip-name">Agent memory</span></button>`;
+  const head=S==='C'?'':`<div class="pn-theory-head"><div class="pn-theory-themes">${themeChip}</div></div>`;
+  const rival={
+    cur:`<button class="pn-chip pn-rival">${I('arrows-left-right',12)}<span>${T.rival}</span></button>`,
+    A:`<button class="pn-chip pn-rival">${slot('theory',12)}<span>${T.rival}</span>${I('arrows-left-right',12,'x-rel')}</button>`,
+    B:claimB(T.rival),
+    C:`<button class="pn-chip pn-rival"><span>${T.rival}</span></button>`}[S];
+  let rows='';
+  if(S==='C') rows+=row('Theme',`<button class="pn-chip"><span>Agent memory</span></button>`);
+  rows+=row('Confidence',conf(4)+mark('challenge'));
+  rows+=row('Happens by',`<button class="pn-step" aria-label="Earlier">${I('minus',12)}</button><span class="ap-num pn-field-val">2027</span><button class="pn-step" aria-label="Later">${I('plus',12)}</button>`,'pn-year');
+  rows+=row('Rival',rival,S==='B'?'x-b-stackdd':'pn-rivals');
+  if(S==='C'){
+    rows+=row('Follows from',`<button class="pn-chip pn-rival"><span>${T.t1}</span></button>`,'pn-rivals');
+    rows+=row('Leads to',`<button class="pn-chip pn-rival"><span>${T.t7}</span></button><button class="pn-chip pn-rival" data-draft><span>${T.ld}</span></button>`,'pn-rivals');
+    rows+=row('Prototypes',`<button class="pn-chip">${proto('shelved')}<span>Memory inspector</span></button>`);
+  }
+  const evHead=(dir,label,n)=>`<div class="pn-ev-head">${I(dir,12)}<span class="ap-label">${label}</span><span class="ap-num pn-field-val">${n}</span><button class="pn-step" aria-label="Add ${label.toLowerCase()} evidence">${I('plus',12)}</button></div>`;
+  const grid=`<div class="pn-grid"><div class="pn-col">${evHead('arrow-up','Supports',2)}<div>${sig(S,{gist:'Agent recalls a codebase across a month of sessions',src:'x.com',open:true,detail:sigDetail(S)})}${sig(S,{gist:'Assistant ships a project vault with consent prompts',src:'techcrunch.com',suggested:true})}</div></div><div class="pn-col">${evHead('arrow-down','Undermines',1)}<div>${sig(S,{gist:'Memory feature withdrawn after privacy complaints',src:'theverge.com',fresh:true})}</div></div></div>`;
+  const links={
+    cur:`<div class="pn-links"><button class="pn-chip" title="Follows from">${I('caret-left',12)}<span>${T.t1}</span></button><button class="pn-chip" title="Leads to"><span>${T.t7}</span>${I('caret-right',12)}</button><button class="pn-chip" title="Leads to" data-draft><span>${T.ld}</span>${I('caret-right',12)}</button><button class="pn-chip" title="Prototype">${proto('shelved')}<span>Memory inspector</span></button></div>`,
+    A:`<div class="pn-links"><span class="x-a-rel" title="Follows from">${I('caret-left',12)}<button class="pn-chip">${slot('theory',12)}<span>${T.t1}</span></button></span><span class="x-a-rel" title="Leads to"><button class="pn-chip">${slot('theory',12)}<span>${T.t7}</span></button>${I('caret-right',12)}</span><span class="x-a-rel" title="Leads to"><button class="pn-chip" data-draft>${slot('theory',12)}<span>${T.ld}</span></button>${I('caret-right',12)}</span><button class="pn-chip" title="Prototype">${proto('shelved',12)}<span>Memory inspector</span></button></div>`,
+    B:`<div class="pn-links x-b-links"><dl class="pn-meta">${row('Follows from',claimB(T.t1),'x-b-stackdd')}${row('Leads to',claimB(T.t7)+claimB(T.ld,true),'x-b-stackdd')}${row('Prototypes',artB('shelved','Memory inspector'))}</dl></div>`,
+    C:''}[S];
+  return `<div class="pn-doc pn-theory-doc x-doc">${head}<h1 class="pn-title">${T.t3}</h1><dl class="pn-meta">${rows}</dl>${grid}${links}</div>`;
+}
+
+/* ───────────── 2 · columns ───────────── */
+function cols(S){
+  const col=(kind,icon,name,items)=>`<section class="cd-col" data-kind="${kind}"><div class="cd-inner"><header class="cd-head">${I(icon,14)}<span>${name}</span></header><div class="cd-list-wrap"><div class="cd-list">${items}</div></div></div></section>`;
+  const themes=[['Cost of intelligence','fresh',5],['Agent memory','',2],['Code review after agents','',2],['Novel agent interfaces','open',0],['Robotics','',1,1]].map(([n,m,c,d])=>{
+    const name=S==='A'?`<span class="x-lead">${slot('theme')}<span>${n}</span></span>`:S==='B'?pillB(n,c,d,'span'):`<span>${n}</span>`;
+    return `<div class="cd-item"${d?' data-draft':' data-stock'}><button class="cd-item-btn"><span class="cd-line cd-spread">${name}${mark(m)}</span></button></div>`;}).join('');
+  const theories=[['t1',3],['t2',2,'',1],['t3',4,'challenge',3,'open'],['d1',0,'',0,'draft']].map(([k,c,m,g,st])=>{
+    const line=`<span class="cd-line">${c?conf(c):''}${mark(m)}${g?ghost(g):''}</span>`;
+    const body=`<span class="cd-claim">${T[k]}</span>${st==='draft'?'':line}`;
+    const inner=S==='A'?`<span class="x-grid">${slot('theory')}<span class="x-body">${body}</span></span>`:body;
+    return `<div class="cd-item"${st==='draft'?' data-draft':' data-stock'}${st==='open'?' data-open':''}><button class="cd-item-btn">${inner}</button></div>`;}).join('');
+  const protos=[['building','Intent review'],['idea','Token budget meter'],['built','One-person app kit'],['shelved','Memory inspector']].map(([st,n])=>
+    `<div class="cd-item" data-stock><button class="cd-item-btn"><span class="cd-line">${proto(st)}<span${S==='B'?' style="font-weight:500"':''}>${n}</span></span></button></div>`).join('');
+  return `<div class="x-cd-scroll"><div class="cd x-cd"><div class="cd-row">${col('theme','binoculars','Themes',themes)}${col('theory','target','Theories',theories)}${col('prototype','pencil-ruler','Prototypes',protos)}</div></div></div>`;
+}
+
+/* ───────────── 3 · briefing + dump log ───────────── */
+function flow(S){
+  const lead=`<span class="ap-num">7</span>${I('tray-arrow-down')}${I('arrow-right',12)}<span class="ap-num">12</span>${I('pulse')}`;
+  const tail={
+    cur:`<span class="ap-num">6</span><span class="br-flow-draft">${I('target')}</span>`,
+    A:`<span class="x-dtok" title="4 draft theories">${I('target',12)}<span class="ap-num">4</span></span><span class="x-dtok" title="1 draft theme">${I('binoculars',12)}<span class="ap-num">1</span></span><span class="x-dtok" title="1 draft prototype">${I('pencil-ruler',12)}<span class="ap-num">1</span></span>`,
+    B:`<span class="x-dcount" title="6 drafts: 4 theories, 1 theme, 1 prototype">6</span>`,
+    C:`<span class="x-dtok"><span class="ap-num">6</span> drafts</span>`}[S];
+  return `<button class="br-flow" aria-label="7 dumps became 12 signals and 6 drafts">${lead}${tail}</button>`;
+}
+function made(S){
+  const sigs=S==='C'?`<span class="x-sigtok"><span class="ap-num">3</span> signals</span>`:`<span class="dl-tok" title="3 signals">${I('pulse',12)}<span class="ap-num">3</span></span>`;
+  const drafts={
+    cur:`<span class="dl-tok" data-draft title="2 drafts">${I('target',12)}<span class="ap-num">2</span></span>`,
+    A:`<span class="dl-tok" data-draft title="1 draft theory">${I('target',12)}<span class="ap-num">1</span></span><span class="dl-tok" data-draft title="1 draft prototype">${I('pencil-ruler',12)}<span class="ap-num">1</span></span>`,
+    B:`<span class="x-dcount" title="2 drafts: 1 theory, 1 prototype">2</span>`,
+    C:`<span class="x-dtok"><span class="ap-num">2</span> drafts</span>`}[S];
+  return `<span class="dl-made">${sigs}${drafts}</span>`;
+}
+function brief(S){
+  const glyph=(type)=>S==='A'&&type==='prototype'?proto('idea'):I(ICON[type],14);
+  const title=(type,t)=>S==='B'&&type==='theme'?pillB(t,0,1,'span'):t;
+  const themeRef=n=>S==='B'?pillB(n,0,0,'span'):`<span class="ap-muted ap-inline">${I('binoculars',12)}${n}</span>`;
+  const acts=draft=>S==='cur'?`<span class="br-acts"><button class="ap-btn">Accept</button><button class="ap-iconbtn" aria-label="Discard">${I('x',14)}</button></span>`
+    :`<span class="br-acts"><button class="ap-btn x-quiet">${draft?'Discard':'Dismiss'}</button><button class="ap-btn">Accept</button></span>`;
+  const item=(type,t,{draft,detail,cursor,extra='',a=acts(draft)}={})=>`<div class="br-item"${cursor?' data-cursor':''}><div class="br-row"${draft?' data-draft':''}><span class="br-glyph">${glyph(type)}</span><div class="br-main"><div class="br-title"><button class="br-open">${title(type,t)}${extra}</button></div>${detail?`<div class="br-detail">${detail}</div>`:''}</div>${a}</div></div>`;
+  const sigcard=`<span class="ab-sigcard"><span class="ab-sigcard-well" aria-hidden="true">${I('pulse',14)}</span><span class="ab-sigcard-text"><span class="ab-sigcard-gist">Memory feature withdrawn after privacy complaints</span><span class="ab-sigcard-src">theverge.com</span></span><span class="ab-sigcard-side"><span class="ab-sigcard-tag">${I('arrow-down',12)}Undermines</span></span></span><span class="br-why">A major assistant pulled memory after complaints</span>`;
+  const meta=(p,th)=>`<span class="br-meta">${bal(p,0)}${themeRef(th)}</span>`;
+  const group=(n,c,body)=>`<section class="br-group"><h3 class="ap-label br-group-name">${n}<span class="ap-num">${c}</span></h3>${body}</section>`;
+  const newSig=`<span class="br-acts"><span class="br-count ap-num">2 new${I('caret-right',12)}</span></span>`;
+  const protoDetail=S==='C'||S==='A'?`<span class="br-meta"><span class="ap-muted ap-inline">Tests ${I('target',12)}Warehouse picking robots…</span></span>`:S==='B'?`<span class="br-meta"><span class="ap-muted">Tests</span>${claimB('Warehouse picking robots…',true)}</span>`:`<span class="br-meta"><span class="ap-muted ap-inline">Tests: Warehouse picking robots…</span></span>`;
+  return `<div class="ap br x-br" style="height:auto"><div class="br-col">
+    <header class="br-head"><span class="ap-h">Since you last looked</span><span class="br-left ap-muted ap-num">12 left</span></header>
+    ${flow(S)}
+    ${group('Challenges',1,item('theory',T.t3,{cursor:1,extra:mark('challenge'),detail:sigcard}))}
+    ${group('New signals',1,item('theme','Agent memory',{extra:mark('fresh'),a:newSig}))}
+    ${group('Drafts',6,
+      item('theory',T.d1,{draft:1,detail:meta(1,'Cost of intelligence')})+
+      item('theory',T.d2,{draft:1,detail:meta(1,'Cost of intelligence')})+
+      item('theory',T.d3,{draft:1,detail:meta(1,'Code review after agents')})+
+      item('theme','Robotics',{draft:1,detail:`<span class="br-meta ap-muted">From a voice note · 1 signal</span>`})+
+      item('theory',T.d4,{draft:1,detail:meta(1,'Robotics')})+
+      item('prototype','Recovery rehearsal',{draft:1,detail:protoDetail}))}
+  </div>
+  <div class="x-dlwrap"><span class="ap-label">Dump log row</span><div class="dl-row"><span class="dl-kind">${I('waveform',14)}</span><span class="dl-first">Warehouse robots still need people to recover them…</span><span class="dl-time ap-muted ap-num">09:14</span><span class="dl-status">${made(S)}</span></div></div></div>`;
+}
+
+/* ───────────── 4 · sidebar + theme section ───────────── */
+function side(S){
+  const themes=[['Cost of intelligence',1,'fresh',5],['Agent memory',0,'',2],['Code review after agents',0,'',2],['Personal software',0,'',2],['Novel agent interfaces',0,'',''],['Robotics',0,'fresh',1]];
+  const index=themes.map(([n,act,m,c])=>{
+    const name=S==='A'?`<span class="x-lead">${slot('theme',13)}<span>${n}</span></span>`:`<span>${n}</span>`;
+    const count=S==='B'?(c?`<span class="x-b-count ap-num">${c}</span>`:''):`<span class="ap-muted ap-num">${c}</span>`;
+    return `<a href="#"${act?' data-active':''} onclick="return false">${name}${mark(m)}${count}</a>`;}).join('');
+  const themesHead=S==='C'?`<div class="cur-protos x-c-head">${I('binoculars',13)}<span class="cur-sidebar-label">Themes</span><span class="ap-muted ap-num">8</span></div>`:'';
+  const ps=[['building','Intent review'],['idea','Token budget meter'],['built','One-person app kit'],['shelved','Memory inspector']];
+  const protoRows=ps.map(([st,n])=>`<button class="cur-prototype-row">${S==='cur'?I('pencil-ruler',13):proto(st,13)}<span class="cur-sidebar-label">${n}</span>${I('caret-right',12)}</button>`).join('');
+  const rail=`<aside class="cur-rail" data-sidebar><div class="cur-sidebar-body"><div class="cur-sidebar-scroll">${themesHead}<nav class="cur-index">${index}</nav><div class="cur-prototype-section"><h3 class="cur-prototype-heading"><button class="cur-protos">${I('pencil-ruler',13)}<span class="cur-sidebar-label">Prototypes</span><span class="ap-muted ap-num">5</span><span class="cur-protos-chevron">${I('caret-down',12)}</span></button></h3><div class="cur-prototype-list">${protoRows}</div></div></div></div></aside>`;
+  const card=(k,c,p,n,draft)=>{
+    const claim=S==='A'?`<div class="ap-card-claim x-grid">${slot('theory')}<span>${T[k]}</span></div>`:`<div class="ap-card-claim">${T[k]}</div>`;
+    return `<div class="cur-card"><div class="ap-card"${draft?' data-draft':''} role="button" tabindex="0">${claim}<div class="ap-card-meta">${draft?'':conf(c)}${bal(p,n)}</div></div></div>`;};
+  const heading=n=>S==='A'?`<span class="x-theme-head">${slot('theme')}<button class="ap-h cur-theme-name cur-theme-btn">${n}</button></span>`:S==='B'?pillB(n,'',0):`<button class="ap-h cur-theme-name cur-theme-btn">${n}</button>`;
+  const main=`<main class="cur-main"><section class="cur-section"><div class="cur-theme">${heading('Cost of intelligence')}<span class="ap-muted ap-num">5 signals</span></div><div class="cur-cards">${card('t1',3,2,1)}${card('t2',2,1,2)}${card('d1',0,1,0,1)}</div></section></main>`;
+  return `<div class="ap cur x-cur" data-hosted>${rail}${main}</div>`;
+}
+
+/* ───────────── 5 · chat ───────────── */
+function chat(S){
+  const marked=S==='A'||S==='C';
+  const tcard=`<div class="ap-card" role="button" tabindex="0"><div class="ap-card-claim${marked?' x-grid':''}">${marked?slot('theory')+`<span>${T.t3}</span>`:T.t3}</div><div class="ap-card-meta">${conf(4)}${bal(2,1)}${mark('challenge')}</div></div>`;
+  const ocard=(kind,title,body,st)=>{
+    const cls=S==='B'&&kind==='theme'?' x-b-stack':'';
+    const claim=marked?`<span class="ap-card-claim x-grid">${slot(kind,14,st)}<span>${title}</span></span>`
+      :`<span class="ap-card-claim ap-inline">${S==='B'&&kind==='prototype'?proto(st):I(ICON[kind],14)}${title}</span>`;
+    return `<div class="ab-chat-theory"><button class="ap-card ab-chat-object${cls}" data-draft>${claim}<span>${body}</span></button><div class="pn-chips">${S==='cur'?`<button class="ap-btn">Accept</button><button class="ap-iconbtn" aria-label="Rephrase and accept">${I('pencil-simple',14)}</button><button class="ap-iconbtn" aria-label="Discard">${I('x',14)}</button>`:`<button class="ap-iconbtn" aria-label="Rephrase and accept">${I('pencil-simple',14)}</button><button class="ap-btn x-quiet">Discard</button><button class="ap-btn">Accept</button>`}</div></div>`;};
+  const sigs=[['Memory feature withdrawn after privacy complaints','theverge.com',1],['Agent recalls a codebase across a month of sessions','x.com']].map(([g,s,f])=>sig(S,{gist:g,src:s,fresh:f})).join('');
+  const sigBlock=S==='C'?`<div><span class="ap-label x-c-lab">${I('pulse',12)}Signals<span class="ap-num">2</span></span><div class="pn-col">${sigs}</div></div>`:`<div class="pn-col">${sigs}</div>`;
+  return `<div class="x-chat"><p class="x-msg">Two things moved since Monday. Your memory theory is challenged, and a voice note became a draft theme and a draft prototype.</p><div class="ab-chat-theory">${tcard}</div>${ocard('theme','Robotics','Where warehouse automation still needs people.')}${ocard('prototype','Recovery rehearsal','A drill that times how long a person takes to recover a stuck robot.','idea')}${sigBlock}</div>`;
+}
+
+/* ───────────── 6 · states ───────────── */
+function states(S){
+  const chip=(cls='',draft)=>({
+    cur:`<button class="pn-chip pn-rival x-force ${cls}"${draft?' data-draft':''}>${I('arrows-left-right',12)}<span>${T.t1}</span></button>`,
+    A:`<button class="pn-chip pn-rival x-force ${cls}"${draft?' data-draft':''}>${slot('theory',12)}<span>${T.t1}</span>${I('arrows-left-right',12,'x-rel')}</button>`,
+    B:`<button class="x-b-claim x-force ${cls}"${draft?' data-draft':''}>${T.t1}</button>`,
+    C:`<button class="pn-chip pn-rival x-force ${cls}"${draft?' data-draft':''}><span>${T.t1}</span></button>`}[S]);
+  const sigFace=S==='A'?`<span class="x-grid">${slot('signal')}<span class="x-body"><span class="pn-line"><span>Agent recalls a codebase…</span></span><span class="ap-muted">x.com</span></span></span>`
+    :S==='B'?`<span class="x-b-quote"><span class="pn-line"><span>Agent recalls a codebase…</span></span><span class="ap-muted">x.com</span></span>`
+    :`<span class="pn-line"><span>Agent recalls a codebase…</span></span><span class="ap-muted">x.com</span>`;
+  const sigr=(cls='',a='')=>`<div class="pn-col"><div class="pn-sig"${a}><button class="pn-ev x-force ${cls}">${sigFace}</button></div></div>`;
+  const heads=['Rest','Hover','Focus','Selected','Draft'].map(h=>`<span class="x-colh">${h}</span>`).join('');
+  return `<div class="x-states"><span></span>${heads}
+    <span class="ap-label">Theory chip</span>${chip()}${chip('is-hover')}${chip('is-focus')}${chip('is-sel')}${chip('',1)}
+    <span class="ap-label">Signal row</span>${sigr()}${sigr('is-hover')}${sigr('is-focus')}${sigr('',' data-open')}${sigr('',' data-suggested')}</div>`;
+}
+
+/* ───────────── notes per context ───────────── */
+const NOTES={
+  pane:{
+    cur:'One theory reference takes four forms: a swap chip (rival), a caret chip (follows/leads), an arrow link (inside a signal) and the title. None shows Target. The dump chip shows its source (waveform), not the dump type.',
+    A:'Every chip and row leads with its type glyph in a fixed slot. Relation glyphs (swap, caret, stance arrow) move to the trailing edge or outside the chip, so they no longer compete with the type mark.',
+    B:'Theory references are mini cards, the theme is a rounded pill with a count, signals have a quote rule, and the prototype is a squared artifact chip. No new icons, but you must learn four shapes. Relations become labelled stacks at the foot.',
+    C:'The meta list names each relation (Theme, Rival, Follows from, Leads to, Prototypes), so its chips stay plain. Only the unfolded signal is a mixed context, so its links carry glyphs (stance arrow plus Target, Binoculars, TrayArrowDown).'},
+  cols:{
+    cur:'Already effectively C: each column header names the type, so items are unmarked. The draft theme and theory are dashed.',
+    A:'The glyph repeats down every row of a column whose header already says the type. It adds noise without adding information, and it costs 22px of claim width in narrow columns.',
+    B:'Themes become pills, theories stay cards (already a claim form), and prototypes are status glyph plus name. The theme column reads as a tag cloud, not a list.',
+    C:'No change. This shows that C costs nothing where the app is already disciplined.'},
+  brief:{
+    cur:'Row glyphs already carry the type, which is good in a mixed list. But the flow line ends in a dashed Target that counts six drafts of three types, and the dump log does the same. The prototype row uses a plain PencilRuler, unlike every other prototype mention.',
+    A:'The draft count is split into per-type dashed tokens: honest, but three tokens long. The prototype row uses its ProtoGlyph. The "Tests" reference on the prototype gains Target.',
+    B:'The glyph column stays (it is a mixed list). The theme draft becomes a dashed pill and the theme reference becomes a pill. The draft count is a bare dashed number with the breakdown in a tooltip: quiet, but the type is hidden.',
+    C:'The rows are unchanged (a mixed list, already marked). The draft count says "6 drafts" in words inside a dashed token, so no glyph claims to be a type. The "Tests" reference gains Target because the row\'s detail mixes types.'},
+  side:{
+    cur:'The themes list has no header and no glyph, while prototypes have both. Every prototype row uses the same plain PencilRuler, which drops the status that ProtoGlyph shows everywhere else.',
+    A:'A Binoculars glyph on every theme and a Target on every card. The rail reads busier, and the Theme section heading gains a glyph beside its name.',
+    B:'Theme counts become pills, and the section heading becomes a pill, which turns a page heading into a tag. That is a strain on B.',
+    C:'A "Themes" header with Binoculars mirrors the Prototypes header. Prototype rows use the status ProtoGlyph. Items under a named header stay unmarked.'},
+  chat:{
+    cur:'Theme and prototype cards lead with an icon, but the theory card does not, and the signal rows do not either. A theory is the least identifiable object in a conversation.',
+    A:'Every card and row leads with its type glyph in the same slot, with the claim aligned under it.',
+    B:'The theme card gains a stacked edge (a collection), the prototype card shows its status glyph, and the theory card stays a plain card. The type is readable only once you know the shapes.',
+    C:'Chat is a mixed context, so each card gets the glyph slot (here this equals A). The signal pair sits under a labelled "Signals" header, so the rows stay plain.'},
+  states:{
+    cur:'The swap glyph marks the relation, not the type. The draft state keeps the glyph.',
+    A:'The type glyph survives hover, focus, selected and draft. The relation glyph is secondary (ink-3).',
+    B:'The claim chip keeps its shadow at rest, so hover and selected differ only by background and shadow weight. Draft loses the shadow, which removes the form that carried the type.',
+    C:'Plain chip: hover, focus and selected all read cleanly. The type comes from the row label ("Rival"), not from the chip.'},
+};
+
+/* ───────────── render ───────────── */
+const R={pane,cols,brief,side,chat,states};
+const SURF={pane:1,chat:1,states:1};
+document.querySelectorAll('[data-ctx]').forEach(el=>{
+  const k=el.dataset.ctx;
+  el.innerHTML=S4.map(S=>`<div class="jig-option"><div class="jig-label"${S==='cur'?' data-current':''}><b>${S==='cur'?'Now':S}</b>${NAME[S]}</div><div class="jig-stage"><div class="ap ab-production x-ap${SURF[k]?' x-surface':''}">${R[k](S)}</div></div><p class="jig-note">${NOTES[k][S]}</p></div>`).join('');
+});
+
+/* specimen inventory */
+const W=(html,white)=>`<div class="ap ab-production x-spec${white?' x-white':''}">${html}</div>`;
+const SPEC=[
+  ['Theory','TheoryCard','atoms.tsx:118',W(`<div class="ap-card"><div class="ap-card-claim">${T.t1}</div><div class="ap-card-meta">${conf(3)}${bal(2,1)}</div></div>`),'card, no glyph'],
+  ['','TheoryTile','panes.tsx:239',W(`<button class="pn-tile" style="border-radius:8px;height:auto"><span class="pn-tile-inner"><span class="pn-claim">${T.t1}</span><span class="pn-line">${conf(3)}</span></span></button>`),'a second card form'],
+  ['','Columns row','columns2.tsx:148',W(`<div class="cd-item" data-stock><button class="cd-item-btn"><span class="cd-claim">${T.t1}</span><span class="cd-line">${conf(3)}</span></button></div>`),'third card form'],
+  ['','Rival chip','panes.tsx:155',W(`<button class="pn-chip pn-rival">${I('arrows-left-right',12)}<span>${T.rival}</span></button>`,1),'Swap glyph'],
+  ['','Follows / leads chips','panes.tsx:183–184',W(`<div class="pn-chips"><button class="pn-chip">${I('caret-left',12)}${T.t1}</button><button class="pn-chip">${T.t7}${I('caret-right',12)}</button></div>`,1),'caret, leading or trailing'],
+  ['','Prototype "Tests" chip','panes.tsx:296',W(`<button class="pn-chip pn-rival">${I('target',12)}<span>${T.d4}</span></button>`,1),'the only chip with Target'],
+  ['','Evidence link','panes.tsx:103',W(`<button class="pn-link">${I('arrow-up',12)}<span>${T.t4}</span></button>`,1),'stance arrow, bare link'],
+  ['','Feed chip','panes.tsx:88',W(`<span class="pn-feed-chip">${I('arrow-up',12)}<span>${T.t1}</span></span>`,1),'stance arrow, smaller chip'],
+  ['','Chat card','chat/object-card.tsx:22',W(`<div class="ap-card"><div class="ap-card-claim">${T.t3}</div></div>`),'the only chat card without an icon'],
+  ['Theme','Pane chip','panes.tsx:109, 136',W(`<button class="pn-chip">${I('binoculars',12)}<span>Agent memory</span></button>`,1),'Binoculars'],
+  ['','Section heading','current.tsx:59–61',W(`<div class="cur-theme" style="margin:0"><button class="ap-h cur-theme-name cur-theme-btn">Cost of intelligence</button><span class="ap-muted ap-num">5 signals</span></div>`,1),'bold text, no glyph'],
+  ['','Sidebar index','current-sidebar.tsx:83',W(`<nav class="cur-index"><a href="#" onclick="return false"><span>Agent memory</span><span class="ap-muted ap-num">2</span></a></nav>`),'no glyph, no header'],
+  ['','Columns row','columns2.tsx:147',W(`<div class="cd-item"><button class="cd-item-btn"><span class="cd-line cd-spread"><span>Agent memory</span></span></button></div>`,1),'no glyph (column header has it)'],
+  ['Signal','SignalRow','panes.tsx:69',W(`<div class="pn-sig"><button class="pn-ev"><span class="pn-line"><span>Agent recalls a codebase across a month of sessions</span></span><span class="ap-muted">x.com</span></button></div>`,1),'no glyph'],
+  ['','Feed line','panes.tsx:85–89',W(`<div class="pn-feed"><div class="pn-sig"><button class="pn-ev"><span class="pn-feed-glyph">${I('link',14)}</span><span class="pn-feed-text"><span>Agent recalls a codebase across a month</span><span class="ap-muted">x.com</span></span></button></div></div>`,1),'Link / Text source glyph, not Pulse'],
+  ['','SignalCard','signal-card.tsx',W(`<span class="ab-sigcard"><span class="ab-sigcard-well">${I('pulse',14)}</span><span class="ab-sigcard-text"><span class="ab-sigcard-gist">Memory feature withdrawn after privacy complaints</span><span class="ab-sigcard-src">theverge.com</span></span></span>`,1),'Pulse in a well, card'],
+  ['','Briefing signal list','briefing-app.tsx:109',W(`<span class="ap-inline">${I('pulse',14)}Agent recalls a codebase across a month</span>`,1),'Pulse inline'],
+  ['Prototype','Chip / columns','atoms.tsx:162',W(`<div class="pn-chips"><button class="pn-chip">${proto('building')}Intent review</button><button class="pn-chip">${proto('built')}One-person app kit</button><button class="pn-chip">${proto('shelved')}Memory inspector</button></div>`,1),'status-coloured PencilRuler'],
+  ['','Sidebar row','current-sidebar.tsx:91, 95',W(`<button class="cur-prototype-row">${I('pencil-ruler',13)}<span class="cur-sidebar-label">Intent review</span>${I('caret-right',12)}</button>`),'plain PencilRuler, status lost'],
+  ['Drafts','Draft count','briefing-app.tsx:78 · dump-log.tsx:116',W(`<span style="display:flex;gap:12px;align-items:center"><span class="br-flow" style="margin:0"><span class="ap-num">6</span><span class="br-flow-draft">${I('target',14)}</span></span><span class="dl-tok" data-draft>${I('target',12)}<span class="ap-num">2</span></span></span>`,1),'Target counts drafts of every type'],
+];
+document.querySelector('#spec tbody').innerHTML=SPEC.map(([t,r,w,h,why])=>`<tr><td>${t}</td><td>${r}<span class="x-spec-why">${why}</span></td><td><code>${w}</code></td><td>${h}</td></tr>`).join('');
+
+/* strategy cards */
+const STR=[
+  ['A','One mark, every reference','Every reference to an object carries its OBJECT_ICONS glyph in a fixed leading slot (14px in rows and cards, 12px in chips). The form (card, row or chip) varies by role; the mark never does. A relation glyph (swap, caret, stance) moves to the trailing edge or outside the chip.','Fully predictable, so you learn it once. It fixes chat, the Tests chip, rival chips and signal rows in one rule. The cost is noise in homogeneous lists (Columns, the sidebar), where the glyph repeats what the header says, and about 22px of claim width in narrow columns.','Linear and mechanical: a new type needs one icon. It is easy to lint ("every object reference renders <ObjectRef>").'],
+  ['B','Each type has a form','Type is carried by shape. Theory is a claim card (surface, shadow, 600 weight), Theme is a rounded collection pill (or a stacked card), Signal is a quoted observation (a left rule, regular weight), and Prototype is a squared artifact chip with its status glyph. Icons appear only in mixed lists.','The calmest at rest, and it feels designed rather than labelled. But shapes have to be learned, weight and shadow differences are weak at a glance, and the dashed draft state strips the very shadow that marks a theory. Pills already mean "radius and size" elsewhere in the app, so this overloads them.','Poor: each new type needs a new, distinguishable shape, and the shape vocabulary runs out quickly. It is hard to enforce.'],
+  ['C','The container names the type','Mark only where the type is ambiguous. Homogeneous containers (column headers, sidebar headers, field labels such as Rival, Tests and Supports) name the type once, and items stay plain. Mixed contexts (Briefing, chat, an unfolded signal) mark every item. Relations become labelled rows, not chip variants. Counts say their noun ("6 drafts").','Matches the model\'s "field labels persist" rule and keeps lists quiet. It needs judgement about what counts as mixed, and a plain chip lifted out of its labelled row loses its type (on drag, in search results, in a tooltip).','Good: a new type only needs a header or label. The risk is drift, so it needs a written rule and a shared ObjectRef that takes a "marked" flag from its container.'],
+];
+document.getElementById('strats').innerHTML=STR.map(([k,n,rule,trade,scale])=>`<div class="x-strat"><div class="jig-label"><b>${k}</b>${n}</div><p>${rule}</p><span class="x-k">Tradeoffs</span><p>${trade}</p><span class="x-k">How it scales</span><p>${scale}</p></div>`).join('');
+
+document.getElementById('rec').innerHTML=`<p class="x-why"><b>Use C's rule for when to mark, and A's slot for how.</b> Columns and the sidebar show that C costs nothing where the app is already disciplined. The theory pane and chat show that the real failures are in mixed contexts and in relation chips, where a relation glyph currently takes the place of the type glyph. Where C says "mark", use A's fixed leading slot with the OBJECT_ICONS glyph (ProtoGlyph for prototypes), so a marked reference always looks the same. B's shapes look good in isolation, but they break down in the dashed draft state, overload pills, and do not scale to a sixth type.</p>
+<p class="x-why"><b>Applies regardless of strategy:</b> Target never stands for "drafts" (use "6 drafts" or per-type tokens). Sidebar prototype rows should use ProtoGlyph. The dump-origin chip should lead with TrayArrowDown, with the source in the text. A theory card in chat needs its glyph.</p>
+<p class="x-why"><b>Open questions:</b> (1) Does a reference that leaves its container (on drag, or in the command palette) switch to marked automatically? (2) Should the unfolded signal's theory link show both the stance arrow and Target, or should stance move to a label ("Supports")? (3) Should the Theme section heading stay unmarked, since it is a page heading rather than a reference?</p>`;
+</script>
+</body>
+</html>

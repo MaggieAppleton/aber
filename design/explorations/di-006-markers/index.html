@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DI-006 Markers and DI-007 Prototype status</title>
+<link rel="stylesheet" href="../../../app/web/src/design-tokens.css">
+<link rel="stylesheet" href="../../../app/web/src/app/base.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/homes.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/app-shell.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/panes.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/surface-patterns.css">
+<link rel="stylesheet" href="../../../app/web/src/app/production.css">
+<link rel="stylesheet" href="../../../app/web/src/app/hit-areas.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/current-sidebar.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/confidence-spark.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/tooltip.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/tripwire.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/briefing-app.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/atlas2.css">
+<link rel="stylesheet" href="../_shell/jig.css">
+<script src="../_shell/jig.js" defer></script>
+<script src="icons.js"></script>
+<script src="app.js" defer></script>
+<style>
+  /* Proposal values. Temporary (not yet tokens) are marked "temp". Colours reuse the app's existing tokens. */
+  :root {
+    --m6-gutter: 14px;   /* temp: the reserved marker gutter (A) */
+    --m6-gap: 8px;       /* temp: clear space between a marker and any text or number */
+    --m6-dot: 6px;       /* temp: new dot, without the 3px halo the app adds today */
+    --m6-new-ink: color-mix(in oklab, var(--ab-new) 72%, black);   /* temp: accent green darkened to pass 4.5:1 as 11px text */
+    --m6-status: var(--ap-pos, #1f7a4d);  /* DI-007: prototype status green = the existing --ap-pos, not the --ab-new accent */
+  }
+
+  /* ── Page-only chrome ── */
+  .m6-quote { margin: 10px 0 0; padding: 0 0 0 14px; max-width: 78ch; color: #3d3a34; font-size: 13px; box-shadow: inset 1px 0 0 #cfc9bf; }
+  .m6-quote b { font-weight: 650; }
+  .m6-bar { position: sticky; top: 0; z-index: 50; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; padding: 10px 32px; background: rgb(233 230 225 / 0.94); backdrop-filter: blur(6px); border-bottom: 1px solid #d6d1c9; font-size: 13px; }
+  .m6-bar > div { display: flex; align-items: center; gap: 6px; }
+  .m6-bar .lab { color: #5d5850; }
+  .m6-seg { display: inline-flex; padding: 2px; border-radius: 8px; background: #dcd7cf; gap: 2px; }
+  .m6-seg button { font: inherit; border: 0; padding: 3px 10px; border-radius: 6px; background: transparent; color: #3d3a34; cursor: pointer; }
+  .m6-seg button[aria-pressed="true"] { background: #fff; color: #2b2925; box-shadow: 0 1px 2px rgb(0 0 0 / 0.12); }
+  .m6-seg button:focus-visible, .m6-bar label:focus-within { outline: 2px solid #2b2925; outline-offset: 1px; }
+  .m6-bar label { display: inline-flex; gap: 4px; align-items: center; padding: 2px 6px; border-radius: 6px; cursor: pointer; }
+
+  .m6-strats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 14px; }
+  .m6-strat { background: #fff; border-radius: 12px; padding: 14px 16px; display: grid; gap: 8px; align-content: start; box-shadow: 0 1px 2px rgb(0 0 0 / 0.06); }
+  .m6-strat h3 { margin: 0; font-size: 14px; font-weight: 650; display: flex; gap: 8px; align-items: center; }
+  .m6-strat dl { margin: 0; display: grid; grid-template-columns: 84px 1fr; gap: 4px 10px; font-size: 13px; }
+  .m6-strat dt { color: #8a847a; }
+  .m6-strat dd { margin: 0; color: #2b2925; }
+
+  .m6-ctx { margin-top: 26px; }
+  .m6-ctx:first-of-type { margin-top: 8px; }
+  .m6-ctx h3 { margin: 0 0 2px; font-size: 14px; font-weight: 650; }
+  .m6-ctx > p { margin: 0 0 10px; color: #5d5850; font-size: 13px; max-width: 80ch; }
+  .m6-grid { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: 12px; }
+  .m6-cell { display: grid; gap: 6px; align-content: start; min-width: 0; }
+  .m6-cell .jig-label { font-size: 13px; }
+  .m6-cell .jig-stage { --jig-stage-h: 0px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.06); }
+  [data-hide-current] [data-col="current"], [data-hide-a] [data-col="A"], [data-hide-b] [data-col="B"], [data-hide-c] [data-col="C"] { display: none; }
+  @media (max-width: 900px) { .m6-grid { grid-template-columns: minmax(0, 1fr); } .m6-bar { padding: 10px 16px; } }
+
+  .m6-inv { overflow-x: auto; border-radius: 10px; }
+  .m6-inv table { min-width: 980px; }
+  .m6-inv td:nth-child(1) { font-weight: 600; white-space: nowrap; }
+  .m6-inv .sw { display: inline-block; width: 9px; height: 9px; border-radius: 50%; vertical-align: -0.5px; margin-right: 4px; }
+  .m6-collide { display: grid; gap: 6px; margin: 16px 0 0; padding-left: 18px; font-size: 13px; color: #2b2925; max-width: 92ch; }
+  .m6-collide b { font-weight: 650; }
+
+  /* ── App-markup wrappers inside a stage: the real .ap tokens, shorter ── */
+  .cx.ap { height: auto; border-radius: 0; box-shadow: none; padding: 14px; overflow: visible; }
+  .cx .cur-index { display: grid; gap: 2px; width: 100%; max-width: 232px; }
+  .cx .cd-list { padding: 0; }
+  .cx .pn-doc { padding: 0; max-width: none; gap: 12px; }
+  .cx .pn-title { font-size: 18px; margin: 0; padding: 0; }
+  .cx .cd-colhead { display: flex; align-items: center; gap: 6px; padding: 2px 4px 6px; font-size: 12px; font-weight: 600; color: var(--ap-ink-2); }
+  .cx .br-row { background: var(--ap-surface); box-shadow: var(--ap-shadow-1); }
+  .cx .br-row[data-draft] { background: var(--color-gray-255-a-50, rgb(255 255 255 / 0.5)); box-shadow: none; }
+  .cx .br-stack { display: grid; gap: 6px; }
+  .cx .cur-cards { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .cx .pn-feed-day { grid-template-columns: 52px minmax(0, 1fr); column-gap: 6px; }
+  .cx.mini { position: relative; height: 250px; padding: 0; background: var(--color-rgb-246-245-241, #f6f5f1); overflow: hidden; }
+  .cx.a2 { width: auto; }
+  .cx.mini .a2-world { width: 100%; height: 100%; }
+  .cx.mini .a2-region { cursor: pointer; }
+  .cx .tw-tc { font-size: 13px; }
+
+  /* Force hover/focus: the first row of each context shows its real hover paint, the first mark its focus ring */
+  [data-force] .cur-index a:not([data-active]):nth-child(2), [data-force] .pn-feed .pn-col > .pn-sig:first-child .pn-ev,
+  [data-force] .cd-list .cd-item-btn:first-child, [data-force] .cd-col[data-kind="theme"] .cd-item:first-child .cd-item-btn,
+  [data-force] .br-stack .br-item:first-child .br-open { background: var(--ap-hover); }
+  [data-force] .m6-cell .ap-card:first-child { box-shadow: var(--ap-shadow-selected); }
+  [data-force] .cx .a2-region:first-child { background: var(--color-gray-0-a-5-5); }
+  [data-force] .cx .tipped.tip-demo:not(.a2-pin > *) { position: relative; }
+  [data-force] .cx .tipped.tip-demo::after { content: attr(data-tip); position: absolute; z-index: 5; left: 50%; bottom: calc(100% + 6px); translate: -50% 0; white-space: nowrap; padding: 3px 7px; border-radius: 6px; background: var(--ap-ink); color: #fff; font: 500 11px/1.4 Inter, system-ui, sans-serif; box-shadow: 0 2px 6px rgb(0 0 0 / 0.18); pointer-events: none; }
+  /* Forced tooltips open below the mark and inward, so the stage edge never clips them */
+  [data-force] .cx .tipped.tip-demo::after { top: calc(100% + 6px); bottom: auto; left: auto; right: -6px; translate: none; }
+  [data-force] .cx .gut .tipped.tip-demo::after { left: -4px; right: auto; }
+  .cur-index a.sA > .gut { overflow: visible; }
+  .cx .tipped:focus-visible { outline: 1.5px solid var(--ab-focus); outline-offset: 2px; border-radius: 4px; }
+
+  /* ── Strategy A: one leading gutter, one mark, always the same place ── */
+  .gut { display: inline-grid; place-items: center; width: var(--m6-gutter); height: 1lh; flex: none; }
+  .mk { display: inline-grid; place-items: center; flex: none; }
+  .mk[data-k="fresh"] { width: var(--m6-dot); height: var(--m6-dot); border-radius: 50%; background: var(--ab-new); }
+  .mk[data-k="open"] { width: 7px; height: 7px; border-radius: 50%; box-shadow: inset 0 0 0 1.25px var(--ap-ink-3); }
+  .mk[data-k="challenge"] { color: var(--ab-tripped); }
+  .cur-index a.sA { display: grid; grid-template-columns: var(--m6-gutter) minmax(0, 1fr) auto; column-gap: var(--m6-gap); padding-left: 4px; }
+  .cur-index a.sA > .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pn-feed .pn-ev.fA { grid-template-columns: var(--m6-gutter) var(--size-px-28) minmax(0, 1fr); column-gap: var(--m6-gap); }
+  .pn-feed .pn-ev.fA > .gut { height: var(--size-px-28); }
+  .pn-feed .pn-ev.fA > .pn-feed-to { grid-column: 3; }
+  .gA { display: grid !important; grid-template-columns: var(--m6-gutter) minmax(0, 1fr); column-gap: var(--m6-gap); align-items: start; }
+  .gA3 { display: grid !important; grid-template-columns: var(--m6-gutter) minmax(0, 1fr) auto; column-gap: var(--m6-gap); align-items: start; }
+  .a2-name > .gut { margin-right: calc(var(--m6-gap) - 6px); }
+  .a2-pin > .mk { position: absolute; top: 0; right: calc(100% + 6px + (var(--size-px-8) + var(--c) * var(--size-px-1-5)) / 2); translate: 0 -50%; }
+
+  /* ── Strategy B: roll attention up into one trailing slot, in words ── */
+  .slot { display: inline-flex; gap: 4px; align-items: center; flex: none; margin-left: var(--m6-gap); }
+  .att { display: inline-flex; align-items: center; gap: 3px; height: 18px; padding: 0 6px; border-radius: 999px; font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .att[data-k="fresh"] { color: var(--m6-new-ink); background: color-mix(in oklab, var(--ab-new) 13%, transparent); }
+  .att[data-k="challenge"] { color: var(--ab-tripped); background: color-mix(in oklab, var(--ab-tripped) 10%, transparent); }
+  .cur-index a.sB > .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ap-challenge.tagB { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; white-space: nowrap; }
+  .ap-card-meta:has(.tagB) { flex-wrap: wrap; row-gap: 6px; }
+  .newrule { display: flex; align-items: center; gap: 8px; padding: 2px 0 4px 8px; font-size: 11px; font-weight: 600; color: var(--m6-new-ink); }
+  .newrule::after { content: ""; flex: 1; height: 0.5px; background: color-mix(in oklab, var(--ab-new) 45%, transparent); }
+  .pn-sig[data-seen] .pn-feed-text > span:first-child { color: var(--ap-ink-2); }
+  .pn-sig[data-unseen] .pn-feed-text > span:first-child { font-weight: 600; }
+
+  /* ── Strategy C: no marks; state lives in Briefing, order and words ── */
+  .cur-index a.cBrief { color: var(--ap-ink); font-weight: 600; margin-bottom: 6px; }
+  .cur-index a.cBrief > span:first-child { display: inline-flex; align-items: center; gap: 8px; }
+  .cur-index a.cBrief .ap-num { color: var(--ap-ink); }
+  .pn-feed-date[data-new] { color: var(--ap-ink); font-weight: 600; }
+
+  /* ── DI-007 status ── */
+  .s7 { display: grid; gap: 14px; }
+  .s7-row { display: grid; gap: 6px; }
+  .s7-row > .ap-label { padding-left: 2px; }
+  .s7 .cd-list { gap: 4px; }
+  .s7 .pn-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .s7 .pn-status button:focus-visible { outline: 1.5px solid var(--ab-focus); outline-offset: 1px; }
+  /* A: green ramp by fill. Fill = progress here, so the selected segment keeps its raised paint and name, not a fill change */
+  .ap-proto.pA[data-status="building"], .ap-proto.pA[data-status="built"] { color: var(--m6-status); }
+  .ap-proto.pA[data-status="idea"] { color: var(--ap-ink-3); opacity: 1; }
+  .ap-proto.pA[data-status="shelved"] { color: var(--ap-ink-3); opacity: 0.4; }
+  /* B: words carry status; the glyph stays neutral; green marks the one live state */
+  .stw { font-size: 11px; font-weight: 600; letter-spacing: 0.01em; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+  .stw[data-status="idea"] { color: var(--ap-ink-3); }
+  .stw[data-status="building"] { color: var(--m6-status); }
+  .stw[data-status="built"] { color: var(--ap-ink); }
+  .stw[data-status="shelved"] { color: var(--ap-ink-3); font-weight: 500; }
+  .s7 .pn-status.wB button { padding: 0 9px; }
+  .s7 .pn-status.wB .stw { font-size: 12px; font-weight: 500; }
+  .s7 .pn-status.wB button[aria-checked="true"] .stw { font-weight: 600; }
+  .ap-proto.pB { color: var(--ap-ink-3); }
+  /* C: swap blue for the status green; built stays ink */
+  .ap-proto.pC[data-status="building"] { color: var(--m6-status); }
+  .s7-collide { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 13px; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body class="jig" data-jig="di-006">
+<header class="jig-head">
+  <h1>Markers (DI-006) and prototype status colour (DI-007)</h1>
+  <p>Every new, challenge and open mark the app draws, measured from the running app. Each strategy then redraws the same seven contexts with real app markup and CSS. Toggle <b>Stress</b> to test long names, many new items, and a challenge and new signals on the same theme.</p>
+  <blockquote class="m6-quote"><b>DI-006.</b> “…they are always in a different place in the interface. Sometimes they are between items, next to items, or on the corner of items… their placement feels too squished… Sometimes they are to the left of text, sometimes to the right… I don't even know if we need to show these all the time. It's unclear how useful the markers are, especially if they're constantly moving and it's not clear what they're supposed to mean.”</blockquote>
+  <blockquote class="m6-quote"><b>DI-007.</b> “This blue color on the prototype screen appears to be one of the only blue elements in the entire interface, which I don't think we should have if green is our primary colour. I don't see why we wouldn't opt for a green element instead.”</blockquote>
+</header>
+
+<div class="m6-bar" role="toolbar" aria-label="Jig controls">
+  <div><span class="lab">Data</span><span class="m6-seg" data-ctl="data"><button type="button" data-v="seed" aria-pressed="true">Seed</button><button type="button" data-v="stress" aria-pressed="false">Stress</button></span></div>
+  <div><span class="lab">States</span><span class="m6-seg" data-ctl="force"><button type="button" data-v="rest" aria-pressed="true">Rest</button><button type="button" data-v="force" aria-pressed="false">Hover + tooltip</button></span></div>
+  <div><span class="lab">Show</span>
+    <label><input type="checkbox" data-show="current" checked> Current</label>
+    <label><input type="checkbox" data-show="a" checked> A</label>
+    <label><input type="checkbox" data-show="b" checked> B</label>
+    <label><input type="checkbox" data-show="c" checked> C</label>
+  </div>
+</div>
+
+<section class="jig-section" id="inventory">
+  <h2>Inventory: what the app draws today</h2>
+  <p>Read from source and from the live app at 1440 (DOM and computed colours). Seven positions, three greens, three reds, one orphan blue, and three definitions of “new”.</p>
+  <div class="m6-inv">
+  <table class="jig-table">
+    <thead><tr><th>Surface</th><th>Source</th><th>Mark</th><th>Means</th><th>Colour (computed)</th><th>Position</th><th>Spacing</th></tr></thead>
+    <tbody>
+      <tr><td>Sidebar themes <code>nav.cur-index a</code></td><td><code>current-sidebar.tsx:85</code>, <code>homes.css:89</code>, <code>surface-patterns.css:79</code></td><td>Dot</td><td>Theme has unseen signals (<code>seenAt == null</code>)</td><td><span class="sw" style="background:#29a383"></span>#29a383 + 3px halo</td><td>Right of the name, <b>left of</b> the theory count</td><td>8px gap minus the 3px halo, about 5px of clear space before the count</td></tr>
+      <tr><td>Theme feed <code>.pn-ev</code></td><td><code>panes.tsx:86</code>, <code>panes.css:168–169</code></td><td>Dot</td><td>Signal unseen</td><td><span class="sw" style="background:#29a383"></span>#29a383, 2px surface ring</td><td><b>Top-right corner</b> of the 28px glyph tile, overlapping it by 2px</td><td>None: it sits on the tile</td></tr>
+      <tr><td>Theory pane evidence <code>.pn-line</code></td><td><code>panes.tsx:71</code>, <code>surface-patterns.css:178</code></td><td>Dot</td><td>Signal unseen</td><td><span class="sw" style="background:#29a383"></span>#29a383</td><td><b>Left of</b> the gist, on the first line</td><td>6px</td></tr>
+      <tr><td>Theory pane confidence</td><td><code>panes.tsx:147</code></td><td>Dot</td><td>Challenge: tripped tripwire, or a challenge suggestion</td><td><span class="sw" style="background:#e5484d"></span>#e5484d + halo</td><td>End of the confidence row, after the sparkline</td><td>Row gap</td></tr>
+      <tr><td>Theory card <code>.ap-card</code></td><td><code>atoms.tsx:133</code>, <code>homes.css:43</code></td><td>Dot</td><td>Challenge</td><td><span class="sw" style="background:#e5484d"></span>#e5484d + halo</td><td>Last in the meta row, <b>right of</b> the dashed suggestions count</td><td>10px</td></tr>
+      <tr><td>Columns theme <code>.cd-line.cd-spread</code></td><td><code>columns2.tsx:147</code></td><td>Ring or dot (either, never both)</td><td>Open (no theory) wins over new</td><td><span class="sw" style="box-shadow:inset 0 0 0 1.25px #8a8a8a"></span>ink-3 / <span class="sw" style="background:#29a383"></span>green</td><td><b>Flush right</b> of the row</td><td>space-between</td></tr>
+      <tr><td>Columns signal <code>.cd-line</code></td><td><code>columns2.tsx:146</code></td><td>Dot</td><td><b>Arrived today</b> (<code>s.day === "Today"</code>), not unseen</td><td><span class="sw" style="background:#29a383"></span>#29a383</td><td>Left of the gist</td><td>6px</td></tr>
+      <tr><td>Columns theory</td><td><code>columns2.tsx:148</code></td><td>Dot</td><td>Challenge</td><td><span class="sw" style="background:#e5484d"></span>#e5484d</td><td>After confidence, <b>before</b> the suggestions count (cards put it after)</td><td>6px</td></tr>
+      <tr><td>Columns rail <code>.cd-dot-n</code></td><td><code>columns2.tsx:85</code>, <code>homes.css:330</code></td><td>Numbered badge</td><td>Objects related to the selection (not new)</td><td><span class="sw" style="background:#29a383"></span>#29a383</td><td><b>Top-right corner</b> of the column icon, −5px</td><td>Overlaps</td></tr>
+      <tr><td>Briefing <code>.br-title</code></td><td><code>briefing-app.tsx:93, 107</code>, <code>surface-patterns.css:77</code></td><td>Dot</td><td>Challenge item; a new theme (though every Briefing item is new)</td><td><span class="sw" style="background:#e5484d"></span>red / <span class="sw" style="background:#29a383"></span>green</td><td>Right of the title, inside its button</td><td>10px</td></tr>
+      <tr><td>Atlas name <code>.a2-name</code></td><td><code>atlas-styles/grounds.tsx:44, 55</code>, <code>atlas2.css:49</code></td><td>Ring, number, dot, number</td><td>Open; signal total; <b>new today</b> (<code>isFresh</code>)</td><td>ink-3, <span class="sw" style="background:#29a383"></span>green</td><td>Ring right of the name; dot <b>between</b> two numbers</td><td>6px, then 3px between dot and its number</td></tr>
+      <tr><td>Atlas landmark <code>.a2-pin</code></td><td><code>atlas2.tsx:236</code>, <code>atlas2.css:31</code></td><td>Dot</td><td>Challenge</td><td><span class="sw" style="background:#e5484d"></span>#e5484d</td><td><b>Top-right shoulder</b> of the pin</td><td>Touches, with a 1.5px ground ring</td></tr>
+      <tr><td>Atlas evidence ticks and dots</td><td><code>atlas2.css:25, 60</code></td><td>Tick colour</td><td>New</td><td><span class="sw" style="background:#29a383"></span>green</td><td>The mark is the item</td><td>Colour only</td></tr>
+      <tr><td>Timeline</td><td><code>timeline2-shared.tsx:141, 202</code></td><td>Ring; dot</td><td>Open replaces the count; challenge</td><td>ink-3, red</td><td>In the count's place; after the claim</td><td>—</td></tr>
+      <tr><td>Prototype status <code>.ap-proto</code></td><td><code>atoms.tsx:161–163</code>, <code>homes.css:110–113</code>, <code>panes.tsx:312</code></td><td>Glyph colour (+ fill when selected)</td><td>idea, building, built, shelved</td><td><span class="sw" style="background:#8a8a8a"></span>ink-3, <span class="sw" style="background:#2f6fed"></span><b>#2f6fed</b>, <span class="sw" style="background:#171717"></span>ink, 40% ink-3</td><td>Leading the name (Columns, chips); radio segments</td><td>4–6px</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <ul class="m6-collide">
+    <li><b>New is green, not blue.</b> The design model says new is a blue dot (#2f6fed), but <code>--ap-new</code> is never set, so <code>--ab-new</code> falls back to the accent <code>#29a383</code>. The blue “building” glyph therefore clashes with nothing: it is an orphan, which is what Maggie saw.</li>
+    <li><b>Built is not green either.</b> <code>STATUS_COLOUR.built = #1f7a4d</code> is dead code (never imported). CSS paints built in ink. Moving building to green does not collide with built; it collides with new, the focus ring, the Columns related-count badge and the “confidence rose” sparkline, all of which are already green.</li>
+    <li><b>Three definitions of new:</b> unseen (sidebar, feed, pane), arrived today (Columns, Atlas), and “is in Briefing” (where every item is new, yet only themes get a dot).</li>
+    <li><b>Three reds:</b> dot #e5484d, signpost #ce2c31, text <code>--ap-neg</code> #b4402f.</li>
+    <li><b>A challenged theme is invisible from navigation.</b> The sidebar shows new but not challenge; only Briefing and the theory itself show it.</li>
+    <li><b>Numbers change meaning beside the dot:</b> the sidebar count is theories, the Atlas count is signals, and the Atlas new count sits between them.</li>
+    <li><b>The squeeze is the halo.</b> The 3px 18% halo (<code>surface-patterns.css:75–76</code>) makes a 7px dot read as 13px, while gaps were set for 7px.</li>
+  </ul>
+</section>
+
+<section class="jig-section" id="strategies">
+  <h2>Three strategies</h2>
+  <p>These differ in where state lives, not in colour. Every strategy keeps challenge reachable and never relies on colour alone.</p>
+  <div class="m6-strats">
+    <article class="m6-strat"><h3><span class="jig-label"><b>A</b></span>One gutter</h3><dl>
+      <dt>Rule</dt><dd>Every object can carry one mark, always in a reserved 14px gutter that leads its name and is centred on its first line. The gutter is reserved even when empty, so names never shift.</dd>
+      <dt>Survives</dt><dd>Challenge (red signpost), new (6px dot, no halo), open (ring). Precedence: challenge, then new, then open; the tooltip names all of them.</dd>
+      <dt>Spacing</dt><dd>8px clear on every side. Counts always sit at the far right, never beside a mark.</dd>
+      <dt>Cost</dt><dd>Every list loses 22px of width. Only one mark shows, so challenge hides new on the same object.</dd></dl></article>
+    <article class="m6-strat"><h3><span class="jig-label"><b>B</b></span>Roll up, in words</h3><dl>
+      <dt>Rule</dt><dd>No marks on individual items. Containers (sidebar theme, Columns theme, Atlas territory) carry one trailing slot with “3 new” and a signpost with the count of challenged theories. Inside, a “3 new” rule and bold titles split unseen from seen.</dd>
+      <dt>Survives</dt><dd>New as a count with a word; challenge as a signpost count on the container and a “Challenged” label on the theory. Open is dropped: the empty section already says it.</dd>
+      <dt>Spacing</dt><dd>Pills get their own padding; one slot, always trailing.</dd>
+      <dt>Cost</dt><dd>Sidebar theory counts go; they remain on section headings. Text pills add more ink than dots.</dd></dl></article>
+    <article class="m6-strat"><h3><span class="jig-label"><b>C</b></span>No persistent marks</h3><dl>
+      <dt>Rule</dt><dd>Lists show names and counts only. Attention lives in one place: a Briefing row at the top of the sidebar with one number. Feeds put unseen items first under a “New” day label.</dd>
+      <dt>Survives</dt><dd>Challenge as a Briefing item and as the tripped tripwire sentence in the theory. Nothing else.</dd>
+      <dt>Spacing</dt><dd>Nothing to crowd.</dd>
+      <dt>Cost</dt><dd>A challenged theory looks normal on its card, in Columns and in Atlas until you read Briefing or open it. This adds a sidebar row.</dd></dl></article>
+  </div>
+</section>
+
+<section class="jig-section" id="contexts">
+  <h2>Same contexts, each strategy</h2>
+  <p>Real app classes and CSS throughout; only the markers and their wrappers change. Hover or focus anything. Use <b>Hover + tooltip</b> to force the first row's hover paint and the marks' tooltips.</p>
+  <div id="m6-matrix"></div>
+  <div class="jig-decision" data-decision="marker-strategy" data-question="Marker strategy" data-options="Current|A|B|C"></div>
+  <div class="jig-decision" data-decision="marker-position" data-question="Marker position rule" data-options="Leading gutter (A)|Trailing slot on containers (B)|No position: words and order (C)|Mix: B for containers, A inside"></div>
+  <div class="jig-decision" data-decision="meanings-survive" data-question="Which meanings keep a persistent mark?" data-options="New, challenge and open|New and challenge|Challenge only|None (Briefing only)"></div>
+</section>
+
+<section class="jig-section" id="di-007">
+  <h2>DI-007 · Prototype status colour</h2>
+  <p>The radio group is live: click a segment or use the arrow keys. Each option also shows the Columns prototype list, the theory pane's prototype chips, and the glyph beside a new mark to check the collision. Status green is <code>--ap-pos</code> #1f7a4d; the new dot stays the accent #29a383 and is the only dot, so shape separates them.</p>
+  <div class="jig-compare" style="--jig-min: 250px; --jig-stage-h: 0px" id="m6-status"></div>
+  <ul class="jig-tradeoffs" style="margin-top:14px">
+    <li><b>A</b> fill ramp: one glyph shows progress (outline, half, solid). Fill then means progress for this glyph, while the encoding map says fill means selected; the radio shows selection by its raised segment instead.</li>
+    <li><b>B</b> words: the clearest and the most text. Green is only on “Building”. The glyph becomes a neutral object icon everywhere.</li>
+    <li><b>C</b> swap: the smallest change. Building becomes green and built stays ink, so the two never share a colour; idea and shelved are grey and differ only by opacity.</li>
+  </ul>
+  <div class="jig-decision" data-decision="proto-status" data-question="Prototype status colour system" data-options="Current|A|B|C"></div>
+</section>
+</body>
+</html>

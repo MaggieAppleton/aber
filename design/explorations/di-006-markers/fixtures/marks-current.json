@@ -1,0 +1,68 @@
+[
+ {
+  "cls": "ap-mark",
+  "kind": "fresh",
+  "parent": "",
+  "idx": 1,
+  "sibs": 3,
+  "text": "Cost of intelligence5",
+  "bg": "rgb(41, 163, 131)",
+  "color": "rgb(23, 23, 23)",
+  "w": 7
+ },
+ {
+  "cls": "ap-mark",
+  "kind": "fresh",
+  "parent": "",
+  "idx": 1,
+  "sibs": 3,
+  "text": "Robotics1",
+  "bg": "rgb(41, 163, 131)",
+  "color": "rgb(82, 82, 82)",
+  "w": 7
+ },
+ {
+  "cls": "ap-ghost-badge",
+  "kind": "",
+  "parent": "ap-card-meta",
+  "idx": 2,
+  "sibs": 3,
+  "text": "+1−01",
+  "bg": "rgba(0, 0, 0, 0)",
+  "color": "rgb(82, 82, 82)",
+  "w": 18
+ },
+ {
+  "cls": "ap-ghost-badge",
+  "kind": "",
+  "parent": "ap-card-meta",
+  "idx": 3,
+  "sibs": 5,
+  "text": "+1−013",
+  "bg": "rgba(0, 0, 0, 0)",
+  "color": "rgb(82, 82, 82)",
+  "w": 18
+ },
+ {
+  "cls": "ap-mark",
+  "kind": "challenge",
+  "parent": "ap-card-meta",
+  "idx": 4,
+  "sibs": 5,
+  "text": "+1−013",
+  "bg": "rgb(229, 72, 77)",
+  "color": "rgb(23, 23, 23)",
+  "w": 7
+ },
+ {
+  "cls": "ap-ghost-badge",
+  "kind": "",
+  "parent": "ap-card-meta",
+  "idx": 2,
+  "sibs": 3,
+  "text": "+1−01",
+  "bg": "rgba(0, 0, 0, 0)",
+  "color": "rgb(82, 82, 82)",
+  "w": 18
+ }
+]
