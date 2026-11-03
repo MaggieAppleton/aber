@@ -73,6 +73,9 @@
 .jx-edge-acts { position: absolute; right: var(--size-px-6); bottom: var(--size-px-6); z-index: 2; display: flex; gap: var(--size-px-4); opacity: 0; pointer-events: none; transition: opacity 160ms var(--ab-ease); }
 .jx-edge-acts .ap-btn { height: var(--size-px-24); font-size: var(--size-px-12); background: var(--ap-surface); }
 :is(.ab-edge-host, .cd-item):is(:hover, :focus-within) .jx-edge-acts { opacity: 1; pointer-events: auto; }
+/* Proposals only (DI-003 option A): prototype rows navigate, so no chevron; status glyph trails, names align with themes. */
+.jig-option:not([data-alt="current"]) .cur-prototype-row[data-jx-row] :is(.cur-sidebar-label, .jx-inline-input) { flex: 1; min-width: 0; }
+.jig-option:not([data-alt="current"]) .cur-prototype-row[data-jx-row] .ap-proto svg { color: inherit; }
 .jx-shake { animation: jx-shake 280ms ease-out; }
 @keyframes jx-shake { 20% { translate: -4px 0; } 40% { translate: 4px 0; } 60% { translate: -3px 0; } 80% { translate: 2px 0; } }
 .jx-inline-input[aria-invalid="true"]::placeholder { color: var(--ap-ink-2); }

@@ -55,6 +55,19 @@
   }
   const currentDoc = (app) => $(".as-pane-scroll .pn-doc", app);
   /* Proposals never use X to reject: Discard/Dismiss become labelled buttons left of the primary, with no key. */
+  /* Proposals follow DI-003 option A: prototype rows navigate, so no chevron; the status glyph sits at the trailing edge
+     and there's no leading type icon. Fixture statuses are illustrative. The section header keeps its expand chevron. */
+  const ROW_STATUS = { "Intent review": "building", "Token budget meter": "idea", "One-person app kit": "built", "Memory inspector": "building", "Recovery rehearsal": "shelved" };
+  function trailingStatusRows(root) {
+    $$(".cur-prototype-row:not([data-jx-row])", root).forEach((row) => {
+      if (row.closest(".jig-option")?.dataset.alt === "current") return;
+      const name = $(".cur-sidebar-label", row)?.textContent.trim();
+      if (name === "New prototype") return;
+      row.dataset.jxRow = "";
+      [...row.children].filter((n) => n.matches("svg, .ap-proto")).forEach((n) => n.remove());
+      row.append(el(SVG.status[ROW_STATUS[name] || "idea"]));
+    });
+  }
   function noXReject(root) {
     if (root.closest(".jig-option")?.dataset.alt === "current") return;
     const labelled = (b, label) => { const n = el(`<button type="button" class="ap-btn ab-btn-ghost">${label}</button>`); b.replaceWith(n); return n; };
@@ -863,6 +876,8 @@
     SVG.target = svgOf("prototype-pane-doc", ".pn-rival svg");
     SVG.protoIdea = svgOf("prototype-pane-doc", ".ap-proto[data-status=idea]");
     SVG.binoculars = svgOf("theory-pane-doc", ".pn-theory-themes .pn-chip svg");
+    SVG.status = Object.fromEntries(["idea", "building", "built", "shelved"].map((st) => [st, svgOf("prototype-pane-doc", `.ap-proto[data-status=${st}]`)]));
+    new MutationObserver(() => trailingStatusRows(document)).observe(document.body, { childList: true, subtree: true });
 
     const flows = {
       prototype: { current: protoDialogFlow("current"), A: protoDialogFlow("A"), B: protoB, C: protoC },
