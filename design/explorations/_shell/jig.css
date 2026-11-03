@@ -1,0 +1,31 @@
+/* Jig chrome only. App markup inside .jig-stage uses the app's real CSS. */
+.jig { margin: 0; background: #e9e6e1; color: #2b2925; font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, sans-serif; }
+.jig-head { max-width: 1180px; margin: 0 auto; padding: 40px 32px 8px; }
+.jig-head h1 { margin: 0 0 6px; font-size: 22px; font-weight: 650; letter-spacing: -0.01em; }
+.jig-head p { margin: 0 0 6px; max-width: 72ch; color: #5d5850; }
+.jig-head .jig-rules { margin: 12px 0 0; padding-left: 18px; color: #3d3a34; }
+.jig-section { max-width: 1180px; margin: 0 auto; padding: 28px 32px; border-top: 1px solid #d6d1c9; }
+.jig-section > h2 { margin: 0 0 4px; font-size: 16px; font-weight: 650; }
+.jig-section > p { margin: 0 0 16px; max-width: 72ch; color: #5d5850; }
+.jig-compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--jig-min, 520px)), 1fr)); gap: 20px; }
+.jig-option { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.jig-label { display: flex; align-items: baseline; gap: 8px; font-weight: 650; }
+.jig-label b { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 6px; background: #2b2925; color: #fff; font-size: 12px; }
+.jig-label[data-current] b { background: #8a847a; }
+.jig-note { margin: 0; color: #5d5850; font-size: 13px; max-width: 64ch; }
+.jig-stage { position: relative; overflow: hidden; border-radius: 12px; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 8px 24px rgb(0 0 0 / 0.06); min-height: var(--jig-stage-h, 560px); }
+.jig-stage > .ap { height: 100%; }
+.jig-tradeoffs { margin: 0; padding-left: 18px; font-size: 13px; color: #3d3a34; }
+.jig-decision { margin-top: 18px; padding: 14px 16px; border-radius: 10px; background: #f6f4f0; display: grid; gap: 10px; }
+.jig-decision-q { font-weight: 650; }
+.jig-choices { display: flex; flex-wrap: wrap; gap: 6px; }
+.jig-choices button { font: inherit; padding: 5px 12px; border-radius: 999px; border: 1px solid #cfc9bf; background: #fff; cursor: pointer; }
+.jig-choices button[aria-pressed="true"] { background: #2b2925; border-color: #2b2925; color: #fff; }
+.jig-decision textarea { font: inherit; min-height: 54px; padding: 8px 10px; border-radius: 8px; border: 1px solid #cfc9bf; resize: vertical; }
+.jig-dock { position: fixed; right: 20px; bottom: 20px; z-index: 1000; display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 12px; background: #2b2925; color: #fff; box-shadow: 0 8px 28px rgb(0 0 0 / 0.25); font-size: 13px; }
+.jig-dock button { font: inherit; padding: 6px 12px; border-radius: 8px; border: 0; background: #fff; color: #2b2925; cursor: pointer; }
+.jig-dock output { padding: 0 6px; opacity: 0.8; }
+.jig-table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border-radius: 10px; overflow: hidden; }
+.jig-table th, .jig-table td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #eee9e2; vertical-align: top; }
+.jig-table th { background: #f6f4f0; font-weight: 650; }
+.jig-table code { font-size: 12px; }
