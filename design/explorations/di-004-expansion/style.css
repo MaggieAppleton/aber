@@ -234,3 +234,26 @@
 .x-modal { width: min(90%, 480px); max-height: 65%; overflow: auto; padding: var(--size-px-20); border-radius: var(--size-px-14); background: var(--ap-surface); box-shadow: var(--ap-shadow-float); }
 .x-modal h2 { margin: 0; font-size: var(--size-px-15); font-weight: 600; }
 .x-modal-acts { display: flex; justify-content: flex-end; padding-top: var(--size-px-12); }
+
+/* Labelled unfile controls (no × for removing relationships) */
+.xa-text-btn { font: inherit; font-size: var(--size-px-12); height: var(--size-px-24); padding: 0 var(--size-px-8); border: 0; border-radius: var(--size-px-6); background: transparent; color: var(--ap-ink-2); cursor: pointer; position: relative; flex-shrink: 0; }
+.xa-text-btn:hover { background: var(--ap-hover); color: var(--ap-ink); }
+.xa-text-btn:focus-visible, .xc-chipbtn:focus-visible { outline: var(--size-px-1-5) solid var(--ab-focus); outline-offset: var(--size-px-1); }
+.xa-unfile-list { list-style: none; margin: 0 0 var(--size-px-4); padding: 0; display: grid; gap: var(--size-px-2); }
+.xa-unfile-list li { display: flex; align-items: center; gap: var(--size-px-4); min-height: var(--size-px-28); padding-left: var(--size-px-6); border-radius: var(--size-px-6); background: var(--ap-sunk, var(--ap-hover)); }
+.xa-unfile-name { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--size-px-6); font-size: var(--size-px-12); color: var(--ap-ink); }
+.xa-unfile-name svg { flex-shrink: 0; color: var(--ap-ink-3); }
+.xb-chiprow { display: inline-flex; align-items: center; gap: var(--size-px-2); }
+.xb-unfile { opacity: 0; }
+.xb-chiprow:hover .xb-unfile, .xb-chiprow:focus-within .xb-unfile { opacity: 1; }
+.xc-chipbtn svg:last-child { color: var(--ap-ink-3); margin-left: var(--size-px-2); }
+.xc-chipmenu { left: 0; right: auto; min-width: var(--size-px-200, 200px); }
+@media (pointer: coarse) {
+  .xb-unfile { opacity: 1; }
+  .xa-text-btn::after { content: ""; position: absolute; inset: min(0px, calc((100% - 40px) / 2)); }
+}
+
+/* Illustrative provenance: quote spans aren't stored yet */
+.x-illus { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--size-px-2) var(--size-px-8); margin: var(--size-px-4) 0; padding: var(--size-px-4) var(--size-px-8); border-radius: var(--size-px-6); background: var(--ap-hover); font-size: var(--size-px-11); line-height: 1.4; color: var(--ap-ink-3); }
+.x-illus b { color: var(--ap-ink-2); font-weight: 600; }
+.x-illus .xa-link-btn { font-size: var(--size-px-11); }

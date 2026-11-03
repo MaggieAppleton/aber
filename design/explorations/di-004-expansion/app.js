@@ -38,7 +38,7 @@
   function init(el) {
     const surface = el.dataset.surface, opt = el.dataset.option;
     const st = { el, id: el.dataset.stage, surface, opt, open: new Set(), full: new Set(), runs: new Set(), peek: new Set(), show: new Set(),
-      themes: {}, evidence: {}, notes: {}, gists: {}, discard: {}, flash: {}, unmerged: {}, picker: null, menu: null, pane: [], hl: null, modal: null, enter: null, scrollTo: null };
+      themes: {}, evidence: {}, notes: {}, gists: {}, discard: {}, flash: {}, unmerged: {}, picker: null, menu: null, editThemes: new Set(), real: false, pane: [], hl: null, modal: null, enter: null, scrollTo: null };
     if (surface === "feed") st.pane = [{ k: "theme", id: FEED.theme }];
     if (surface === "columns") { if (opt === "B") st.pane = NARROW ? [] : [{ k: "signal", id: "s12" }]; else st.open.add("signal:s12"); if (opt === "A") st.peek.add("s12"); }
     if (surface === "dumps") { if (opt === "B") st.pane = NARROW ? [] : [{ k: "dump", id: "D2" }]; else st.open.add("dump:D2"); }
@@ -68,11 +68,26 @@
   };
   const evLink = (e, cls = "") => `<button class="pn-link ${cls}" ${e.suggested ? "data-suggested" : ""} data-act="open-theory" data-t="${e.theory}" title="${e.stance === "supports" ? "Supports" : "Undermines"}">${ic(e.stance === "supports" ? "arrow-up" : "arrow-down")}<span>${esc(claim(e.theory))}</span>${cls ? `<span class="xa-stance">${e.suggested ? "suggested · " : ""}${e.stance}</span>` : ""}</button>`;
 
+  /* Theme relationships. No × on chips: × only closes fleeting surfaces. Each option unfiles with a labelled control that names the theme. */
+  const themeName = (t, ctx) => `${esc(theme(t))}${t === ctx ? ` <span class="ap-muted">· this theme</span>` : ""}`;
   function themeChips(st, s, ctx) {
-    const ts = themesOf(st, s);
-    return `<div class="xa-chips">${ts.map(t => `<span class="xa-chip"><button class="pn-chip" data-act="open-theme" data-t="${t}">${ic("binoculars")}<span>${esc(theme(t))}${t === ctx ? ` <span class="ap-muted">· this theme</span>` : ""}</span></button><button class="xa-x" aria-label="Unfile from ${esc(theme(t))}" data-act="unfile" data-id="${s.id}" data-t="${t}" data-key="unfile:${s.id}:${t}">${ic("x", 10)}</button></span>`).join("")}
-      ${ts.length ? "" : `<span class="xa-none">Not filed</span>`}<button class="xa-add" data-act="picker" data-pk="file" data-id="${s.id}" data-key="pick:file:${s.id}" aria-expanded="${st.picker?.id === s.id && st.picker.kind === "file"}">${ic("plus", 10)} File</button></div>
-      ${flash(st, s, "themes")}${st.picker?.id === s.id && st.picker.kind === "file" ? filePicker(st, s) : ""}`;
+    const ts = themesOf(st, s), pickOpen = st.picker?.id === s.id && st.picker.kind === "file";
+    const add = `<button class="xa-add" data-act="picker" data-pk="file" data-id="${s.id}" data-key="pick:file:${s.id}" aria-expanded="${pickOpen}">${ic("plus", 10)} File</button>`;
+    const tail = `${flash(st, s, "themes")}${pickOpen ? filePicker(st, s) : ""}`;
+    const none = ts.length ? "" : `<span class="xa-none">Not filed</span>`;
+    if (st.opt === "A") {
+      // A: the field owns its verbs; an Edit mode lists each theme with a labelled Unfile.
+      const editing = st.editThemes.has(s.id);
+      if (editing) return `<ul class="xa-unfile-list" aria-label="Themes, editing">${ts.map(t => `<li><span class="xa-unfile-name">${ic("binoculars")}<span>${themeName(t, ctx)}</span></span><button class="xa-text-btn" data-act="unfile" data-id="${s.id}" data-t="${t}" data-key="unfile:${s.id}:${t}" aria-label="Unfile from ${esc(theme(t))}">Unfile</button></li>`).join("")}</ul>
+        <div class="xa-chips">${none}${add}<button class="xa-add" data-act="edit-themes" data-id="${s.id}" data-key="edit-themes:${s.id}" aria-pressed="true">Done</button></div>${tail}`;
+      return `<div class="xa-chips">${ts.map(t => `<button class="pn-chip" data-act="open-theme" data-t="${t}">${ic("binoculars")}<span>${themeName(t, ctx)}</span></button>`).join("")}${none}${add}${ts.length ? `<button class="xa-add" data-act="edit-themes" data-id="${s.id}" data-key="edit-themes:${s.id}" aria-pressed="false" aria-label="Edit themes">Edit</button>` : ""}</div>${tail}`;
+    }
+    if (st.opt === "C") {
+      // C: object verbs live in menus; each chip opens a small menu.
+      return `<div class="xa-chips">${ts.map(t => { const id = `chip:${s.id}:${t}`, open = st.menu === id; return `<span class="xc-menu-wrap"><button class="pn-chip xc-chipbtn" aria-haspopup="menu" aria-expanded="${open}" data-act="menu" data-id="${id}" data-key="menu:${id}">${ic("binoculars")}<span>${themeName(t, ctx)}</span>${ic("caret-down", 10)}</button>${open ? `<div class="xc-menu xc-chipmenu" role="menu" aria-label="${esc(theme(t))}"><button role="menuitem" data-act="open-theme" data-t="${t}" data-key="menu-first">${ic("arrow-right")} Open theme</button><button role="menuitem" data-act="unfile" data-id="${s.id}" data-t="${t}">${ic("minus")} Unfile from ${esc(theme(t))}</button></div>` : ""}</span>`; }).join("")}${none}${add}</div>${tail}`;
+    }
+    // B: the pane has room; a labelled Unfile sits beside the chip, revealed on hover or focus and always shown on touch.
+    return `<div class="xa-chips">${ts.map(t => `<span class="xb-chiprow"><button class="pn-chip" data-act="open-theme" data-t="${t}">${ic("binoculars")}<span>${themeName(t, ctx)}</span></button><button class="xa-text-btn xb-unfile" data-act="unfile" data-id="${s.id}" data-t="${t}" data-key="unfile:${s.id}:${t}" aria-label="Unfile from ${esc(theme(t))}">Unfile</button></span>`).join("")}${none}${add}</div>${tail}`;
   }
   function evidenceRows(st, s) {
     const ev = evOf(st, s);
@@ -102,9 +117,13 @@
       <li>${ts.length ? `Leaves ${ts.map(t => esc(theme(t))).join(", ")}` : "It isn't filed in any theme"}</li>
       <li>${ev.length ? `Stops counting as evidence for ${plural(ev.length, "theory", "theories")}; their confidence is recalculated` : "Not evidence for any theory"}</li>
       <li>Agents won't extract it from “${esc(d.first)}” again</li></ul>
-      <div class="x-confirm-acts"><button class="ap-btn x-danger" data-act="discard-yes" data-id="${s.id}">Discard</button><button class="ap-btn" data-act="discard-no" data-id="${s.id}" data-key="discard-no:${s.id}">Cancel</button></div></div>`;
+      <div class="x-confirm-acts"><button class="ap-btn" data-act="discard-no" data-id="${s.id}" data-key="discard-no:${s.id}">Cancel</button><button class="ap-btn x-danger" data-act="discard-yes" data-id="${s.id}">Discard</button></div></div>`;
   }
   const tomb = (st, s, current) => `<div class="x-tomb" data-item="signal:${s.id}">${ic("trash")}<s>${esc(gistOf(st, s))}</s><button class="xa-link-btn" data-act="undiscard" data-id="${s.id}" data-key="undiscard:${s.id}">${current ? "Restore (jig only)" : "Undo"}</button></div>`;
+  /* Quote spans and passage positions aren't stored (signal_origins links a signal to a whole dump). Highlights are illustrative; "today's data" shows only what the schema can back. */
+  const illus = (st, what = "Passage and highlights") => `<div class="x-illus" role="note"><span>${st.real ? "Today's data: a signal links to its whole dump, not a passage." : `<b>Illustrative.</b> ${what} are matched by hand; quote spans aren't stored yet.`}</span><button class="xa-link-btn" data-act="illus" data-key="illus" aria-pressed="${st.real}">${st.real ? "Show proposed" : "Show today's data"}</button></div>`;
+  const markQ = (st, text, quote) => st.real ? esc(text) : markQuote(text, quote);
+  const passageOf = (st, s) => st.real ? null : W.passageFor(s);
   const grow = (st, key, inner, cls = "") => `<div class="x-grow ${cls}"${st.enter === key ? " data-enter" : ""}><div>${inner}</div></div>`;
 
   /* ── Current, rebuilt from SignalDetail (panes.tsx:93) and DumpDetail (columns2.tsx:261) ── */
@@ -127,17 +146,17 @@
 
   /* ── A: field sheet in place ── */
   function aSignalBody(st, s, ctx) {
-    const d = W.dump(s.dump), p = W.passageFor(s), pi = d.paras.indexOf(p), peek = st.peek.has(s.id);
+    const d = W.dump(s.dump), p = passageOf(st, s), pi = d.paras.indexOf(p), peek = st.peek.has(s.id);
     return `<div class="xa-body">
       <dl class="xa-sheet">
         <div class="xa-f"><dt>Note</dt><dd>${editable("xa-note", "note", s.id, noteOf(st, s), "Note", "Add a note")}</dd></div>
         <div class="xa-f"><dt>Themes</dt><dd>${themeChips(st, s, ctx)}</dd></div>
         <div class="xa-f"><dt>Theories</dt><dd>${evidenceRows(st, s)}</dd></div>
         <div class="xa-f"><dt>From</dt><dd><button class="xa-from" aria-expanded="${peek}" data-act="peek" data-id="${s.id}" data-key="peek:${s.id}">${ic(dumpIcon(d))}<span>${esc(d.first)} <span class="ap-muted">· ${esc(when(d))}</span></span><span class="xa-caret-sm">${ic("caret-right", 10)}</span></button>
-          ${peek && p ? `<blockquote class="xa-passage">${markQuote(p.text, p.quote)}</blockquote><div class="xa-passage-foot"><span class="ap-num">Passage ${pi + 1} of ${d.paras.length}</span>·<button class="xa-link-btn" data-act="open-dump" data-d="${d.id}" data-para="${pi}">Open in dump</button></div>` : ""}</dd></div>
+          ${peek ? illus(st) + (p ? `<blockquote class="xa-passage">${markQuote(p.text, p.quote)}</blockquote><div class="xa-passage-foot"><span class="ap-num">Passage ${pi + 1} of ${d.paras.length}</span>·<button class="xa-link-btn" data-act="open-dump" data-d="${d.id}" data-para="${pi}">Open in dump</button></div>` : `<blockquote class="xa-passage">${esc(d.paras[0].text)}</blockquote><div class="xa-passage-foot"><span>Opening of the dump</span>·<button class="xa-link-btn" data-act="open-dump" data-d="${d.id}">Open dump</button></div>`) : ""}</dd></div>
         <div class="xa-f"><dt>Source</dt><dd>${sourceLinks(st, s)}</dd></div>
       </dl>
-      ${st.discard[s.id] === "confirm" ? consequence(st, s) : `<div class="xa-acts"><button class="ap-btn" data-act="merge">${ic("arrows-merge")} Merge…</button><span class="xa-spacer"></span><button class="ap-btn x-danger" data-act="discard" data-id="${s.id}" data-key="discard:${s.id}">${ic("trash")} Discard…</button></div>`}
+      ${st.discard[s.id] === "confirm" ? consequence(st, s) : `<div class="xa-acts"><button class="ap-btn x-danger" data-act="discard" data-id="${s.id}" data-key="discard:${s.id}">${ic("trash")} Discard…</button><span class="xa-spacer"></span><button class="ap-btn" data-act="merge">${ic("arrows-merge")} Merge…</button></div>`}
     </div>`;
   }
   function aDumpBody(st, d) {
@@ -156,12 +175,12 @@
   const menu = (st, s) => `<span class="xc-menu-wrap"><button class="ap-iconbtn" aria-haspopup="menu" aria-expanded="${st.menu === s.id}" aria-label="More actions" data-act="menu" data-id="${s.id}" data-key="menu:${s.id}">${ic("dots-three", 16)}</button>
     ${st.menu === s.id ? `<div class="xc-menu" role="menu" aria-label="Signal actions"><button role="menuitem" data-act="merge" data-key="menu-first">${ic("arrows-merge")} Merge with another signal…</button><button role="menuitem" data-act="picker" data-pk="file" data-id="${s.id}">${ic("plus")} File in a theme…</button><button role="menuitem" data-act="picker" data-pk="link" data-id="${s.id}">${ic("target")} Use as evidence…</button><button role="menuitem" class="x-danger" data-act="discard" data-id="${s.id}">${ic("trash")} Discard…</button></div>` : ""}</span>`;
   function cSignalBody(st, s, ctx) {
-    const d = W.dump(s.dump), p = W.passageFor(s), pi = d.paras.indexOf(p);
+    const d = W.dump(s.dump), p = passageOf(st, s), pi = d.paras.indexOf(p);
     const srcNodes = s.sources.length ? s.sources.map(x => `<li class="xc-node"><span class="xc-dot">${ic("link")}</span><div class="xc-main"><div class="xc-k"><b>${esc(x.domain)}</b> · ${esc(x.author)} · ${esc(x.date)}<a class="xc-mini" href="${x.url}" target="_blank" rel="noreferrer" aria-label="Open source on ${esc(x.domain)}">${ic("arrow-square-out", 10)}</a></div><p class="xc-quote">${esc(x.title)}</p></div></li>`).join("")
       : `<li class="xc-node"><span class="xc-dot">${ic("pencil-ruler")}</span><div class="xc-main"><div class="xc-k"><b>Your own observation</b></div></div></li>`;
     return `<div class="xc-body">${st.discard[s.id] === "confirm" ? consequence(st, s) : ""}<ol class="xc-trail" aria-label="Where this signal came from and where it goes">
       ${srcNodes}
-      <li class="xc-node"><span class="xc-dot">${ic(dumpIcon(d))}</span><div class="xc-main"><div class="xc-k"><b>You, ${d.kind === "voice" ? "voice note" : "dump"}</b> · ${esc(when(d))}<button class="xc-mini" data-act="open-dump" data-d="${d.id}" data-para="${pi}">Open ${ic("arrow-right", 10)}</button></div>${p ? `<p class="xc-quote" data-own>${esc(p.quote || p.text)}</p>` : `<p class="xc-quote">${esc(d.first)}</p>`}</div></li>
+      <li class="xc-node"><span class="xc-dot">${ic(dumpIcon(d))}</span><div class="xc-main"><div class="xc-k"><b>You, ${d.kind === "voice" ? "voice note" : "dump"}</b> · ${esc(when(d))}<button class="xc-mini" data-act="open-dump" data-d="${d.id}" data-para="${pi}">Open ${ic("arrow-right", 10)}</button></div>${illus(st, "The passage and quote")}${p ? `<p class="xc-quote" data-own>${esc(p.quote || p.text)}</p>` : `<p class="xc-quote">${esc(d.paras[0].text)}</p>`}</div></li>
       <li class="xc-node" data-self><span class="xc-dot">${ic("pulse")}</span><div class="xc-main"><div class="xc-k"><b>This signal</b> · ${esc(s.day)}</div>${merged(st, s)}${editable("xa-note", "note", s.id, noteOf(st, s), "Note", "Why it matters to you")}</div></li>
       <li class="xc-node"><span class="xc-dot">${ic("binoculars")}</span><div class="xc-main"><div class="xc-k"><b>Filed in</b></div>${themeChips(st, s, ctx)}</div></li>
       <li class="xc-node"><span class="xc-dot">${ic("target")}</span><div class="xc-main"><div class="xc-k"><b>Evidence for</b></div>${evidenceRows(st, s)}</div></li>
@@ -175,13 +194,14 @@
       const key = `${d.id}:${sg.start}`, open = st.runs.has(key), words = sg.idx.reduce((n, i) => n + W.words(d.paras[i].text), 0);
       return `<li class="xc-p" data-quiet><button class="xc-run" aria-expanded="${open}" data-act="run" data-run="${key}" data-key="run:${key}">${ic(open ? "caret-down" : "caret-right", 10)} ${open ? "Fold" : ""} ${plural(sg.idx.length, "passage")}, nothing extracted <span class="ap-muted ap-num" style="margin-left:auto">${words} words</span></button>${open ? sg.idx.map(i => `<p data-para="${d.id}:${i}">${esc(d.paras[i].text)}</p>`).join("") : ""}</li>`;
     }).join("");
-    return `<div class="xc-body">${voiceRow(d)}${d.links ? linksOf(d) : ""}<ol class="xc-pass" aria-label="Passages and what they made">${body}</ol></div>`;
+    if (st.real) return `<div class="xc-body">${voiceRow(d)}${d.links ? linksOf(d) : ""}${illus(st)}<section class="xa-sec"><div class="ap-label">Made <span class="ap-num">${d.produced.length}</span></div>${d.produced.map(id => madeRow(id, d.id + ":")).join("")}</section><div class="xa-text">${d.paras.map((p, i) => `<p data-para="${d.id}:${i}">${esc(p.text)}</p>`).join("")}</div></div>`;
+    return `<div class="xc-body">${voiceRow(d)}${d.links ? linksOf(d) : ""}${illus(st, "Passage-to-signal pairing and highlights")}<ol class="xc-pass" aria-label="Passages and what they made">${body}</ol></div>`;
   }
 
   /* ── B: documents in the object pane ── */
   const metaRow = (k, v) => `<div class="pn-meta-row"><dt class="ap-muted">${k}</dt><dd>${v}</dd></div>`;
   function signalDoc(st, s, ctx) {
-    const d = W.dump(s.dump), p = W.passageFor(s), pi = d.paras.indexOf(p);
+    const d = W.dump(s.dump), p = passageOf(st, s), pi = d.paras.indexOf(p);
     return `<div class="pn-doc">${st.discard[s.id] === "confirm" ? consequence(st, s) : ""}
       ${editable("pn-title", "gist", s.id, gistOf(st, s), "Signal gist")}
       <dl class="pn-meta">
@@ -193,7 +213,7 @@
       </dl>
       ${editable("pn-body", "note", s.id, noteOf(st, s), "Note", "Add a note")}
       ${s.sources.length ? `<section class="xb-sec"><div class="ap-label">${ic("quotes")} What the source says</div>${s.sources.map(x => `<blockquote class="xb-q">${esc(x.title)}</blockquote>`).join("")}${merged(st, s)}</section>` : ""}
-      ${p ? `<section class="xb-sec"><div class="ap-label">${ic(dumpIcon(d))} In your ${d.kind === "voice" ? "voice note" : "dump"}, passage ${pi + 1} of ${d.paras.length}</div><blockquote class="xb-q">${markQuote(p.text, p.quote)}</blockquote><div><button class="xa-link-btn" data-act="open-dump" data-d="${d.id}" data-para="${pi}">Read the whole ${d.kind === "voice" ? "note" : "dump"}</button></div></section>` : ""}
+      <section class="xb-sec"><div class="ap-label">${ic(dumpIcon(d))} ${p ? `In your ${d.kind === "voice" ? "voice note" : "dump"}, passage ${pi + 1} of ${d.paras.length}` : `Your ${d.kind === "voice" ? "voice note" : "dump"}, opening`}</div>${illus(st)}<blockquote class="xb-q">${p ? markQuote(p.text, p.quote) : esc(d.paras[0].text)}</blockquote><div><button class="xa-link-btn" data-act="open-dump" data-d="${d.id}"${p ? ` data-para="${pi}"` : ""}>Read the whole ${d.kind === "voice" ? "note" : "dump"}</button></div></section>
     </div>`;
   }
   function dumpDoc(st, d) {
@@ -202,7 +222,7 @@
       <dl class="pn-meta">${metaRow("Captured", esc(when(d)))}${metaRow("Kind", `<span class="ap-num">${kindName(d)}${d.duration ? ` · ${d.duration}` : ""} · ${wordsOf(d)} words</span>`)}</dl>
       <section class="xb-sec"><div class="ap-label">Made <span class="ap-muted">· ${esc(madeSummary(d))}</span></div><div class="xb-made">${d.produced.map(id => madeRow(id, "doc:")).join("")}</div></section>
       ${voiceRow(d)}${d.links ? `<section class="xb-sec"><div class="ap-label">Links</div>${linksOf(d)}</section>` : ""}
-      <section class="xb-sec"><div class="ap-label">${d.kind === "voice" ? "Transcript" : "Text"}</div><div class="xb-text">${d.paras.map((p, i) => `<p data-para="${d.id}:${i}"${st.hl === `${d.id}:${i}` ? " data-hl" : ""}>${p.made ? `<button class="ap-iconbtn xb-gut" data-act="goto-signal" data-id="${p.made[0]}" aria-label="Made: ${esc(W.signal(p.made[0])?.gist)}" title="Made: ${esc(W.signal(p.made[0])?.gist)}">${ic("pulse", 13)}</button>` : ""}${markQuote(p.text, p.quote)}</p>`).join("")}</div></section>
+      <section class="xb-sec"><div class="ap-label">${d.kind === "voice" ? "Transcript" : "Text"}</div>${illus(st, "Margin marks and underlines")}<div class="xb-text">${d.paras.map((p, i) => `<p data-para="${d.id}:${i}"${st.hl === `${d.id}:${i}` ? " data-hl" : ""}>${p.made && !st.real ? `<button class="ap-iconbtn xb-gut" data-act="goto-signal" data-id="${p.made[0]}" aria-label="Made: ${esc(W.signal(p.made[0])?.gist)}" title="Made: ${esc(W.signal(p.made[0])?.gist)}">${ic("pulse", 13)}</button>` : ""}${markQ(st, p.text, p.quote)}</p>`).join("")}</div></section>
     </div>`;
   }
   function themeDoc(st) {
@@ -218,7 +238,7 @@
     const label = top.k === "signal" ? "Signal" : top.k === "dump" ? "Dump" : "Theme";
     const backLabel = back && (back.k === "theme" ? theme(back.id) : back.k === "dump" ? W.dump(back.id).first : W.signal(back.id).gist);
     const doc = top.k === "signal" ? signalDoc(st, W.signal(top.id), st.surface === "feed" ? FEED.theme : null) : top.k === "dump" ? dumpDoc(st, W.dump(top.id)) : themeDoc(st);
-    const acts = top.k === "signal" && st.discard[top.id] !== "confirm" ? `<button class="ap-btn" data-act="merge">${ic("arrows-merge")} Merge…</button><button class="ap-btn x-danger" data-act="discard" data-id="${top.id}" data-key="discard:${top.id}">${ic("trash")} Discard…</button>` : "";
+    const acts = top.k === "signal" && st.discard[top.id] !== "confirm" ? `<button class="ap-btn x-danger" data-act="discard" data-id="${top.id}" data-key="discard:${top.id}">${ic("trash")} Discard…</button><button class="ap-btn" data-act="merge">${ic("arrows-merge")} Merge…</button>` : "";
     const close = inStage ? "" : `<button class="ap-iconbtn" aria-label="Close pane" data-act="close" data-key="close">${ic("x", 14)}</button>`;
     const bar = top.k === "theme" ? "" : `<div class="xb-bar">${back ? `<button class="xb-back" data-act="back" data-key="back">${ic("arrow-right", 12, "rotate:180deg")}<span>${esc(backLabel)}</span></button>` : `<span class="ap-label">${ic(top.k === "signal" ? "pulse" : "tray-arrow-down")} ${label}</span>`}<span class="xb-sp"></span>${acts}${close}</div>`;
     return `<aside class="${inStage ? "" : "xb-pane"}" aria-label="${label}" tabindex="-1" data-key="pane"${inStage ? "" : ` data-scroll="pane"`}>${bar}${doc}</aside>`;
@@ -350,7 +370,9 @@
     picker: (st, b) => { const id = b.dataset.id, kind = b.dataset.pk; st.menu = null; st.picker = st.picker?.id === id && st.picker.kind === kind ? null : { id, kind }; render(st, st.picker ? "picker-first" : `pick:${kind}:${id}`); },
     "picker-close": (st, b) => { const p = st.picker; st.picker = null; render(st, p ? `pick:${p.kind}:${p.id}` : null); },
     file: (st, b) => { const s = W.signal(b.dataset.id); st.themes[s.id] = [...themesOf(st, s), b.dataset.t]; st.picker = null; st.flash[s.id] = { field: "themes", msg: `Filed in ${theme(b.dataset.t)}.`, undo: { type: "unfile", t: b.dataset.t } }; render(st, `undo:${s.id}`); },
-    unfile: (st, b) => { const s = W.signal(b.dataset.id), t = b.dataset.t; st.themes[s.id] = themesOf(st, s).filter(x => x !== t); st.flash[s.id] = { field: "themes", msg: `Unfiled from ${theme(t)}. It stays in Signals.`, undo: { type: "file", t } }; render(st, `undo:${s.id}`); },
+    illus: st => { st.real = !st.real; st.hl = st.real ? null : st.hl; render(st, "illus"); },
+    "edit-themes": (st, b) => { const id = b.dataset.id; st.editThemes.has(id) ? st.editThemes.delete(id) : st.editThemes.add(id); render(st, `edit-themes:${id}`); },
+    unfile: (st, b) => { st.menu = null; const s = W.signal(b.dataset.id), t = b.dataset.t; st.themes[s.id] = themesOf(st, s).filter(x => x !== t); st.flash[s.id] = { field: "themes", msg: `Unfiled from ${theme(t)}. It stays in Signals.`, undo: { type: "file", t } }; render(st, `undo:${s.id}`); },
     link: (st, b) => { const s = W.signal(b.dataset.id); st.evidence[s.id] = [...evOf(st, s), { theory: b.dataset.t, stance: b.dataset.stance }]; st.picker = null; st.flash[s.id] = { field: "evidence", msg: `Now ${b.dataset.stance === "supports" ? "supports" : "undermines"} “${claim(b.dataset.t)}”.`, undo: { type: "unlink", t: b.dataset.t } }; render(st, `undo:${s.id}`); },
     undo: (st, b) => { const s = W.signal(b.dataset.id), u = st.flash[s.id]?.undo; if (!u) return;
       if (u.type === "file") st.themes[s.id] = [...themesOf(st, s), u.t];
@@ -366,7 +388,7 @@
     "cur-ask": (st, b) => toast(st, b.dataset.msg),
     merge: st => { st.menu = null; render(st); toast(st, "Opens the existing two-step merge dialog (signal-merge.tsx): pick a candidate, then review sources."); },
     unmerge: (st, b) => { st.unmerged[b.dataset.id] = true; render(st); toast(st, "Merge undone: the absorbed signal is restored."); },
-    "open-theme": (st, b) => toast(st, `Opens the theme pane: ${theme(b.dataset.t)}`),
+    "open-theme": (st, b) => { if (st.menu) { st.menu = null; render(st); } toast(st, `Opens the theme pane: ${theme(b.dataset.t)}`); },
     "open-theory": (st, b) => toast(st, `Opens the theory pane: ${claim(b.dataset.t)}`),
     play: st => toast(st, "Plays the recording."),
     "modal-close": st => { st.modal = null; render(st, "origin:s12"); },

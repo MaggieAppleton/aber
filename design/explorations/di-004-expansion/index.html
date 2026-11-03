@@ -76,7 +76,7 @@
       <tr><td><b>Row</b> (scan)</td><td>New mark, gist, source domain</td><td>Kind glyph, first line, time · <b>made N</b> (new in A–C)</td></tr>
       <tr><td><b>Expanded</b> (glance)</td><td>Editable gist (replacing the row, not repeating it), note, themes, theories, from, source</td><td>What it made, named, then playback and the opening of the text</td></tr>
       <tr><td><b>On demand</b></td><td>Maggie's original passage; the full dump; the external post</td><td>The full transcript, in readable paragraphs, in place (A, C) or as a document (B)</td></tr>
-      <tr><td><b>Verbs</b></td><td>Relationship verbs on their own field: × unfile, + file, + use as evidence. Object verbs (merge, discard) apart, with consequences.</td><td>Open what it made. (Delete stays in the Dump log.)</td></tr>
+      <tr><td><b>Verbs</b></td><td>Relationship verbs on their own field, always labelled: Unfile, + File, + Use as evidence. × only closes fleeting surfaces (pickers, menus, the pane). Object verbs (merge, discard) apart, with consequences.</td><td>Open what it made. (Delete stays in the Dump log.)</td></tr>
     </tbody>
   </table>
 </section>
@@ -92,19 +92,19 @@
     </div>
     <div class="jig-option">
       <div class="jig-label"><b>A</b> Field sheet, in place <button class="x-reset" data-reset="c-a">Reset</button></div>
-      <p class="jig-note">The row becomes the object. The gist itself turns editable, and under it a labelled sheet: Note, Themes, Theories, From, Source. Each relationship carries its own verb. “From” opens Maggie's passage; “Open in dump” jumps there. Merge and Discard sit at the foot, and Discard shows its consequences before it acts.</p>
+      <p class="jig-note">The row becomes the object. The gist itself turns editable, and under it a labelled sheet: Note, Themes, Theories, From, Source. Each relationship carries its own verb. Themes has an <b>Edit</b> mode that lists each theme with a labelled <b>Unfile</b>, so chips stay clean at 274px and nothing removes on a stray tap. “From” opens Maggie's passage (marked <i>illustrative</i>, with a toggle to today's data); “Open in dump” jumps there. The foot puts Discard… on the left and Merge… on the right; Discard shows its consequences before it acts.</p>
       <div class="jig-stage x-stage" style="--jig-stage-h: 780px" data-stage="c-a" data-surface="columns" data-option="A"></div>
       <div class="x-optmeta"><div><h4>Long content</h4><p>The sheet grows with real data; there are no clamps. A long note wraps. The passage is one paragraph and only appears when asked for.</p></div><div><h4>Versus the pane</h4><p>Uses the same field names and order as the <code>.pn-meta</code> list in a pane doc, so promoting a signal to a pane is the same thing, bigger.</p></div></div>
     </div>
     <div class="jig-option x-wide">
       <div class="jig-label"><b>B</b> Select, then read in the docked pane <button class="x-reset" data-reset="c-b">Reset</button></div>
-      <p class="jig-note">Rows never expand. Selecting one keeps it to a single line, rings it, and opens the object as a <code>.pn-doc</code> in the existing pane: title, meta, note, what the source says, and the passage from the voice note. “From” pushes the dump document, and the back crumb returns. Escape closes. At narrow widths the pane becomes a full-screen sheet.</p>
+      <p class="jig-note">Rows never expand. Selecting one keeps it to a single line, rings it, and opens the object as a <code>.pn-doc</code> in the existing pane: title, meta, note, what the source says, and the passage from the voice note. Each theme chip has a labelled <b>Unfile</b> beside it, revealed on hover or focus and always shown on touch. The pane's × closes the pane, nothing else. “From” pushes the dump document, and the back crumb returns. Escape closes. At narrow widths the pane becomes a full-screen sheet.</p>
       <div class="jig-stage x-stage" style="--jig-stage-h: 780px" data-stage="c-b" data-surface="columns" data-option="B"></div>
       <div class="x-optmeta"><div><h4>Long content</h4><p>The best case for long reading: 15px at line-height 1.65 with a 68ch measure, and room for a long note.</p></div><div><h4>Versus the pane</h4><p>This <i>is</i> the pane. Signals and Dumps become first-class pane objects, like Theories and Themes.</p></div><div><h4>Cost</h4><p>Scanning several signals means repeated selects. The column stays narrow, but the pane takes about 55% of the width.</p></div></div>
     </div>
     <div class="jig-option">
       <div class="jig-label"><b>C</b> Provenance trail <button class="x-reset" data-reset="c-c">Reset</button></div>
-      <p class="jig-note">The expansion reads top to bottom as lineage: what the world said, then what Maggie said about it (her extracted words), then this signal and its note, then where it's filed, then what it's evidence for. Object verbs live in a ⋯ menu, so the trail stays clean.</p>
+      <p class="jig-note">The expansion reads top to bottom as lineage: what the world said, then what Maggie said about it (her extracted words), then this signal and its note, then where it's filed, then what it's evidence for. Object verbs live in a ⋯ menu, so the trail stays clean. Theme chips follow the same grammar: each opens a small menu with “Open theme” and “Unfile from &lt;theme&gt;”. The quoted words are <i>illustrative</i>; the toggle shows what today's data supports.</p>
       <div class="jig-stage x-stage" style="--jig-stage-h: 780px" data-stage="c-c" data-surface="columns" data-option="C"></div>
       <div class="x-optmeta"><div><h4>Long content</h4><p>Quotes are the extracted span, so they're short. The full passage and the dump are one click away.</p></div><div><h4>Needs</h4><p>Agents to record the quoted span for each signal. Today there are only origin dump ids.</p></div></div>
     </div>
@@ -113,7 +113,7 @@
 
 <section class="jig-section" style="--jig-min: 520px">
   <h2>2 · The same signal in the theme pane's feed</h2>
-  <p><i>Novel agent interfaces</i> → Signals. In this context the current detail hides the theme you're in, so you can't unfile from here without a modal. The alternatives show it as “this theme”, with × beside it. Opening the dump from here uses the pane in every alternative, and the current modal.</p>
+  <p><i>Novel agent interfaces</i> → Signals. In this context the current detail hides the theme you're in, so you can't unfile from here without a modal. The alternatives show it as “this theme”, with each option's labelled Unfile control. Opening the dump from here uses the pane in every alternative, and the current modal.</p>
   <div class="jig-compare">
     <div class="jig-option">
       <div class="jig-label" data-current><b>Current</b> SignalRow feed <button class="x-reset" data-reset="f-cur">Reset</button></div>
@@ -154,12 +154,12 @@
     </div>
     <div class="jig-option x-wide">
       <div class="jig-label"><b>B</b> Dump document in the pane <button class="x-reset" data-reset="d-b">Reset</button></div>
-      <p class="jig-note">The dump is a document: meta, Made, playback, and the transcript at reading size. Passages that made something carry a signal mark in the margin, and the extracted words are underlined. This replaces the <code>inspectDump</code> modal everywhere.</p>
+      <p class="jig-note">The dump is a document: meta, Made, playback, and the transcript at reading size. Passages that made something carry a signal mark in the margin, and the extracted words are underlined. Both are <i>illustrative</i>: passage positions and quote spans aren't stored, and the toggle shows the plain transcript today's data supports. This replaces the <code>inspectDump</code> modal everywhere.</p>
       <div class="jig-stage x-stage" style="--jig-stage-h: 820px" data-stage="d-b" data-surface="dumps" data-option="B"></div>
     </div>
     <div class="jig-option">
       <div class="jig-label"><b>C</b> Passages interleaved with what they made <button class="x-reset" data-reset="d-c">Reset</button></div>
-      <p class="jig-note">Each productive passage shows the signal it made directly beneath it, with the extracted words underlined. Passages that made nothing fold into counted disclosures (“2 passages, nothing extracted · 81 words”), so nothing is hidden silently.</p>
+      <p class="jig-note">Each productive passage shows the signal it made directly beneath it, with the extracted words underlined. Passages that made nothing fold into counted disclosures (“2 passages, nothing extracted · 81 words”), so nothing is hidden silently. The pairing is <i>illustrative</i>: with today's data (toggle) C falls back to the Made list and the plain transcript.</p>
       <div class="jig-stage x-stage" style="--jig-stage-h: 820px" data-stage="d-c" data-surface="dumps" data-option="C"></div>
     </div>
   </div>
@@ -174,7 +174,7 @@
       <tr><td>Reading long dumps</td><td>One 12px block, 1,300px tall</td><td>Opening plus explicit reveal; 13px; still 250px wide</td><td>Best: 15px, 68ch, margin marks</td><td>Good: text arrives with its meaning; unproductive passages folded</td></tr>
       <tr><td>Provenance</td><td>Unlabelled chips; source labelled with the gist</td><td>Labelled From and Source; passage on demand</td><td>Full: source quote and passage</td><td>Best: the whole lineage is the layout</td></tr>
       <tr><td>Editing the note</td><td>A boxed field</td><td>Inline, labelled</td><td>Body-sized; best for long notes</td><td>Inline, in the signal's own node</td></tr>
-      <tr><td>Relationship verbs</td><td>− and + icons, then a modal</td><td>× on each theme, + File, + Use as evidence, inline pickers, Undo</td><td>Same, inside meta</td><td>Same, inside the trail</td></tr>
+      <tr><td>Relationship verbs</td><td>− and + icons, then a modal</td><td>Themes Edit mode with labelled Unfile, + File, + Use as evidence, inline pickers, Undo</td><td>Labelled Unfile beside each chip (hover, focus, touch)</td><td>Chip menu: Open theme / Unfile from &lt;theme&gt;</td></tr>
       <tr><td>Discard</td><td>Immediate</td><td>Inline consequence, then a tombstone with Undo</td><td>Same, at the top of the doc</td><td>Same; reached through ⋯</td></tr>
       <tr><td>Narrow and touch</td><td>OK</td><td>Good: in place at any width</td><td>Pane becomes a full-screen sheet</td><td>Good</td></tr>
       <tr><td>Build cost</td><td>none</td><td>Low: rewrite <code>SignalDetail</code> and <code>DumpDetail</code></td><td>Medium: two new pane kinds, and routing</td><td>Medium to high: needs quote spans from agents</td></tr>
@@ -185,7 +185,7 @@
 <section class="jig-section">
   <h2>Recommendation</h2>
   <div class="x-rec">
-    <p><b>Signal: A, the field sheet, everywhere SignalRow is used.</b> Borrow C's idea and make “From” open Maggie's own passage, with the extracted words marked. Expansion is the right weight for a signal: it is small, mostly relationships, and read while scanning a list. The sheet removes the duplicate gist and the boxes, labels each relationship, and puts each verb on the thing it changes. One rewrite of <code>SignalDetail</code> fixes Columns, the theme feed, the theory grid, Briefing, Atlas and Chat.</p>
+    <p><b>Signal: A, the field sheet, everywhere SignalRow is used.</b> Borrow C's idea and make “From” open Maggie's own passage, with the extracted words marked once agents store quote spans; until then, show the dump's opening and “Open dump”. Expansion is the right weight for a signal: it is small, mostly relationships, and read while scanning a list. The sheet removes the duplicate gist and the boxes, labels each relationship, and puts each verb on the thing it changes. One rewrite of <code>SignalDetail</code> fixes Columns, the theme feed, the theory grid, Briefing, Atlas and Chat.</p>
     <p><b>Dump: A in the Dumps column, B as the full read.</b> In place, a dump leads with what it made, then the opening and an explicit reveal. “Open in dump” from a signal outside Columns opens the dump document in the pane (B's dump doc), which replaces the <code>inspectDump</code> modal and its inner scroll. A dump is Maggie's long-form writing; it deserves a reading surface, and a signal doesn't need one.</p>
     <p><b>Shared grammar: yes, by rungs, not by layout.</b> A row, then a labelled sheet, then the source on demand. The same field names appear in pane meta. Signal and Dump keep different sheets.</p>
     <p><b>Action placement:</b> relationship verbs on their fields; object verbs at the sheet's foot as labelled buttons; Discard always shows its consequences inline, with Undo afterwards.</p>
