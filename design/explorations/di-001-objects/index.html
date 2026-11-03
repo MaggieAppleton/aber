@@ -174,6 +174,7 @@ body.jig { background: #e9e6e1; }
 <symbol id="i-arrow-up" viewBox="0 0 256 256"><path d="M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z"/></symbol>
 <symbol id="i-arrow-down" viewBox="0 0 256 256"><path d="M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z"/></symbol>
 <symbol id="i-arrow-right" viewBox="0 0 256 256"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></symbol>
+<symbol id="i-arrow-left" viewBox="0 0 256 256"><path transform="matrix(-1 0 0 1 256 0)" d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></symbol>
 <symbol id="i-link" viewBox="0 0 256 256"><path d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/></symbol>
 <symbol id="i-text-align-left" viewBox="0 0 256 256"><path d="M32,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H40A8,8,0,0,1,32,64Zm8,48H168a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16Zm176,24H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm-48,40H40a8,8,0,0,0,0,16H168a8,8,0,0,0,0-16Z"/></symbol>
 <symbol id="i-plus" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"/></symbol>
@@ -300,7 +301,7 @@ function sigDetail(S){
     C:`<button class="pn-link" title="Supports">${I('arrow-up',12)}${I('target',12)}<span>${T.t4}</span></button>`}[S];
   const themeChip=S==='B'?pillB('Code review after agents',2):`<button class="pn-chip" title="Theme">${I('binoculars',12)}<span>Code review after agents</span></button>`;
   const dumpGlyph=S==='cur'?'waveform':'tray-arrow-down';
-  const dump=`<button class="pn-chip pn-origin" title="Voice note">${I(dumpGlyph,12)}<span>${S==='cur'?'':'Voice note · '}Memory across the month</span></button>`;
+  const dump=`<button class="pn-chip pn-origin" title="Voice note">${I(dumpGlyph,12)}<span>${S==='cur'?'':'Voice note: '}Memory across the month</span></button>`;
   return note+link+`<div class="pn-chips">${themeChip}${dump}</div>`;
 }
 function pane(S){
@@ -325,7 +326,7 @@ function pane(S){
   const grid=`<div class="pn-grid"><div class="pn-col">${evHead('arrow-up','Supports',2)}<div>${sig(S,{gist:'Agent recalls a codebase across a month of sessions',src:'x.com',open:true,detail:sigDetail(S)})}${sig(S,{gist:'Assistant ships a project vault with consent prompts',src:'techcrunch.com',suggested:true})}</div></div><div class="pn-col">${evHead('arrow-down','Undermines',1)}<div>${sig(S,{gist:'Memory feature withdrawn after privacy complaints',src:'theverge.com',fresh:true})}</div></div></div>`;
   const links={
     cur:`<div class="pn-links"><button class="pn-chip" title="Follows from">${I('caret-left',12)}<span>${T.t1}</span></button><button class="pn-chip" title="Leads to"><span>${T.t7}</span>${I('caret-right',12)}</button><button class="pn-chip" title="Leads to" data-draft><span>${T.ld}</span>${I('caret-right',12)}</button><button class="pn-chip" title="Prototype">${proto('shelved')}<span>Memory inspector</span></button></div>`,
-    A:`<div class="pn-links"><span class="x-a-rel" title="Follows from">${I('caret-left',12)}<button class="pn-chip">${slot('theory',12)}<span>${T.t1}</span></button></span><span class="x-a-rel" title="Leads to"><button class="pn-chip">${slot('theory',12)}<span>${T.t7}</span></button>${I('caret-right',12)}</span><span class="x-a-rel" title="Leads to"><button class="pn-chip" data-draft>${slot('theory',12)}<span>${T.ld}</span></button>${I('caret-right',12)}</span><button class="pn-chip" title="Prototype">${proto('shelved',12)}<span>Memory inspector</span></button></div>`,
+    A:`<div class="pn-links"><span class="x-a-rel" title="Follows from">${I('arrow-left',12)}<button class="pn-chip">${slot('theory',12)}<span>${T.t1}</span></button></span><span class="x-a-rel" title="Leads to"><button class="pn-chip">${slot('theory',12)}<span>${T.t7}</span></button>${I('arrow-right',12)}</span><span class="x-a-rel" title="Leads to"><button class="pn-chip" data-draft>${slot('theory',12)}<span>${T.ld}</span></button>${I('arrow-right',12)}</span><button class="pn-chip" title="Prototype">${proto('shelved',12)}<span>Memory inspector</span></button></div>`,
     B:`<div class="pn-links x-b-links"><dl class="pn-meta">${row('Follows from',claimB(T.t1),'x-b-stackdd')}${row('Leads to',claimB(T.t7)+claimB(T.ld,true),'x-b-stackdd')}${row('Prototypes',artB('shelved','Memory inspector'))}</dl></div>`,
     C:''}[S];
   return `<div class="pn-doc pn-theory-doc x-doc">${head}<h1 class="pn-title">${T.t3}</h1><dl class="pn-meta">${rows}</dl>${grid}${links}</div>`;
@@ -376,7 +377,7 @@ function brief(S){
   const sigcard=`<span class="ab-sigcard"><span class="ab-sigcard-well" aria-hidden="true">${I('pulse',14)}</span><span class="ab-sigcard-text"><span class="ab-sigcard-gist">Memory feature withdrawn after privacy complaints</span><span class="ab-sigcard-src">theverge.com</span></span><span class="ab-sigcard-side"><span class="ab-sigcard-tag">${I('arrow-down',12)}Undermines</span></span></span><span class="br-why">A major assistant pulled memory after complaints</span>`;
   const meta=(p,th)=>`<span class="br-meta">${bal(p,0)}${themeRef(th)}</span>`;
   const group=(n,c,body)=>`<section class="br-group"><h3 class="ap-label br-group-name">${n}<span class="ap-num">${c}</span></h3>${body}</section>`;
-  const newSig=`<span class="br-acts"><span class="br-count ap-num">2 new${I('caret-right',12)}</span></span>`;
+  const newSig=`<span class="br-acts"><span class="br-count ap-num">2 new${S==='cur'?I('caret-right',12):''}</span></span>`;
   const protoDetail=S==='C'||S==='A'?`<span class="br-meta"><span class="ap-muted ap-inline">Tests ${I('target',12)}Warehouse picking robots…</span></span>`:S==='B'?`<span class="br-meta"><span class="ap-muted">Tests</span>${claimB('Warehouse picking robots…',true)}</span>`:`<span class="br-meta"><span class="ap-muted ap-inline">Tests: Warehouse picking robots…</span></span>`;
   return `<div class="ap br x-br" style="height:auto"><div class="br-col">
     <header class="br-head"><span class="ap-h">Since you last looked</span><span class="br-left ap-muted ap-num">12 left</span></header>
@@ -387,7 +388,7 @@ function brief(S){
       item('theory',T.d1,{draft:1,detail:meta(1,'Cost of intelligence')})+
       item('theory',T.d2,{draft:1,detail:meta(1,'Cost of intelligence')})+
       item('theory',T.d3,{draft:1,detail:meta(1,'Code review after agents')})+
-      item('theme','Robotics',{draft:1,detail:`<span class="br-meta ap-muted">From a voice note · 1 signal</span>`})+
+      item('theme','Robotics',{draft:1,detail:`<span class="br-meta ap-muted">${S==='cur'?'From a voice note · 1 signal':'1 signal from a voice note'}</span>`})+
       item('theory',T.d4,{draft:1,detail:meta(1,'Robotics')})+
       item('prototype','Recovery rehearsal',{draft:1,detail:protoDetail}))}
   </div>
@@ -403,7 +404,7 @@ function side(S){
     return `<a href="#"${act?' data-active':''} onclick="return false">${name}${mark(m)}${count}</a>`;}).join('');
   const themesHead=S==='C'?`<div class="cur-protos x-c-head">${I('binoculars',13)}<span class="cur-sidebar-label">Themes</span><span class="ap-muted ap-num">8</span></div>`:'';
   const ps=[['building','Intent review'],['idea','Token budget meter'],['built','One-person app kit'],['shelved','Memory inspector']];
-  const protoRows=ps.map(([st,n])=>`<button class="cur-prototype-row">${S==='cur'?I('pencil-ruler',13):proto(st,13)}<span class="cur-sidebar-label">${n}</span>${I('caret-right',12)}</button>`).join('');
+  const protoRows=ps.map(([st,n])=>`<button class="cur-prototype-row">${S==='cur'?I('pencil-ruler',13):proto(st,13)}<span class="cur-sidebar-label">${n}</span>${S==='cur'?I('caret-right',12):''}</button>`).join('');
   const rail=`<aside class="cur-rail" data-sidebar><div class="cur-sidebar-body"><div class="cur-sidebar-scroll">${themesHead}<nav class="cur-index">${index}</nav><div class="cur-prototype-section"><h3 class="cur-prototype-heading"><button class="cur-protos">${I('pencil-ruler',13)}<span class="cur-sidebar-label">Prototypes</span><span class="ap-muted ap-num">5</span><span class="cur-protos-chevron">${I('caret-down',12)}</span></button></h3><div class="cur-prototype-list">${protoRows}</div></div></div></div></aside>`;
   const card=(k,c,p,n,draft)=>{
     const claim=S==='A'?`<div class="ap-card-claim x-grid">${slot('theory')}<span>${T[k]}</span></div>`:`<div class="ap-card-claim">${T[k]}</div>`;

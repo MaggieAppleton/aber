@@ -80,13 +80,12 @@
 .x-head-btn { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--size-px-6); height: 100%; padding: 0 var(--size-px-8); border: 0; background: transparent; border-radius: var(--size-px-6); color: var(--ap-ink-3); font-size: var(--size-px-12) !important; font-weight: 500 !important; text-align: left; cursor: pointer; transition: background 100ms ease-out, color 100ms ease-out; }
 .x-head-btn:hover { background: var(--ap-hover); color: var(--ap-ink-2); }
 .x-head-btn .ap-num { font-weight: 400; }
-.x-chev { display: inline-flex; opacity: 0; transition: transform 200ms var(--ap-ease), opacity 120ms ease-out; }
+/* Maggie's rule: a chevron is the expand/collapse control, visible at rest in both states and pointing to the current one. */
+.x-chev { display: inline-flex; transition: transform 200ms var(--ap-ease); }
 .x-head-btn[aria-expanded="true"] .x-chev { transform: rotate(90deg); }
-.x-head-btn[aria-expanded="false"] .x-chev, .x-head:hover .x-chev, .x-head-btn:focus-visible .x-chev { opacity: 1; }
-.x-head[data-stuck="bottom"] .x-chev { opacity: 0 !important; }
 .x-head .ap-iconbtn { flex-shrink: 0; color: var(--ap-ink-3); }
 .x-head .ap-iconbtn:hover { color: var(--ap-ink); }
-@media (hover: none) { .x-chev { opacity: 1; } }
+
 
 /* ── Chosen · A's stacked sections with C's band headers ──
    Leading type icon, label one step bolder and darker, count one step smaller. */
@@ -152,7 +151,7 @@
 <div class="x-bar" role="toolbar" aria-label="Jig controls">
   <div class="x-bar-in">
     <div class="x-ctl"><span>Population</span><div role="radiogroup" aria-label="Population" data-ctl="pop">
-      <button role="radio" data-v="seeded">Seeded (8 · 5)</button><button role="radio" data-v="long">Long (14 · 12)</button></div></div>
+      <button role="radio" data-v="seeded">Seeded (8, 5)</button><button role="radio" data-v="long">Long (14, 12)</button></div></div>
     <div class="x-ctl"><span>Rail</span><div role="radiogroup" aria-label="Rail" data-ctl="rail">
       <button role="radio" data-v="expanded">Expanded</button><button role="radio" data-v="collapsed">Collapsed</button><button role="radio" data-v="overlay">Tight overlay</button></div></div>
     <div class="x-ctl"><span>Prototype status glyph</span><div role="radiogroup" aria-label="Prototype status glyph" data-ctl="glyph">
@@ -179,7 +178,7 @@
 
 <section class="jig-section x-wide" id="opt-chosen">
   <div class="jig-label" data-chosen><b>A+C</b> Chosen direction: stacked sections with band headers</div>
-  <p class="jig-note">Maggie's pick: A's layout and behaviour with C's header treatment. One scroll, <em>Themes</em> then <em>Prototypes</em>, both top-aligned. Each header collapses its section and sticks, docking at the bottom when its section is below the fold. As in C, each header has the type icon on the left, a slightly bolder label and a smaller count, with + on the right. The chevron appears only on approach or while collapsed, because the header really does collapse. C's independently scrolling bands are not carried over.</p>
+  <p class="jig-note">Maggie's pick: A's layout and behaviour with C's header treatment. One scroll, <em>Themes</em> then <em>Prototypes</em>, both top-aligned. Each header collapses its section and sticks, docking at the bottom when its section is below the fold. As in C, each header has the type icon on the left, a slightly bolder label and a smaller count, with + on the right. The chevron is always visible, pointing right when collapsed and down when open, because the header really does collapse. C's independently scrolling bands are not carried over.</p>
   <div class="x-local"><label><input type="checkbox" data-local="aSticky" checked> Sticky section headers (applies to A as well)</label></div>
   <div class="x-scrollx"><div class="jig-stage" style="--jig-stage-h:680px" data-stage="ac"></div></div>
   <ul class="jig-tradeoffs">
@@ -191,7 +190,7 @@
 
 <section class="jig-section x-wide" id="opt-a">
   <div class="jig-label"><b>A</b> Stacked sections, top-aligned <span class="jig-note">(the chosen layout; reference)</span></div>
-  <p class="jig-note">One scroll, two labelled sections: <em>Themes 8</em> then <em>Prototypes 5</em>, each with its own + . The header collapses its section, so its chevron is legitimate (shown at rest only while collapsed; on approach otherwise). Headers stick: a section below the fold docks its header at the bottom edge, and clicking a docked header scrolls to it instead of collapsing.</p>
+  <p class="jig-note">One scroll, two labelled sections: <em>Themes 8</em> then <em>Prototypes 5</em>, each with its own + . The header collapses its section, so its chevron is legitimate; it is always visible and points right when collapsed, down when open. Headers stick: a section below the fold docks its header at the bottom edge, and clicking a docked header scrolls to it instead of collapsing.</p>
   <div class="x-scrollx"><div class="jig-stage" style="--jig-stage-h:680px" data-stage="a"></div></div>
   <ul class="jig-tradeoffs">
     <li>Both populations visible at once; prototypes sit directly under themes instead of being pushed to the floor.</li>

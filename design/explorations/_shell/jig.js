@@ -18,7 +18,7 @@
         row.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x.textContent === state.choice))); };
       row.append(b);
     }
-    const note = document.createElement("textarea"); note.placeholder = "Note (optional): combine, tweak, reject…"; note.value = state.note || "";
+    const note = document.createElement("textarea"); note.placeholder = "Note (optional): combine, tweak or reject"; note.value = state.note || "";
     note.setAttribute("aria-label", `Note for ${q.textContent}`);
     note.oninput = () => { state.note = note.value; save(id, state); };
     el.append(q, row, note);

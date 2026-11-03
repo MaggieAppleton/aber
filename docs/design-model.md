@@ -371,6 +371,8 @@ One meaning per variable, everywhere.
 | **Decisions read Dismiss or Discard, then Accept.** The labelled secondary button sits on the left: **Dismiss** rejects a suggestion, and **Discard** removes a draft. The primary **Accept** (or Save or Confirm) sits on the right. This pair is the one exception to "at most one text button per surface" | Maggie, DI-009 |
 | **No keyboard shortcut for Dismiss or Discard.** The X shortcut is removed and nothing replaces it. Rejecting a suggestion or discarding a draft always goes through the labelled button. A (Accept) and U (Undo merge) stay | Maggie, DI-009 |
 | **Chevrons only expand and collapse.** They never mean "go to this object" | Maggie, DI-003 |
+| **A chevron is always visible on a collapsible item.** It shows in both states, points to the current one and stays in the same place when the item opens. It never appears only on hover or only once expanded | Maggie, DI-003 and DI-004 |
+| **No trailing ellipsis** on menu items, buttons or action labels ("Merge", not "Merge…"). Ellipses may still mark truncated or elided content | Maggie, DI-004 |
 
 ## Implementation notes
 
