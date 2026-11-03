@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DI-008: the draft theme heading (Robotics)</title>
+<link rel="stylesheet" href="../../../app/web/src/design-tokens.css">
+<link rel="stylesheet" href="../../../app/web/src/app/base.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/homes.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/app-shell.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/panes.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/surface-patterns.css">
+<link rel="stylesheet" href="../../../app/web/src/app/production.css">
+<link rel="stylesheet" href="../../../app/web/src/app/hit-areas.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/current-sidebar.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/confidence-spark.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/tooltip.css">
+<link rel="stylesheet" href="../_shell/jig.css">
+<script src="../_shell/jig.js" defer></script>
+<script src="icons.js"></script>
+<script src="d8.js" defer></script>
+<style>
+/* ── Jig framing: the app's .ap is a fixed 760px board; inside a stage it grows with its content. ── */
+.jig-stage { min-height: 0; }
+.jig-stage .ap { height: auto; border-radius: 0; box-shadow: none; overflow: visible; }
+.jig-stage > .ap.ab-production { position: relative; }
+/* State-grid cells: narrow mini stages, one card column. TEMP jig framing */
+.jig-stage[data-layout="cell"] .ap.cur { min-height: 0; }
+.jig-stage[data-layout="cell"] .ap .cur[data-hosted] .cur-main { min-width: 0; padding: var(--size-px-16) var(--size-px-16) var(--size-px-20); }
+.jig-stage[data-layout="cell"] .ap .cur[data-hosted] .cur-cards { grid-template-columns: minmax(0, 1fr); }
+.jig-stage[data-layout="cell"] .d8-toast-slot { bottom: var(--size-px-10); }
+.jig-stage .ap.cur { min-height: var(--size-px-480); }
+.jig-stage .cur-main { overflow: visible; }
+.jig-stage .cur-sidebar-body { padding-bottom: var(--size-px-14); }
+.d8-mainonly .ap.cur { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+.d8-mainonly .cur[data-hosted] .cur-main { padding: var(--size-px-20) var(--size-px-20) var(--size-px-60); }
+.d8-phone { width: var(--size-px-390); max-width: 100%; }
+.d8-phone .cur[data-hosted] .cur-main { padding: var(--size-px-20) var(--size-px-12) var(--size-px-60); }
+.d8-phone .cur[data-hosted] .cur-cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--size-px-196)), 1fr)); }
+.jig-label .d8-reset { margin-left: auto; font: inherit; font-weight: 500; font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid #cfc9bf; background: #fff; cursor: pointer; }
+.jig-label .d8-reset:active { transform: scale(0.96); }
+.d8-dial { display: inline-flex; gap: 2px; padding: 2px; border-radius: 999px; background: #e0dbd3; font-size: 12px; font-weight: 500; }
+.d8-dial button { font: inherit; border: 0; background: transparent; padding: 2px 9px; border-radius: 999px; cursor: pointer; color: #5d5850; }
+.d8-dial button[aria-pressed="true"] { background: #fff; color: #2b2925; box-shadow: 0 1px 2px rgb(0 0 0 / 0.08); }
+.d8-findings { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: #3d3a34; max-width: 90ch; }
+.d8-findings b { font-weight: 650; }
+.d8-states { display: grid; gap: 18px; }
+.d8-state-row { display: grid; grid-template-columns: 120px repeat(4, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.d8-state-row > h3 { margin: 6px 0 0; font-size: 13px; font-weight: 650; }
+.d8-state-row > h3 small { display: block; font-weight: 400; color: #5d5850; margin-top: 2px; }
+.d8-colhead { display: grid; grid-template-columns: 120px repeat(4, minmax(0, 1fr)); gap: 12px; font-weight: 650; }
+.d8-nd { display: grid; place-items: center; min-height: 92px; border-radius: 12px; border: 1px dashed #cfc9bf; color: #8a847a; font-size: 12px; text-align: center; padding: 10px; }
+.d8-phones { display: flex; flex-wrap: wrap; gap: 20px; }
+.d8-phones .jig-option { width: 390px; max-width: 100%; }
+@media (max-width: 900px) {
+  .d8-state-row, .d8-colhead { grid-template-columns: minmax(0, 1fr); }
+  .d8-colhead { display: none; }
+  .d8-state-row > .d8-cell::before { content: attr(data-col); display: block; font-size: 12px; font-weight: 650; margin-bottom: 4px; }
+}
+
+/* ── Shared proposal tokens (temporary, page-local; mapped to existing app tokens) ── */
+.ap {
+  --d8-line: var(--ab-draft-line);            /* the same dash the draft theory cards use (surface-patterns.css) */
+  --d8-fill: var(--ab-draft-fill);            /* the same translucent fill */
+  --d8-edit-line: var(--color-gray-0-a-40);   /* the pane's draft-title dash while editing (panes.css:27) */
+  --d8-out: var(--size-px-12);                /* B: how far the draft container paints into the gutter. TEMP */
+}
+.d8-phone .ap { --d8-out: var(--size-px-8); }
+
+/* Rename in place: same geometry as the heading button so the text never moves. */
+.ap .d8-rename { font: inherit; font-weight: 700; color: var(--ap-ink); border: 0; margin: 0 var(--size-px-neg-6); padding: var(--size-px-2) var(--size-px-6);
+  border-radius: var(--size-px-6); background: var(--pn-edit-bg); outline: var(--size-px-1) dashed var(--d8-edit-line); outline-offset: var(--size-px-neg-1);
+  field-sizing: content; min-width: 4ch; max-width: 100%; line-height: inherit; }
+.ap .d8-rename::selection { background: var(--color-gray-0-a-12); }
+
+/* Discard: slides right like a draft card, then the space closes. */
+.d8-collapse { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 1fr; transition: grid-template-rows 240ms var(--ab-ease) 120ms; }
+.d8-collapse > div { min-height: 0; }
+.d8-collapse[data-gone] { grid-template-rows: 0fr; }
+.d8-collapse[data-gone] > div { overflow: hidden; }
+.d8-collapse > div > * { transition: opacity 160ms var(--ab-ease), transform 160ms var(--ab-ease); }
+.d8-collapse[data-gone] > div > * { opacity: 0; transform: translateX(var(--size-px-16)); pointer-events: none; }
+
+/* Sidebar index: the draft row takes the draft material too (as .col-item[data-draft] does in Columns). */
+.ap .cur-index .d8-sb { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 1fr; transition: grid-template-rows 220ms var(--ab-ease) 100ms; }
+.ap .cur-index .d8-sb > a { min-height: 0; overflow: hidden; }
+.ap .cur-index .d8-sb[data-gone] { grid-template-rows: 0fr; }
+.ap .cur-index a[data-d8-draft] { position: relative; background: var(--d8-fill); transition: background 260ms var(--ab-ease), color 260ms var(--ab-ease); }
+.ap .cur-index a[data-d8-draft]::after { content: ""; position: absolute; inset: 0; border-radius: inherit; border: var(--size-px-1) dashed var(--d8-line); pointer-events: none; transition: opacity 260ms var(--ab-ease); }
+.ap .cur-index a[data-d8-draft]:hover { background: color-mix(in oklab, var(--d8-fill) 60%, #fff); }
+.ap .cur-index a[data-d8-draft][data-mine] { background: transparent; }
+.ap .cur-index a[data-d8-draft][data-mine]::after { opacity: 0; }
+.ap .cur-index a[data-d8-draft][data-mine]:hover { background: var(--ap-hover); }
+.ap .cur-index .d8-sb-label { padding: var(--size-px-12) var(--size-px-8) var(--size-px-4); }
+
+/* ── A: the heading keeps every mine heading's geometry. The draft material is drawn on the footprint the
+      heading button already paints on hover; a second line carries provenance and the decision. ── */
+.ap .d8a .cur-theme-btn[data-d8-draft] { position: relative; color: var(--ap-ink-2); background: var(--d8-fill);
+  transition: background 260ms var(--ab-ease), color 260ms var(--ab-ease); }
+.ap .d8a .cur-theme-btn[data-d8-draft]::before { content: ""; position: absolute; inset: 0; border-radius: inherit; border: var(--size-px-1) dashed var(--d8-line); pointer-events: none; transition: opacity 260ms var(--ab-ease); }
+.ap .d8a .cur-theme-btn[data-d8-draft]:is(:hover, :focus-visible), .ap .d8a [data-force="hover"] .cur-theme-btn[data-d8-draft] { background: color-mix(in oklab, var(--d8-fill) 60%, #fff); }
+.ap .d8a[data-edge="flush"] .cur-theme-btn[data-d8-draft] { margin-left: 0; }
+.ap .d8a [data-state="mine"] .cur-theme-btn[data-d8-draft] { color: var(--ap-ink); background: transparent; }
+.ap .d8a [data-state="mine"] .cur-theme-btn[data-d8-draft]:hover { background: var(--ap-hover); }
+.ap .d8a [data-state="mine"] .cur-theme-btn[data-d8-draft]::before { opacity: 0; }
+.ap .d8a [data-settling] .cur-theme-btn { animation: ab-solidify var(--ab-spring-dur) var(--ab-spring); }
+.d8a-meta { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 1fr; transition: grid-template-rows 280ms var(--ab-spring), opacity 180ms var(--ab-ease); }
+.d8a-meta > div { min-height: 0; overflow: hidden; }
+.d8a-meta-in { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--size-px-12); row-gap: var(--size-px-4); min-height: var(--size-px-28); margin: 0 0 var(--size-px-8); font-size: var(--size-px-12); color: var(--ap-ink-3); }
+.d8a-meta { margin-top: var(--size-px-neg-4); } /* pulled up outside the clipping box so glyphs never clip */
+.d8a-from { display: inline-flex; align-items: center; gap: var(--size-px-6); white-space: nowrap; }
+.d8a-from svg { flex-shrink: 0; }
+.d8a-acts { display: inline-flex; align-items: center; gap: var(--size-px-6); }
+[data-state="mine"] > .d8a-meta { grid-template-rows: 0fr; opacity: 0; pointer-events: none; }
+
+/* ── B: the whole draft section is one draft object: dashed, translucent, on the plane. It paints into the gutter
+      so its heading and cards keep the column's edges; actions sit on its edge like a draft card's. ── */
+.ap .d8b-shell { position: relative; margin: calc(-1 * var(--d8-out)); padding: var(--d8-out); border-radius: var(--size-px-12); background: var(--d8-fill); transition: background 260ms var(--ab-ease); }
+.ap .d8b-shell::after { content: ""; position: absolute; inset: 0; border-radius: inherit; border: var(--size-px-1) dashed var(--d8-line); pointer-events: none; transition: opacity 260ms var(--ab-ease); }
+.ap .d8b [data-state="mine"] .d8b-shell { background: transparent; }
+.ap .d8b [data-state="mine"] .d8b-shell::after { opacity: 0; }
+.ap .d8b [data-state="draft"] .cur-theme-name, .ap .d8b [data-state="editing"] .cur-theme-name { color: var(--ap-ink-2); }
+.ap .d8b .cur-theme-name { transition: color 260ms var(--ab-ease); }
+.d8b-from { display: inline-grid; place-items: center; width: var(--size-px-20); height: var(--size-px-20); border-radius: var(--size-px-5); color: var(--ap-ink-3); flex-shrink: 0; }
+.d8b-from:hover { color: var(--ap-ink-2); }
+.d8b-from:focus-visible { outline: var(--size-px-2) solid var(--ab-focus); outline-offset: var(--size-px-1); }
+[data-state="mine"] .d8b-from { display: none; }
+.d8b-edge, .d8-card-edge { position: absolute; z-index: 2; top: calc(-1 * var(--size-px-14)); right: var(--size-px-10); display: inline-flex; gap: var(--size-px-2); padding: var(--size-px-2); border-radius: 999px; background: var(--ap-surface);
+  box-shadow: 0 0 0 0.5px rgb(var(--ab-shc) / 9%), 0 1px 2px rgb(var(--ab-shc) / 8%);
+  opacity: 0; transform: translateY(var(--size-px-2)); pointer-events: none; transition: opacity 160ms var(--ab-ease), transform 160ms var(--ab-ease); }
+.d8b-edge button:not(.d8-tbtn) { display: inline-grid; place-items: center; width: var(--size-px-24); height: var(--size-px-24); padding: 0; border: 0; border-radius: 999px; background: transparent; color: var(--ap-ink-2); cursor: pointer; transition: background 90ms var(--ab-ease), color 90ms var(--ab-ease); }
+.d8b-edge button:not(.d8-tbtn):hover { background: var(--ap-hover); color: var(--ap-ink); }
+.d8-edge button:active { transform: scale(var(--ab-press)); }
+.d8-edge button:focus-visible { outline: var(--size-px-2) solid var(--ab-focus); outline-offset: var(--size-px-1); }
+.d8b-shell:is(:hover, :focus-within) > .d8b-edge, [data-force="hover"] .d8b-edge, [data-touch] .d8b-edge { opacity: 1; transform: none; pointer-events: auto; }
+[data-state="mine"] .d8b-edge, [data-state="editing"] .d8b-edge { opacity: 0 !important; pointer-events: none !important; }
+@media (hover: none) { .d8b-edge, .d8-card-edge { opacity: 1; transform: none; pointer-events: auto; } }
+
+/* Decisions follow DI-009: labelled secondary Discard on the left, primary Accept on the right. No X, no discard key. */
+.ap .ap-btn[data-primary], .ap .d8-tbtn[data-primary] { background: var(--ab-accent); color: var(--color-gray-255); box-shadow: none; } /* TEMP: no primary button exists in the app yet */
+.ap .ap-btn[data-primary]:hover, .ap .d8-tbtn[data-primary]:hover { background: color-mix(in oklab, var(--ab-accent) 88%, #000); }
+.ap .d8-tbtn { height: var(--size-px-24); padding: 0 var(--size-px-10); border: 0; border-radius: 999px; background: transparent; color: var(--ap-ink-2); font: inherit; font-size: var(--size-px-12); font-weight: 500; cursor: pointer; transition: background 90ms var(--ab-ease), color 90ms var(--ab-ease); }
+.ap .d8-tbtn:not([data-primary]):hover { background: var(--ap-hover); color: var(--ap-ink); }
+/* Draft theory cards in the proposals: the same labelled pair on the card's top edge, in place of the X / check minis. */
+.ap .ab-edge-host { position: relative; }
+.d8-card-edge { top: calc(-1 * var(--size-px-13)); right: var(--size-px-8); }
+.ab-edge-host:is(:hover, :focus-within) > .d8-card-edge, [data-touch] .d8-card-edge { opacity: 1; transform: none; pointer-events: auto; }
+
+/* ── C: drafts gather after my themes as compact proposal rows; accepting moves the row up into my themes
+      as a full section. ── */
+.d8c-group { padding-bottom: var(--size-px-22); }
+.d8c-head { display: flex; align-items: center; gap: var(--size-px-8); height: var(--size-px-28); margin-bottom: var(--size-px-8); }
+.d8c-list { display: grid; gap: var(--size-px-8); }
+.ap .d8c-row { position: relative; margin: 0 calc(-1 * var(--d8-out)); border-radius: var(--size-px-8); background: var(--d8-fill); transition: background 150ms var(--ab-ease); }
+.ap .d8c-row::after { content: ""; position: absolute; inset: 0; border-radius: inherit; border: var(--size-px-1) dashed var(--d8-line); pointer-events: none; }
+.ap .d8c-row:is(:hover, :focus-within), .ap .d8c-row[data-force="hover"] { background: color-mix(in oklab, var(--d8-fill) 60%, #fff); }
+.d8c-row-head { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--size-px-10); row-gap: var(--size-px-2); min-height: var(--size-px-44); padding: var(--size-px-6) var(--size-px-8) var(--size-px-6) var(--d8-out); }
+.d8c-toggle.ap-iconbtn { width: var(--size-px-24); height: var(--size-px-24); flex-shrink: 0; color: var(--ap-ink-3); }
+.d8c-toggle svg { transition: transform 200ms var(--ab-spring); }
+.d8c-toggle[aria-expanded="true"] svg { transform: rotate(90deg); }
+.ap .d8c-row .cur-theme-name { color: var(--ap-ink-2); }
+.d8c-title { display: flex; align-items: center; gap: var(--size-px-10); flex: 1 1 var(--size-px-200); min-width: 0; }
+.d8c-title > .ap-num { flex-shrink: 0; white-space: nowrap; }
+.d8c-side { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: var(--size-px-4) var(--size-px-12); margin-left: auto; font-size: var(--size-px-12); color: var(--ap-ink-3); }
+.d8c-body { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 0fr; transition: grid-template-rows 280ms var(--ab-spring); }
+.d8c-body > div { min-height: 0; overflow: hidden; }
+.d8c-row[data-open] .d8c-body { grid-template-rows: 1fr; }
+.d8c-body .cur-cards { padding: var(--size-px-2) var(--d8-out) var(--d8-out); }
+.d8c-empty { padding: 0 var(--d8-out) var(--d8-out); font-size: var(--size-px-12); color: var(--ap-ink-3); }
+
+/* Toast (tier 6), matching the app's dump toast (pill-study.css .ps-toast), local because that sheet isn't in the shell. */
+.d8-toast-slot { position: absolute; left: 0; right: 0; bottom: var(--size-px-16); display: flex; justify-content: center; pointer-events: none; z-index: 6; }
+.d8-toast { pointer-events: auto; display: flex; align-items: center; gap: var(--size-px-12); min-height: var(--size-px-36); max-width: calc(100% - var(--size-px-24)); padding: var(--size-px-5) var(--size-px-6) var(--size-px-5) var(--size-px-14); border-radius: var(--size-px-18);
+  background: var(--ap-ink); color: var(--color-gray-255); box-shadow: 0 var(--size-px-4) var(--size-px-12) var(--color-gray-0-a-16); font-size: var(--size-px-12); transform-origin: 50% 100%;
+  transition: opacity 160ms var(--ab-ease), transform 200ms var(--ab-spring); }
+.d8-toast[data-hidden] { opacity: 0; transform: translateY(var(--size-px-6)) scale(0.98); pointer-events: none; }
+.d8-toast-text { color: var(--color-gray-255-a-75); }
+.d8-toast-text b { color: var(--color-gray-255); font-weight: 600; }
+.d8-toast-undo { flex-shrink: 0; height: var(--size-px-26); padding: 0 var(--size-px-10); border: 0; border-radius: var(--size-px-13); background: var(--color-gray-255-a-12); color: var(--color-gray-255) !important; font-weight: 500; cursor: pointer; }
+.d8-toast-undo:hover { background: var(--color-gray-255-a-20); }
+
+/* Jig tooltip: the app's .ab-tooltip, positioned by hand. */
+.d8-tip { position: fixed; z-index: 2000; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .d8-collapse, .d8-collapse > div > *, .d8a-meta, .d8c-body, .d8-toast, .ap .cur-index .d8-sb { transition-duration: 0ms !important; }
+}
+</style>
+</head>
+<body class="jig" data-jig="di-008">
+
+<header class="jig-head">
+  <h1>DI-008: the draft theme heading</h1>
+  <p><b>Robotics is a draft theme</b>: the agent created it from a voice note (<code>createDraftTheme</code>, <code>demo-seed.ts:41</code>), with one draft theory inside it (which links a draft prototype, Recovery rehearsal) and two signals filed. It is not a suggestion. It becomes mine when I accept or rephrase it; discarding removes it.</p>
+  <p>Every stage below uses the app's real CSS. Hover, focus, accept (<kbd>A</kbd>), rephrase (<kbd>R</kbd>), Discard (button only, no key, per DI-009) and Undo are live; <b>Reset</b> replays. The long-named second draft is hypothetical, added to test truncation.</p>
+</header>
+
+<section class="jig-section" id="findings">
+  <h2>What's wrong now (measured on the live app at 1440)</h2>
+  <ol class="d8-findings">
+    <li><b>The box breaks the column edge.</b> The heading button is pulled 6px left so its text lines up; the 1px dashed outline then sits 2px further out, so the box starts at x=252 while cards and every other heading start at x=260.</li>
+    <li><b>The count is jammed against it.</b> 2px from the dashed box to “2 signals”, against 16px from name to count on mine headings.</li>
+    <li><b>It's a different material from every other draft.</b> Outward 28% black outline, no fill, 26px tall in a 28px row, so it reads as a focus ring or form field. Draft cards use an inset 12% dash with a translucent fill.</li>
+    <li><b>Hierarchy is inverted.</b> The draft name stays full ink at 700 while draft claims step down to ink-2.</li>
+    <li><b>No decision where it's seen.</b> Accept and discard exist only in the pane (Accept button + X, which DI-009 now rules out); draft cards act from their own edge with X / check minis.</li>
+    <li><b>No provenance.</b> Nothing says which dump made it or when.</li>
+    <li><b>The sidebar can't tell.</b> Robotics' index row is identical to mine rows apart from the new dot.</li>
+  </ol>
+</section>
+
+<section class="jig-section" id="context">
+  <h2>In the Theme sections view, between mine themes</h2>
+  <p>Same five themes in each stage: two mine above, two drafts, one mine below. The heading text of every theme should start on one vertical line with the cards.</p>
+  <div class="jig-compare" style="--jig-min: 100%">
+    <div class="jig-option">
+      <div class="jig-label" data-current><b>Current</b>Dashed outline around the heading button<button class="d8-reset" data-reset="ctx-current" type="button">Reset</button></div>
+      <p class="jig-note">Real markup from <code>current.tsx:59</code> with <code>production.css:13</code>. Accepting needs the pane.</p>
+      <div class="jig-stage" data-stage="ctx-current" data-variant="current" data-layout="full" data-measure></div>
+    </div>
+    <div class="jig-option">
+      <div class="jig-label"><b>A</b>Aligned heading, provenance line with the decision<span class="d8-dial" role="group" aria-label="A: dashed box edge"><button type="button" data-dial="edge" data-value="outdent" aria-pressed="true">Text aligned</button><button type="button" data-dial="edge" data-value="flush" aria-pressed="false">Box aligned</button></span><button class="d8-reset" data-reset="ctx-a" type="button">Reset</button></div>
+      <p class="jig-note">The heading row is byte-for-byte a mine heading. The draft material (inset dash, translucent fill, ink-2) sits exactly where every heading already paints its hover. Below it, one 12px line: where it came from, then Rephrase, Discard, Accept (DI-009: labelled Discard left of the primary Accept). Accepting collapses that line and the heading is simply mine. <i>Dial:</i> “Box aligned” trades text alignment for a box flush with the cards.</p>
+      <div class="jig-stage" data-stage="ctx-a" data-variant="a" data-layout="full" data-measure></div>
+    </div>
+    <div class="jig-option">
+      <div class="jig-label"><b>B</b>The whole draft section is one dashed object<button class="d8-reset" data-reset="ctx-b" type="button">Reset</button></div>
+      <p class="jig-note">The container paints 12px into the gutter so the heading and cards keep the column edge. Rephrase, then labelled Discard and Accept, sit on its top edge on hover or focus (always on touch). Provenance is a mic glyph with a tooltip. Accepting fades the container; the theory inside stays a draft.</p>
+      <div class="jig-stage" data-stage="ctx-b" data-variant="b" data-layout="full" data-measure></div>
+    </div>
+    <div class="jig-option">
+      <div class="jig-label"><b>C</b>Drafts gathered after my themes as proposal rows<button class="d8-reset" data-reset="ctx-c" type="button">Reset</button></div>
+      <p class="jig-note">My themes stay uninterrupted; draft themes collapse to one dashed row each (summary before detail), with provenance and labelled actions. The chevron unfolds its theories in place. Accepting moves the row up into my themes as a full section, as does the sidebar row.</p>
+      <div class="jig-stage" data-stage="ctx-c" data-variant="c" data-layout="full" data-measure></div>
+    </div>
+  </div>
+  <ul class="jig-tradeoffs" style="margin-top:16px">
+    <li><b>Current</b>: smallest change, but every finding above stands.</li>
+    <li><b>A</b>: perfect heading alignment and the clearest provenance; costs one extra 28px line per draft theme until decided. The dashed box still outdents 6px (the hover footprint) unless the dial says otherwise.</li>
+    <li><b>B</b>: strongest “this whole thing isn't mine yet”; draft theory cards become dashed-inside-dashed, and actions are hidden until hover. Clearly an object, but the heaviest on the page when overnight clustering makes several.</li>
+    <li><b>C</b>: scales best (many drafts stay one row each) and keeps my sections calm; the draft lives away from where it would eventually sit, and it's a new grouping on the base plane.</li>
+  </ul>
+  <div class="jig-decision" data-decision="draft-theme-structure" data-question="Draft theme structure in Theme sections" data-options="Current|A|B|C"></div>
+</section>
+
+<section class="jig-section" id="states">
+  <h2>States side by side</h2>
+  <p>Each cell is live. Mine (accepted) is the end state of the transition; Discarded shows the consequence the toast reports.</p>
+  <div class="d8-colhead" aria-hidden="true"><span></span><span>Current</span><span>A</span><span>B</span><span>C</span></div>
+  <div class="d8-states" id="state-grid"></div>
+  <div class="jig-decision" data-decision="draft-action-placement" data-question="Where accept / rephrase / discard live" data-options="Current|A|B|C"></div>
+  <div class="jig-decision" data-decision="provenance-display" data-question="How provenance (which dump, when) shows" data-options="Current|A|B|C"></div>
+</section>
+
+<section class="jig-section" id="narrow">
+  <h2>Narrow (390)</h2>
+  <p>Main only, as when the sidebar is an overlay. B's edge actions are shown as on touch, where hover doesn't exist. The long draft name truncates in the heading; its full name is in the sidebar and pane.</p>
+  <div class="d8-phones">
+    <div class="jig-option"><div class="jig-label" data-current><b>Current</b></div><div class="jig-stage d8-phone" data-stage="ph-current" data-variant="current" data-layout="phone" data-measure></div></div>
+    <div class="jig-option"><div class="jig-label"><b>A</b></div><div class="jig-stage d8-phone" data-stage="ph-a" data-variant="a" data-layout="phone" data-measure></div></div>
+    <div class="jig-option"><div class="jig-label"><b>B</b></div><div class="jig-stage d8-phone" data-stage="ph-b" data-variant="b" data-layout="phone" data-touch data-measure></div></div>
+    <div class="jig-option"><div class="jig-label"><b>C</b></div><div class="jig-stage d8-phone" data-stage="ph-c" data-variant="c" data-layout="phone" data-measure></div></div>
+  </div>
+</section>
+
+<section class="jig-section" id="questions">
+  <h2>Open questions</h2>
+  <ol class="d8-findings">
+    <li><b>What does discarding a draft theme do to what's inside?</b> The jig assumes its signals become unthemed and its draft theory stays a draft (unthemed). The alternative is discarding the agent's whole bundle from that dump.</li>
+    <li><b>Does accepting the theme accept its draft theory?</b> The jig says no: each draft is decided on its own, so the theory stays dashed.</li>
+    <li><b>Where does an accepted draft go in the order?</b> The jig keeps it in place (A, B) or appends it after my themes (C).</li>
+    <li><b>Weight.</b> Theme headings render at 700 (homes.css:102) where the encoding map says object names are 600. Left as is here.</li>
+  </ol>
+</section>
+
+</body>
+</html>
