@@ -117,8 +117,8 @@ Six concepts. The core move: separate what I've **seen** (signals, themes) from 
 
 - **Purpose:** Let an agent propose a change to something of mine without making it.
 - **State:** kind (evidence, revision, merge, challenge); target objects; the proposed change; the agent's reasoning; proposing agent and model; status (pending, accepted, discarded).
-- **Actions:** user: accept, rephrase then accept, discard. System: propose.
-- **Operational principle:** If an agent thinks a signal undermines one of your theories, then a dashed link appears on that theory. Accepting makes it real; discarding removes it.
+- **Actions:** user: accept, rephrase then accept, dismiss. System: propose.
+- **Operational principle:** If an agent thinks a signal undermines one of your theories, then a dashed link appears on that theory. Accepting makes it real; dismissing removes it.
 - **Lifetime:** task.
 - **Not suggestions:** new themes, theories and prototypes arrive as drafts. Extrapolations arrive as draft theories that follow from the original. Near-duplicate signal merges are applied directly (the exception above).
 
@@ -147,13 +147,13 @@ d = drafts only.
 | Theme | | ● | rename | ● | ● | | | d | d | ● | d | |
 | Theory | | ● | ● versioned | ● | ● | ● | ● | d | d | ● | d | |
 | Prototype | | ● | ● | ● | | | | d | d | ● | d | |
-| Suggestion | | | | | | | | ● | ● | | ● | |
+| Suggestion | | | | | | | | ● | ● | | ● (labelled Dismiss) | |
 
 Intentional gaps:
 
 - **One way in.** Signals can't be written directly; everything enters as a dump, so every signal has provenance. Chat messages are dumps too.
 - **Dumps can't be edited.** They are the record. Mistakes are deleted, not corrected.
-- **Retire vs discard vs delete.** Being wrong is information, so my themes, theories and prototypes are retired and keep their history. A bad extraction or an unwanted draft isn't information, so signals, drafts and suggestions are discarded. Only dumps are deleted, because they're the one thing I author by accident.
+- **Retire vs discard vs delete.** Being wrong is information, so my themes, theories and prototypes are retired and keep their history. A bad extraction or an unwanted draft isn't information, so signals and drafts are discarded and suggestions are dismissed (stored as `discarded`). Only dumps are deleted, because they're the one thing I author by accident.
 - **Only theories are extrapolated or challenged.** A theme has to become a claim first.
 - **Themes can't be split.** Merge and re-file instead, until splitting proves necessary.
 - **No "bet" verb, no "pin" verb.**
@@ -368,7 +368,7 @@ One meaning per variable, everywhere.
 | Concentric radii, shadows over borders, 40 × 40 px hit areas, `scale(0.96)` on press, no `transition: all`, no clipped rings in scroll containers | make-interfaces-feel-better |
 | Use the concept names exactly, everywhere | This model |
 | **X only closes a fleeting surface** (a modal, popover, toast or transient card). It never discards, dismisses or rejects a suggestion, draft or proposal. A modal's close X always sits top-right | Maggie, DI-002 and DI-009 |
-| **Decisions read Dismiss, then Accept.** Rejecting a model's suggestion or draft uses a labelled secondary **Dismiss** button on the left. The primary **Accept** (or Save or Confirm) sits on the right. This pair is the one exception to "at most one text button per surface" | Maggie, DI-009 |
+| **Decisions read Dismiss or Discard, then Accept.** The labelled secondary button sits on the left: **Dismiss** rejects a suggestion, and **Discard** removes a draft. The primary **Accept** (or Save or Confirm) sits on the right. This pair is the one exception to "at most one text button per surface" | Maggie, DI-009 |
 | **No keyboard shortcut for Dismiss or Discard.** The X shortcut is removed and nothing replaces it. Rejecting a suggestion or discarding a draft always goes through the labelled button. A (Accept) and U (Undo merge) stay | Maggie, DI-009 |
 | **Chevrons only expand and collapse.** They never mean "go to this object" | Maggie, DI-003 |
 

@@ -286,7 +286,7 @@ The violation types are:
     - Drop "(X)" from the tooltips.
     - Keep A for Accept, and keep U for "Undo merge" on near-duplicates.
     - Dismiss stays reachable by Tab, since it comes before Accept in the DOM.
-- Wording question: the model's verb is **Discard** for drafts and signals, while Maggie said **Dismiss** for suggestions. Keep both verbs by object type, or use one label?
+- **Decided by Maggie on 2026-11-03: the label depends on the object.** Rejecting a **suggestion** (evidence, revision, merge, challenge or tripwire match) reads **Dismiss**. Removing a **draft** (theme, theory or prototype) reads **Discard**. Signals keep **Discard**. The stored status `discarded` is internal and doesn't change. Mixed surfaces like the Briefing row label each item by its kind. App labels change only once a direction is chosen.
 - Ten X uses were checked and are legitimate, because they close a transient pane, panel or banner (for example `columns2.tsx:113`, `atlas2.tsx:350`, `app-shell.tsx:257` and `:285`). Other X uses remove a chip or clear a filter. The remove and clear uses (`timeline2-shared.tsx:117`, `panes.tsx:113` "Remove evidence", attachment chips in `pill-study.tsx`) are outside this rule but worth reviewing.
 
 **Exploration:** none needed, because the rule is decided. Any open questions about Dismiss styling or the density of the suggestion card go into the DI-004 (expansion) and DI-006 (markers) jigs.
