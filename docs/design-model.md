@@ -367,6 +367,9 @@ One meaning per variable, everywhere.
 | As few type sizes as possible | Maggie's UI rules |
 | Concentric radii, shadows over borders, 40 × 40 px hit areas, `scale(0.96)` on press, no `transition: all`, no clipped rings in scroll containers | make-interfaces-feel-better |
 | Use the concept names exactly, everywhere | This model |
+| **X only closes a fleeting surface** (a modal, popover, toast or transient card). It never discards, dismisses or rejects a suggestion, draft or proposal. A modal's close X always sits top-right | Maggie, DI-002 and DI-009 |
+| **Decisions read Dismiss, then Accept.** Rejecting a model's suggestion or draft uses a labelled secondary **Dismiss** button on the left. The primary **Accept** (or Save or Confirm) sits on the right. This pair is the one exception to "at most one text button per surface" | Maggie, DI-009 |
+| **Chevrons only expand and collapse.** They never mean "go to this object" | Maggie, DI-003 |
 
 ## Implementation notes
 

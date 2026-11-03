@@ -17,7 +17,7 @@ Status values are `observed`, `scoped`, `exploring`, `decided` and `done`.
 
 ## DI-001 · Objects are hard to tell apart and are represented inconsistently
 
-**Status:** scoped. The first jig's scope is waiting for review.
+**Status:** exploring (Maggie authorized the exploration).
 **Concepts:** Theory, Theme, Signal, Prototype
 **Surfaces:** Theme sections, Columns, Briefing, object pane, chat cards, sidebar
 
@@ -51,8 +51,8 @@ Status values are `observed`, `scoped`, `exploring`, `decided` and `done`.
 - **Chat cards** (`ObjectChatCard`) render theories with `TheoryCard`, but every other kind with `.ap-card` plus an icon (`chat/object-card.tsx`).
 - Known encoding clash (design-model §5): the prototype "building" glyph uses the same blue as "new".
 
-**Proposed first exploration:** one vocabulary for object references. A reference to a Theory, Theme, Signal or Prototype inside another object should carry the same type marker and form wherever it appears. The jig would use the theory pane, Columns and Briefing as context. It won't be built until the scope is approved.
-**Exploration:** none yet. **Decision:** none.
+**Proposed first exploration:** one vocabulary for object references. A reference to a Theory, Theme, Signal or Prototype inside another object should carry the same type marker and form wherever it appears. The jig compares distinct strategies; not every reference needs an identical marker and form.
+**Exploration:** [`design/explorations/di-001-objects/`](../design/explorations/di-001-objects/index.html). **Decision:** none.
 
 ---
 
@@ -155,3 +155,95 @@ It includes a long-population stress test.
 
 **Exploration:** shared with DI-004. It looks for one summary-to-detail grammar that keeps the different roles of Dump and Signal and their source relationships.
 **Decision:** none yet.
+
+---
+
+## DI-006 · Freshness and attention markers sit in inconsistent places, crowd their neighbours and have unclear meanings
+
+**Status:** exploring
+**Concepts:** "new" (fresh), challenge and open-theme markers on Theory, Theme and Signal
+**Surfaces:**
+- the theory pane (`.pn-line`)
+- Columns (`.cd-line`)
+- the sidebar theme index (`nav.cur-index a`)
+- Theory cards (`.ap-card`)
+- the theme feed (`.pn-ev`)
+- Briefing (`.br-title`)
+- Atlas (`.a2-region`)
+
+**Related:** DI-001 (object grammar) and DI-003 (sidebar rows)
+
+**Maggie's observation (verbatim):** "I find there's an issue with these "like" markers that something is new or needs attention. We have some that are green, some that are blue, and some that are red. The larger problem is that they are always in a different place in the interface. Sometimes they are between items, next to items, or on the corner of items — they are extremely inconsistent in position, which is really problematic. Also, overall their placement feels too squished; there isn't enough space between them and surrounding elements. Sometimes they are to the left of text, sometimes to the right. They can be to the left of a number or to the right of a number; sometimes they're in the top left, sometimes in the top right. There's absolutely no consistency in where they appear or how they display, which makes them extremely difficult to look at or reason about. Some options to consider: I don't even know if we need to show these all the time. It's unclear how useful the markers are, especially if they're constantly moving and it's not clear what they're supposed to mean."
+
+**Open questions:**
+- Should markers be in a consistent position?
+- How much breathing room should they have?
+- Should they appear only when they're useful, or not at all?
+
+**Constraints:**
+- Consequential states, such as a challenge, must stay reachable.
+- No meaning may rely on colour alone.
+
+**Exploration:** [`design/explorations/di-006-markers/`](../design/explorations/di-006-markers/index.html), shared with DI-007.
+**Decision:** none yet.
+
+## DI-007 · The "building" prototype status is an isolated blue
+
+**Status:** exploring
+**Concepts:** Prototype status (idea → building → built → shelved)
+**Surfaces:** the Prototype detail `.pn-status` radio group, and status glyphs wherever they appear
+**Related:** DI-006. The same blue also means "new" (the encoding clash noted in design-model §5).
+
+**Maggie's observation (verbatim):** "This blue color on the prototype screen appears to be one of the only blue elements in the entire interface, which I don't think we should have if green is our primary colour. I don't see why we wouldn't opt for a green element instead."
+
+**Constraint from the coordinator:** use green as she prefers, but keep prototype status distinct from freshness and from the other meanings green carries. Green must not silently mean the same thing everywhere.
+
+**Exploration:** shared with DI-006.
+**Decision:** none yet.
+
+## DI-008 · The draft theme header (Robotics) is poorly spaced, styled and aligned
+
+**Status:** exploring
+**Concepts:** Theme, in its draft (agent-created) and mine (accepted) states
+**Surfaces:** the Theme sections heading `.cur-theme` / `.cur-theme-name[data-draft]` (`current.tsx:59`)
+**Related:** DI-001 (the "not yet mine" encoding) and DI-002 (creation looks like the final object)
+
+**Maggie's observation (verbatim):** "This design of what I think is a suggested theme is really bad. The spacing is bad, the styling is bad, and it's misaligned with the rest of the interface. It all just seems like it needs work."
+
+**Verified findings:**
+- Robotics is a **draft theme** that the agent created. The demo seed has `status: 'draft'` (`app/server/src/db/demo-seed.ts:41`). It is not a Suggestion: design-model §4 says new themes arrive as drafts.
+- The draft is shown by a 1px dashed outline with a 2px offset around the heading button (`app/web/src/app/production.css:13`). It sits beside the signal count and a "State a theory" button.
+- Accepting or rephrasing the draft makes it mine. The ownership distinction must be kept.
+
+**Exploration:** [`design/explorations/di-008-draft-theme/`](../design/explorations/di-008-draft-theme/index.html)
+**Decision:** none yet.
+
+---
+
+## DI-009 · An X is used to reject a suggestion. Rule: X only closes transient UI
+
+**Status:** decided (the rule). The inventory below is still to be fixed.
+**Concepts:** Suggestion (challenge, evidence, revision, merge), and draft decisions
+**Surfaces:** the tripwire hit (`.tw-tc > .tw-unfold > .tw-hits > .tw-hit > .ab-sigcard`, `app/web/src/ui/tripwire.tsx:46–47`), plus every suggestion and draft decision in the app
+**Related:** DI-002, where X is reserved for the modal close button in the top-right corner
+
+**Maggie's observation (verbatim):** "This component has a cross next to the accept button, which feels like — yeah, it's just bad design. If the cross button is dismissing something, the dismiss should be on the left of the accept. Accept should be on the right as the primary action, and dismiss should be a secondary action to the left of accept. The X close button should only be used for a temporary element on screen, like a modal or a card, where you click X to close it. If we're dismissing a suggestion that a model has made, that needs to be a dismiss button to the left of an accept/save/confirm button. Never use an X to mean "discard this suggestion." We only use X to close a fleeting interface item."
+
+**Rules (decided by Maggie; recorded in design-model §5 "Rules carried into every surface"):**
+
+1. X only closes a fleeting surface, such as a modal, popover or transient card. Never use it to discard a suggestion, draft or proposal.
+2. Rejecting a model suggestion uses a labelled secondary **Dismiss** button.
+3. Dismiss sits to the **left** of the primary Accept, Save or Confirm button, which sits on the right.
+
+**Verified behaviour of the target:**
+
+- Current markup: `Accept` (`ap-btn`, titled "Accept and lower confidence"), followed by an icon-only X (`.tw-dismiss`, aria-label "Dismiss").
+- Accepting a challenge lowers the theory's confidence by one, with a floor of 1. It appends the stance "Lowered: <signal gist>" and can be undone.
+- Accepting requires the theory to have a confidence already set (`app/server/src/tools/suggestions.ts:95–99`).
+- Dismissing marks the challenge `discarded`.
+- The effect on confidence is currently stated only in the button's `title` tooltip.
+
+**Inventory:** _being compiled._
+
+**Exploration:** none needed, because the rule is decided. Any open questions about Dismiss styling or the density of the suggestion card go into the DI-004 (expansion) and DI-006 (markers) jigs.
+**Decision:** the rule is set. Next, fix every inventory row.
