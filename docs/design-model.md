@@ -153,7 +153,7 @@ Intentional gaps:
 
 - **One way in.** Signals can't be written directly; everything enters as a dump, so every signal has provenance. Chat messages are dumps too.
 - **Dumps can't be edited.** They are the record. Mistakes are deleted, not corrected.
-- **Retire vs discard vs delete.** Being wrong is information, so my themes, theories and prototypes are retired and keep their history. A bad extraction or an unwanted draft isn't information, so signals and drafts are discarded and suggestions are dismissed (stored as `discarded`). Only dumps are deleted, because they're the one thing I author by accident.
+- **Retire vs discard vs delete.** Being wrong is information, so my themes, theories and prototypes are retired and keep their history. A bad extraction or an unwanted draft isn't information, so drafts are discarded and suggestions are dismissed (stored as `discarded`), per Maggie in DI-009. Signals are discarded today; the label for agent-extracted signals awaiting review is open (DI-009). Only dumps are deleted, because they're the one thing I author by accident.
 - **Only theories are extrapolated or challenged.** A theme has to become a claim first.
 - **Themes can't be split.** Merge and re-file instead, until splitting proves necessary.
 - **No "bet" verb, no "pin" verb.**
