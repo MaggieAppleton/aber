@@ -272,14 +272,15 @@ The violation types are:
 **Related:**
 
 - The dialog footer's Cancel X (`app/dialogs.tsx:44`, also used by Rephrase draft) is tracked in DI-002.
-- **Decided by Maggie on 2026-11-03: remove or change the X discard shortcut.**
+- **Decided by Maggie on 2026-11-03: remove or change the X discard shortcut.** She has made no wider rule about single-key shortcuts.
   - Current bindings, all bare single keys with no modifier:
     - `ui/app-shell.tsx:191–193`: an open draft in the pane runs `discardDraft`.
     - `ui/briefing-app.tsx:49, 55`: the current Briefing item is decided as `discarded`, and that item can be any suggestion, a draft or a group of new signals.
     - `ui/draft-edge.tsx:47–53`: a focused draft-edge card is discarded.
   - Tooltips advertise "(X)" at `panes.tsx:143, 202, 288`, `briefing-app.tsx:90`, `pill-study.tsx:298` and `draft-edge.tsx:55–58`.
-  - **Recommendation:** remove the X binding everywhere. Don't give discarding another bare letter, because a single keypress shouldn't reject something. Dismiss stays reachable by Tab, since it comes before Accept in the DOM, and an undo follows the discard. Drop "(X)" from the tooltips. Keep A for Accept, and keep U for "Undo merge" on near-duplicates.
-  - **Still open:** should Dismiss get a modified shortcut, such as ⇧D or ⌘⌫, or none at all? None is the recommendation.
+  - **Maggie's decision:** X will no longer discard. Whether to remove the shortcut or change it to another key is still open.
+  - **Recommendation, pending her decision:** remove the X binding everywhere, and don't give discarding any other single key. Dismiss stays reachable by Tab, since it comes before Accept in the DOM, and an undo follows the discard. Drop "(X)" from the tooltips. Keep A for Accept, and keep U for "Undo merge" on near-duplicates.
+  - **Still open:** remove the shortcut, or replace it? If she replaces it, the options are a different single key or a modified key such as ⇧D or ⌘⌫. Our recommendation is to remove it.
 - Wording question: the model's verb is **Discard** for drafts and signals, while Maggie said **Dismiss** for suggestions. Keep both verbs by object type, or use one label?
 - Ten X uses were checked and are legitimate, because they close a transient pane, panel or banner (for example `columns2.tsx:113`, `atlas2.tsx:350`, `app-shell.tsx:257` and `:285`). Other X uses remove a chip or clear a filter. The remove and clear uses (`timeline2-shared.tsx:117`, `panes.tsx:113` "Remove evidence", attachment chips in `pill-study.tsx`) are outside this rule but worth reviewing.
 
