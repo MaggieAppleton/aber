@@ -101,6 +101,34 @@ The exploration ([`#name-error`](../design/explorations/di-002-dialogs/index.htm
 
 **Decision:** none yet.
 
+### Decisions (Maggie, 3 Nov 2026)
+
+From the jig's "Copy choices":
+
+- **New prototype: B, "Create in the docked pane".** The pane opens on a blank prototype page with the name focused, status *idea*, and Tests prefilled when started from a theory. It looks like the final prototype from the first keystroke.
+- **State a theory: B, "Theory page in the pane".** The theory page opens in the pane, filed in the theme you pressed + on, with the claim focused.
+- **New theme: B, "Theme page in the pane".** The theme page opens in the pane, empty and editable.
+- **Retire theory or theme: B, "Tethered menu + Undo".** The trash button opens a small menu of reasons; one click retires, and a toast offers Undo. There's no modal.
+- **Modal anatomy: A, "shadcn anatomy".** Every modal that stays has a header (title and description), an X in the top-right corner, a compact body, and a footer with Cancel and the primary action. This includes the 15 px title, so 15 needs adding to the app's type scale.
+
+The jig marks each chosen option "Chosen" and preselects it in its decision row. The other options stay for reference, dimmed.
+
+**Per-type policy was not approved.** Maggie: "The interface you've made me for this is all text and it isn't clear what's being asked or suggested". The policy section is rebuilt as before/after mini stages using real markup, grouped by the surface proposed. Each open row asks one question.
+
+**Still open:**
+
+- Rephrase draft and Add link: edit the text where it sits, with no modal?
+- Pickers (Tests, Theory relationships, Add evidence, File in a theme, Unfile, Merge: choose): open as a popover from their own button?
+- Merge confirm: apply straight away with Undo, with no confirmation step?
+- Dump viewer: unfold in place under its signal?
+- Delete dump: stay a modal, as the one destructive action?
+- Find (⌘K): stay a centred modal, as a command palette?
+- The missing-name error (A, B or C above).
+
+**Finding: ellipses in action labels.** Rule (Maggie): no trailing ellipses on menu items or action labels; she calls them "an enormous violation". None of today's dialog action or menu labels end in an ellipsis. The only ellipses in the app are on status and loading text: "Searching…" (`dialogs.tsx:39`), "Uploading media…" (`panes.tsx:301`), and the "…Aber…" loading text (`app-shell.tsx:286`, `main.tsx:14`). Those are outside this rule, but worth a look. The jig checks that no proposal control's label ends in an ellipsis.
+
+**Finding: chevrons.** Rule (Maggie): "a chevron is a button that shows a collapsed item and indicates the expanded state, and you should never have them appear out of nowhere without an initial one." Chevrons also must not appear on things that don't expand. Today the theory page's "Leads to" chips (links to other theories) carry a trailing chevron, and so do the Find and picker option rows; all of these navigate or select. In the proposals they're removed. The remaining chevrons (the Prototypes section header and proposal toggles) are visible at rest and point to their state, and the jig checks this. The proposals also use no "·" or "•" separators.
+
 ---
 
 ## DI-003 · Sidebar navigation: prototypes sit at the bottom and rows misuse chevrons
@@ -134,7 +162,7 @@ It includes a long-population stress test.
 - **Layout (from A):** one scroll with Themes then Prototypes, both top-aligned. Each header collapses its section, sticks, and docks at the bottom edge when its section is below the fold. Each section has its own +.
 - **Headers (from C):** the type icon on the left, then a bolder label (13px, weight 600, `--ap-ink-2`), then the count on the right in a smaller size (11px `--size-px-11`, `--ap-ink-3`).
 - **Not carried over:** C's independently scrolling bands.
-- **Chevrons:** prototype rows end in their status glyph and have no chevron. The header's chevron appears only on approach or while the section is collapsed.
+- **Chevrons:** prototype rows end in their status glyph and have no chevron. The header's chevron is always visible, pointing right when collapsed and down when open (Maggie's chevron rule, 3 Nov).
 
 The jig shows this as the preselected "A+C" option (`#opt-chosen`, screenshots `chosen-ac.png` and `chosen-ac-long.png`). The production change waits for implementation approval.
 

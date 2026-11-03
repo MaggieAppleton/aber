@@ -57,7 +57,7 @@
   /* Proposals never use X to reject: Discard/Dismiss become labelled buttons left of the primary, with no key. */
   /* Proposals follow DI-003 option A: prototype rows navigate, so no chevron; the status glyph sits at the trailing edge
      and there's no leading type icon. Fixture statuses are illustrative. The section header keeps its expand chevron. */
-  const appFaithful = (n) => { const o = n.closest(".jig-option"); return o?.dataset.alt === "current" && !o.hasAttribute("data-proposal"); };
+  const appFaithful = (n) => { if (n.closest("[data-faithful]")) return true; const o = n.closest(".jig-option"); return o?.dataset.alt === "current" && !o.hasAttribute("data-proposal"); };
   const ROW_STATUS = { "Intent review": "building", "Token budget meter": "idea", "One-person app kit": "built", "Memory inspector": "building", "Recovery rehearsal": "shelved" };
   function trailingStatusRows(root) {
     $$(".cur-prototype-row:not([data-jx-row])", root).forEach((row) => {
@@ -67,6 +67,11 @@
       row.dataset.jxRow = "";
       [...row.children].filter((n) => n.matches("svg, .ap-proto")).forEach((n) => n.remove());
       row.append(el(SVG.status[ROW_STATUS[name] || "idea"]));
+    });
+    /* Chevrons only expand or collapse: links to other objects (e.g. the "Leads to" chip) lose theirs in proposals. */
+    $$("svg", root).forEach((svg) => {
+      if (!svg.querySelector("path")?.getAttribute("d")?.startsWith("M181.66,133.66") || appFaithful(svg)) return;
+      if (!svg.closest("[aria-expanded], .cur-protos-chevron, .pn-proposal-chevron")) svg.remove();
     });
   }
   function noXReject(root) {
@@ -1027,6 +1032,103 @@
     esc() { if (this.dialog) { this.dialog.esc(); return true; } },
   };
 
+
+  /* ════ Policy visuals: today's modal next to the proposed surface, in the real app (static, inert) ════ */
+  const askDialog = (app, inner, attrs = "") => {
+    app.append(el(`<div class="ab-backdrop"></div>`));
+    const dlg = el(`<div class="ap ab-dialog" role="dialog" ${attrs}>${inner}</div>`);
+    app.append(dlg);
+    return dlg;
+  };
+  const askOptions = (rows) => `<div class="ab-options">${rows.map(([icon, label, detail]) => `<button class="ab-option">${icon}<span>${esc(label)}${detail ? `<small>${esc(detail)}</small>` : ""}</span>${SVG.chevron}</button>`).join("")}</div>`;
+  const tetherTo = (app, trig, menu) => {
+    const a = app.getBoundingClientRect(), r = trig.getBoundingClientRect();
+    menu.style.top = r.bottom - a.top + 6 + "px";
+    menu.style.right = Math.max(8, a.right - r.right) + "px";
+    app.append(menu); menu.setAttribute("data-open", ""); trig.setAttribute("aria-expanded", "true");
+    if (r.bottom + 6 + menu.offsetHeight > a.bottom - 8) menu.style.top = Math.max(8, r.top - a.top - 6 - menu.offsetHeight) + "px";
+  };
+  const toastIn = (app, html) => { const t = el(`<div class="ap jx-toast" role="status" data-open>${html}</div>`); app.append(t); };
+  const scrollPaneTo = (app, node) => { const sc = $(".as-pane-scroll", app); sc.scrollTop = Math.max(0, node.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop - 24); };
+  const TESTS = [["Agents keep context across months, not sessions"], ["Most software is made for an audience of one"], ["Agents run continuously in the background by default"]];
+  const DUMP_TEXT = "Claude remembered the whole repo layout from last month. I didn't have to re-explain the build.";
+  const revisionProposal = (app) => $$(".pn-proposal", app).find((p) => p.dataset.paneSuggestionId?.includes("revision"));
+  function openProposal(p) {
+    $$("[data-closed], [data-hidden], [hidden]", p).forEach((n) => { n.removeAttribute("data-closed"); n.removeAttribute("data-hidden"); n.removeAttribute("hidden"); });
+    const tg = $(".pn-proposal-toggle", p); tg?.setAttribute("aria-expanded", "true"); tg?.setAttribute("data-panel-open", "");
+  }
+  const MINIS = {
+    "create-today"(app) { currentDialog(app, { title: "New prototype", field: "Name", focus: false, onSubmit() {} }); },
+    "create-new": () => buildApp({ protosOpen: true, pane: protoDoc({}) }),
+    "text-today"(app) {
+      const p = revisionProposal(app); openProposal(p); scrollPaneTo(app, p);
+      const d = currentDialog(app, { title: "Rephrase draft theory", field: "Claim", submit: "Accept wording", focus: false, onSubmit() {} });
+      d.input.value = text($(".ab-proposal-fields dd", p));
+    },
+    "text-new"(app) {
+      const p = revisionProposal(app); openProposal(p);
+      const dd = $(".ab-proposal-fields dd", p);
+      dd.setAttribute("contenteditable", "plaintext-only"); dd.setAttribute("role", "textbox"); dd.setAttribute("aria-label", "Proposed claim"); dd.classList.add("jx-editing-text");
+      $("[aria-label='Rephrase and accept']", p)?.remove();
+      scrollPaneTo(app, p);
+    },
+    "picker-today"(app) {
+      askDialog(app, `<h2 class="ap-h">Tests</h2><p class="ab-description"></p><input aria-label="Find" placeholder="Find" class="ab-input">${askOptions(TESTS.map(([t]) => [SVG.target, t]))}`);
+    },
+    "picker-new"(app) {
+      const trig = $("[aria-label='Add theory to test']", app);
+      const sc = $(".as-pane-scroll", app); sc.scrollTop += trig.getBoundingClientRect().top - sc.getBoundingClientRect().top - 60;
+      tetherTo(app, trig, el(`<div class="ap jx-menu jx-picker" role="dialog" aria-label="Tests"><input class="jx-input jx-picker-find" placeholder="Find a theory" aria-label="Find a theory">${TESTS.map(([t]) => `<button role="option">${SVG.target}<span>${esc(t)}</span></button>`).join("")}</div>`));
+    },
+    "retire-today"(app) {
+      askDialog(app, `<h2 class="ap-h">Retire theory</h2><p class="ab-description"></p><input aria-label="Find" placeholder="Find" class="ab-input"><div class="ab-options">${REASONS.map(([, label]) => `<button class="ab-option"><span>${label}</span>${SVG.chevron}</button>`).join("")}</div>`);
+    },
+    "retire-new"(app) {
+      tetherTo(app, retireTrigger(app), el(`<div class="ap jx-menu" role="menu" aria-label="Retire theory"><div class="ap-label jx-menu-label">Retire because</div>${REASONS.map(([id, label, sub]) => `<button role="menuitem">${label}<small>${sub}</small></button>`).join("")}</div>`));
+    },
+    "merge-today"(app) {
+      askDialog(app, `<h2 class="ap-h">Merge these signals?</h2><p class="ab-description">Sources, origins and evidence are kept on the first signal. You can undo this merge.</p><form><label class="ab-field">Reason<input class="ab-input" value="Same observation"></label><div class="ab-dialog-actions"><button type="button" class="ap-iconbtn" aria-label="Cancel">${SVG.x}</button><button class="ap-btn">Merge signals</button></div></form>`);
+    },
+    "merge-new"(app) { toastIn(app, `Merged into “Agent recalls a codebase”<button type="button" class="ap-btn">Undo</button>`); },
+    "viewer-today"(app) {
+      askDialog(app, `<h2 class="ap-h">Voice note</h2><p class="ab-description">03/03/2026, 09:12:40</p><div class="ab-dump-content"><p>${DUMP_TEXT}</p></div><form><div class="ab-dialog-actions"><button class="ap-btn">Close</button></div></form>`);
+    },
+    "viewer-new"(app) {
+      const sig = $(".pn-sig", app); const btn = $(".pn-ev", sig);
+      btn.setAttribute("aria-expanded", "true");
+      sig.append(el(`<div class="jx-dump-unfold"><span class="ap-label">From a voice note, 3 Mar</span><p>${DUMP_TEXT}</p></div>`));
+      scrollPaneTo(app, $(".pn-grid", app));
+    },
+    "delete-today"(app) {
+      askDialog(app, `<h2 class="ap-h">Delete this dump?</h2><p class="ab-description">${CONSEQUENCE}</p><form><div class="ab-dialog-actions"><button type="button" class="ap-btn ab-btn-ghost">Cancel</button><button class="ap-btn ab-btn-ink" data-destructive>Move to bin</button></div></form>`, "data-confirm");
+    },
+    "delete-new"(app) { shadcnDialog(app, { title: "Delete this dump?", desc: CONSEQUENCE, submit: "Move to bin", size: "sm", focus: false, onSubmit() {} }); },
+    "find-today"(app) {
+      askDialog(app, `<h2 class="ap-h">Find</h2><p class="ab-description"></p><input aria-label="Find" placeholder="Find" class="ab-input" value="memory">${askOptions([[SVG.binoculars, "Agent memory"], [SVG.target, "Agents keep context across months, not sessions"], [SVG.protoRow, "Memory inspector"]])}`);
+    },
+    "find-new"(app) {
+      app.append(el(`<div class="jx-backdrop" data-open></div>`));
+      app.append(el(`<div class="ap jx-dialog jx-cmd" role="dialog" aria-label="Find" data-open><div class="jx-cmd-row"><input class="jx-input" aria-label="Find" placeholder="Find a theme, theory, prototype or signal" value="memory"></div><div class="jx-cmd-list">${[[SVG.binoculars, "Agent memory"], [SVG.target, "Agents keep context across months, not sessions"], [SVG.protoRow, "Memory inspector"]].map(([i, t], n) => `<button class="jx-cmd-item" ${n ? "" : "data-active"}>${i}<span>${esc(t)}</span></button>`).join("")}</div><button type="button" class="ap-iconbtn jx-dialog-close" aria-label="Close">${SVG.x}</button></div>`));
+    },
+  };
+  const MINI_CONTEXT = {
+    create: () => buildApp({ protosOpen: true }), text: () => buildApp({ pane: existingTheoryDoc() }),
+    picker: () => buildApp({ pane: protoDoc({ name: "Memory inspector", tests: "Agents keep context across months, not sessions", status: "building" }) }),
+    retire: () => buildApp({ pane: existingTheoryDoc() }), merge: () => buildApp({}), viewer: () => buildApp({ pane: existingTheoryDoc() }),
+    delete: () => buildApp({}), find: () => buildApp({}),
+  };
+  function buildPolicy() {
+    for (const slot of $$(".jx-mini[data-mini]")) {
+      const id = slot.dataset.mini, kind = id.split("-")[0];
+      const fn = MINIS[id];
+      const made = fn.length === 0 ? fn() : null;
+      const app = mount(slot, made || MINI_CONTEXT[kind]());
+      if (!made) fn(app);
+      $$(".ab-dialog.ap, .jx-dialog", app).forEach((d) => d.setAttribute("data-open", ""));
+      slot.inert = true;
+    }
+  }
+
   /* ── Boot ───────────────────────────────────────────────────────── */
   async function boot() {
     try {
@@ -1063,6 +1165,7 @@
     await raf2();
     for (const [flow, alts] of Object.entries(flows)) for (const [alt, ctrl] of Object.entries(alts)) register(flow, alt, ctrl);
 
+    buildPolicy();
     $$("[data-scenario]").forEach((b) => b.addEventListener("click", () => {
       protoScenario = b.dataset.scenario;
       $$("[data-scenario]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
