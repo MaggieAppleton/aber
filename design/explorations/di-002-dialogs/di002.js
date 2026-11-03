@@ -1044,8 +1044,11 @@
   const tetherTo = (app, trig, menu) => {
     const a = app.getBoundingClientRect(), r = trig.getBoundingClientRect();
     menu.style.top = r.bottom - a.top + 6 + "px";
-    menu.style.right = Math.max(8, a.right - r.right) + "px";
     app.append(menu); menu.setAttribute("data-open", ""); trig.setAttribute("aria-expanded", "true");
+    /* Right-align to the trigger, but keep the whole menu inside the visible stage (flip to left-aligned if needed). */
+    const v = app.parentElement.getBoundingClientRect(), w = menu.offsetWidth;
+    const lo = Math.max(a.left, v.left) + 8, hi = Math.min(a.right, v.right) - 8 - w;
+    menu.style.left = Math.min(Math.max(r.right - w, lo), Math.max(lo, hi)) - a.left + "px";
     if (r.bottom + 6 + menu.offsetHeight > a.bottom - 8) menu.style.top = Math.max(8, r.top - a.top - 6 - menu.offsetHeight) + "px";
   };
   const toastIn = (app, html) => { const t = el(`<div class="ap jx-toast" role="status" data-open>${html}</div>`); app.append(t); };
@@ -1077,7 +1080,8 @@
     },
     "picker-new"(app) {
       const trig = $("[aria-label='Add theory to test']", app);
-      const sc = $(".as-pane-scroll", app); sc.scrollTop += trig.getBoundingClientRect().top - sc.getBoundingClientRect().top - 60;
+      const sc = $(".as-pane-scroll", app); sc.style.paddingBottom = "var(--size-px-240)";
+      sc.scrollTop += trig.getBoundingClientRect().top - sc.getBoundingClientRect().top - 48;
       tetherTo(app, trig, el(`<div class="ap jx-menu jx-picker" role="dialog" aria-label="Tests"><input class="jx-input jx-picker-find" placeholder="Find a theory" aria-label="Find a theory">${TESTS.map(([t]) => `<button role="option">${SVG.target}<span>${esc(t)}</span></button>`).join("")}</div>`));
     },
     "retire-today"(app) {

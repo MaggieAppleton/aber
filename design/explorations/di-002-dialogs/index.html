@@ -47,7 +47,7 @@
 /* The live app positions dialogs against the viewport; inside a jig stage they are contained instead. */
 .jx-stage .ab-backdrop, .jx-stage .ab-dialog.ap, .jx-mini .ab-backdrop, .jx-mini .ab-dialog.ap { position: absolute; }
 .jx-stage .ab-dialog.ap, .jx-mini .ab-dialog.ap { max-height: calc(100% - 40px); }
-.jx-mini .ab-dialog.ap { top: 12%; }
+.jx-mini .ab-dialog.ap { top: 12%; max-width: calc(100% - var(--size-px-24)); }
 @media (max-width: 639px) {
   .jig-stage .ab-production .as-pane { width: 100% !important; }
   .jig-head, .jig-section { padding-left: 16px; padding-right: 16px; }
@@ -217,7 +217,8 @@
 .ap.jx-picker { width: var(--size-px-300); display: grid; gap: var(--size-px-2); }
 .jx-picker .jx-picker-find { margin: var(--size-px-2) var(--size-px-2) var(--size-px-4); height: var(--size-px-30); }
 .jx-picker button { display: flex !important; align-items: center; gap: var(--size-px-8) !important; }
-.jx-picker button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jx-picker button span { white-space: normal; text-wrap: pretty; }
+.ap.jx-picker { max-width: calc(100% - var(--size-px-16)); }
 .jx-picker button svg { flex-shrink: 0; color: var(--ap-ink-2); }
 .ap.jx-dialog.jx-cmd { top: var(--size-px-24); transform: translate(-50%, 0); padding: 0; gap: 0; }
 .jx-cmd-row { padding: var(--size-px-12) var(--size-px-56) var(--size-px-12) var(--size-px-12); border-bottom: var(--size-px-1) solid var(--ap-line); }
@@ -273,7 +274,7 @@
     <header><h4>Pickers</h4><span class="jx-members">Tests, Theory relationships, Add evidence, File in a theme, Unfile, Merge: choose</span><span class="jx-status" data-state="open">Open question</span></header>
     <div class="jx-pair">
       <figure><figcaption>Today: <b>modal</b></figcaption><div class="jig-stage jx-mini" data-mini="picker-today" data-faithful></div><p class="jx-cap">A centred list, away from the button and the field it fills.</p></figure>
-      <figure><figcaption>Proposed: <b>popover from the button</b></figcaption><div class="jig-stage jx-mini" data-mini="picker-new" data-proposed></div><p class="jx-cap">Anchored to the + that opened it, with a filter. Unfile is unchecking a theme in the same popover.</p></figure>
+      <figure><figcaption>Proposed: <b>popover from the button</b></figcaption><div class="jig-stage jx-mini" data-mini="picker-new" data-proposed></div><p class="jx-cap">Anchored to the “Add theory to test” button that opened it, with a filter. Unfile is unchecking a theme in the same popover.</p></figure>
     </div>
     <div class="jig-decision" data-decision="policy-pickers" data-question="Should every picker open as a popover from its own button, instead of a centred modal?" data-options="Yes|No, keep the modal|Other (note)"></div>
   </article>
