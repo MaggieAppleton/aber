@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DI-003 · Themes and prototypes in the sidebar</title>
+<link rel="stylesheet" href="../../../app/web/src/design-tokens.css">
+<link rel="stylesheet" href="../../../app/web/src/app/base.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/homes.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/app-shell.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/panes.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/surface-patterns.css">
+<link rel="stylesheet" href="../../../app/web/src/app/production.css">
+<link rel="stylesheet" href="../../../app/web/src/app/hit-areas.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/current-sidebar.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/confidence-spark.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/tooltip.css">
+<link rel="stylesheet" href="../../../app/web/src/ui/pill-study.css">
+<link rel="stylesheet" href="../_shell/jig.css">
+<script src="../_shell/jig.js" defer></script>
+<script src="icons.js"></script>
+<style>
+/* ── Jig chrome (page only) ── */
+.x-wide { max-width: 1340px; }
+.x-bar { position: sticky; top: 0; z-index: 900; background: rgb(233 230 225 / 0.94); backdrop-filter: blur(6px); border-bottom: 1px solid #d6d1c9; }
+.x-bar-in { max-width: 1340px; margin: 0 auto; padding: 10px 32px; display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; font-size: 13px; }
+@media (max-width: 640px) { .x-bar { position: static; } }
+.x-ctl { display: flex; align-items: center; gap: 6px; }
+.x-ctl > span { color: #5d5850; }
+.x-ctl [role="radiogroup"] { display: flex; gap: 2px; padding: 2px; border-radius: 8px; background: #ddd8d0; }
+.x-ctl button { font: inherit; font-size: 12px; padding: 4px 10px; border: 0; border-radius: 6px; background: transparent; color: #3d3a34; cursor: pointer; }
+.x-ctl button[aria-checked="true"] { background: #fff; color: #2b2925; box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.06); }
+.x-rails { display: flex; flex-wrap: wrap; gap: 16px; }
+.x-rails > .jig-option { width: 232px; flex: none; }
+.x-rails .jig-note { font-size: 12px; }
+.x-local { display: flex; gap: 12px; align-items: center; font-size: 13px; color: #5d5850; }
+.x-local label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.x-scrollx { overflow-x: auto; border-radius: 12px; }
+.x-scrollx > .jig-stage { min-width: 960px; }
+.x-model { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; }
+.x-model .jig-table td:first-child { white-space: nowrap; font-weight: 600; }
+
+/* ── Stage frame: the real app shell at the captured proportions (content 528 px, pane the rest) ── */
+.x-app { height: var(--jig-stage-h, 680px) !important; border-radius: 0; }
+.x-app .as-content { width: 528px; }
+.x-app .as-view { width: 528px; }
+.x-app .as-pane { left: 528px; right: 0; }
+.x-app[data-solo] .as-content, .x-app[data-solo] .as-view { width: 100%; }
+.x-app[data-solo] .cur { grid-template-columns: var(--size-px-232) 0; }
+.x-app[data-solo] .cur[data-rail-collapsed] { grid-template-columns: var(--size-px-44) 0; }
+.x-app .ps-surface { left: auto !important; right: var(--size-px-12); }
+.x-app .as-pane-scroll > div { transition: opacity 140ms ease-out; }
+.x-app .as-pane-scroll > div[data-swapping] { opacity: 0; }
+.x-app :focus-visible { outline: var(--size-px-1-5) solid var(--ab-focus); outline-offset: var(--size-px-neg-1-5); }
+
+/* ── Shared row grammar for every proposal (theme rows are the app's real .cur-index a) ── */
+.x-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cur-index a .ap-proto { flex-shrink: 0; }
+/* Open in the pane: the app's selection ring (as Columns' open item and the theme heading). */
+.cur-index a[data-open] { background: var(--ap-surface); color: var(--ap-ink); box-shadow: var(--ap-shadow-selected); }
+.cur-index a[data-draft] { outline: var(--size-px-1) dashed var(--color-gray-0-a-28); outline-offset: var(--size-px-neg-1); }
+.x-empty-num:empty { display: none; }
+
+/* Collapsible region: grid rows animate open and closed, interruptibly (interface-grammar). */
+.x-collapse { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 300ms var(--ap-ease); }
+.x-collapse[data-closed] { grid-template-rows: 0fr; }
+.x-clip { min-height: 0; overflow: hidden; }
+.x-clip > .cur-index, .x-clip > .cur-prototype-list { padding: var(--size-px-2) 0; }
+
+/* ── A · Stacked sections ── */
+.x-flow { gap: 0 !important; }
+.x-sentinel { height: 0; flex: none; }
+.x-head { display: flex; align-items: center; gap: var(--size-px-2); height: var(--size-px-28); flex: none; margin-top: var(--size-px-12); background: var(--ap-sunk); z-index: 1; transition: box-shadow 120ms ease-out; }
+.x-flow > .x-head:nth-child(2) { margin-top: 0; }
+.x-flow[data-sticky] > .x-head { position: sticky; top: 0; bottom: 0; }
+.x-head[data-stuck="top"] { box-shadow: 0 var(--size-px-0-5) 0 var(--ap-line); }
+.x-head[data-stuck="bottom"] { box-shadow: 0 var(--size-px-neg-0-5) 0 var(--ap-line); }
+.x-head-btn { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--size-px-6); height: 100%; padding: 0 var(--size-px-8); border: 0; background: transparent; border-radius: var(--size-px-6); color: var(--ap-ink-3); font-size: var(--size-px-12) !important; font-weight: 500 !important; text-align: left; cursor: pointer; transition: background 100ms ease-out, color 100ms ease-out; }
+.x-head-btn:hover { background: var(--ap-hover); color: var(--ap-ink-2); }
+.x-head-btn .ap-num { font-weight: 400; }
+.x-chev { display: inline-flex; opacity: 0; transition: transform 200ms var(--ap-ease), opacity 120ms ease-out; }
+.x-head-btn[aria-expanded="true"] .x-chev { transform: rotate(90deg); }
+.x-head-btn[aria-expanded="false"] .x-chev, .x-head:hover .x-chev, .x-head-btn:focus-visible .x-chev { opacity: 1; }
+.x-head[data-stuck="bottom"] .x-chev { opacity: 0 !important; }
+.x-head .ap-iconbtn { flex-shrink: 0; color: var(--ap-ink-3); }
+.x-head .ap-iconbtn:hover { color: var(--ap-ink); }
+@media (hover: none) { .x-chev { opacity: 1; } }
+
+/* ── B · Tabs ── */
+.x-seg { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: var(--size-px-2); border-radius: var(--size-px-8); background: var(--ap-hover); flex: none; }
+.x-seg-thumb { position: absolute; top: var(--size-px-2); bottom: var(--size-px-2); left: var(--size-px-2); width: calc(50% - var(--size-px-2)); border-radius: var(--size-px-6); background: var(--ap-surface); box-shadow: var(--ap-shadow-1); transition: transform 260ms var(--ap-ease); }
+.x-seg[data-tab="prototypes"] .x-seg-thumb { transform: translateX(100%); }
+.x-seg button { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: var(--size-px-6); min-width: 0; height: var(--size-px-26); padding: 0 var(--size-px-6); border: 0; border-radius: var(--size-px-6); background: transparent; color: var(--ap-ink-3); font-size: var(--size-px-12) !important; font-weight: 500 !important; cursor: pointer; transition: color 120ms ease-out; }
+.x-seg button[aria-selected="true"] { color: var(--ap-ink); }
+.x-seg button:not([aria-selected="true"]):hover { color: var(--ap-ink-2); }
+.x-seg .ap-num { font-weight: 400; color: var(--ap-ink-3); }
+.x-panels { position: relative; flex: 1; min-height: 0; }
+.x-panel { position: absolute; inset: 0; transition: opacity 160ms ease-out, transform 260ms var(--ap-ease), visibility 0s; }
+.x-panel[data-hidden] { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 120ms ease-out, transform 260ms var(--ap-ease), visibility 0s linear 260ms; }
+.x-panel[data-hidden][data-side="left"] { transform: translateX(calc(-1 * var(--size-px-16))); }
+.x-panel[data-hidden][data-side="right"] { transform: translateX(var(--size-px-16)); }
+
+/* ── C · Bands (Columns' type headers, stacked) ── */
+.x-bands { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: var(--size-px-12); }
+.x-band { display: flex; flex-direction: column; min-height: var(--size-px-96); flex: 0 1 auto; }
+.x-band-head { display: flex; align-items: center; gap: var(--size-px-6); height: var(--size-px-28); padding-left: var(--size-px-8); flex: none; font-weight: 600; color: var(--ap-ink-2); transition: box-shadow 120ms ease-out; }
+.x-band-head > svg { flex-shrink: 0; color: var(--ap-ink-3); }
+.x-band-head .ap-num { font-weight: 400; color: var(--ap-ink-3); }
+.x-band-head .ap-iconbtn { margin-left: auto; color: var(--ap-ink-3); }
+.x-band-head .ap-iconbtn:hover { color: var(--ap-ink); }
+.x-band[data-scrolled] .x-band-head { box-shadow: 0 var(--size-px-0-5) 0 var(--ap-line); }
+.x-band-list { min-height: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; }
+.x-band-list > .cur-index { padding: var(--size-px-2) 0; }
+
+/* ── D · Prototypes as a section of the view ── */
+.x-anchor-gap { height: var(--size-px-8); flex: none; }
+.x-anchor { position: sticky; bottom: 0; background: var(--ap-sunk); }
+.x-anchor a > svg { flex-shrink: 0; color: var(--ap-ink-3); }
+.x-pheading { display: flex; align-items: center; gap: var(--size-px-10); height: var(--size-px-28); margin-bottom: var(--size-px-8); }
+.x-pheading h2 { margin: 0; display: flex; align-items: center; gap: var(--size-px-6); font-size: var(--size-px-16); font-weight: 700; }
+.x-pheading h2 svg { color: var(--ap-ink-3); }
+.x-pcard .ap-card-meta { gap: var(--size-px-6); }
+
+@media (prefers-reduced-motion: reduce) {
+  .x-collapse, .x-chev, .x-seg-thumb, .x-panel, .x-head, .x-band-head { transition: none !important; }
+  .x-panel[data-hidden][data-side] { transform: none; }
+}
+</style>
+</head>
+<body class="jig" data-jig="di-003">
+
+<header class="jig-head x-wide">
+  <h1>DI-003 · Themes and prototypes in the sidebar</h1>
+  <p>Theme sections' sidebar lists themes at the top and parks Prototypes in an accordion pinned to the bottom, with a chevron on every prototype row. Below: the current sidebar and four structures, each a live copy of the app's real CSS and captured markup at the real 232&nbsp;px rail (212&nbsp;px of content), with One-person app kit (p3) open in the pane.</p>
+  <ul class="jig-rules">
+    <li>Chevrons mean expand/collapse only. No proposal puts a chevron on a row that navigates.</li>
+    <li>Click rows, headings, tabs and section headers. Click a theme heading in the view to open that theme in the pane; the sidebar follows.</li>
+    <li>Use the bar to switch to the long population (14 themes, 12 prototypes with long names) and to the collapsed or overlay rail.</li>
+  </ul>
+</header>
+
+<div class="x-bar" role="toolbar" aria-label="Jig controls">
+  <div class="x-bar-in">
+    <div class="x-ctl"><span>Population</span><div role="radiogroup" aria-label="Population" data-ctl="pop">
+      <button role="radio" data-v="seeded">Seeded (8 · 5)</button><button role="radio" data-v="long">Long (14 · 12)</button></div></div>
+    <div class="x-ctl"><span>Rail</span><div role="radiogroup" aria-label="Rail" data-ctl="rail">
+      <button role="radio" data-v="expanded">Expanded</button><button role="radio" data-v="collapsed">Collapsed</button><button role="radio" data-v="overlay">Tight overlay</button></div></div>
+    <div class="x-ctl"><span>Prototype status glyph</span><div role="radiogroup" aria-label="Prototype status glyph" data-ctl="glyph">
+      <button role="radio" data-v="lead">Leading</button><button role="radio" data-v="trail">Trailing</button><button role="radio" data-v="none">None</button></div></div>
+  </div>
+</div>
+
+<section class="jig-section x-wide">
+  <h2>Side by side</h2>
+  <p>Just the rails, so the structures can be compared at a glance. Each is live and keeps its own selection.</p>
+  <div class="x-rails" id="rails"></div>
+</section>
+
+<section class="jig-section x-wide" id="opt-current">
+  <div class="jig-label" data-current><b>Current</b> Bottom accordion</div>
+  <p class="jig-note">Captured markup and classes from <code>current-sidebar.tsx</code>. Rows navigate to the pane but end in a chevron; the open prototype has no selected state; the list sits under the view switcher's 64&nbsp;px clearance.</p>
+  <div class="x-scrollx"><div class="jig-stage" style="--jig-stage-h:680px" data-stage="current"></div></div>
+  <ul class="jig-tradeoffs">
+    <li>The section's position says "secondary" through distance, not structure; with a long theme list it scrolls away entirely.</li>
+    <li>Theme rows carry no icon, prototype rows carry the type icon and a chevron: two row grammars in one rail.</li>
+    <li>"New prototype" is a row inside the list; "New theme" is a + in the brand row. Creation lives in two different places.</li>
+  </ul>
+</section>
+
+<section class="jig-section x-wide" id="opt-a">
+  <div class="jig-label"><b>A</b> Stacked sections, top-aligned</div>
+  <p class="jig-note">One scroll, two labelled sections: <em>Themes 8</em> then <em>Prototypes 5</em>, each with its own + . The header collapses its section, so its chevron is legitimate (shown at rest only while collapsed; on approach otherwise). Headers stick: a section below the fold docks its header at the bottom edge, and clicking a docked header scrolls to it instead of collapsing.</p>
+  <div class="x-local"><label><input type="checkbox" data-local="aSticky" checked> Sticky section headers</label></div>
+  <div class="x-scrollx"><div class="jig-stage" style="--jig-stage-h:680px" data-stage="a"></div></div>
+  <ul class="jig-tradeoffs">
+    <li>Both populations visible at once; prototypes sit directly under themes instead of being pushed to the floor.</li>
+    <li>With many themes, prototypes fall below the fold. Sticky headers keep the section findable (docked at the bottom), at the cost of one dual-purpose click.</li>
+    <li>Creation moves from the brand row onto each section, beside its object. The brand row loses its ambiguous +.</li>
+    <li>Collapsing is a session preference worth remembering, like the rail itself.</li>
+  </ul>
+</section>
+
+<section class="jig-section x-wide" id="opt-b">
+  <div class="jig-label"><b>B</b> Tabs: Themes | Prototypes</div>
+  <p class="jig-note">A segmented switch under the brand row; one list at a time slides in from its side. The brand row's + creates whatever the visible tab lists. The tab follows the pane: opening a theme from the view swaps back to Themes. A green dot on a hidden tab says it holds something new.</p>
+  <div class="x-scrollx"><div class="jig-stage" style="--jig-stage-h:680px" data-stage="b"></div></div>
+  <ul class="jig-tradeoffs">
+    <li>Most compact and calm; long lists get the whole height.</li>
+    <li>Hides a population. While a prototype is open, the theme index (and its scroll-spy and fresh marks) is out of sight; the tab dot is the only trace.</li>
+    <li>A tab that follows the pane can swap the list under the pointer; a tab that doesn't leaves the open object unlisted.</li>
+    <li>The theme index is a table of contents for the view; tabs make it optional chrome.</li>
+  </ul>
+</section>
+
+<section class="jig-section x-wide" id="opt-c">
+  <div class="jig-label"><b>C</b> Bands, after Columns</div>
+  <p class="jig-note">Columns' grammar turned 90°: each type gets a band with Columns' header (type icon, name, count, +) and its own scroll, raw to refined from top to bottom. Short lists sit top-aligned; long ones share the height, so the Prototypes band never leaves the screen. No collapse, so no chevrons at all.</p>
+  <div class="x-scrollx"><div class="jig-stage" style="--jig-stage-h:680px" data-stage="c"></div></div>
+  <ul class="jig-tradeoffs">
+    <li>Both populations always on screen, at any size, without a sticky trick.</li>
+    <li>Two scroll regions in 212&nbsp;px. Each band can be cut mid-list; the header's hairline shows when a band is scrolled.</li>
+    <li>Type icons in the headers match Columns and the mini rail, so headers carry identity and rows stay text.</li>
+    <li>Split is proportional to population; a draggable seam (as the pane edge) would be the next step if it feels wrong.</li>
+  </ul>
+</section>
+
+<section class="jig-section x-wide" id="opt-d">
+  <div class="jig-label"><b>D</b> Prototypes become a section of the view</div>
+  <p class="jig-note">A grammar fix rather than a layout one: every sidebar row is a table-of-contents entry for the view. Themes scroll to their sections; a <em>Prototypes</em> entry follows them and scrolls to a Prototypes section after the last theme, where prototype cards open in the pane like theory cards do.</p>
+  <div class="x-scrollx"><div class="jig-stage" style="--jig-stage-h:680px" data-stage="d"></div></div>
+  <ul class="jig-tradeoffs">
+    <li>One verb per sidebar row (go to section); the current mix of "scroll the view" and "open in the pane" disappears.</li>
+    <li>Prototypes gain a home with room for status and the theory they test, without a view of their own.</li>
+    <li>Individual prototypes are no longer one click from the sidebar; reaching one is a scroll or ⌘K.</li>
+    <li>Changes the base plane, so it needs a design-model update (the "Prototypes link at the bottom of the index" line).</li>
+  </ul>
+</section>
+
+<section class="jig-section x-wide">
+  <h2>Decisions</h2>
+  <div class="jig-decision" data-decision="structure" data-question="Overall sidebar structure" data-options="Current|A stacked sections|B tabs|C bands|D section of the view"></div>
+  <div class="jig-decision" data-decision="row-identity" data-question="Row identity: where the type icon and prototype status live" data-options="Leading status glyph on prototype rows|Trailing status glyph (names align with themes)|Header carries the type; rows plain"></div>
+  <div class="jig-decision" data-decision="proto-affordance" data-question="How a prototype row signals that it opens in the pane" data-options="Hover paint, then the selection ring when open|Status glyph is the only trailing mark|Keep a trailing navigation mark (not a chevron)"></div>
+</section>
+
+<section class="jig-section x-wide">
+  <h2>Model notes</h2>
+  <div class="x-model">
+    <table class="jig-table"><thead><tr><th colspan="2">Encodings used</th></tr></thead><tbody>
+      <tr><td>White + shadow-1</td><td>Theme where the view is scrolled (existing scroll-spy)</td></tr>
+      <tr><td>Selection ring</td><td><code>--ap-shadow-selected</code>: open in the pane (as Columns and the theme heading)</td></tr>
+      <tr><td>Filled glyph</td><td>Selected (encoding map: icon fill)</td></tr>
+      <tr><td>Chevron</td><td>Section header that collapses. Nowhere else</td></tr>
+      <tr><td>Green dot</td><td>New since you last looked (<code>--ab-new</code>, now green)</td></tr>
+      <tr><td>Glyph colour</td><td>Prototype status: grey idea, blue building, ink built, faded shelved</td></tr>
+      <tr><td>Dashed outline</td><td>Draft (long population includes one of each)</td></tr>
+    </tbody></table>
+    <table class="jig-table"><thead><tr><th colspan="2">Populations</th></tr></thead><tbody>
+      <tr><td>Themes</td><td>8 now, ~25 at year 1, ~50 at year 3. An index: every theme visible by scrolling</td></tr>
+      <tr><td>Prototypes</td><td>5 now, ~15 at year 1, ~40 at year 3. Smaller and slower-growing; few live (building) at once</td></tr>
+      <tr><td>Verbs</td><td>Theme row: scroll the view. Prototype row: open in the pane. Two verbs in one list is the root of the awkwardness (option D removes it)</td></tr>
+      <tr><td>Clash</td><td>The model flags "building blue = new blue". New is now green (<code>--ab-accent</code>), so the clash is stale; update the encoding map</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<script>
+(() => {
+  const I = window.DI3_ICONS;
+  const svg = (name, size = 16) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true">${I[name]}</svg>`;
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const MARK = `<span class="ap-mark" role="img" data-kind="fresh" title="New since you last looked" aria-label="New since you last looked"></span>`;
+  const glyph = (status, selected) => `<span class="ap-proto" role="img" data-status="${status}" title="${status}" aria-label="${status}">${svg(selected ? "protoFill" : "proto", 14)}</span>`;
+
+  /* ── Data: seeded matches the live preview; long adds realistic stress ── */
+  const SEED_THEMES = [
+    { id: "cost", name: "Cost of intelligence", n: 5, fresh: true, signals: 5 },
+    { id: "memory", name: "Agent memory", n: 2, signals: 2 },
+    { id: "review", name: "Code review after agents", n: 2, fresh: true, signals: 2 },
+    { id: "personal", name: "Personal software", n: 2, signals: 2 },
+    { id: "funding", name: "AI funding cycle", n: 2, signals: 2 },
+    { id: "interfaces", name: "Novel agent interfaces", n: 0, signals: 1 },
+    { id: "identity", name: "Agent identity", n: 0, signals: 1 },
+    { id: "demo-v1:robotics", name: "Robotics", n: 1, fresh: true, signals: 3 },
+  ];
+  const LONG_THEMES = [
+    { id: "evals", name: "Evaluation as the product surface", n: 3, signals: 6 },
+    { id: "small", name: "Small models on every device", n: 1, fresh: true, signals: 4 },
+    { id: "provenance", name: "Trust and provenance for agent output", n: 0, signals: 2, draft: true },
+    { id: "pricing", name: "Pricing after the seat", n: 2, signals: 3 },
+    { id: "teach", name: "Interfaces that teach themselves", n: 1, signals: 2 },
+    { id: "localfirst", name: "The return of local-first software", n: 4, signals: 7 },
+  ];
+  const SEED_PROTOS = [
+    { id: "p2", name: "Intent review", status: "building", tests: "Review shifts from diffs to intent" },
+    { id: "p1", name: "Token budget meter", status: "idea", tests: "Tokens become nearly free for routine work" },
+    { id: "p3", name: "One-person app kit", status: "built", tests: "Most software is made for an audience of one" },
+    { id: "p4", name: "Memory inspector", status: "shelved", tests: "Agents keep context across months, not sessions" },
+    { id: "p5", name: "Recovery rehearsal", status: "idea", tests: "Agents run continuously in the background by default" },
+  ];
+  const LONG_PROTOS = [
+    { id: "p6", name: "Overnight briefing with per-theme confidence deltas", status: "building", tests: "Agents run continuously in the background by default" },
+    { id: "p7", name: "Tripwire watcher for regulatory filings", status: "idea", tests: "Frontier intelligence stays scarce and expensive" },
+    { id: "p8", name: "Agent memory diff viewer with rollback", status: "built", tests: "Agents keep context across months, not sessions" },
+    { id: "p9", name: "Pair-review queue ranked by intent risk", status: "idea", tests: "Code review becomes the bottleneck, not writing", draft: true },
+    { id: "p10", name: "Household finance app generator", status: "shelved", tests: "Most software is made for an audience of one" },
+    { id: "p11", name: "Voice dump to theory extractor", status: "building", tests: "Tokens become nearly free for routine work" },
+    { id: "p12", name: "Local model cost calculator across vendors", status: "idea", tests: "Local models absorb most everyday agent work" },
+  ];
+
+  /* ── Global jig state ── */
+  const G = { pop: "seeded", rail: "expanded", glyph: "trail", aSticky: true };
+  const themes = () => G.pop === "long" ? [...SEED_THEMES, ...LONG_THEMES] : SEED_THEMES;
+  const protos = () => G.pop === "long" ? [...SEED_PROTOS, ...LONG_PROTOS] : SEED_PROTOS;
+  const freshThemes = () => themes().some(t => t.fresh);
+
+  let FIX = null;
+  const stages = [];
+
+  /* ── Row builders ── */
+  const themeRow = (t) => `<a href="#cur-${esc(t.id)}" data-act="theme" data-kind="theme" data-id="${esc(t.id)}"${t.draft ? " data-draft" : ""}><span class="x-name">${esc(t.name)}</span>${t.fresh ? MARK : ""}<span class="ap-muted ap-num">${t.n || ""}</span></a>`;
+  const protoRow = (p) => {
+    const g = glyph(p.status, false);
+    return `<a href="#proto-${p.id}" data-act="proto" data-kind="prototype" data-id="${p.id}" title="${esc(p.name)}"${p.draft ? " data-draft" : ""}>${G.glyph === "lead" ? g : ""}<span class="x-name">${esc(p.name)}</span>${G.glyph === "trail" ? g : ""}</a>`;
+  };
+  const themeNav = () => `<nav class="cur-index" aria-label="Themes">${themes().map(themeRow).join("")}</nav>`;
+  const protoNav = () => `<nav class="cur-index" aria-label="Prototypes">${protos().map(protoRow).join("")}</nav>`;
+  const iconBtn = (icon, label, act = "", extra = "") => `<button type="button" class="ap-iconbtn" aria-label="${esc(label)}" title="${esc(label)}"${act ? ` data-act="${act}"` : ""} ${extra}>${svg(icon)}</button>`;
+
+  /* ── Rails per variant ── */
+  const brand = (st, plus) => `<div class="cur-brand"><span>Aber</span>${iconBtn("search", "Find (⌘K)", "noop")}${plus ? plus : ""}${iconBtn("sidebar", "Collapse theme sidebar", "collapse")}</div>`;
+
+  function bodyCurrent(st) {
+    const open = st.protosOpen;
+    return `${brand(st, iconBtn("plus", "New theme", "noop"))}
+    <div class="cur-sidebar-scroll ap-scroll">${themeNav()}
+      <div data-orientation="vertical" class="cur-prototype-section"><div data-index="0"${open ? " data-open" : ""}>
+        <h3 class="cur-prototype-heading"><button type="button" class="cur-protos" data-act="protos-acc" aria-expanded="${open}" aria-controls="${st.uid}-pp"${open ? " data-panel-open" : ""}>${svg("proto", 13)}<span class="cur-sidebar-label">Prototypes</span><span class="ap-muted ap-num">${protos().length}</span><span class="cur-protos-chevron">${svg("chevron", 12)}</span></button></h3>
+        <div class="x-collapse" id="${st.uid}-pp" role="region"${open ? "" : " data-closed inert"}><div class="x-clip"><div class="cur-prototype-list">
+          ${protos().map(p => `<button class="cur-prototype-row" data-act="proto" data-cur-row data-id="${p.id}">${svg("proto", 13)}<span class="cur-sidebar-label">${esc(p.name)}</span>${svg("chevron", 12)}</button>`).join("")}
+          <button class="cur-prototype-row" data-act="noop">${svg("plus", 13)}<span class="cur-sidebar-label">New prototype</span></button>
+        </div></div></div>
+      </div></div>
+    </div>`;
+  }
+
+  function head(st, key, label, count, newLabel) {
+    const open = !st.closed[key];
+    return `<div class="x-sentinel" data-sentinel="${key}"></div><div class="x-head" data-head="${key}"><button type="button" class="x-head-btn" data-act="section" data-section="${key}" aria-expanded="${open}" aria-controls="${st.uid}-${key}"><span>${label}</span><span class="ap-num">${count}</span><span class="x-chev">${svg("chevron", 12)}</span></button>${iconBtn("plus", newLabel, "noop")}</div>`;
+  }
+  const region = (st, key, inner) => `<div class="x-collapse" id="${st.uid}-${key}" role="region" aria-label="${key}"${st.closed[key] ? " data-closed inert" : ""}><div class="x-clip">${inner}</div></div>`;
+
+  function bodyA(st) {
+    return `${brand(st)}
+    <div class="cur-sidebar-scroll ap-scroll x-flow"${G.aSticky ? " data-sticky" : ""} data-scroller>
+      ${head(st, "themes", "Themes", themes().length, "New theme")}${region(st, "themes", themeNav())}
+      ${head(st, "prototypes", "Prototypes", protos().length, "New prototype")}${region(st, "prototypes", protoNav())}
+    </div>`;
+  }
+
+  function bodyB(st) {
+    const tab = st.tab, other = tab === "themes" ? "prototypes" : "themes";
+    const dot = (k) => (k === "themes" && freshThemes() && tab !== "themes") ? MARK : "";
+    const tabBtn = (k, label, n) => `<button type="button" role="tab" id="${st.uid}-tab-${k}" aria-selected="${tab === k}" aria-controls="${st.uid}-panel-${k}" tabindex="${tab === k ? 0 : -1}" data-act="tab" data-tab="${k}"><span>${label}</span><span class="ap-num">${n}</span>${dot(k)}</button>`;
+    const newLabel = tab === "themes" ? "New theme" : "New prototype";
+    return `${brand(st, iconBtn("plus", newLabel, "noop", 'data-newbtn'))}
+    <div class="x-seg" role="tablist" aria-label="Sidebar lists" data-tab="${tab}"><span class="x-seg-thumb" aria-hidden="true"></span>${tabBtn("themes", "Themes", themes().length)}${tabBtn("prototypes", "Prototypes", protos().length)}</div>
+    <div class="x-panels">
+      <div class="x-panel cur-sidebar-scroll ap-scroll" role="tabpanel" id="${st.uid}-panel-themes" aria-labelledby="${st.uid}-tab-themes" data-side="left" data-scroller${tab === "themes" ? "" : " data-hidden inert"}>${themeNav()}</div>
+      <div class="x-panel cur-sidebar-scroll ap-scroll" role="tabpanel" id="${st.uid}-panel-prototypes" aria-labelledby="${st.uid}-tab-prototypes" data-side="right" data-scroller${tab === "prototypes" ? "" : " data-hidden inert"}>${protoNav()}</div>
+    </div>`;
+  }
+
+  function bodyC(st) {
+    const band = (key, icon, label, list, newLabel) => `<section class="x-band" data-band="${key}" aria-label="${label}"><div class="x-band-head">${svg(icon, 13)}<span>${label}</span><span class="ap-num">${list.length}</span>${iconBtn("plus", newLabel, "noop")}</div><div class="x-band-list" data-scroller>${key === "themes" ? themeNav() : protoNav()}</div></section>`;
+    return `${brand(st)}<div class="x-bands">${band("themes", "theme", "Themes", themes(), "New theme")}${band("prototypes", "proto", "Prototypes", protos(), "New prototype")}</div>`;
+  }
+
+  function bodyD(st) {
+    return `${brand(st, iconBtn("plus", "New theme", "noop"))}
+    <div class="cur-sidebar-scroll ap-scroll x-flow" data-scroller>${themeNav()}<div class="x-anchor-gap"></div>
+      <nav class="cur-index x-anchor" aria-label="Prototypes"><a href="#cur-prototypes" data-act="theme" data-kind="section" data-id="__protos">${svg("proto", 13)}<span class="x-name">Prototypes</span><span class="ap-muted ap-num">${protos().length}</span></a></nav>
+    </div>`;
+  }
+
+  const BODIES = { current: bodyCurrent, a: bodyA, b: bodyB, c: bodyC, d: bodyD };
+
+  function mini(st) {
+    const plus = st.variant === "current" ? iconBtn("plus", "New theme", "noop") : "";
+    return `<div class="cur-sidebar-mini">
+      <button type="button" class="ap-iconbtn" aria-label="Expand theme sidebar" title="Expand theme sidebar" aria-expanded="false" data-act="expand">${svg("sidebar")}</button>
+      ${iconBtn("search", "Find (⌘K)", "noop")}${plus}
+      <button type="button" class="ap-iconbtn" aria-label="Themes" title="Themes" data-act="mini" data-section="themes">${svg("theme")}</button>
+      <button type="button" class="ap-iconbtn cur-protos-mini" aria-label="Prototypes (${protos().length})" title="Prototypes (${protos().length})" data-act="mini" data-section="prototypes">${svg("proto")}<span class="cur-sidebar-count ap-num">${protos().length}</span></button>
+    </div>`;
+  }
+
+  function railHTML(st) {
+    const collapsed = st.rail !== "expanded";
+    const showBody = !collapsed || st.overlay;
+    return `${collapsed && !st.overlay ? mini(st) : ""}${showBody ? `<div class="cur-sidebar-body"${st.overlay ? " data-overlay" : ""}>${BODIES[st.variant](st)}</div>` : ""}`;
+  }
+
+  /* ── Main view (theme sections from the captured fixture) ── */
+  function mainHTML(st) {
+    let html = FIX.main;
+    const extra = G.pop === "long" ? LONG_THEMES.map(t => `<section data-sec="cur-${t.id}" class="cur-section"><div class="cur-theme"><button class="ap-h cur-theme-name cur-theme-btn" data-kind="theme" data-pick="${t.id}"${t.draft ? " data-draft" : ""}>${esc(t.name)}</button><span class="ap-muted ap-num">${t.signals} signals</span>${iconBtn("plus", "State a theory", "noop")}</div><div class="cur-cards">${Array.from({ length: Math.max(t.n, 1) }, (_, i) => `<div class="cur-card"><div class="ap-card" role="button" tabindex="0"><div class="ap-card-claim">${t.n ? `Illustrative theory ${i + 1} for ${esc(t.name.toLowerCase())}` : "No theory yet"}</div></div></div>`).join("")}</div></section>`).join("") : "";
+    const pro = st.variant === "d" ? `<section data-sec="cur-prototypes" class="cur-section" data-protosection><div class="x-pheading"><h2>${svg("proto", 16)}Prototypes</h2><span class="ap-muted ap-num">${protos().length}</span>${iconBtn("plus", "New prototype", "noop")}</div><div class="cur-cards">${protos().map(p => `<div class="cur-card x-pcard"><div class="ap-card" role="button" tabindex="0" data-act="proto" data-kind="prototype" data-id="${p.id}"${p.draft ? " data-draft" : ""}><div class="ap-card-claim">${esc(p.name)}</div><div class="ap-card-meta">${glyph(p.status)}<span class="ap-muted">${p.status}</span></div></div></div>`).join("")}</div></section>` : "";
+    const spacer = '<div style="height: 80px;"></div>';
+    return html.replace(spacer, extra + pro + spacer);
+  }
+
+  function stageHTML(st) {
+    const solo = st.solo;
+    const collapsed = st.rail !== "expanded";
+    return `<div class="ap as ab-production x-app" data-view="current"${solo ? " data-solo" : ""}>
+      <div class="as-content" data-region="main"><div class="as-view"><div class="ap cur" data-hosted${collapsed ? " data-rail-collapsed" : ""}>
+        <aside class="cur-rail" data-sidebar aria-label="Theme sidebar"${collapsed ? " data-collapsed" : ""}>${railHTML(st)}</aside>
+        ${solo ? "" : `<main class="cur-main ap-scroll">${mainHTML(st)}</main>`}
+      </div></div></div>
+      ${solo ? "" : `<aside class="as-pane" data-region="pane" aria-label="Open object">${FIX.paneChrome}<div class="as-pane-scroll ap-scroll"><div></div></div></aside>`}
+      ${FIX.switcher}${solo ? "" : FIX.pill}
+    </div>`;
+  }
+
+  /* ── Stage behaviour ── */
+  let uidN = 0;
+  function makeStage(host, variant, solo) {
+    const st = { host, variant, solo, uid: `s${++uidN}`, open: { kind: "prototype", id: "p3" }, active: "cost", closed: {}, tab: "prototypes", protosOpen: true, rail: G.rail === "expanded" ? "expanded" : "collapsed", overlay: G.rail === "overlay" ? "themes" : null };
+    st.render = () => render(st);
+    stages.push(st);
+    host.addEventListener("click", e => onClick(st, e));
+    host.addEventListener("keydown", e => onKey(st, e));
+    render(st);
+    return st;
+  }
+
+  function render(st) {
+    const mainScroll = st.host.querySelector(".cur-main")?.scrollTop ?? 0;
+    st.host.innerHTML = stageHTML(st);
+    const main = st.host.querySelector(".cur-main");
+    if (main) { main.scrollTop = mainScroll; main.addEventListener("scroll", () => spy(st), { passive: true }); }
+    st.host.querySelectorAll("[data-scroller]").forEach(sc => sc.addEventListener("scroll", () => stuck(st), { passive: true }));
+    st.host.querySelectorAll(".x-band-list").forEach(l => l.addEventListener("scroll", () => l.closest(".x-band").toggleAttribute("data-scrolled", l.scrollTop > 0), { passive: true }));
+    if (!st.solo) paintPane(st, false);
+    applySelection(st);
+    requestAnimationFrame(() => stuck(st));
+  }
+
+  function applySelection(st) {
+    st.host.querySelectorAll("[data-kind][data-id]").forEach(el => {
+      const on = st.open && el.dataset.kind === st.open.kind && el.dataset.id === st.open.id;
+      if (el.matches(".ap-card")) el.toggleAttribute("data-hot", on);
+      else if (!el.hasAttribute("data-cur-row")) {
+        el.toggleAttribute("data-open", on);
+        if (on) el.setAttribute("aria-current", "page"); else el.removeAttribute("aria-current");
+      }
+      const g = el.querySelector(".ap-proto svg");
+      if (g) g.innerHTML = I[on ? "protoFill" : "proto"];
+    });
+    st.host.querySelectorAll('[data-act="theme"]').forEach(el => el.toggleAttribute("data-active", el.dataset.id === st.active));
+    st.host.querySelectorAll(".cur-theme-btn").forEach(b => b.toggleAttribute("data-open", st.open?.kind === "theme" && b.dataset.pick === st.open.id));
+  }
+
+  function paintPane(st, animate) {
+    const holder = st.host.querySelector(".as-pane-scroll > div");
+    if (!holder) return;
+    const fill = () => {
+      if (st.open.kind === "prototype") {
+        const p = protos().find(x => x.id === st.open.id) || SEED_PROTOS[2];
+        holder.innerHTML = FIX.protoPane;
+        holder.querySelector(".pn-title").textContent = p.name;
+        holder.querySelectorAll('.pn-status [role="radio"]').forEach(r => {
+          const on = r.getAttribute("aria-label") === p.status;
+          r.setAttribute("aria-checked", on);
+          r.querySelector(".pn-reveal")?.remove();
+          r.querySelector(".ap-proto svg").innerHTML = I[on ? "protoFill" : "proto"];
+          if (on) r.insertAdjacentHTML("beforeend", `<span class="pn-reveal" style="width: auto; opacity: 1;"><span class="pn-reveal-in"><span class="pn-status-name">${p.status}</span></span></span>`);
+        });
+        const claim = holder.querySelector(".pn-tested-claim"); if (claim) claim.textContent = p.tests;
+      } else {
+        const t = themes().find(x => x.id === st.open.id);
+        holder.innerHTML = FIX.themePane;
+        holder.querySelector(".pn-title").textContent = t.name;
+        const sig = holder.querySelector(".pn-field-val"); if (sig) sig.textContent = t.signals;
+        if (t.id !== "cost") holder.querySelector(".pn-cards")?.remove();
+      }
+      holder.querySelectorAll("[contenteditable]").forEach(e => e.removeAttribute("contenteditable"));
+      holder.querySelectorAll("[id]").forEach(e => e.removeAttribute("id"));
+    };
+    if (!animate) return fill();
+    holder.setAttribute("data-swapping", "");
+    setTimeout(() => { fill(); holder.removeAttribute("data-swapping"); }, 120);
+  }
+
+  function openObject(st, kind, id) {
+    st.open = { kind, id };
+    if (st.variant === "b") switchTab(st, kind === "theme" ? "themes" : "prototypes");
+    applySelection(st);
+    if (!st.solo) paintPane(st, true);
+    const row = st.host.querySelector(`.cur-rail [data-kind="${kind}"][data-id="${CSS.escape(id)}"]`);
+    if (row) reveal(row);
+  }
+
+  /* Scroll a row into its own scroller only (never the page), clearing sticky headers. */
+  function reveal(row) {
+    const sc = row.closest("[data-scroller]");
+    if (!sc || row.closest("[inert]")) return;
+    const pad = sc.matches("[data-sticky]") ? 32 : 4;
+    const r = row.getBoundingClientRect(), s = sc.getBoundingClientRect();
+    if (r.top < s.top + pad) sc.scrollBy({ top: r.top - s.top - pad, behavior: "smooth" });
+    else if (r.bottom > s.bottom - pad) sc.scrollBy({ top: r.bottom - s.bottom + pad, behavior: "smooth" });
+  }
+
+  function setActive(st, id, scroll) {
+    st.active = id; applySelection(st);
+    const main = st.host.querySelector(".cur-main");
+    if (!main || !scroll) return;
+    const sec = main.querySelector(`[data-sec="cur-${CSS.escape(id === "__protos" ? "prototypes" : id)}"]`);
+    if (!sec) return;
+    st.spyLock = true; clearTimeout(st.spyT);
+    main.scrollTo({ top: sec.offsetTop - 16, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    st.spyT = setTimeout(() => { st.spyLock = false; }, 700);
+  }
+
+  function spy(st) {
+    if (st.spyLock) return;
+    const main = st.host.querySelector(".cur-main");
+    const secs = [...main.querySelectorAll(".cur-section[data-sec]")];
+    let cur = secs[0];
+    for (const s of secs) if (s.offsetTop - main.scrollTop <= 48) cur = s;
+    if (main.scrollTop + main.clientHeight >= main.scrollHeight - 4) cur = secs[secs.length - 1];
+    const id = cur.dataset.sec === "cur-prototypes" ? "__protos" : cur.dataset.sec.slice(4);
+    if (id !== st.active) { st.active = id; applySelection(st); }
+  }
+
+  /* Sticky header state: docked at the top (scrolled past) or the bottom (section below the fold). */
+  function stuck(st) {
+    st.host.querySelectorAll(".x-flow[data-sticky]").forEach(sc => {
+      sc.querySelectorAll(".x-head").forEach(h => {
+        const natural = h.previousElementSibling.offsetTop;
+        const bottom = natural + h.offsetHeight > sc.scrollTop + sc.clientHeight + 1;
+        const top = natural < sc.scrollTop - 1;
+        if (bottom) h.dataset.stuck = "bottom"; else if (top) h.dataset.stuck = "top"; else delete h.dataset.stuck;
+        h.querySelector(".x-head-btn").title = bottom ? "Show this section" : "";
+      });
+    });
+  }
+
+  function toggleSection(st, key, btn) {
+    const h = btn.closest(".x-head");
+    if (h?.dataset.stuck === "bottom") {
+      const sc = h.closest("[data-scroller]");
+      if (st.closed[key]) setSection(st, key, false);
+      sc.scrollTo({ top: h.previousElementSibling.offsetTop, behavior: "smooth" });
+      return;
+    }
+    setSection(st, key, !st.closed[key]);
+  }
+  function setSection(st, key, closed) {
+    st.closed[key] = closed;
+    const reg = st.host.querySelector(`#${st.uid}-${key}`);
+    reg.toggleAttribute("data-closed", closed); reg.toggleAttribute("inert", closed);
+    st.host.querySelector(`[data-section="${key}"].x-head-btn`).setAttribute("aria-expanded", !closed);
+    const t0 = performance.now();
+    const tick = () => { stuck(st); if (performance.now() - t0 < 340) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  }
+
+  function switchTab(st, tab) {
+    if (st.tab === tab) return;
+    st.tab = tab;
+    const seg = st.host.querySelector(".x-seg"); if (!seg) return;
+    seg.dataset.tab = tab;
+    seg.querySelectorAll('[role="tab"]').forEach(b => { const on = b.dataset.tab === tab; b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; });
+    seg.querySelector('[data-tab="themes"] .ap-mark')?.remove();
+    if (tab !== "themes" && freshThemes()) seg.querySelector('[data-tab="themes"]').insertAdjacentHTML("beforeend", MARK);
+    st.host.querySelectorAll(".x-panel").forEach(p => { const on = p.id.endsWith(tab); p.toggleAttribute("data-hidden", !on); p.toggleAttribute("inert", !on); });
+    const nb = st.host.querySelector("[data-newbtn]");
+    if (nb) { const l = tab === "themes" ? "New theme" : "New prototype"; nb.setAttribute("aria-label", l); nb.title = l; }
+  }
+
+  function closeOverlay(st, restore) {
+    if (!st.overlay) return;
+    st.overlay = null; render(st);
+    if (restore) st.host.querySelector('[data-act="expand"]')?.focus();
+  }
+
+  function onClick(st, e) {
+    const heading = e.target.closest(".cur-theme-btn");
+    if (heading) { openObject(st, "theme", heading.dataset.pick); return; }
+    const el = e.target.closest("[data-act]");
+    if (!el || !st.host.contains(el)) return;
+    if (el.tagName === "A") e.preventDefault();
+    const act = el.dataset.act;
+    if (act === "theme") { setActive(st, el.dataset.id, true); if (st.overlay) closeOverlay(st, true); }
+    else if (act === "proto") { openObject(st, "prototype", el.dataset.id); if (st.overlay) closeOverlay(st, true); }
+    else if (act === "section") toggleSection(st, el.dataset.section, el);
+    else if (act === "tab") switchTab(st, el.dataset.tab);
+    else if (act === "protos-acc") {
+      st.protosOpen = !st.protosOpen;
+      const reg = st.host.querySelector(`#${st.uid}-pp`);
+      reg.toggleAttribute("data-closed", !st.protosOpen); reg.toggleAttribute("inert", !st.protosOpen);
+      el.setAttribute("aria-expanded", st.protosOpen); el.toggleAttribute("data-panel-open", st.protosOpen);
+    }
+    else if (act === "collapse") { if (st.overlay) closeOverlay(st, true); else { st.rail = "collapsed"; render(st); st.host.querySelector('[data-act="expand"]')?.focus(); } }
+    else if (act === "expand") { st.rail = "expanded"; st.overlay = null; render(st); }
+    else if (act === "mini") {
+      const sec = el.dataset.section;
+      if (st.variant === "b") st.tab = sec;
+      if (st.variant === "a") st.closed[sec] = false;
+      if (st.variant === "current" && sec === "prototypes") st.protosOpen = true;
+      st.overlay = sec; render(st);
+      const target = st.host.querySelector(sec === "prototypes"
+        ? '.x-head[data-head="prototypes"] .x-head-btn, .x-band[data-band="prototypes"] .ap-iconbtn, .cur-protos, [data-tab="prototypes"], .x-anchor a'
+        : '[data-act="theme"][data-active], [data-tab="themes"]');
+      if (target) {
+        target.focus({ preventScroll: true });
+        const sc = target.closest("[data-scroller]");
+        const anchor = st.host.querySelector('[data-sentinel="prototypes"]') || target;
+        if (sec === "prototypes" && sc && !target.closest(".x-anchor")) sc.scrollTop += anchor.getBoundingClientRect().top - sc.getBoundingClientRect().top;
+        else reveal(target);
+      }
+    }
+  }
+
+  function onKey(st, e) {
+    if (e.key === "Escape" && st.overlay) { e.preventDefault(); closeOverlay(st, true); return; }
+    const tab = e.target.closest?.('[role="tab"]');
+    if (tab && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+      const next = st.tab === "themes" ? "prototypes" : "themes";
+      switchTab(st, next); st.host.querySelector(`[data-tab="${next}"][role="tab"]`).focus(); e.preventDefault();
+    }
+  }
+  document.addEventListener("pointerdown", e => {
+    for (const st of stages) if (st.overlay && !st.host.querySelector(".cur-sidebar-body")?.contains(e.target) && !e.target.closest(".x-bar")) closeOverlay(st, false);
+  }, true);
+
+  /* ── Controls ── */
+  function syncControls() {
+    document.querySelectorAll("[data-ctl]").forEach(g => g.querySelectorAll("button").forEach(b => b.setAttribute("aria-checked", G[g.dataset.ctl] === b.dataset.v)));
+  }
+  document.querySelectorAll("[data-ctl]").forEach(g => g.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    G[g.dataset.ctl] = b.dataset.v; syncControls();
+    for (const st of stages) {
+      if (g.dataset.ctl === "rail") { st.rail = G.rail === "expanded" ? "expanded" : "collapsed"; st.overlay = G.rail === "overlay" ? "themes" : null; }
+      if (g.dataset.ctl === "pop" && st.open.kind === "theme" && !themes().some(t => t.id === st.open.id)) st.open = { kind: "prototype", id: "p3" };
+      if (g.dataset.ctl === "pop" && !themes().some(t => t.id === st.active)) st.active = "cost";
+      render(st);
+    }
+  }));
+  document.querySelectorAll("[data-local]").forEach(c => c.addEventListener("change", () => {
+    G[c.dataset.local] = c.checked;
+    stages.filter(s => s.variant === "a").forEach(render);
+  }));
+
+  /* ── Boot: read captured fixtures, then build stages ── */
+  const get = f => fetch(`../_fixtures/${f}`).then(r => { if (!r.ok) throw new Error(`${f}: ${r.status}`); return r.text(); });
+  Promise.all([get("current-view-prototype-open.html"), get("prototype-pane-doc.html"), get("theme-pane-doc.html")]).then(([view, proto, theme]) => {
+    const doc = new DOMParser().parseFromString(`<div id="r">${view}</div>`, "text/html");
+    const strip = el => { el.querySelectorAll("[id]").forEach(x => x.removeAttribute("id")); el.querySelectorAll("[contenteditable]").forEach(x => x.removeAttribute("contenteditable")); return el; };
+    const mainEl = doc.querySelector("main.cur-main");
+    mainEl.querySelectorAll(".cur-section[id]").forEach(x => { x.dataset.sec = x.id; });
+    const main = strip(mainEl);
+    const pane = doc.querySelector("aside.as-pane");
+    const chrome = strip(pane.querySelector(".as-pane-close")).outerHTML;
+    const edge = pane.querySelector(".as-pane-edge"); edge.removeAttribute("tabindex");
+    const pill = doc.querySelector(".ps-surface"); pill.style.left = ""; 
+    FIX = {
+      main: main.innerHTML,
+      paneChrome: edge.outerHTML + chrome,
+      switcher: strip(doc.querySelector("nav.as-switch")).outerHTML,
+      pill: strip(pill).outerHTML,
+      protoPane: proto, themePane: theme,
+    };
+    syncControls();
+    const rails = document.getElementById("rails");
+    const LABELS = { current: ["Current", "Bottom accordion"], a: ["A", "Stacked sections"], b: ["B", "Tabs"], c: ["C", "Bands"], d: ["D", "Section of the view"] };
+    for (const v of ["current", "a", "b", "c", "d"]) {
+      const opt = document.createElement("div"); opt.className = "jig-option";
+      opt.innerHTML = `<div class="jig-label"${v === "current" ? " data-current" : ""}><b>${LABELS[v][0]}</b> ${LABELS[v][1]}</div><div class="jig-stage" style="--jig-stage-h:680px; min-height:680px"></div>`;
+      rails.append(opt);
+      makeStage(opt.querySelector(".jig-stage"), v, true);
+    }
+    document.querySelectorAll("[data-stage]").forEach(h => makeStage(h, h.dataset.stage, false));
+    document.body.dataset.ready = "";
+  }).catch(err => { console.error(err); document.body.insertAdjacentHTML("afterbegin", `<p style="color:#b4402f;padding:16px">Could not load fixtures: ${esc(err.message)}</p>`); });
+})();
+</script>
+</body>
+</html>
