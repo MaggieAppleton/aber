@@ -1,3 +1,7 @@
+/* The app's base.css locks html/body to the viewport (height 100%, overflow hidden).
+   A jig is a long page, so it must scroll. Higher specificity wins whatever the load order. */
+html:root, html:root > body { height: auto; min-height: 100%; overflow: visible; }
+
 /* Jig chrome only. App markup inside .jig-stage uses the app's real CSS. */
 .jig { margin: 0; background: #e9e6e1; color: #2b2925; font: 14px/1.45 ui-sans-serif, system-ui, -apple-system, sans-serif; }
 .jig-head { max-width: 1180px; margin: 0 auto; padding: 40px 32px 8px; }
