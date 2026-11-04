@@ -105,3 +105,30 @@
 .br8-win.narrow .ob-top > .nv-ib { margin-left: calc((var(--control) - var(--icon)) / -2); }
 .br8-win.narrow .ob-full { padding-inline: var(--inset-pane-inline) var(--inset-list-inline); }
 @media (prefers-reduced-motion: reduce) { .br8-win.narrow .br8-rail { transition: none; } }
+
+/* ═══ Block insets and alignment (coordinator round, 4 Nov) ═══
+   1. A dashed block's border sits on the tile edge, never outside it; its contents are inset 12 on every side, so its row's tile is at border + 12.
+   2. The head sits on the content: the 32 tile on the tile edge, the title 12 after it; nothing hangs into the pane inset.
+   3. Subject to its decision block 16; inside a block, a label stays 4 above the row it names, then 12 between row, consequence and buttons.
+   4. Section label: 32 above (between sections), 12 below to the first item; items in a section 16 apart. */
+.br8-doc { --blk: 12px; }
+.br8-doc > .ob-head { margin-left: 0; }
+.br8-doc .ob-block { margin-left: calc(var(--hang) * -1); padding: var(--blk); gap: 0; max-width: calc(560px + var(--hang)); }
+.br8-doc .ob-block > :not(.ob-row) { margin-left: 0; }
+.br8-doc .ob-block > .ob-row { margin-inline: calc(var(--inset-row) * -1); }
+.br8-doc .ob-block > .ob-blabel + .ob-row { margin-top: var(--gap-tight); }
+.br8-doc .ob-block > :is(.ob-row, .br8-words) + * { margin-top: var(--blk); }
+.br8-doc .ob-block > .ob-blabel + .br8-words { margin-top: var(--gap-tight); }
+.br8-doc .ob-block > .ob-why-t + .ob-decide { margin-top: var(--blk); }
+.br8-ch > .ob-attach + .ob-block { margin-top: var(--gap-group); }
+.br8-g > .ob-row + .ob-block { margin-top: var(--gap-item); }
+.br8-g > .ob-block + .ob-block { margin-top: var(--gap-item); }
+.br8-sec { gap: 0; }
+.br8-sec > .ob-sh + * { margin-top: var(--blk); }
+.br8-sec > .br8-g + .br8-g { margin-top: var(--gap-group); }
+
+/* Placeholder: capture is being rebuilt as the real chat sidebar (09). This marks where the Dump or ask pill sits; it isn't a design. */
+.br8-pill-ph { position: absolute; z-index: var(--z-chrome); right: var(--inset-float); bottom: var(--inset-float); display: flex; align-items: center; gap: var(--gap-item); height: var(--composer-h); padding: 0 var(--gap-group);
+  border-radius: 999px; background: var(--surface); box-shadow: var(--sh-float); color: var(--ink-2); font-size: var(--fs-label); white-space: nowrap; }
+.br8-pill-ph b { font-weight: 500; color: var(--ink); }
+.br8-win.narrow .br8-pill-ph { left: var(--inset-float); justify-content: center; }
