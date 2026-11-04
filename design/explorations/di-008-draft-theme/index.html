@@ -29,6 +29,8 @@
 .jig-stage[data-layout="cell"] .ap .cur[data-hosted] .cur-main { min-width: 0; padding: var(--size-px-16) var(--size-px-16) var(--size-px-20); }
 .jig-stage[data-layout="cell"] .ap .cur[data-hosted] .cur-cards { grid-template-columns: minmax(0, 1fr); }
 .jig-stage[data-layout="cell"] .d8-toast-slot { bottom: var(--size-px-10); }
+/* Room for B's top-edge actions, which sit above the container. */
+#act .jig-stage[data-layout="cell"] .ap .cur[data-hosted] .cur-main { padding-top: var(--size-px-32); }
 .jig-stage .ap.cur { min-height: var(--size-px-480); }
 .jig-stage .cur-main { overflow: visible; }
 .jig-stage .cur-sidebar-body { padding-bottom: var(--size-px-14); }
@@ -208,26 +210,26 @@
   </ol>
 </section>
 
-<section class="jig-section" id="context">
+<section class="jig-section" id="context" data-decision="draft-theme-structure" data-question="Draft theme structure in Theme sections">
   <h2>In the Theme sections view, between mine themes</h2>
   <p>Same five themes in each stage: two mine above, two drafts, one mine below. The heading text of every theme should start on one vertical line with the cards.</p>
   <div class="jig-compare" style="--jig-min: 100%">
-    <div class="jig-option">
+    <div class="jig-option" data-option="Current">
       <div class="jig-label" data-current><b>Current</b>Dashed outline around the heading button<button class="d8-reset" data-reset="ctx-current" type="button">Reset</button></div>
       <p class="jig-note">Real markup from <code>current.tsx:59</code> with <code>production.css:13</code>. Accepting needs the pane.</p>
       <div class="jig-stage" data-stage="ctx-current" data-variant="current" data-layout="full" data-measure></div>
     </div>
-    <div class="jig-option">
+    <div class="jig-option" data-option="A">
       <div class="jig-label"><b>A</b>Aligned heading, provenance line with the decision<span class="d8-dial" role="group" aria-label="A: dashed box edge"><button type="button" data-dial="edge" data-value="outdent" aria-pressed="true">Text aligned</button><button type="button" data-dial="edge" data-value="flush" aria-pressed="false">Box aligned</button></span><button class="d8-reset" data-reset="ctx-a" type="button">Reset</button></div>
       <p class="jig-note">The heading row is byte-for-byte a mine heading. The draft material (inset dash, translucent fill, ink-2) sits exactly where every heading already paints its hover. Below it, one 12px line: where it came from, then Rephrase, Discard, Accept (DI-009: labelled Discard left of the primary Accept). Accepting collapses that line and the heading is simply mine. <i>Dial:</i> “Box aligned” trades text alignment for a box flush with the cards.</p>
       <div class="jig-stage" data-stage="ctx-a" data-variant="a" data-layout="full" data-measure></div>
     </div>
-    <div class="jig-option">
+    <div class="jig-option" data-option="B">
       <div class="jig-label"><b>B</b>The whole draft section is one dashed object<button class="d8-reset" data-reset="ctx-b" type="button">Reset</button></div>
       <p class="jig-note">The container paints 12px into the gutter so the heading and cards keep the column edge. Rephrase, then labelled Discard and Accept, sit on its top edge on hover or focus (always on touch). Provenance is a mic glyph with a tooltip. Accepting fades the container; the theory inside stays a draft.</p>
       <div class="jig-stage" data-stage="ctx-b" data-variant="b" data-layout="full" data-measure></div>
     </div>
-    <div class="jig-option">
+    <div class="jig-option" data-option="C">
       <div class="jig-label"><b>C</b>Drafts gathered after my themes as proposal rows<button class="d8-reset" data-reset="ctx-c" type="button">Reset</button></div>
       <p class="jig-note">My themes stay uninterrupted; draft themes collapse to one dashed row each (summary before detail), with provenance and labelled actions. The chevron unfolds its theories in place. Accepting moves the row up into my themes as a full section, as does the sidebar row.</p>
       <div class="jig-stage" data-stage="ctx-c" data-variant="c" data-layout="full" data-measure></div>
@@ -239,7 +241,28 @@
     <li><b>B</b>: strongest “this whole thing isn't mine yet”; draft theory cards become dashed-inside-dashed, and actions are hidden until hover. Clearly an object, but the heaviest on the page when overnight clustering makes several.</li>
     <li><b>C</b>: scales best (many drafts stay one row each) and keeps my sections calm; the draft lives away from where it would eventually sit, and it's a new grouping on the base plane.</li>
   </ul>
-  <div class="jig-decision" data-decision="draft-theme-structure" data-question="Draft theme structure in Theme sections" data-options="Current|A|B|C"></div>
+</section>
+
+<section class="jig-section" id="act" data-decision="draft-action-placement" data-question="Where accept / rephrase / discard live">
+  <h2>Where the decision lives</h2>
+  <p>The Robotics draft alone, from each option above, so only the actions differ. Each frame is live.</p>
+  <div class="jig-compare" style="--jig-min: 250px">
+    <div class="jig-option" data-option="Current"><div class="jig-label" data-current><b>Current</b>Only in the pane</div><div class="jig-stage" data-stage="act-current" data-variant="current" data-layout="cell" data-only="robotics" data-preset="hover"></div><p class="jig-note">Nothing on the heading. Accept and the X live in the theory pane.</p></div>
+    <div class="jig-option" data-option="A"><div class="jig-label"><b>A</b>A line under the heading</div><div class="jig-stage" data-stage="act-a" data-variant="a" data-layout="cell" data-only="robotics" data-preset="hover"></div><p class="jig-note">Always visible: Rephrase, then Discard left of Accept, on the provenance line.</p></div>
+    <div class="jig-option" data-option="B"><div class="jig-label"><b>B</b>On the container's top edge</div><div class="jig-stage" data-stage="act-b" data-variant="b" data-layout="cell" data-only="robotics" data-preset="hover"></div><p class="jig-note">Shown on hover or focus (always on touch). Shown here hovered.</p></div>
+    <div class="jig-option" data-option="C"><div class="jig-label"><b>C</b>On the proposal row</div><div class="jig-stage" data-stage="act-c" data-variant="c" data-layout="cell" data-only="robotics" data-preset="hover"></div><p class="jig-note">Always visible at the end of the draft row, after its provenance.</p></div>
+  </div>
+</section>
+
+<section class="jig-section" id="prov" data-decision="provenance-display" data-question="How provenance (which dump, when) shows">
+  <h2>Where it came from</h2>
+  <p>The same draft at rest, so only the provenance differs. Robotics was drafted from a voice note two hours ago.</p>
+  <div class="jig-compare" style="--jig-min: 250px">
+    <div class="jig-option" data-option="Current"><div class="jig-label" data-current><b>Current</b>Not shown</div><div class="jig-stage" data-stage="prov-current" data-variant="current" data-layout="cell" data-only="robotics"></div><p class="jig-note">Nothing says which dump made it or when.</p></div>
+    <div class="jig-option" data-option="A"><div class="jig-label"><b>A</b>Worded line</div><div class="jig-stage" data-stage="prov-a" data-variant="a" data-layout="cell" data-only="robotics"></div><p class="jig-note">“Drafted from your voice note” and the age, under the heading. Hover either for the dump title or the exact time.</p></div>
+    <div class="jig-option" data-option="B"><div class="jig-label"><b>B</b>Glyph with a tooltip</div><div class="jig-stage" data-stage="prov-b" data-variant="b" data-layout="cell" data-only="robotics"></div><p class="jig-note">A mic glyph after the count. Hover or focus it for “Drafted from your voice note”, the title and the age.</p></div>
+    <div class="jig-option" data-option="C"><div class="jig-label"><b>C</b>Glyph and word on the row</div><div class="jig-stage" data-stage="prov-c" data-variant="c" data-layout="cell" data-only="robotics"></div><p class="jig-note">“Voice note” and the age at the right of the draft row.</p></div>
+  </div>
 </section>
 
 <section class="jig-section" id="states">
@@ -247,8 +270,6 @@
   <p>Each cell is live. Mine (accepted) is the end state of the transition; Discarded shows the consequence the toast reports.</p>
   <div class="d8-colhead" aria-hidden="true"><span></span><span>Current</span><span>A</span><span>B</span><span>C</span></div>
   <div class="d8-states" id="state-grid"></div>
-  <div class="jig-decision" data-decision="draft-action-placement" data-question="Where accept / rephrase / discard live" data-options="Current|A|B|C"></div>
-  <div class="jig-decision" data-decision="provenance-display" data-question="How provenance (which dump, when) shows" data-options="Current|A|B|C"></div>
 </section>
 
 <section class="jig-section" id="narrow">

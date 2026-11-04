@@ -33,7 +33,12 @@
 .x-ctl button { font: inherit; font-size: 12px; padding: 4px 10px; border: 0; border-radius: 6px; background: transparent; color: #3d3a34; cursor: pointer; }
 .x-ctl button[aria-checked="true"] { background: #fff; color: #2b2925; box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.06); }
 .x-rails { display: flex; flex-wrap: wrap; gap: 16px; }
+.x-rails.jig-compare { display: flex; flex-wrap: wrap; gap: 16px; }
 .x-rails > .jig-option { width: 232px; flex: none; }
+.x-frame { --jig-stage-h: 520px; min-height: 520px; }
+.x-frame.x-frame-short { --jig-stage-h: 300px; min-height: 300px; }
+.cur-index a[data-x-hover]:not([data-open]) { background: var(--ap-hover); }
+.cur-index a .x-navmark { display: inline-grid; flex-shrink: 0; color: var(--ap-ink-3); }
 .x-rails .jig-note { font-size: 12px; }
 .x-local { display: flex; gap: 12px; align-items: center; font-size: 13px; color: #5d5850; }
 .x-local label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
@@ -159,10 +164,37 @@
   </div>
 </div>
 
-<section class="jig-section x-wide">
+<section class="jig-section x-wide" data-decision="structure" data-question="Overall sidebar structure" data-default="A stacked sections with C headers (chosen)">
   <h2>Side by side</h2>
-  <p>Just the rails, so the structures can be compared at a glance. Each is live and keeps its own selection.</p>
-  <div class="x-rails" id="rails"></div>
+  <p>Just the rails, so the structures can be compared at a glance. Each is live and keeps its own selection. Each structure is shown full size, with the view and the pane, further down.</p>
+  <div class="jig-compare x-rails" id="rails">
+    <div class="jig-option" data-variant="ac" data-option="A stacked sections with C headers (chosen)"><div class="jig-label" data-chosen><b>A+C</b> Stacked, band headers</div><div class="jig-stage" style="--jig-stage-h:680px; min-height:680px"></div></div>
+    <div class="jig-option" data-variant="current" data-option="Current"><div class="jig-label" data-current><b>Current</b> Bottom accordion</div><div class="jig-stage" style="--jig-stage-h:680px; min-height:680px"></div></div>
+    <div class="jig-option" data-variant="a" data-option="A stacked sections"><div class="jig-label"><b>A</b> Stacked sections</div><div class="jig-stage" style="--jig-stage-h:680px; min-height:680px"></div></div>
+    <div class="jig-option" data-variant="b" data-option="B tabs"><div class="jig-label"><b>B</b> Tabs</div><div class="jig-stage" style="--jig-stage-h:680px; min-height:680px"></div></div>
+    <div class="jig-option" data-variant="c" data-option="C bands"><div class="jig-label"><b>C</b> Bands</div><div class="jig-stage" style="--jig-stage-h:680px; min-height:680px"></div></div>
+    <div class="jig-option" data-variant="d" data-option="D section of the view"><div class="jig-label"><b>D</b> Section of the view</div><div class="jig-stage" style="--jig-stage-h:680px; min-height:680px"></div></div>
+  </div>
+</section>
+
+<section class="jig-section x-wide" data-decision="row-identity" data-question="Row identity: where the type icon and prototype status live">
+  <h2>Row identity</h2>
+  <p>The chosen rail (A+C) three ways. Only the prototype rows change. These frames ignore the bar's glyph switch.</p>
+  <div class="jig-compare x-rails">
+    <div class="jig-option" data-option="Leading status glyph on prototype rows"><div class="jig-label"><b>1</b> Leading glyph</div><div class="jig-stage x-frame" data-frame data-variant="ac" data-glyph="lead"></div><p class="jig-note">Status leads each prototype name, so prototype names start 20&nbsp;px right of theme names.</p></div>
+    <div class="jig-option" data-option="Trailing status glyph (names align with themes)"><div class="jig-label"><b>2</b> Trailing glyph</div><div class="jig-stage x-frame" data-frame data-variant="ac" data-glyph="trail"></div><p class="jig-note">Status trails the name, where theme rows keep their count, so every name starts on one line.</p></div>
+    <div class="jig-option" data-option="Header carries the type; rows plain"><div class="jig-label"><b>3</b> Plain rows</div><div class="jig-stage x-frame" data-frame data-variant="ac" data-glyph="none"></div><p class="jig-note">Only the Prototypes header carries the type icon. Rows are text, and status is not shown in the sidebar.</p></div>
+  </div>
+</section>
+
+<section class="jig-section x-wide" data-decision="proto-affordance" data-question="How a prototype row signals that it opens in the pane">
+  <h2>Opens in the pane</h2>
+  <p>Themes collapsed to show the prototype rows only. Intent review is shown hovered; One-person app kit is open in the pane, so it has the selection ring.</p>
+  <div class="jig-compare x-rails">
+    <div class="jig-option" data-option="Hover paint, then the selection ring when open"><div class="jig-label"><b>1</b> Hover and ring</div><div class="jig-stage x-frame x-frame-short" data-frame data-variant="ac" data-glyph="lead" data-hover="p2" data-closed="themes"></div><p class="jig-note">No trailing mark. The row paints on hover and keeps the ring while its prototype is open.</p></div>
+    <div class="jig-option" data-option="Status glyph is the only trailing mark"><div class="jig-label"><b>2</b> Status glyph trails</div><div class="jig-stage x-frame x-frame-short" data-frame data-variant="ac" data-glyph="trail" data-hover="p2" data-closed="themes"></div><p class="jig-note">The status glyph sits where a chevron was. It reports status; it doesn't promise navigation.</p></div>
+    <div class="jig-option" data-option="Keep a trailing navigation mark (not a chevron)"><div class="jig-label"><b>3</b> Trailing arrow</div><div class="jig-stage x-frame x-frame-short" data-frame data-variant="ac" data-glyph="lead" data-trail="arrow" data-hover="p2" data-closed="themes"></div><p class="jig-note">An arrow on every row says "goes somewhere" without borrowing the expand chevron. Status moves to the front.</p></div>
+  </div>
 </section>
 
 <section class="jig-section x-wide" id="opt-current">
@@ -234,13 +266,6 @@
     <li>Individual prototypes are no longer one click from the sidebar; reaching one is a scroll or ⌘K.</li>
     <li>Changes the base plane, so it needs a design-model update (the "Prototypes link at the bottom of the index" line).</li>
   </ul>
-</section>
-
-<section class="jig-section x-wide">
-  <h2>Decisions</h2>
-  <div class="jig-decision" data-decision="structure" data-question="Overall sidebar structure" data-default="A stacked sections with C headers (chosen)" data-options="A stacked sections with C headers (chosen)|Current|A stacked sections|B tabs|C bands|D section of the view"></div>
-  <div class="jig-decision" data-decision="row-identity" data-question="Row identity: where the type icon and prototype status live" data-options="Leading status glyph on prototype rows|Trailing status glyph (names align with themes)|Header carries the type; rows plain"></div>
-  <div class="jig-decision" data-decision="proto-affordance" data-question="How a prototype row signals that it opens in the pane" data-options="Hover paint, then the selection ring when open|Status glyph is the only trailing mark|Keep a trailing navigation mark (not a chevron)"></div>
 </section>
 
 <section class="jig-section x-wide">
@@ -319,12 +344,13 @@
 
   /* ── Row builders ── */
   const themeRow = (t) => `<a href="#cur-${esc(t.id)}" data-act="theme" data-kind="theme" data-id="${esc(t.id)}"${t.draft ? " data-draft" : ""}><span class="x-name">${esc(t.name)}</span>${t.fresh ? MARK : ""}<span class="ap-muted ap-num">${t.n || ""}</span></a>`;
-  const protoRow = (p) => {
-    const g = glyph(p.status, false);
-    return `<a href="#proto-${p.id}" data-act="proto" data-kind="prototype" data-id="${p.id}" title="${esc(p.name)}"${p.draft ? " data-draft" : ""}>${G.glyph === "lead" ? g : ""}<span class="x-name">${esc(p.name)}</span>${G.glyph === "trail" ? g : ""}</a>`;
+  const protoRow = (p, st) => {
+    const g = glyph(p.status, false), pos = st?.glyph || G.glyph;
+    const nav = st?.trail === "arrow" ? `<span class="x-navmark">${svg("arrowRight", 12)}</span>` : "";
+    return `<a href="#proto-${p.id}" data-act="proto" data-kind="prototype" data-id="${p.id}" title="${esc(p.name)}"${p.draft ? " data-draft" : ""}${st?.hoverId === p.id ? " data-x-hover" : ""}>${pos === "lead" ? g : ""}<span class="x-name">${esc(p.name)}</span>${pos === "trail" ? g : ""}${nav}</a>`;
   };
   const themeNav = () => `<nav class="cur-index" aria-label="Themes">${themes().map(themeRow).join("")}</nav>`;
-  const protoNav = () => `<nav class="cur-index" aria-label="Prototypes">${protos().map(protoRow).join("")}</nav>`;
+  const protoNav = (st) => `<nav class="cur-index" aria-label="Prototypes">${protos().map(p => protoRow(p, st)).join("")}</nav>`;
   const iconBtn = (icon, label, act = "", extra = "") => `<button type="button" class="ap-iconbtn" aria-label="${esc(label)}" title="${esc(label)}"${act ? ` data-act="${act}"` : ""} ${extra}>${svg(icon)}</button>`;
 
   /* ── Rails per variant ── */
@@ -354,7 +380,7 @@
     return `${brand(st)}
     <div class="cur-sidebar-scroll ap-scroll x-flow"${G.aSticky ? " data-sticky" : ""} data-scroller>
       ${head(st, "themes", "Themes", themes().length, "New theme")}${region(st, "themes", themeNav())}
-      ${head(st, "prototypes", "Prototypes", protos().length, "New prototype")}${region(st, "prototypes", protoNav())}
+      ${head(st, "prototypes", "Prototypes", protos().length, "New prototype")}${region(st, "prototypes", protoNav(st))}
     </div>`;
   }
 
@@ -367,12 +393,12 @@
     <div class="x-seg" role="tablist" aria-label="Sidebar lists" data-tab="${tab}"><span class="x-seg-thumb" aria-hidden="true"></span>${tabBtn("themes", "Themes", themes().length)}${tabBtn("prototypes", "Prototypes", protos().length)}</div>
     <div class="x-panels">
       <div class="x-panel cur-sidebar-scroll ap-scroll" role="tabpanel" id="${st.uid}-panel-themes" aria-labelledby="${st.uid}-tab-themes" data-side="left" data-scroller${tab === "themes" ? "" : " data-hidden inert"}>${themeNav()}</div>
-      <div class="x-panel cur-sidebar-scroll ap-scroll" role="tabpanel" id="${st.uid}-panel-prototypes" aria-labelledby="${st.uid}-tab-prototypes" data-side="right" data-scroller${tab === "prototypes" ? "" : " data-hidden inert"}>${protoNav()}</div>
+      <div class="x-panel cur-sidebar-scroll ap-scroll" role="tabpanel" id="${st.uid}-panel-prototypes" aria-labelledby="${st.uid}-tab-prototypes" data-side="right" data-scroller${tab === "prototypes" ? "" : " data-hidden inert"}>${protoNav(st)}</div>
     </div>`;
   }
 
   function bodyC(st) {
-    const band = (key, icon, label, list, newLabel) => `<section class="x-band" data-band="${key}" aria-label="${label}"><div class="x-band-head">${svg(icon, 13)}<span>${label}</span><span class="ap-num">${list.length}</span>${iconBtn("plus", newLabel, "noop")}</div><div class="x-band-list" data-scroller>${key === "themes" ? themeNav() : protoNav()}</div></section>`;
+    const band = (key, icon, label, list, newLabel) => `<section class="x-band" data-band="${key}" aria-label="${label}"><div class="x-band-head">${svg(icon, 13)}<span>${label}</span><span class="ap-num">${list.length}</span>${iconBtn("plus", newLabel, "noop")}</div><div class="x-band-list" data-scroller>${key === "themes" ? themeNav() : protoNav(st)}</div></section>`;
     return `${brand(st)}<div class="x-bands">${band("themes", "theme", "Themes", themes(), "New theme")}${band("prototypes", "proto", "Prototypes", protos(), "New prototype")}</div>`;
   }
 
@@ -425,8 +451,8 @@
 
   /* ── Stage behaviour ── */
   let uidN = 0;
-  function makeStage(host, variant, solo) {
-    const st = { host, variant, solo, uid: `s${++uidN}`, open: { kind: "prototype", id: "p3" }, active: "cost", closed: {}, tab: "prototypes", protosOpen: true, rail: G.rail === "expanded" ? "expanded" : "collapsed", overlay: G.rail === "overlay" ? "themes" : null };
+  function makeStage(host, variant, solo, opts = {}) {
+    const st = { host, variant, solo, uid: `s${++uidN}`, open: { kind: "prototype", id: "p3" }, active: "cost", closed: {}, tab: "prototypes", protosOpen: true, rail: G.rail === "expanded" ? "expanded" : "collapsed", overlay: G.rail === "overlay" ? "themes" : null, ...opts };
     st.render = () => render(st);
     stages.push(st);
     host.addEventListener("click", e => onClick(st, e));
@@ -675,14 +701,12 @@
       protoPane: proto, themePane: theme,
     };
     syncControls();
-    const rails = document.getElementById("rails");
-    const LABELS = { current: ["Current", "Bottom accordion"], ac: ["A+C", "Chosen: stacked, band headers"], a: ["A", "Stacked sections"], b: ["B", "Tabs"], c: ["C", "Bands"], d: ["D", "Section of the view"] };
-    for (const v of ["current", "ac", "a", "b", "c", "d"]) {
-      const opt = document.createElement("div"); opt.className = "jig-option";
-      opt.innerHTML = `<div class="jig-label"${v === "current" ? " data-current" : v === "ac" ? " data-chosen" : ""}><b>${LABELS[v][0]}</b> ${LABELS[v][1]}</div><div class="jig-stage" style="--jig-stage-h:680px; min-height:680px"></div>`;
-      rails.append(opt);
-      makeStage(opt.querySelector(".jig-stage"), v, true);
-    }
+    // Option frames are static so the shell can attach Choose before the fixtures arrive.
+    document.querySelectorAll("#rails > .jig-option").forEach(opt => makeStage(opt.querySelector(".jig-stage"), opt.dataset.variant, true));
+    document.querySelectorAll("[data-frame]").forEach(h => makeStage(h, h.dataset.variant, true, {
+      glyph: h.dataset.glyph, trail: h.dataset.trail, hoverId: h.dataset.hover,
+      closed: h.dataset.closed ? { [h.dataset.closed]: true } : {},
+    }));
     document.querySelectorAll("[data-stage]").forEach(h => makeStage(h, h.dataset.stage, false));
     document.body.dataset.ready = "";
   }).catch(err => { console.error(err); document.body.insertAdjacentHTML("afterbegin", `<p style="color:#b4402f;padding:16px">Could not load fixtures: ${esc(err.message)}</p>`); });

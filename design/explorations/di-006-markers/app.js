@@ -278,20 +278,51 @@
     { id: "atlas", title: "Atlas (scaled down)", note: "Labels mix ring, total, dot and new count; challenge sits on a pin's shoulder. Mini-map at zoom 1.", fn: atlas },
   ];
   const COLS = [
-    { id: "current", label: `<span class="jig-label" data-current>Current</span>` },
-    { id: "A", label: `<span class="jig-label"><b>A</b> One gutter</span>` },
-    { id: "B", label: `<span class="jig-label"><b>B</b> Roll up, in words</span>` },
-    { id: "C", label: `<span class="jig-label"><b>C</b> No persistent marks</span>` },
+    { id: "current", value: "Current", label: `<span class="jig-label" data-current>Current</span>` },
+    { id: "A", value: "A", label: `<span class="jig-label"><b>A</b> One gutter</span>` },
+    { id: "B", value: "B", label: `<span class="jig-label"><b>B</b> Roll up, in words</span>` },
+    { id: "C", value: "C", label: `<span class="jig-label"><b>C</b> No persistent marks</span>` },
   ];
+  const FN = Object.fromEntries(CONTEXTS.map(c => [c.id, c.fn]));
+
+  // Focused excerpts for the narrower questions. Each frame names the context and strategy it draws.
+  const noOpen = d => ({ ...d, themes: d.themes.map(t => ({ ...t, open: false })) });
+  const chalOnly = d => ({ ...d, themes: d.themes.map(t => ({ ...t, open: false, fresh: 0 })) });
+  const MOD = { noOpen, chalOnly };
+  const POSITION = [
+    { value: "Leading gutter (A)", label: "<b>A</b> Leading gutter", note: "Every mark leads the name in a reserved gutter, in containers and inside them.", frames: [["sidebar", "A", "Sidebar (a container)"], ["pane", "A", "Theory pane evidence (inside)"]] },
+    { value: "Trailing slot on containers (B)", label: "<b>B</b> Trailing slot", note: "Containers carry one trailing slot of worded counts; inside, a rule and bold titles split new from seen.", frames: [["sidebar", "B", "Sidebar (a container)"], ["pane", "B", "Theory pane evidence (inside)"]] },
+    { value: "No position: words and order (C)", label: "<b>C</b> Words and order", note: "No mark has a position. Order and Briefing carry attention.", frames: [["sidebar", "C", "Sidebar (a container)"], ["pane", "C", "Theory pane evidence (inside)"]] },
+    { value: "Mix: B for containers, A inside", label: "<b>B + A</b> Mix", note: "B's trailing slot on the sidebar, A's leading gutter inside the theory.", frames: [["sidebar", "B", "Sidebar (a container), as B"], ["pane", "A", "Theory pane evidence (inside), as A"]] },
+  ];
+  const MEANINGS = [
+    { value: "New, challenge and open", label: "New, challenge, open", note: "A's gutter with all three. One mark per row: challenge, then new, then open.", frames: [["columns", "A", "Columns, A's gutter"]] },
+    { value: "New and challenge", label: "New and challenge", note: "A's gutter without open: an empty theme just has no mark.", frames: [["columns", "A", "Columns, A's gutter, no open ring", "noOpen"]] },
+    { value: "Challenge only", label: "Challenge only", note: "A's gutter showing challenge alone. New lives in feed order and Briefing.", frames: [["columns", "A", "Columns, A's gutter, challenge only", "chalOnly"]] },
+    { value: "None (Briefing only)", label: "None", note: "No persistent marks (C). Challenge reaches you as a Briefing item.", frames: [["columns", "C", "Columns, no marks"], ["briefing", "C", "Briefing carries challenge"]] },
+  ];
+  function buildFocus(id, list) {
+    document.getElementById(id).innerHTML = list.map(o => `<div class="jig-option" data-option="${esc(o.value)}"><span class="jig-label">${o.label}</span>${o.frames.map(([ctx, S, cap, mod]) => `<p class="m6-cap">${cap}</p><div class="jig-stage m6-cell" data-render="${ctx}" data-s="${S}"${mod ? ` data-mod="${mod}"` : ""}></div>`).join("")}<p class="jig-note">${o.note}</p></div>`).join("");
+  }
+
+  // Option frames are built once so the shell's Choose buttons survive data switches; only stage contents re-render.
+  function buildMatrix() {
+    const root = document.getElementById("m6-matrix");
+    const span = 1 + CONTEXTS.length * 2;
+    const cols = COLS.map(col => `<div class="jig-option m6-col" data-col="${col.id}" data-option="${col.value}" style="grid-row: 1 / span ${span}">${col.label}${CONTEXTS.map((c, k) => `<h4 class="m6-mini" style="grid-row: ${2 + 2 * k}">${c.title}</h4><div class="jig-stage m6-cell" data-render="${c.id}" data-s="${col.id}" style="grid-row: ${3 + 2 * k}"></div>`).join("")}</div>`).join("");
+    const heads = CONTEXTS.map((c, k) => `<div class="m6-ctx" data-ctx="${c.id}" style="grid-row: ${2 + 2 * k}"><h3>${c.title}</h3><p>${c.note}</p></div>`).join("");
+    root.innerHTML = cols + heads;
+  }
 
   const state = { data: "seed", force: false, show: { current: true, a: true, b: true, c: true } };
 
   function renderMatrix() {
-    const root = document.getElementById("m6-matrix");
     const d = state.data === "stress" ? STRESS : SEED;
-    root.innerHTML = CONTEXTS.map(c => `<div class="m6-ctx" data-ctx="${c.id}"><h3>${c.title}</h3><p>${c.note}</p><div class="m6-grid">${COLS.map(col => `<div class="m6-cell" data-col="${col.id}">${col.label}<div class="jig-stage">${c.fn(col.id, d)}</div></div>`).join("")}</div></div>`).join("");
-    root.querySelectorAll(".m6-cell").forEach(cell => cell.querySelector(".tipped")?.classList.add("tip-demo"));
-    root.querySelectorAll("a[href='#']").forEach(a => a.addEventListener("click", e => e.preventDefault()));
+    document.querySelectorAll("[data-render]").forEach(cell => {
+      cell.innerHTML = FN[cell.dataset.render](cell.dataset.s, cell.dataset.mod ? MOD[cell.dataset.mod](d) : d);
+      cell.querySelector(".tipped")?.classList.add("tip-demo");
+      cell.querySelectorAll("a[href='#']").forEach(a => a.addEventListener("click", e => e.preventDefault()));
+    });
     applyView();
   }
   function applyView() {
@@ -299,6 +330,9 @@
     root.toggleAttribute("data-force", state.force);
     for (const k of ["current", "a", "b", "c"]) root.toggleAttribute(`data-hide-${k}`, !state.show[k]);
     root.style.setProperty("--cols", Math.max(1, Object.values(state.show).filter(Boolean).length));
+    // Headers span every column at fixed rows, so visible columns need explicit tracks to avoid being pushed aside.
+    let n = 0;
+    for (const col of root.querySelectorAll(".m6-col")) col.style.gridColumn = state.show[col.dataset.col.toLowerCase()] ? String(++n) : "";
   }
 
   // ── DI-007 ──
@@ -312,10 +346,10 @@
   const STATUSES = ["idea", "building", "built", "shelved"];
   const WORD = { idea: "Idea", building: "Building", built: "Built", shelved: "Shelved" };
   const OPTS = [
-    { id: "current", label: `<span class="jig-label" data-current>Current</span>`, note: "Building is #2f6fed, the only blue in the app. Built is ink. Selected switches the glyph to fill." },
-    { id: "A", label: `<span class="jig-label"><b>A</b> Green ramp by fill</span>`, note: "One glyph, three fills: outline idea, half building, solid built. Green only once work has started; shelved fades." },
-    { id: "B", label: `<span class="jig-label"><b>B</b> Words</span>`, note: "The glyph is a neutral object icon; the status is a word. Only “Building” is green." },
-    { id: "C", label: `<span class="jig-label"><b>C</b> Swap blue for green</span>`, note: "Building takes --ap-pos green; built stays ink. The smallest change." },
+    { id: "current", value: "Current", label: `<span class="jig-label" data-current>Current</span>`, note: "Building is #2f6fed, the only blue in the app. Built is ink. Selected switches the glyph to fill." },
+    { id: "A", value: "A", label: `<span class="jig-label"><b>A</b> Green ramp by fill</span>`, note: "One glyph, three fills: outline idea, half building, solid built. Green only once work has started; shelved fades." },
+    { id: "B", value: "B", label: `<span class="jig-label"><b>B</b> Words</span>`, note: "The glyph is a neutral object icon; the status is a word. Only “Building” is green." },
+    { id: "C", value: "C", label: `<span class="jig-label"><b>C</b> Swap blue for green</span>`, note: "Building takes --ap-pos green; built stays ink. The smallest change." },
   ];
   const proto = (O, status, selected) => {
     if (O === "A") {
@@ -348,9 +382,11 @@
       <div class="s7-row"><span class="ap-label">Beside a new mark</span><div class="s7-collide">${collide}</div></div>
     </div></div>`;
   }
+  function buildStatus() {
+    document.getElementById("m6-status").innerHTML = OPTS.map(o => `<div class="jig-option" data-opt="${o.id}" data-option="${o.value}">${o.label}<p class="jig-note">${o.note}</p><div class="jig-stage"></div></div>`).join("");
+  }
   function renderStatus() {
-    const root = document.getElementById("m6-status");
-    root.innerHTML = OPTS.map(o => `<div class="jig-option" data-opt="${o.id}">${o.label}<p class="jig-note">${o.note}</p><div class="jig-stage">${statusOption(o.id)}</div></div>`).join("");
+    for (const o of OPTS) document.querySelector(`#m6-status [data-opt="${o.id}"] .jig-stage`).innerHTML = statusOption(o.id);
   }
   function setStatus(opt, s, focus) {
     sel[opt] = s;
@@ -381,6 +417,10 @@
     });
   }
 
+  buildMatrix();
+  buildFocus("m6-position", POSITION);
+  buildFocus("m6-meanings", MEANINGS);
+  buildStatus();
   renderMatrix();
   renderStatus();
   wire();

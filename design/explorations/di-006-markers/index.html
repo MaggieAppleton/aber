@@ -19,9 +19,10 @@
 <link rel="stylesheet" href="../../../app/web/src/ui/briefing-app.css">
 <link rel="stylesheet" href="../../../app/web/src/ui/atlas2.css">
 <link rel="stylesheet" href="../_shell/jig.css">
-<script src="../_shell/jig.js" defer></script>
 <script src="icons.js"></script>
 <script src="app.js" defer></script>
+<!-- After app.js: the shell attaches Choose to option frames app.js builds. -->
+<script src="../_shell/jig.js" defer></script>
 <style>
   /* Proposal values. Temporary (not yet tokens) are marked "temp". Colours reuse the app's existing tokens. */
   :root {
@@ -51,16 +52,20 @@
   .m6-strat dt { color: #8a847a; }
   .m6-strat dd { margin: 0; color: #2b2925; }
 
-  .m6-ctx { margin-top: 26px; }
-  .m6-ctx:first-of-type { margin-top: 8px; }
+  /* Matrix: each strategy column is one option; a subgrid keeps every context on one row across columns. */
+  .m6-matrix.jig-compare { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: 6px 12px; }
+  .m6-col { display: grid; grid-template-rows: subgrid; gap: 6px; align-content: start; }
+  .m6-col > .jig-label { grid-row: 1; }
+  .m6-ctx { grid-column: 1 / -1; padding-top: 20px; }
+  .m6-mini { display: none; margin: 14px 0 0; font-size: 14px; font-weight: 650; }
+  .m6-cap { margin: 4px 0 0; font-size: 14px; color: #5d5850; }
   .m6-ctx h3 { margin: 0 0 2px; font-size: 14px; font-weight: 650; }
   .m6-ctx > p { margin: 0 0 10px; color: #5d5850; font-size: 13px; max-width: 80ch; }
   .m6-grid { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: 12px; }
   .m6-cell { display: grid; gap: 6px; align-content: start; min-width: 0; }
-  .m6-cell .jig-label { font-size: 13px; }
-  .m6-cell .jig-stage { --jig-stage-h: 0px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.06); }
+  .jig-stage.m6-cell { --jig-stage-h: 0px; min-height: 0; box-shadow: 0 1px 2px rgb(0 0 0 / 0.06); }
   [data-hide-current] [data-col="current"], [data-hide-a] [data-col="A"], [data-hide-b] [data-col="B"], [data-hide-c] [data-col="C"] { display: none; }
-  @media (max-width: 900px) { .m6-grid { grid-template-columns: minmax(0, 1fr); } .m6-bar { padding: 10px 16px; } }
+  @media (max-width: 900px) { .m6-matrix.jig-compare { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; } .m6-col { display: flex; flex-direction: column; grid-row: auto !important; grid-column: auto !important; } .m6-col > * { grid-row: auto !important; } .m6-matrix > .m6-ctx { display: none; } .m6-mini { display: block; } .m6-bar { padding: 10px 16px; } }
 
   .m6-inv { overflow-x: auto; border-radius: 10px; }
   .m6-inv table { min-width: 980px; }
@@ -241,16 +246,25 @@
   </div>
 </section>
 
-<section class="jig-section" id="contexts">
+<section class="jig-section" id="contexts" data-decision="marker-strategy" data-question="Marker strategy">
   <h2>Same contexts, each strategy</h2>
   <p>Real app classes and CSS throughout; only the markers and their wrappers change. Hover or focus anything. Use <b>Hover + tooltip</b> to force the first row's hover paint and the marks' tooltips.</p>
-  <div id="m6-matrix"></div>
-  <div class="jig-decision" data-decision="marker-strategy" data-question="Marker strategy" data-options="Current|A|B|C"></div>
-  <div class="jig-decision" data-decision="marker-position" data-question="Marker position rule" data-options="Leading gutter (A)|Trailing slot on containers (B)|No position: words and order (C)|Mix: B for containers, A inside"></div>
-  <div class="jig-decision" data-decision="meanings-survive" data-question="Which meanings keep a persistent mark?" data-options="New, challenge and open|New and challenge|Challenge only|None (Briefing only)"></div>
+  <div id="m6-matrix" class="jig-compare m6-grid m6-matrix"></div>
 </section>
 
-<section class="jig-section" id="di-007">
+<section class="jig-section" id="position" data-decision="marker-position" data-question="Marker position rule">
+  <h2>Where a mark sits</h2>
+  <p>The same two contexts under each rule: a container (the sidebar) and the inside of an object (the theory pane's evidence). The mix takes B's slot for the container and A's gutter inside.</p>
+  <div id="m6-position" class="jig-compare" style="--jig-min: 250px; --jig-stage-h: 0px"></div>
+</section>
+
+<section class="jig-section" id="meanings" data-decision="meanings-survive" data-question="Which meanings keep a persistent mark?">
+  <h2>Which meanings keep a mark</h2>
+  <p>Columns drawn with A's gutter, so only the set of meanings changes: new (dot), challenge (signpost) and open (ring). The last option drops persistent marks and leaves challenge to Briefing.</p>
+  <div id="m6-meanings" class="jig-compare" style="--jig-min: 250px; --jig-stage-h: 0px"></div>
+</section>
+
+<section class="jig-section" id="di-007" data-decision="proto-status" data-question="Prototype status colour system">
   <h2>DI-007: Prototype status colour</h2>
   <p>The radio group is live: click a segment or use the arrow keys. Each option also shows the Columns prototype list, the theory pane's prototype chips, and the glyph beside a new mark to check the collision. Status green is <code>--ap-pos</code> #1f7a4d; the new dot stays the accent #29a383 and is the only dot, so shape separates them.</p>
   <div class="jig-compare" style="--jig-min: 250px; --jig-stage-h: 0px" id="m6-status"></div>
@@ -259,7 +273,6 @@
     <li><b>B</b> words: the clearest and the most text. Green is only on “Building”. The glyph becomes a neutral object icon everywhere.</li>
     <li><b>C</b> swap: the smallest change. Building becomes green and built stays ink, so the two never share a colour; idea and shelved are grey and differ only by opacity.</li>
   </ul>
-  <div class="jig-decision" data-decision="proto-status" data-question="Prototype status colour system" data-options="Current|A|B|C"></div>
 </section>
 </body>
 </html>

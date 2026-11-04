@@ -48,6 +48,10 @@ body.jig { background: #e9e6e1; }
 .x-strat { background: #fff; border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; align-content: start; }
 .x-strat h3 { margin: 0; font-size: 15px; }
 .x-strat p { margin: 0; font-size: 13px; color: #3d3a34; }
+.x-strat .x-strat-rec { padding-top: 8px; border-top: 1px solid #eee9e2; color: #2b2925; }
+/* Strategy peek: the top of the theory pane at full size, cropped (not scaled) */
+.jig-stage.x-strat-peek { height: 340px; }
+.jig-option > .x-strat { flex: 1; }
 .x-strat .x-k { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #8a847a; font-weight: 650; }
 
 /* Shared helpers */
@@ -203,17 +207,16 @@ body.jig { background: #e9e6e1; }
   <table class="jig-table x-spec-table" id="spec"><thead><tr><th>Type</th><th>Rendering</th><th>Where</th><th>Specimen</th></tr></thead><tbody></tbody></table>
 </section>
 
-<section class="jig-section x-wide">
-  <h2>Three strategies</h2>
-  <p>These are rules, not skins. A decides how a type is marked: always, with the same glyph. B decides it by giving each type a form. C decides when to mark: only where the surrounding container leaves the type ambiguous.</p>
+<section class="jig-section x-wide" data-decision="overall-strategy" data-question="Which strategy should the app adopt?">
+  <h2>Three strategies, against today</h2>
+  <p>These are rules, not skins. A decides how a type is marked: always, with the same glyph. B decides it by giving each type a form. C decides when to mark: only where the surrounding container leaves the type ambiguous. Under each rule is the top of the theory pane drawn with it, the densest mixed context; sections 1 to 6 show the rest.</p>
   <div class="jig-compare" style="--jig-min: 300px" id="strats"></div>
 </section>
 
-<section class="jig-section x-wide">
+<section class="jig-section x-wide" data-decision="relationship-chips" data-question="How should a relationship to another object be drawn?">
   <h2>1 · Theory pane: the densest mixed context</h2>
   <p>A theory references a theme, a rival theory, signals (as evidence), and, inside an unfolded signal, another theory, a theme and its dump. It also references theories it follows from or leads to, and its prototypes. Today the same theory reference appears as four chip variants with three different glyphs.</p>
   <div class="jig-compare" style="--jig-min: 520px" data-ctx="pane"></div>
-  <div class="jig-decision" data-decision="relationship-chips" data-question="How should a relationship to another object be drawn?" data-options="Current: relation glyph replaces type|A: type glyph in chip, relation glyph outside|B: labelled rows of type-shaped forms|C: labelled meta rows, plain chips"></div>
 </section>
 
 <section class="jig-section x-wide">
@@ -222,11 +225,10 @@ body.jig { background: #e9e6e1; }
   <div class="jig-compare" style="--jig-min: 520px" data-ctx="cols"></div>
 </section>
 
-<section class="jig-section x-wide">
+<section class="jig-section x-wide" data-decision="draft-count-glyph" data-question="What stands for a count of drafts (flow line and dump log)?">
   <h2>3 · Briefing and the dump log: mixed lists and the draft count</h2>
   <p>The Drafts group mixes theories, a theme and a prototype. The flow line and the dump log use Target to mean "drafts of any type", which teaches the wrong meaning for Target.</p>
   <div class="jig-compare" style="--jig-min: 520px" data-ctx="brief"></div>
-  <div class="jig-decision" data-decision="draft-count-glyph" data-question="What stands for a count of drafts (flow line and dump log)?" data-options="Current: dashed Target|A: split by type, dashed tokens|B: dashed count only, tooltip lists types|C: dashed token with the word 'drafts'"></div>
 </section>
 
 <section class="jig-section x-wide">
@@ -235,11 +237,10 @@ body.jig { background: #e9e6e1; }
   <div class="jig-compare" style="--jig-min: 520px" data-ctx="side"></div>
 </section>
 
-<section class="jig-section x-wide">
+<section class="jig-section x-wide" data-decision="per-type-marker" data-question="How does a reference say its type?">
   <h2>5 · Chat: objects inside prose</h2>
   <p>Chat shows any type the assistant mentions, in the order it mentions them. Today a theory is the only card without an icon, so it is the hardest one to identify there.</p>
   <div class="jig-compare" style="--jig-min: 420px" data-ctx="chat"></div>
-  <div class="jig-decision" data-decision="per-type-marker" data-question="How does a reference say its type?" data-options="Current|A: glyph in a fixed leading slot, everywhere|B: a form per type, glyph only in mixed lists|C: glyph slot only where the container is mixed"></div>
 </section>
 
 <section class="jig-section x-wide">
@@ -251,7 +252,6 @@ body.jig { background: #e9e6e1; }
 <section class="jig-section x-wide">
   <h2>Recommendation</h2>
   <div class="jig-tradeoffs" id="rec"></div>
-  <div class="jig-decision" data-decision="overall-strategy" data-question="Which strategy should the app adopt?" data-options="Current|A: one mark, every reference|B: each type has a form|C: the container names the type|C for when + A's slot for how"></div>
 </section>
 
 <script>
@@ -480,11 +480,18 @@ const NOTES={
 };
 
 /* ───────────── render ───────────── */
+/* Each context with a question: its four frames are that question's options (values unchanged). */
+const OPTION_VALUES={
+  pane:{cur:'Current: relation glyph replaces type',A:'A: type glyph in chip, relation glyph outside',B:'B: labelled rows of type-shaped forms',C:'C: labelled meta rows, plain chips'},
+  brief:{cur:'Current: dashed Target',A:'A: split by type, dashed tokens',B:'B: dashed count only, tooltip lists types',C:"C: dashed token with the word 'drafts'"},
+  chat:{cur:'Current',A:'A: glyph in a fixed leading slot, everywhere',B:'B: a form per type, glyph only in mixed lists',C:'C: glyph slot only where the container is mixed'},
+};
 const R={pane,cols,brief,side,chat,states};
 const SURF={pane:1,chat:1,states:1};
 document.querySelectorAll('[data-ctx]').forEach(el=>{
   const k=el.dataset.ctx;
-  el.innerHTML=S4.map(S=>`<div class="jig-option"><div class="jig-label"${S==='cur'?' data-current':''}><b>${S==='cur'?'Now':S}</b>${NAME[S]}</div><div class="jig-stage"><div class="ap ab-production x-ap${SURF[k]?' x-surface':''}">${R[k](S)}</div></div><p class="jig-note">${NOTES[k][S]}</p></div>`).join('');
+  const V=OPTION_VALUES[k];
+  el.innerHTML=S4.map(S=>`<div class="jig-option"${V?` data-option="${V[S]}"`:''}><div class="jig-label"${S==='cur'?' data-current':''}><b>${S==='cur'?'Now':S}</b>${NAME[S]}</div><div class="jig-stage"><div class="ap ab-production x-ap${SURF[k]?' x-surface':''}">${R[k](S)}</div></div><p class="jig-note">${NOTES[k][S]}</p></div>`).join('');
 });
 
 /* specimen inventory */
@@ -515,11 +522,13 @@ document.querySelector('#spec tbody').innerHTML=SPEC.map(([t,r,w,h,why])=>`<tr><
 
 /* strategy cards */
 const STR=[
+  ['cur','No single rule','Some references carry the type glyph (theme chips, prototype chips, signal cards). Others carry a relation glyph in its place (rival swap, follows and leads carets, stance arrows) or nothing at all (theory cards, signal rows). Target also counts drafts of every type.','Nothing to build. The cost is the inventory above: a theory takes about nine forms, and it is the least identifiable object in chat.','Each new surface picks its own form, so the drift grows with every surface.'],
   ['A','One mark, every reference','Every reference to an object carries its OBJECT_ICONS glyph in a fixed leading slot (14px in rows and cards, 12px in chips). The form (card, row or chip) varies by role; the mark never does. A relation glyph (swap, caret, stance) moves to the trailing edge or outside the chip.','Fully predictable, so you learn it once. It fixes chat, the Tests chip, rival chips and signal rows in one rule. The cost is noise in homogeneous lists (Columns, the sidebar), where the glyph repeats what the header says, and about 22px of claim width in narrow columns.','Linear and mechanical: a new type needs one icon. It is easy to lint ("every object reference renders <ObjectRef>").'],
   ['B','Each type has a form','Type is carried by shape. Theory is a claim card (surface, shadow, 600 weight), Theme is a rounded collection pill (or a stacked card), Signal is a quoted observation (a left rule, regular weight), and Prototype is a squared artifact chip with its status glyph. Icons appear only in mixed lists.','The calmest at rest, and it feels designed rather than labelled. But shapes have to be learned, weight and shadow differences are weak at a glance, and the dashed draft state strips the very shadow that marks a theory. Pills already mean "radius and size" elsewhere in the app, so this overloads them.','Poor: each new type needs a new, distinguishable shape, and the shape vocabulary runs out quickly. It is hard to enforce.'],
   ['C','The container names the type','Mark only where the type is ambiguous. Homogeneous containers (column headers, sidebar headers, field labels such as Rival, Tests and Supports) name the type once, and items stay plain. Mixed contexts (Briefing, chat, an unfolded signal) mark every item. Relations become labelled rows, not chip variants. Counts say their noun ("6 drafts").','Matches the model\'s "field labels persist" rule and keeps lists quiet. It needs judgement about what counts as mixed, and a plain chip lifted out of its labelled row loses its type (on drag, in search results, in a tooltip).','Good: a new type only needs a header or label. The risk is drift, so it needs a written rule and a shared ObjectRef that takes a "marked" flag from its container.'],
 ];
-document.getElementById('strats').innerHTML=STR.map(([k,n,rule,trade,scale])=>`<div class="x-strat"><div class="jig-label"><b>${k}</b>${n}</div><p>${rule}</p><span class="x-k">Tradeoffs</span><p>${trade}</p><span class="x-k">How it scales</span><p>${scale}</p></div>`).join('');
+const STRAT_VALUES={cur:'Current',A:'A: one mark, every reference',B:'B: each type has a form',C:'C: the container names the type'};
+document.getElementById('strats').innerHTML=STR.map(([k,n,rule,trade,scale])=>`<div class="jig-option" data-option="${STRAT_VALUES[k]}"><div class="jig-label"${k==='cur'?' data-current':''}><b>${k==='cur'?'Now':k}</b>${n}</div><div class="x-strat" data-option-stage><p>${rule}</p><span class="x-k">Tradeoffs</span><p>${trade}</p><span class="x-k">How it scales</span><p>${scale}</p>${k==='C'?`<p class="x-strat-rec">As drawn in this jig, C marks with A's fixed leading slot wherever it marks. That is the recommendation below: C for when, A's slot for how.</p>`:''}</div><div class="jig-stage x-strat-peek" aria-label="Theory pane under ${n}"><div class="ap ab-production x-ap x-surface">${pane(k)}</div></div></div>`).join('');
 
 document.getElementById('rec').innerHTML=`<p class="x-why"><b>Use C's rule for when to mark, and A's slot for how.</b> Columns and the sidebar show that C costs nothing where the app is already disciplined. The theory pane and chat show that the real failures are in mixed contexts and in relation chips, where a relation glyph currently takes the place of the type glyph. Where C says "mark", use A's fixed leading slot with the OBJECT_ICONS glyph (ProtoGlyph for prototypes), so a marked reference always looks the same. B's shapes look good in isolation, but they break down in the dashed draft state, overload pills, and do not scale to a sixth type.</p>
 <p class="x-why"><b>Applies regardless of strategy:</b> Target never stands for "drafts" (use "6 drafts" or per-type tokens). Sidebar prototype rows should use ProtoGlyph. The dump-origin chip should lead with TrayArrowDown, with the source in the text. A theory card in chat needs its glyph.</p>
