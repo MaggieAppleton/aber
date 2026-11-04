@@ -32,7 +32,7 @@
   const lum = c => { const f = x => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; }; const [r, g, b] = rgb(c); return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
   const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
   const TEXT = [["--ink", "--ground"], ["--ink", "--ground-2"], ["--ink", "--surface"], ["--ink-2", "--ground"], ["--ink-2", "--ground-2"], ["--ink-2", "--surface"],
-    ["--accent-text", "--surface"], ["--accent-text", "--accent-wash"], ["--on-primary", "--primary"], ["--neg", "--surface"], ["--pos", "--surface"], ["--fell", "--surface"], ["--building", "--surface"]];
+    ["--accent-text", "--surface"], ["--accent-text", "--accent-wash"], ["--on-primary", "--primary"], ["--neg", "--surface"], ["--neg", "--ground"], ["--pos", "--surface"], ["--pos", "--ground"], ["--fell", "--surface"], ["--building", "--surface"]];
   const check = () => {
     for (const scope of document.querySelectorAll(".strip-scope")) {
       const probe = document.createElement("span"); scope.append(probe);

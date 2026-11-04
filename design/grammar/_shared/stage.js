@@ -45,7 +45,7 @@
       <div class="stg-chips"><a href="#" class="stg-chip">${g("theme")}Cost of intelligence</a></div>
       <h3 class="stg-title">Tokens become nearly free for routine work</h3>
       <dl class="stg-fields">
-        <dt>Confidence</dt><dd>${conf(3, true)}<svg class="stg-spark" viewBox="0 0 64 16" aria-hidden="true"><path d="M1 13h10v-3h8v3h8V7h7v4h8V3h6v6h8" fill="none" stroke="var(--pos)" stroke-width="1.5"/><path d="M50 3v6h6" fill="none" stroke="var(--neg)" stroke-width="1.5"/></svg></dd>
+        <dt>Confidence</dt><dd>${conf(3, true)}<svg class="stg-spark" viewBox="0 0 64 16" aria-hidden="true"><path d="M1 13h10v-3h8v3h8V7h7v4h8V3h6v6h8" fill="none" stroke="var(--pos-mark)" stroke-width="1.5"/><path d="M50 3v6h6" fill="none" stroke="var(--neg-dot)" stroke-width="1.5"/></svg></dd>
         <dt>Happens by</dt><dd>${iconBtn("minus", "Earlier")}<span>2028</span>${iconBtn("plus", "Later")}</dd>
         <dt>Rival</dt><dd><a href="#" class="stg-chip">${g("theory")}Frontier intelligence stays scarce and expensive</a></dd>
       </dl>

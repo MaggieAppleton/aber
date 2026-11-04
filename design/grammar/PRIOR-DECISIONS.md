@@ -363,3 +363,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 ## 4 Nov 2026 (Maggie), round 3 of the foundations jig
 
 4 Nov 2026 (Maggie): per-type object colour is back (reverses 1 Nov). Neutrals should be warmer than Radix Sage; tone is a dial. The app's current layout and navigation are liked and stay; jigs restyle, they don't re-layout. The right pane aligns to the top of the main area.
+
+4 Nov 2026 (Maggie): colour system D 'Linen, bright types' leads. Status uses two meanings only: green = up/accent (rose = accent / accent text), red = down/challenge/bad (fell = challenge). No separate amber for fell.

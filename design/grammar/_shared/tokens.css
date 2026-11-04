@@ -29,7 +29,10 @@
   --primary-default: ink;
   --t-dump: 288; --t-signal: 245; --t-theme: 340; --t-theory: 70; --t-prototype: 122; --t-tripwire: 25;
   --tt-L: 0.958; --tt-C: 0.048; --tg-L: 0.56; --tg-C: 0.16;
-  --st-neg: oklch(0.53 0.17 27); --st-neg-dot: oklch(0.61 0.18 27); --st-pos: oklch(0.5 0.1 145); --st-fell: oklch(0.54 0.11 65);
+  /* Two status meanings only (Maggie, 4 Nov): up = accent, down = challenge red. Rose and fell are aliases. */
+  --st-neg: oklch(0.56 0.2 26); --st-neg-dot: oklch(0.59 0.2 26);
+  --st-pos: var(--accent-text); --st-pos-mark: var(--accent);
+  --st-fell: var(--st-neg); --st-fell-mark: var(--st-neg-dot);
 }
 
 /* 1. Clean light (lead; Maggie leaning, 4 Nov): near-white, barely warm, crisp ink, fresh light type tints, jade primary.
@@ -43,6 +46,7 @@
   --t-dump: 288; --t-signal: 245; --t-theme: 340; --t-theory: 70; --t-prototype: 122; --t-tripwire: 25;
   --tt-L: 0.958; --tt-C: 0.048; --tg-L: 0.56; --tg-C: 0.16;
   --st-neg: oklch(0.55 0.2 25); --st-neg-dot: oklch(0.63 0.21 25); --st-pos: oklch(0.52 0.14 148); --st-fell: oklch(0.56 0.13 65);
+  --st-pos-mark: initial; --st-fell-mark: initial;
 }
 
 /* 3. Ink on linen: off-white just warm of neutral, near-black ink and a black primary, quiet dusty tints; teal only for new and focus. */
@@ -55,6 +59,7 @@
   --t-dump: 290; --t-signal: 238; --t-theme: 345; --t-theory: 78; --t-prototype: 125; --t-tripwire: 32;
   --tt-L: 0.948; --tt-C: 0.016; --tg-L: 0.53; --tg-C: 0.055;
   --st-neg: oklch(0.53 0.17 27); --st-neg-dot: oklch(0.61 0.18 27); --st-pos: oklch(0.5 0.1 145); --st-fell: oklch(0.54 0.11 65);
+  --st-pos-mark: initial; --st-fell-mark: initial;
 }
 
 /* 4. Studio grey (agent's proposal): true neutral, lifted so nothing reads as a grey block; rail only just below ground;
@@ -68,6 +73,7 @@
   --t-dump: 292; --t-signal: 250; --t-theme: 345; --t-theory: 62; --t-prototype: 125; --t-tripwire: 25;
   --tt-L: 0.975; --tt-C: 0.025; --tg-L: 0.56; --tg-C: 0.17;
   --st-neg: oklch(0.55 0.2 25); --st-neg-dot: oklch(0.63 0.21 25); --st-pos: oklch(0.52 0.14 148); --st-fell: oklch(0.55 0.12 65);
+  --st-pos-mark: initial; --st-fell-mark: initial;
 }
 
 /* ═══ Derived colour tokens (recomputed in every system scope) ═══════════════ */
@@ -101,6 +107,7 @@
   --new: var(--accent); --focus: var(--accent);
 
   --neg: var(--st-neg); --neg-dot: var(--st-neg-dot); --pos: var(--st-pos); --fell: var(--st-fell);
+  --pos-mark: var(--st-pos-mark, var(--st-pos)); --fell-mark: var(--st-fell-mark, var(--st-fell));   /* sparkline and other marks */
   --building: var(--accent-text);   /* DI-007 open: Maggie wants green; jade shown */
 
   /* Elevation: shadow means height; a 0.5px tinted ring plus soft drops */
