@@ -37,17 +37,74 @@
   </div>
 </section>
 
+<section class="pkj-min-full jig-section" id="signal-anatomy" data-decision="signal-peek" data-question="How should a signal's peek and pane be arranged?">
+  <h2>A signal's anatomy, row to pane</h2>
+  <p><span class="pkj-tag" data-k="proposed">Revised after Maggie's review</span> These are fixed in every option below. The header carries the same kind icon as the row (link, voice note or typed note) and the signal's title. It doesn't spell out "Signal", because the list it opened from already says so. The note is the signal's own prose, so it sits right under the title on the same left edge. Sources, themes, theories and where it came from are connected objects, kept apart from that core. The pane uses the same order, so row, peek and pane read as one object at three sizes.</p>
+  <p>What changes between the options is how the connected objects are set apart. Each shows the same signal as row, peek and pane, then three harder cases. Until you choose, the rest of the page uses <b data-sig-layout-now>A</b>.</p>
+  <figure class="pkj-before"><img src="evidence/r1-signal-rungs.png" alt="Round 1: row, then a peek headed by the word Signal, with a label table, then the pane" loading="lazy"><figcaption><span class="pkj-tag" data-k="superseded">What you reviewed</span> Round 1. The header said "Signal", the title sat in the body, the note was a table row between Sources and Themes, and two rows had no line between them.</figcaption></figure>
+  <div class="jig-compare">
+    <div class="jig-option" data-option="A: one line, then plain lines">
+      <div class="jig-label"><b>A</b> One line between the signal and its connections</div>
+      <p class="jig-note">No labels. Each connection carries its own icon (link, binoculars, arrow up or down), and the groups are separated by space. Quietest of the three; it relies on the icons being learnable.</p>
+      <div class="pkj-opt" data-option-stage>
+        <div class="pkj-rungs">
+          <div><h3>Row</h3><div class="pkj-surface pk" data-sref="row:signal:s5"></div></div>
+          <div><h3>Peek</h3><div data-sref="peek:signal:s5" data-layout="A"></div></div>
+          <div><h3>Pane</h3><div class="pkj-st-720 jig-stage pk-stage" id="sig-pane-A" data-build="signalPane" data-layout="A"></div></div>
+        </div>
+        <div class="pkj-edge">
+          <div><p class="pkj-hint">Long title and note, voice <span class="pkj-tag" data-k="current">Authored</span></p><div class="pkj-surface pk" data-sref="row:signal:L1"></div><div data-sref="peek:signal:L1" data-layout="A"></div></div>
+          <div><p class="pkj-hint">No note, one source, a suggested link</p><div class="pkj-surface pk" data-sref="row:signal:s7"></div><div data-sref="peek:signal:s7" data-layout="A"></div></div>
+          <div><p class="pkj-hint">Typed observation, no source, two theories</p><div class="pkj-surface pk" data-sref="row:signal:s6"></div><div data-sref="peek:signal:s6" data-layout="A"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="jig-option" data-option="B: labelled groups">
+      <div class="jig-label"><b>B</b> Short labels above each group, no lines</div>
+      <p class="jig-note">Sources, Themes and Theories are named above their items, on the title's left edge. Easiest to scan cold, and keeps the labels you already know from the pane. The most text of the three.</p>
+      <div class="pkj-opt" data-option-stage>
+        <div class="pkj-rungs">
+          <div><h3>Row</h3><div class="pkj-surface pk" data-sref="row:signal:s5"></div></div>
+          <div><h3>Peek</h3><div data-sref="peek:signal:s5" data-layout="B"></div></div>
+          <div><h3>Pane</h3><div class="pkj-st-720 jig-stage pk-stage" id="sig-pane-B" data-build="signalPane" data-layout="B"></div></div>
+        </div>
+        <div class="pkj-edge">
+          <div><p class="pkj-hint">Long title and note, voice <span class="pkj-tag" data-k="current">Authored</span></p><div class="pkj-surface pk" data-sref="row:signal:L1"></div><div data-sref="peek:signal:L1" data-layout="B"></div></div>
+          <div><p class="pkj-hint">No note, one source, a suggested link</p><div class="pkj-surface pk" data-sref="row:signal:s7"></div><div data-sref="peek:signal:s7" data-layout="B"></div></div>
+          <div><p class="pkj-hint">Typed observation, no source, two theories</p><div class="pkj-surface pk" data-sref="row:signal:s6"></div><div data-sref="peek:signal:s6" data-layout="B"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="jig-option" data-option="C: connections in a tray">
+      <div class="jig-label"><b>C</b> Connections sit in a tray below the signal</div>
+      <p class="jig-note">Sources and themes become tokens; theory claims are too long for tokens, so they stay lines. The core reads like a card and the tray like its footer. Densest for short names, and the pane can unfile a theme from its token.</p>
+      <div class="pkj-opt" data-option-stage>
+        <div class="pkj-rungs">
+          <div><h3>Row</h3><div class="pkj-surface pk" data-sref="row:signal:s5"></div></div>
+          <div><h3>Peek</h3><div data-sref="peek:signal:s5" data-layout="C"></div></div>
+          <div><h3>Pane</h3><div class="pkj-st-720 jig-stage pk-stage" id="sig-pane-C" data-build="signalPane" data-layout="C"></div></div>
+        </div>
+        <div class="pkj-edge">
+          <div><p class="pkj-hint">Long title and note, voice <span class="pkj-tag" data-k="current">Authored</span></p><div class="pkj-surface pk" data-sref="row:signal:L1"></div><div data-sref="peek:signal:L1" data-layout="C"></div></div>
+          <div><p class="pkj-hint">No note, one source, a suggested link</p><div class="pkj-surface pk" data-sref="row:signal:s7"></div><div data-sref="peek:signal:s7" data-layout="C"></div></div>
+          <div><p class="pkj-hint">Typed observation, no source, two theories</p><div class="pkj-surface pk" data-sref="row:signal:s6"></div><div data-sref="peek:signal:s6" data-layout="C"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="jig-section">
   <h2>One signal, three rungs</h2>
-  <p><i>Team reports agents opening 40 PRs a day</i>, from this morning's voice note. Each rung keeps what the last one showed and adds a little. The pane adds editing, the source's words, the passage it came from, its merge history and every action.</p>
+  <p><i>Team reports agents opening 40 PRs a day</i>, from this morning's voice note, shown in the composition you've chosen above (now <b data-sig-layout-now>A</b>). Each rung keeps what the last one showed and adds a little. The pane adds editing, the source's words, the passage it came from, its merge history and every action.</p>
   <div class="pkj-rungs">
     <div><h3><span class="pkj-tag" data-k="proposed">1</span>Row</h3><div class="pkj-surface pk" data-static-rung="row-signal"></div><p class="pkj-hint">Gist, source domain, new dot.</p></div>
     <div><h3><span class="pkj-tag" data-k="proposed">2</span>Peek</h3><div data-static-rung="peek-signal"></div></div>
     <div><h3><span class="pkj-tag" data-k="proposed">3</span>Pane</h3><div class="pkj-st-720 jig-stage pk-stage" id="signal-pane" data-build="signalPane"></div></div>
   </div>
   <div class="pkj-ledger">
-    <div><h4>Kept from the row</h4><ul><li>The gist, now as the peek's name</li><li>The source domain, now with its date</li></ul></div>
-    <div><h4>Revealed in the peek</h4><ul><li>Every source with its date</li><li>Maggie's note, at most 2 lines</li><li>Themes and theories, with Supports or Undermines</li><li>"From voice note, Today 07:40"</li><li>Pending suggestions, with Dismiss and Accept</li></ul></div>
+    <div><h4>Kept from the row</h4><ul><li>The kind icon (link, voice or typed note)</li><li>The gist, now the peek's title</li><li>The source domain, now with its date</li></ul></div>
+    <div><h4>Revealed in the peek</h4><ul><li>Every source with its date</li><li>Maggie's note, under the title, at most 2 lines</li><li>Themes and theories, with Supports or Undermines</li><li>"From voice note, Today 07:40"</li><li>Pending suggestions, with Dismiss and Accept</li></ul></div>
     <div><h4>Only in the pane</h4><ul><li>Editing the gist and note</li><li>The source's words (fetched content)</li><li>The passage, highlighted</li><li>Other origins and merge history</li><li>File, Unfile, Add theory, Merge, Retire</li></ul></div>
   </div>
 </section>
@@ -150,7 +207,9 @@
       <tr><td>Title sizes</td><td>one, 22–24</td><td>26 (signal), 22 (dump)</td><td data-after="title">22 in both panes; peeks use 14 w600</td></tr>
       <tr><td>Icon sizes</td><td>16 in a 24px slot</td><td>10, 12, 13 and 16</td><td data-after="icons">16 only (12 in the Signal pane, 8 in the Dump pane)</td></tr>
       <tr><td>Icon centre vs first line</td><td>within ±0.5px</td><td>−1.5 to +4px (12px chips high, 13px margin marks low)</td><td data-after="align">+0.5px on every icon</td></tr>
-      <tr><td>Grey section headings and notes</td><td>none; one set of field labels</td><td>"What the source says", "Made", "Transcript", "Illustrative."</td><td>None. Sources, Note, Themes, Theories, From, Passage, Merged; Captured, Kind, Made, Processed, Audio, Transcript</td></tr>
+      <tr><td>Grey section headings and notes</td><td>none; one set of field labels</td><td>"What the source says", "Made", "Transcript", "Illustrative."</td><td>None. Signal pane: no label table (round 2); B names only Sources, Themes, Theories. Dump pane: Captured, Kind, Made, Processed, Audio, Transcript</td></tr>
+      <tr><td>Title and note share a left edge (round 2)</td><td>note directly under the title, on its text edge</td><td>Note was a table row between Sources and Themes</td><td>Peek: title 44px, note 44px, 4px apart. Pane: title, note text and every line's text at 60px. Same in A, B and C (C's tray insets its lines to 72px)</td></tr>
+      <tr><td>Kind glyph (round 2)</td><td>one meaning in row, peek and pane</td><td>Row: link icon. Peek: a pulse and the word "Signal". Pane bar: the same</td><td>Link, voice or typed-note glyph in the row, the peek header and the pane title; no written type. Glyph centre vs title's first line: 0px in the peek and pane</td></tr>
       <tr><td>Reading measure</td><td>at most 68ch</td><td>68ch (kept)</td><td>68ch</td></tr>
     </tbody>
   </table>

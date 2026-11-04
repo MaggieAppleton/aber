@@ -37,12 +37,23 @@
     p4: { name: "Memory inspector", status: "Shelved", theories: ["t3"], links: [] },
   };
   const state = { accepted: {}, dismissed: {}, filed: {} };
-  const sig = id => W.signal(id);
+  // Authored for this jig: a voice-note signal with a long gist and a long note, to test wrapping and the 2-line clamp.
+  const EXTRA = {
+    L1: { id: "L1", gist: "Regulator wants assistants to show people everything they remember about them, and to delete any of it on request", source: "", themes: ["memory", "identity"], evidence: [{ theory: "t3", stance: "undermines" }], day: "Today", dump: "D2", sources: [],
+      note: "The opposite pressure to my memory theory. If every remembered fact becomes a liability, products keep memory short and visible. Watch whether the big three ship a memory inspector before the deadline, or quietly turn memory off in Europe." },
+  };
+  const sig = id => EXTRA[id] || W.signal(id);
   const dumpOf = id => W.dump(id);
   const theory = id => THEORIES[id] || { claim: W.THEORIES[id]?.claim || id, conf: W.THEORIES[id]?.conf };
   const dumpKind = d => ({ voice: "Voice note", link: "Links", text: "Text note" }[d.kind]);
   const dumpGlyph = d => ({ voice: "waveform", link: "link", text: "text-align-left" }[d.kind]);
-  const sigGlyph = s => (/\./.test(s.source) ? "link" : "text-align-left");
+  // A signal's kind: link when it has a web source, otherwise the kind of dump it came from. The same glyph leads the
+  // signal in its row, its peek header, its pane title and every reference line. Context (a column of signals) says it's a signal.
+  const kindOf = s => s.sources?.length ? "link" : dumpOf(s.dump)?.kind === "voice" ? "voice" : "text";
+  const KIND = { link: ["link", "Link signal"], voice: ["waveform", "Voice signal"], text: ["text-align-left", "Note signal"] };
+  const sigGlyph = s => KIND[kindOf(s)][0];
+  const kindSlot = (s, extra = "") => `<span class="pk-i" data-ink role="img" aria-label="${KIND[kindOf(s)][1]}" title="${KIND[kindOf(s)][1]}">${ic(sigGlyph(s))}${extra}</span>`;
+  const layoutOf = st => st?.dataset.layout || document.body.dataset.sigLayout || "A";
   const fromLine = s => { const d = dumpOf(s.dump); return d ? `From ${dumpKind(d).toLowerCase()}, ${d.day} ${d.time}` : ""; };
   const conf = n => `<span class="pk-conf" aria-label="Confidence ${n} of 5">${[1, 2, 3, 4, 5].map(i => `<i${i <= n ? " data-on" : ""}></i>`).join("")}</span>`;
   const stanceOf = (s, tid) => s.evidence.find(e => e.theory === tid);
@@ -53,7 +64,7 @@
   const R = {
     signal: (s, o = {}) => {
       const row = `<button type="button" class="pk-row" data-peek="signal:${s.id}"${o.eye ? ' data-pane-link' : ' aria-expanded="false" aria-haspopup="dialog"'}${o.eye ? ' style="padding-right:40px"' : ""}>
-        <span class="pk-i" data-ink>${ic(sigGlyph(s))}${s.fresh ? '<span class="pk-dot" aria-label="New"></span>' : ""}</span>
+        ${kindSlot(s, s.fresh ? '<span class="pk-dot" aria-label="New"></span>' : "")}
         <span class="pk-row-text"><span>${esc(s.gist)}</span><span class="pk-2">${esc(s.source)}</span></span></button>`;
       if (!o.eye) return row;
       // Alternative trigger: the row opens the pane; a trailing eye opens the peek.
@@ -78,31 +89,55 @@
   const theoryLine = (tid, stanceWord) => { const t = theory(tid); return `<button type="button" class="pk-refline pk-line" data-peek="theory:${tid}"><span class="pk-i">${ic(stanceWord === "Undermines" ? "arrow-down" : stanceWord === "Supports" ? "arrow-up" : "target")}</span><span class="pk-line-text">${stanceWord ? `<span class="pk-2">${stanceWord} </span>` : ""}${esc(t.claim)}</span></button>`; };
   const themeLine = id => `<button type="button" class="pk-refline pk-line" data-peek="theme:${id}"><span class="pk-i">${ic("binoculars")}</span><span class="pk-line-text">${esc(THEMES[id]?.name || W.THEMES[id])}</span></button>`;
 
+  // Connected objects for a signal, rendered once and arranged by each composition.
+  function sigConn(s, { peek = false, pane = false } = {}) {
+    const d = dumpOf(s.dump), ev = evidenceLive(s);
+    const themes = [...s.themes, ...(state.filed[s.id] || [])];
+    const themeName = t => THEMES[t]?.name || W.THEMES[t];
+    const groups = [];
+    if (s.sources.length) groups.push({ label: "Sources", html: s.sources.map(x => pane
+      ? `<div class="pk-line"><span class="pk-i">${ic("link")}</span><span class="pk-line-text"><span class="pk-split"><span><a class="pk-ref" href="${esc(x.url)}" onclick="return false">${esc(x.domain)}</a>, ${esc(x.author)}</span><span class="pk-2">${esc(x.date)}</span></span><span class="pk-quote">${esc(x.title)}</span></span></div>`
+      : `<div class="pk-line"><span class="pk-i">${ic("link")}</span><span class="pk-line-text pk-split"><span>${esc(x.domain)}</span><span class="pk-2">${esc(x.date)}</span></span></div>`).join("") });
+    groups.push({ label: "Themes", html: themes.map(t => pane
+      ? `<div class="pk-line"><span class="pk-i">${ic("binoculars")}</span><span class="pk-line-text pk-split"><a class="pk-ref" href="#" onclick="return false">${esc(themeName(t))}</a><button type="button" class="pk-btn" data-quiet data-size="s">Unfile</button></span></div>`
+      : themeLine(t)).join("") + (pane ? `<button type="button" class="pk-add">${slot("plus")}File in theme</button>` : "") });
+    const evHtml = ev.map(e => {
+      const st = e.stance === "supports" ? "Supports" : "Undermines";
+      if (!isSuggested(s, e)) return pane
+        ? `<div class="pk-line"><span class="pk-i">${ic(st === "Supports" ? "arrow-up" : "arrow-down")}</span><span class="pk-line-text"><span class="pk-2">${st} </span><a class="pk-ref" href="#" onclick="return false">${esc(theory(e.theory).claim)}</a></span></div>`
+        : theoryLine(e.theory, st);
+      return `<div class="pk-suggest" role="group" aria-label="Suggested link">
+          <div class="pk-line"><span class="pk-i">${ic(st === "Supports" ? "arrow-up" : "arrow-down")}</span><span class="pk-line-text"><span class="pk-2">Suggested: ${st.toLowerCase()} </span>${esc(theory(e.theory).claim)}</span></div>
+          <div class="pk-suggest-acts"><button type="button" class="pk-btn" data-quiet data-act="dismiss" data-k="${s.id}:${e.theory}">Dismiss</button><button type="button" class="pk-btn" data-act="accept" data-k="${s.id}:${e.theory}">Accept</button></div></div>`;
+    }).join("");
+    const theoriesHtml = evHtml + (pane ? `<button type="button" class="pk-add">${slot("plus")}Add theory</button>` : "");
+    if (ev.length || pane) groups.push({ label: "Theories", html: theoriesHtml });
+    const origin = d ? `<button type="button" class="pk-refline pk-line" data-peek="dump:${d.id}" aria-haspopup="dialog" aria-expanded="false"><span class="pk-i">${ic(dumpGlyph(d))}</span><span class="pk-line-text pk-2">${esc(fromLine(s))}</span></button>` : "";
+    // C: short names become tokens (sources with their date, themes); claims stay lines.
+    const tok = [
+      ...s.sources.map(x => `<span class="pk-tok">${slot("link")}<span>${esc(x.domain)}</span><span class="pk-2">${esc(x.date)}</span></span>`),
+      ...themes.map(t => pane
+        ? `<span class="pk-tok">${slot("binoculars")}<a class="pk-ref" href="#" onclick="return false">${esc(themeName(t))}</a><button type="button" class="pk-tok-x" aria-label="Unfile from ${esc(themeName(t))}" title="Unfile">${ic("x")}</button></span>`
+        : `<button type="button" class="pk-tok" data-peek="theme:${t}">${slot("binoculars")}<span>${esc(themeName(t))}</span></button>`),
+      ...(pane ? [`<button type="button" class="pk-tok" data-add>${slot("plus")}<span>File in theme</span></button>`] : []),
+    ].join("");
+    return { groups, origin, tokens: `<div class="pk-toks">${tok}</div>`, theories: theoriesHtml, d };
+  }
+
   const PEEK = {
+    // Three compositions share the same anatomy: kind glyph and title in the header, the note as prose right under the
+    // title, then connected objects (sources, themes, theories, origin) kept apart from that core.
+    //   A: one hairline, then unlabelled icon lines grouped by space.  B: no lines, a short label above each group.
+    //   C: the connected objects sit in a sunk tray; short names become tokens, claims stay lines.
     signal(id, opts = {}) {
-      const s = sig(id), d = dumpOf(s.dump);
-      const ev = evidenceLive(s);
-      const sources = s.sources.length
-        ? s.sources.map(x => `<div class="pk-line"><span class="pk-i">${ic("link")}</span><span class="pk-line-text">${esc(x.domain)}, ${esc(x.date)}</span></div>`).join("")
-        : `<div class="pk-line"><span class="pk-i">${ic("text-align-left")}</span><span class="pk-line-text">My observation</span></div>`;
-      const evRows = ev.map(e => {
-        const st = e.stance === "supports" ? "Supports" : "Undermines";
-        if (!isSuggested(s, e)) return theoryLine(e.theory, st);
-        return `<div class="pk-suggest" role="group" aria-label="Suggested link">
-            <div class="pk-line"><span class="pk-i">${ic(st === "Supports" ? "arrow-up" : "arrow-down")}</span><span class="pk-line-text"><span class="pk-2">Suggested: ${st.toLowerCase()} </span>${esc(theory(e.theory).claim)}</span></div>
-            <div class="pk-suggest-acts"><button type="button" class="pk-btn" data-quiet data-act="dismiss" data-k="${s.id}:${e.theory}">Dismiss</button><button type="button" class="pk-btn" data-act="accept" data-k="${s.id}:${e.theory}">Accept</button></div></div>`;
-      }).join("");
-      const themes = [...s.themes, ...(state.filed[s.id] || [])];
-      const body = `<p class="pk-peek-name" id="${opts.labelId}">${esc(s.gist)}</p>
-        <dl class="pk-fields">
-          <dt>Sources</dt><dd>${sources}</dd>
-          ${s.note ? `<dt>Note</dt><dd><span class="pk-clamp2">${esc(s.note)}</span></dd>` : ""}
-          <dt>Themes</dt><dd>${themes.map(themeLine).join("")}</dd>
-          ${ev.length ? `<dt>Theories</dt><dd>${evRows}</dd>` : ""}
-        </dl>
-        ${d ? `<button type="button" class="pk-refline pk-line" data-peek="dump:${d.id}"><span class="pk-i">${ic(dumpGlyph(d))}</span><span class="pk-line-text pk-2">${esc(fromLine(s))}</span></button>` : ""}`;
+      const s = sig(id), L = opts.layout || "A", c = sigConn(s, { peek: true });
+      const note = s.note ? `<p class="pk-sig-note pk-clamp2">${esc(s.note)}</p>` : "";
+      let conn;
+      if (L === "B") conn = `<div class="pk-conn" data-l="B">${c.groups.map(g => `<div class="pk-grp"><div class="pk-grp-label">${g.label}</div>${g.html}</div>`).join("")}${c.origin ? `<div class="pk-grp">${c.origin}</div>` : ""}</div>`;
+      else if (L === "C") conn = `<div class="pk-conn" data-l="C">${c.tokens}${c.theories ? `<div class="pk-grp">${c.theories}</div>` : ""}${c.origin ? `<div class="pk-grp">${c.origin}</div>` : ""}</div>`;
+      else conn = `<div class="pk-conn" data-l="A">${c.groups.map(g => `<div class="pk-grp" role="group" aria-label="${g.label}">${g.html}</div>`).join("")}${c.origin ? `<div class="pk-grp">${c.origin}</div>` : ""}</div>`;
       const foot = opts.verb ? `<button type="button" class="pk-btn" data-act="file" data-k="${s.id}">${ic("plus")}File in theme</button>` : "";
-      return { glyph: "pulse", label: "Signal", body, foot };
+      return { glyphHtml: kindSlot(s), label: KIND[kindOf(s)][1], title: s.gist, body: note + conn, foot, layout: L, sig: true };
     },
     dump(id, opts = {}) {
       const d = dumpOf(id);
@@ -111,32 +146,29 @@
         ? `<div class="pk-status" data-tone="neg">${slot("warning", ' data-tone="neg"')}<span>Transcription failed at 07:41. Retry is in the pane.</span></div>`
         : `<div class="pk-status">${slot("check")}<span class="pk-2">Processed, made ${d.produced.length}</span></div>`;
       const made = d.produced.map(x => sig(x) ? sigLine(sig(x)) : theory(x) ? theoryLine(x) : "").join("");
-      const body = `<p class="pk-peek-name" id="${opts.labelId}">${esc(d.first)}</p>
-        <dl class="pk-fields">
+      const body = `<dl class="pk-fields">
           <dt>Captured</dt><dd>${esc(d.day)} ${esc(d.time)}${d.duration ? `, ${d.duration}` : ""}</dd>
           <dt>Status</dt><dd>${status}</dd>
           ${d.failed ? `<dt>Made</dt><dd><span class="pk-2">Nothing yet</span></dd>` : `<dt>Opening</dt><dd><span class="pk-clamp3">${esc(lines)}</span></dd>
           <dt>Made</dt><dd>${made}</dd>`}
         </dl>`;
-      return { glyph: dumpGlyph(d), label: dumpKind(d), body };
+      return { glyph: dumpGlyph(d), label: dumpKind(d), title: `${esc(d.first)}`, titleHtml: true, body };
     },
     theme(id, opts = {}) {
       const t = THEMES[id];
-      const body = `<p class="pk-peek-name" id="${opts.labelId}">${esc(t.name)}</p>
-        <dl class="pk-fields">
+      const body = `<dl class="pk-fields">
           <dt>Holds</dt><dd><span>${t.signals} signals, ${t.theories.length} ${t.theories.length === 1 ? "theory" : "theories"}, ${t.prototypes.length} ${t.prototypes.length === 1 ? "prototype" : "prototypes"}</span></dd>
           ${t.theories.length ? `<dt>Theories</dt><dd>${t.theories.slice(0, 3).map(x => { const th = theory(x); return `<button type="button" class="pk-refline" data-peek="theory:${x}" style="grid-template-columns:minmax(0,1fr) auto;column-gap:8px;align-items:start"><span>${esc(th.claim)}</span>${th.draft ? '<span class="pk-2">Draft</span>' : conf(th.conf)}</button>`; }).join("")}</dd>` : ""}
           <dt>Newest</dt><dd>${t.newest.slice(0, 3).map(x => sigLine(sig(x))).join("")}</dd>
         </dl>`;
-      return { glyph: "binoculars", label: "Theme", body };
+      return { glyph: "binoculars", label: "Theme", title: `${esc(t.name)}`, titleHtml: true, body };
     },
     theory(id, opts = {}) {
       const t = theory(id);
       const sup = (t.top?.sup || []).slice(0, 2).map(x => sigLine(sig(x))).join("");
       const und = (t.top?.und || []).slice(0, 2).map(x => sigLine(sig(x))).join("");
       const live = (t.hits || []).filter(h => !state.accepted[`hit:${h}`] && !state.dismissed[`hit:${h}`]);
-      const body = `<p class="pk-peek-name" id="${opts.labelId}">${esc(t.claim)}</p>
-        <dl class="pk-fields">
+      const body = `<dl class="pk-fields">
           <dt>Confidence</dt><dd>${t.draft ? "Draft, not yet held" : `<span style="display:flex;gap:8px;align-items:center">${conf(t.conf)}<span class="pk-num">+${t.sup} −${t.und}</span></span>`}</dd>
           <dt>Happens by</dt><dd>${t.horizon}</dd>
           ${t.tripwire ? `<dt>Tripwire</dt><dd><span>I'd change my mind if ${esc(t.tripwire)}.${live.length ? ` <span class="pk-trip-count" style="vertical-align:1px">${live.length}</span>` : ""}</span></dd>` : ""}
@@ -144,33 +176,30 @@
           ${und ? `<dt>Undermines</dt><dd>${und}</dd>` : ""}
         </dl>
         ${t.pending ? `<p class="pk-2">${t.pending} suggestion${t.pending === 1 ? "" : "s"} waiting in the pane</p>` : ""}`;
-      return { glyph: "target", label: t.draft ? "Draft theory" : "Theory", body };
+      return { glyph: "target", label: t.draft ? "Draft theory" : "Theory", title: `${esc(t.claim)}`, titleHtml: true, body };
     },
     prototype(id, opts = {}) {
       const p = PROTOS[id];
-      const body = `<p class="pk-peek-name" id="${opts.labelId}">${esc(p.name)}</p>
-        ${p.media ? '<span class="pk-thumb" role="img" aria-label="First screenshot (schematic)"></span>' : ""}
+      const body = `${p.media ? '<span class="pk-thumb" role="img" aria-label="First screenshot (schematic)"></span>' : ""}
         <dl class="pk-fields">
           <dt>Status</dt><dd>${p.status}</dd>
           <dt>Tests</dt><dd>${p.theories.map(x => theoryLine(x)).join("")}</dd>
           ${p.links.length ? `<dt>Links</dt><dd>${p.links.map(l => `<div class="pk-line"><span class="pk-i">${ic("link")}</span><span class="pk-line-text">${esc(l)}</span></div>`).join("")}</dd>` : ""}
         </dl>`;
-      return { glyph: "pencil-ruler", label: "Prototype", body };
+      return { glyph: "pencil-ruler", label: "Prototype", title: `${esc(p.name)}`, titleHtml: true, body };
     },
     // A set rather than an object: what a filed token or a tripped count points at.
     filed(id, opts = {}) {
       const d = dumpOf(id);
-      const body = `<p class="pk-peek-name" id="${opts.labelId}">Filed ${d.produced.length} signals from your ${dumpKind(d).toLowerCase()}</p>
-        <div style="display:grid;gap:8px">${d.produced.map(x => { const s = sig(x); return s ? `<button type="button" class="pk-refline pk-line" data-peek="signal:${x}"><span class="pk-i">${ic(sigGlyph(s))}</span><span class="pk-line-text">${esc(s.gist)}<br><span class="pk-2">${esc(W.THEMES[s.themes[0]])}</span></span></button>` : ""; }).join("")}</div>`;
-      return { glyph: "check", label: "Filed", body, paneRef: `dump:${id}` };
+      const body = `<div style="display:grid;gap:8px">${d.produced.map(x => { const s = sig(x); return s ? `<button type="button" class="pk-refline pk-line" data-peek="signal:${x}"><span class="pk-i">${ic(sigGlyph(s))}</span><span class="pk-line-text">${esc(s.gist)}<br><span class="pk-2">${esc(W.THEMES[s.themes[0]])}</span></span></button>` : ""; }).join("")}</div>`;
+      return { glyph: "check", label: "Filed", title: `Filed ${d.produced.length} signals from your ${dumpKind(d).toLowerCase()}`, titleHtml: true, body, paneRef: `dump:${id}` };
     },
     hits(id, opts = {}) {
       const t = theory(id);
       const live = t.hits.filter(h => !state.accepted[`hit:${h}`] && !state.dismissed[`hit:${h}`]);
-      const body = `<p class="pk-peek-name" id="${opts.labelId}">${live.length ? `${live.length} signal${live.length === 1 ? " matches" : "s match"} your tripwire` : "Every match is decided"}</p>
-        <p class="pk-2">I'd change my mind if ${esc(t.tripwire)}.</p>
+      const body = `<p class="pk-2">I'd change my mind if ${esc(t.tripwire)}.</p>
         ${live.map(h => { const s = sig(h); return `<div class="pk-suggest">${sigLine(s)}<div class="pk-suggest-acts"><button type="button" class="pk-btn" data-quiet data-act="dismiss" data-k="hit:${h}">Dismiss</button><button type="button" class="pk-btn" data-act="accept" data-k="hit:${h}">Accept</button></div></div>`; }).join("")}`;
-      return { glyph: "signpost", label: "Tripwire", body, paneRef: `theory:${id}` };
+      return { glyph: "signpost", label: "Tripwire", title: `${live.length ? `${live.length} signal${live.length === 1 ? " matches" : "s match"} your tripwire` : "Every match is decided"}`, titleHtml: true, body, paneRef: `theory:${id}` };
     },
   };
 
@@ -181,21 +210,21 @@
     return h;
   }
   const PANE = {
-    signal(id) {
-      const s = sig(id), d = dumpOf(s.dump), para = W.passageFor(s);
-      const ev = evidenceLive(s);
-      const themes = [...s.themes, ...(state.filed[s.id] || [])];
-      return { glyph: "pulse", label: "Signal", acts: ["arrows-merge:Merge", "archive:Retire"], body: `
-        <div class="pk-doc-head"><h2 class="pk-title" tabindex="-1">${esc(s.gist)}</h2></div>
-        <dl class="pk-fields">
-          <dt>Sources</dt><dd><div class="pk-stack">${s.sources.length ? s.sources.map(x => `<div class="pk-line"><span class="pk-i">${ic("link")}</span><span class="pk-line-text"><a class="pk-ref" href="${esc(x.url)}" onclick="return false">${esc(x.domain)}</a>, ${esc(x.author)}, ${esc(x.date)}<span class="pk-quote" style="display:block;margin-top:4px">${esc(x.title)}</span></span></div>`).join("") : '<div class="pk-line"><span class="pk-i">' + ic("text-align-left") + '</span><span class="pk-line-text">My observation</span></div>'}</div></dd>
-          <dt><label for="note-${s.id}">Note</label></dt><dd><textarea class="pk-note" id="note-${s.id}" rows="2" placeholder="Why this matters">${esc(s.note || "")}</textarea></dd>
-          <dt>Themes</dt><dd>${themes.map(t => `<div class="pk-line"><span class="pk-i">${ic("binoculars")}</span><span class="pk-line-text" style="display:flex;justify-content:space-between;gap:8px"><a class="pk-ref" href="#" onclick="return false">${esc(W.THEMES[t])}</a><button type="button" class="pk-btn" data-quiet style="height:20px;padding:0 6px">Unfile</button></span></div>`).join("")}<button type="button" class="pk-add">${slot("plus")}File in theme</button></dd>
-          <dt>Theories</dt><dd>${ev.map(e => `<div class="pk-line"><span class="pk-i">${ic(e.stance === "supports" ? "arrow-up" : "arrow-down")}</span><span class="pk-line-text"><span class="pk-2">${isSuggested(s, e) ? "Suggested: " + e.stance : e.stance === "supports" ? "Supports" : "Undermines"} </span>${esc(theory(e.theory).claim)}</span></div>`).join("")}<button type="button" class="pk-add">${slot("plus")}Add theory</button></dd>
-          ${d ? `<dt>From</dt><dd><div class="pk-line"><span class="pk-i">${ic(dumpGlyph(d))}</span><span class="pk-line-text"><button type="button" class="pk-ref" data-peek="dump:${d.id}" aria-haspopup="dialog" aria-expanded="false">${esc(dumpKind(d))}, ${esc(d.day)} ${esc(d.time)}</button></span></div></dd>` : ""}
-          ${para ? `<dt>Passage</dt><dd><div class="pk-read"><p>${markQuote(para.text, para.quote)}</p></div></dd>` : ""}
-          ${s.merged ? `<dt>Merged</dt><dd><div class="pk-line"><span class="pk-i">${ic("arrows-merge")}</span><span class="pk-line-text">${esc(s.merged.from)}<br><span class="pk-2">${esc(s.merged.at)}</span></span></div></dd>` : ""}
-        </dl>` };
+    // Same anatomy as the peek: glyph and title, note as editable prose under the title, then connected objects.
+    // The pane adds what only a working surface needs: authors and titles of sources, Unfile, add controls,
+    // the passage the signal was cut from, and merge history.
+    signal(id, stage) {
+      const s = sig(id), L = layoutOf(stage), c = sigConn(s, { pane: true });
+      const para = s.id in EXTRA ? null : W.passageFor(s);
+      const note = `<label class="pk-vh" for="note-${s.id}-${uid + 1}">Note</label><textarea class="pk-note pk-sig-note" id="note-${s.id}-${++uid}" rows="2" placeholder="Add a note">${esc(s.note || "")}</textarea>`;
+      const origin = c.d ? `<div class="pk-line"><span class="pk-i">${ic(dumpGlyph(c.d))}</span><span class="pk-line-text"><button type="button" class="pk-ref" data-peek="dump:${c.d.id}" aria-haspopup="dialog" aria-expanded="false">${esc(fromLine(s))}</button></span></div>${para ? `<div class="pk-read pk-passage"><p>${markQuote(para.text, para.quote)}</p></div>` : ""}` : "";
+      const merged = s.merged ? `<div class="pk-line"><span class="pk-i">${ic("arrows-merge")}</span><span class="pk-line-text">Merged from ${esc(s.merged.from)} <span class="pk-2">${esc(s.merged.at)}</span></span></div>` : "";
+      let conn;
+      if (L === "B") conn = `<div class="pk-conn" data-l="B">${c.groups.map(g => `<div class="pk-grp"><div class="pk-grp-label">${g.label}</div>${g.html}</div>`).join("")}${origin ? `<div class="pk-grp">${origin}</div>` : ""}${merged ? `<div class="pk-grp">${merged}</div>` : ""}</div>`;
+      else if (L === "C") conn = `<div class="pk-conn" data-l="C">${c.tokens}<div class="pk-grp">${c.theories}</div></div><div class="pk-after">${origin}${merged}</div>`;
+      else conn = `<div class="pk-conn" data-l="A">${c.groups.map(g => `<div class="pk-grp" role="group" aria-label="${g.label}">${g.html}</div>`).join("")}${origin ? `<div class="pk-grp">${origin}</div>` : ""}${merged ? `<div class="pk-grp">${merged}</div>` : ""}</div>`;
+      return { glyphHtml: kindSlot(s), label: KIND[kindOf(s)][1], acts: ["arrows-merge:Merge", "archive:Retire"], layout: L, body: `
+        <div class="pk-doc-head"><h2 class="pk-title" tabindex="-1">${esc(s.gist)}</h2>${note}</div>${conn}` };
     },
     dump(id) {
       const d = dumpOf(id);
@@ -235,6 +264,16 @@
   // ── Peek controller: one transient layer per page ──
   let open = null; // { el, anchor, stage, history: [ref], opts }
   let uid = 0;
+  // Header for every peek: the object's glyph, its full title (never clamped: the row already shows it whole), then expand and close.
+  // No written type: the list it opened from already says what it is.
+  function peekHead(v, labelId, { back = false, paneRef = "", live = true } = {}) {
+    const g = v.glyphHtml || `<span class="pk-i" data-ink role="img" aria-label="${v.label}" title="${v.label}">${ic(v.glyph)}</span>`;
+    return `<div class="pk-peek-head">
+        ${back ? `<button type="button" class="pk-ib" data-act="peek-back" aria-label="Back" title="Back">${ic("arrow-left")}</button>` : ""}
+        ${g}<p class="pk-peek-title" id="${labelId}">${v.titleHtml ? v.title : esc(v.title)}</p>
+        <span class="pk-peek-ctl"><button type="button" class="pk-ib"${live ? ` data-act="to-pane" data-ref="${paneRef}"` : ""} aria-label="Open in pane" title="Open in pane">${ic("arrows-out-simple")}</button><button type="button" class="pk-ib"${live ? ' data-act="peek-close"' : ""} aria-label="Close" title="Close (Esc)">${ic("x")}</button></span>
+      </div>`;
+  }
   function render(ref, opts) {
     const [kind, id] = ref.split(":");
     const labelId = `pk-peek-l-${++uid}`;
@@ -242,13 +281,8 @@
     const back = open?.history?.length > 1 || opts.historyLen > 1;
     const paneRef = v.paneRef || ref;
     return { labelId, html: `
-      <div class="pk-peek-head">
-        ${back ? `<button type="button" class="pk-ib" data-act="peek-back" aria-label="Back">${ic("arrow-left")}</button>` : ""}
-        <span class="pk-peek-kind">${slot(v.glyph)}<span>${v.label}</span></span>
-        <button type="button" class="pk-ib" data-act="to-pane" data-ref="${paneRef}" aria-label="Open in pane" title="Open in pane">${ic("arrows-out-simple")}</button>
-        <button type="button" class="pk-ib" data-act="peek-close" aria-label="Close" title="Close (Esc)">${ic("x")}</button>
-      </div>
-      <div class="pk-peek-body">${v.body}</div>
+      ${peekHead(v, labelId, { back, paneRef })}
+      <div class="pk-peek-body"${v.layout ? ` data-l="${v.layout}"` : ""}>${v.body}</div>
       ${v.foot ? `<div class="pk-peek-foot">${v.foot}</div>` : ""}` };
   }
   function place(peek, anchor, stage) {
@@ -293,14 +327,14 @@
     const stage = anchor.closest(".pk-stage");
     if (!stage) return;
     if (open && !replace) { const same = open.anchor === anchor; close({ focus: false }); if (same) return; }
-    const opts = { verb: stage.dataset.verb === "on" };
+    const opts = { verb: stage.dataset.verb === "on", layout: layoutOf(stage) };
     if (replace && open) {
       open.history.push(ref);
       const r = render(ref, { ...opts, historyLen: open.history.length });
       open.el.innerHTML = r.html; open.el.setAttribute("aria-labelledby", r.labelId);
       place(open.el, open.anchor, stage);
       open.el.querySelector(".pk-peek-body").scrollTop = 0;
-      open.el.querySelector(".pk-peek-kind")?.closest(".pk-peek-head")?.querySelector("button")?.focus({ preventScroll: true });
+      open.el.querySelector(".pk-peek-head button")?.focus({ preventScroll: true });
       return;
     }
     const el = document.createElement("div");
@@ -316,7 +350,7 @@
   function rerender() {
     if (!open) return;
     const ref = open.history.at(-1);
-    const r = render(ref, { verb: open.stage.dataset.verb === "on", historyLen: open.history.length });
+    const r = render(ref, { verb: open.stage.dataset.verb === "on", layout: layoutOf(open.stage), historyLen: open.history.length });
     open.el.innerHTML = r.html; open.el.setAttribute("aria-labelledby", r.labelId);
     place(open.el, open.anchor, open.stage);
   }
@@ -330,8 +364,8 @@
     const [kind, id] = ref.split(":");
     const v = PANE[kind](id, stage);
     const back = stage._stack.length > 1;
-    host.innerHTML = `<div class="pk-pane-bar">${back ? `<button type="button" class="pk-ib" data-act="pane-back" aria-label="Back">${ic("arrow-left")}</button>` : ""}<span class="pk-peek-kind" style="display:flex;align-items:center;color:var(--pk-ink-2)">${slot(v.glyph)}<span>${v.label}</span></span><span class="pk-grow"></span>${v.acts.map(a => { const [i, l] = a.split(":"); return `<button type="button" class="pk-ib" aria-label="${l}" title="${l}">${ic(i)}</button>`; }).join("")}<button type="button" class="pk-ib" data-act="pane-close" aria-label="Close pane" title="Close pane">${ic("x")}</button></div>
-      <div class="pk-pane-scroll"><div class="pk-doc">${v.body}</div></div>`;
+    host.innerHTML = `<div class="pk-pane-bar">${back ? `<button type="button" class="pk-ib" data-act="pane-back" aria-label="Back">${ic("arrow-left")}</button>` : ""}<span class="pk-grow"></span>${v.acts.map(a => { const [i, l] = a.split(":"); return `<button type="button" class="pk-ib" aria-label="${l}" title="${l}">${ic(i)}</button>`; }).join("")}<button type="button" class="pk-ib" data-act="pane-close" aria-label="Close pane" title="Close pane">${ic("x")}</button></div>
+      <div class="pk-pane-scroll"><div class="pk-doc"${v.layout ? ` data-l="${v.layout}"` : ""}>${v.body.replace('<div class="pk-doc-head">', `<div class="pk-doc-head">${v.glyphHtml || `<span class="pk-i" data-ink role="img" aria-label="${v.label}" title="${v.label}">${ic(v.glyph)}</span>`}`)}</div></div>`;
     host.hidden = false;
     stage.querySelectorAll("[data-sel]").forEach(e => e.removeAttribute("data-sel"));
     if (focus) host.querySelector(".pk-title")?.focus({ preventScroll: true });
@@ -435,11 +469,11 @@
   // ── Static rungs (for the three-rung strips). Same renderers, not floating. ──
   function staticPeek(ref, opts = {}) {
     const [kind, id] = ref.split(":");
-    const v = PEEK[kind](id, { labelId: `pk-s-${++uid}`, ...opts });
-    return `<div class="pk-peek pk" data-static role="group" aria-label="${v.label} peek">
-      <div class="pk-peek-head"><span class="pk-peek-kind">${slot(v.glyph)}<span>${v.label}</span></span>
-      <button type="button" class="pk-ib" aria-label="Open in pane" title="Open in pane">${ic("arrows-out-simple")}</button><button type="button" class="pk-ib" aria-label="Close">${ic("x")}</button></div>
-      <div class="pk-peek-body">${v.body}</div>${v.foot ? `<div class="pk-peek-foot">${v.foot}</div>` : ""}</div>`;
+    const labelId = `pk-s-${++uid}`;
+    const v = PEEK[kind](id, { layout: opts.layout || layoutOf(), ...opts, labelId });
+    return `<div class="pk-peek pk" data-static role="group" aria-labelledby="${labelId}">
+      ${peekHead(v, labelId, { live: false })}
+      <div class="pk-peek-body"${v.layout ? ` data-l="${v.layout}"` : ""}>${v.body}</div>${v.foot ? `<div class="pk-peek-foot">${v.foot}</div>` : ""}</div>`;
   }
   const STATIC = {
     "row-signal": () => `<div class="pk" style="padding:8px">${R.signal(sig("s5"))}</div>`,
@@ -457,9 +491,37 @@
     "peek-dump-failed": () => { const d = dumpOf("D2"); d.failed = true; const h = staticPeek("dump:D2"); d.failed = false; return h; },
   };
 
-  function boot() {
+  // Generic static rung: data-sref="row:signal:s5" or "peek:signal:L1", with an optional data-layout.
+  const staticRef = el => {
+    const [rung, kind, id] = el.dataset.sref.split(":");
+    if (rung === "row") return `<div class="pk pkj-pad">${kind === "signal" ? R.signal(sig(id)) : R[kind](kind === "dump" ? dumpOf(id) : id)}</div>`;
+    return staticPeek(`${kind}:${id}`, { layout: el.dataset.layout, verb: el.dataset.verb === "on" });
+  };
+  // Until Maggie chooses a signal composition, the rest of the page shows A. Her choice (or ?layout=B) applies everywhere.
+  function pageLayout() {
+    const q = new URLSearchParams(location.search).get("layout");
+    if (/^[ABC]$/.test(q || "")) return q;
+    try { const c = JSON.parse(localStorage.getItem("jig:di-010:signal-peek"))?.choice; if (c) return c[0]; } catch {}
+    return "A";
+  }
+  function paintStatic() {
+    document.body.dataset.sigLayout = pageLayout();
+    document.querySelectorAll("[data-sig-layout-now]").forEach(el => { el.textContent = document.body.dataset.sigLayout; });
     document.querySelectorAll("[data-static-rung]").forEach(el => { el.innerHTML = STATIC[el.dataset.staticRung](); });
+    document.querySelectorAll("[data-sref]").forEach(el => { el.innerHTML = staticRef(el); });
+  }
+  function boot() {
+    paintStatic();
     document.querySelectorAll(".pk-stage[data-build]").forEach(st => BUILD[st.dataset.build](st));
+    document.querySelector('[data-decision="signal-peek"]')?.addEventListener("click", e => {
+      if (!e.target.closest(".jig-choose")) return;
+      queueMicrotask(() => {
+        const was = document.body.dataset.sigLayout; paintStatic();
+        if (was === document.body.dataset.sigLayout) return;
+        close({ focus: false });
+        document.querySelectorAll(".pk-stage[data-build]").forEach(st => { if (!st.dataset.layout) { st._stack = []; BUILD[st.dataset.build](st); } });
+      });
+    });
     // Optional: open a peek on load for screenshots, e.g. ?open=feed-a:signal:x1
     const q = new URLSearchParams(location.search).get("open");
     if (q) { const [sid, ...ref] = q.split(":"); const st = document.getElementById(sid); const a = st?.querySelector(`[data-peek="${ref.join(":")}"]`); if (a) { a.scrollIntoView({ block: "center" }); show(a, ref.join(":")); } }

@@ -127,6 +127,8 @@
   --pkj-stage-xxl: 720px;
   --pkj-min-s: 400px;
   --pkj-min-m: 520px;
+  --pkj-min-full: 100%;
+  --pkj-before-w: 760px;
   --pkj-stage-480: 480px;
   --pkj-stage-440: 440px;
 }

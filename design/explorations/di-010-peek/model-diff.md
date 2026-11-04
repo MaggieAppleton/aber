@@ -38,7 +38,7 @@ Superseded table, add:
 + | Dump row | Kind icon, time, first line, "made 3" | Hover tint | Opens its peek | — | Tap |
 - | Theory card | Claim, confidence, evidence balance, marks | Its instances in other themes highlight with an ink ring | Opens the theory in the pane | — | Tap opens |
 + | Theory card | Claim, confidence, evidence balance, marks | Its instances in other themes highlight with an ink ring | Opens its peek (open: or the pane, as for signal rows) | — | Tap |
-+ | Peek | Kind glyph and label, expand, X | — | Expand opens the pane and moves focus to its title; X or Esc closes and returns focus to the row; a link replaces the peek | — | Tap; swipe the sheet down to close |
++ | Peek | The object's glyph (for a signal, its kind: link, voice or typed note) and its full title; expand and X | — | Expand opens the pane and moves focus to its title; X or Esc closes and returns focus to the row; a link replaces the peek | — | Tap; swipe the sheet down to close |
 - | Filed token (in a reply) | Theme icon, theme name, count badge | — | Unfolds the gists filed there | — | Tap |
 + | Filed token (in a reply) | Check, "filed 3" | — | Opens a peek listing the filed signals and their themes; each opens its own peek in place | — | Tap |
 - | Tripwire, tripped | Signpost red, phrase underlined wavy red, dashed count | — | Count toggles the matched signals; each has Accept (lowers confidence one step) and dismiss | — | Tap |
@@ -56,6 +56,7 @@ Unchanged on purpose: Theme heading (opens the theme in the pane, because the se
 + - **Ink:** `--ap-ink` for values and names; `--ap-ink-2` for field labels, meta and secondary text. `--ap-ink-3` is never used for readable text, only for hairlines and disabled glyphs. Every text colour is at least 4.5:1 on its surface.
 + - **Icons:** Phosphor 16 px in a 24 × 20 slot, centred on the first line of the text it marks (within 0.5 px). One size everywhere.
 + - **Fields:** a fixed label column (104 px in the pane, 84 px in a peek), labels in ink-2 at body size. The same persistent field labels throughout; no grey section headings ("What the source says") and no explanatory notes.
++ - **Signal anatomy (revised after Maggie's review of round 1):** the header carries the signal's kind glyph and its title, never a written type ("Signal"), because the list it opens from establishes the type. The note is the signal's own prose: directly under the title, on the title's left edge. Sources, themes, theories and origin are connected objects, set apart from that core. Row, peek and pane keep this order, and the kind glyph means the same thing in all three. **open:** how the connected objects are set apart (A one line then unlabelled icon lines, B short labels above each group, C a tray with tokens). A and C would replace the fixed label column above for signals; B keeps the labels without a table. Other objects' peeks keep the round-1 field table until this is chosen.
 ```
 
 Rules table, add:
@@ -76,3 +77,15 @@ From `measure.mjs` and `align.mjs` (Playwright, 1440 wide) on DI-004's Signal an
 | Icon sizes | 10, 12, 13, 16 | 16 |
 | Icon centre vs first line | −1.5 to +4 px | +0.5 px |
 | Grey section headings and notes | "What the source says", "Made", "Transcript", "Illustrative." | none |
+
+## Round 2: Maggie's review of the Signal peek
+
+What she said, on the note *"Six reviewers. The queue, not the agents, is the constraint."* (`span.pk-clamp2`):
+
+- The note is part of the signal's prose, not metadata. It belongs right below the title, left-aligned with it.
+- Sources, themes and theories are connected objects; separate them from the note and title.
+- The row shows a link icon (the kind of signal) while the peek wrote out "Signal". The type is set by context, so don't spell it out. Put the title in the header, with the icon to its left.
+- The label table was noisy, with two rows lacking a divider. Try other arrangements.
+- Row, peek and pane are versions of the same thing and must read consistently.
+
+What the jig now fixes for every composition: kind glyph plus full title in the header (no clamp, since the row shows it whole), the note directly under it on the same edge (44 px into the peek, 60 px into the pane, measured), connected objects grouped apart, and the same order in the pane. What it leaves open: A, B or C, chosen on the options in "A signal's anatomy, row to pane". The trigger, the quick verb and the narrow-screen form stay open as before.
