@@ -116,6 +116,8 @@
   const glyphOf = o => ICON[o.kind];
   const tile = (type, icon, cls = "") => `<span class="g${cls ? ` ${cls}` : ""}" data-type="${type}"><i class="ph ph-${icon}" aria-hidden="true"></i></span>`;
   const tileOf = (o, cls = "") => tile(o.kind, glyphOf(o), `${o.draft ? "draft" : ""} ${cls}`.trim());
+  // Confidence on previews: one short meter track with a proportional fill (06b option C, decided 4 Nov); unset is an empty track
+  const meter = n => `<span class="ob-meter" role="img" aria-label="${n ? `Confidence ${n} of 5` : "No confidence yet"}"><i style="width:${(n || 0) * 20}%"></i></span>`;
   const conf = (n, label = true) => `<span class="ob-conf" role="img"${label ? ` aria-label="Confidence ${n} of 5"` : ""}>${[1, 2, 3, 4, 5].map(i => `<i${i <= n ? " data-on" : ""}></i>`).join("")}</span>`;
   const ib = (icon, label, attr = "", key = "") => `<button type="button" class="nv-ib" aria-label="${esc(label)}" data-tip="${esc(label)}"${key ? ` data-key="${key}"` : ""} ${attr}><i class="ph ph-${icon}" aria-hidden="true"></i></button>`;
   const mono = t => `<span class="ob-mono">${t}</span>`;
@@ -178,12 +180,13 @@
     if (one && !/\bone\b/.test(cls)) cls = `${cls} one`.trim();
     if (label) cls = `${cls} label`;
     if (o.fresh) cls = `${cls} unseen`;
-    const k = omit.includes("key") ? "" : keyOf(o, one), w = omit.includes("when") || one ? "" : whenOf(o), st = statusOf(o);
+    const k = omit.includes("key") || o.kind === "theory" ? "" : keyOf(o, one), w = omit.includes("when") || one ? "" : whenOf(o), st = statusOf(o);
+    const rk = o.kind === "theory" ? `<span class="ob-rk">${meter(o.draft ? 0 : o.c)}</span>` : "";   // a short key value right of the name's first line
     const f = (freshOf(o) ? `<span class="ob-fresh">${freshOf(o)}</span>` : "") + (/\bsuggested\b/.test(cls) ? `<span>Suggested</span>` : "");
     const line = k || w || st || f ? `<span class="kv">${one ? f + k : k + f}${st ? `<span class="st">${st}</span>` : ""}${w ? `<span class="when">${w}</span>` : ""}</span>` : "";
     const attr = act === "sel" ? `data-sel="${o.id}"` : act === "pane" ? `data-pane="${o.id}"` : act === "none" ? "" : `data-open="${o.id}"`;
-    return `<div class="ob-${as}${o.draft ? " draft" : ""}${o.retired ? " retired" : ""}${line ? "" : " solo"}${cls ? ` ${cls}` : ""}"${cur === o.id ? ' aria-current="true"' : ""} data-id="${o.id}"${host ? ` data-host="${host}"` : ""}>
-      ${tileOf(o)}<button type="button" class="nm" ${attr}>${o.name}</button>${line}${chalOf(o)}${rm ? `<span class="rm">${ib("minus", rm, 'class="nv-ib sm"')}</span>` : ""}</div>`;
+    return `<div class="ob-${as}${o.kind === "theory" ? " has-rk" : ""}${o.draft ? " draft" : ""}${o.retired ? " retired" : ""}${line || o.kind === "theory" ? "" : " solo"}${cls ? ` ${cls}` : ""}"${cur === o.id ? ' aria-current="true"' : ""} data-id="${o.id}"${host ? ` data-host="${host}"` : ""}>
+      ${tileOf(o)}<button type="button" class="nm" ${attr}>${o.name}</button>${rk}${line}${chalOf(o)}${rm ? `<span class="rm">${ib("minus", rm, 'class="nv-ib sm"')}</span>` : ""}</div>`;
   };
   const row = (o, opt) => preview(o, { ...opt, as: "row" });
   const card = (o, opt) => preview(o, { ...opt, as: "card" });
@@ -237,13 +240,13 @@
   const peek = (o, { rel = true, cls = "" } = {}) => {
     const p = proseOf(o), trip = o.kind === "theory" ? tripLine(o, "peek") : "", rels = rel ? peekRel(o) : "";
     // A short key value (a status, a count) sits right-aligned on the title's first line; the key line below keeps only what's left
-    const short = (o.kind === "prototype" || o.kind === "theme") && !o.draft;
+    const short = ((o.kind === "prototype" || o.kind === "theme") && !o.draft) || (o.kind === "theory" && !o.retired);
     const st = statusOf(o), rest = attrsOf(o, "peek").slice(short ? 1 : 0).map(([, v]) => v);
     const meta = short ? rest.join("") : metaLine(o, "peek");
     const body = p || trip ? `<div class="ob-pk-body">${p ? `<p class="ob-prose clamp">${p}</p>` : ""}${trip}</div>` : "";
     return `<div class="ob-peek${meta ? " has-meta" : ""}${cls ? ` ${cls}` : ""}" role="dialog" aria-label="${esc(o.name)}" data-id="${o.id}">
       <div class="ob-hang">${tileOf(o)}<div class="ob-col">
-        ${short ? `<div class="ob-pk-title"><div class="ob-pk-name${o.draft ? " draft" : ""}">${o.name}</div><span class="ob-pk-key">${o.kind === "theme" ? attrsOf(o, "peek")[0][1] : keyOf(o)}</span></div>` : `<div class="ob-pk-name${o.draft ? " draft" : ""}">${o.name}</div>`}
+        ${short ? `<div class="ob-pk-title"><div class="ob-pk-name${o.draft ? " draft" : ""}">${o.name}</div><span class="ob-pk-key">${o.kind === "theme" ? attrsOf(o, "peek")[0][1] : o.kind === "theory" ? meter(o.draft ? 0 : o.c) : keyOf(o)}</span></div>` : `<div class="ob-pk-name${o.draft ? " draft" : ""}">${o.name}</div>`}
         ${meta ? `<div class="ob-meta">${meta}</div>` : ""}
       </div></div>
       ${body || rels ? `<hr class="ob-div">${body}${rels}` : ""}

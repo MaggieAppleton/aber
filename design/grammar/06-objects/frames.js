@@ -9,7 +9,7 @@
   const TOTAL = { signal: 412, dump: 286 };
   const OLDER = { signal: [["October", 288], ["September", 109]], dump: [["October", 201], ["September", 78]] };
   const STATUS = [["building", "Building"], ["idea", "Idea"], ["built", "Built"], ["shelved", "Shelved"]];
-  const OPT = { fresh: "none", peek: "rel", full: "prose", align: document.body.dataset.align || "c", challenge: document.body.dataset.challenge || "c" };
+  const OPT = { fresh: document.body.dataset.fresh || "weight", peek: "rel", full: "prose", align: document.body.dataset.align || "c", challenge: document.body.dataset.challenge || "c" };
   const ib = (icon, label, attr = "", key = "") => `<button type="button" class="nv-ib" aria-label="${label}" data-tip="${label}"${key ? ` data-key="${key}"` : ""} ${attr}><i class="ph ph-${icon}" aria-hidden="true"></i></button>`;
   const dot = (kind, label) => `<span class="nv-dot ${kind}" role="img" aria-label="${label}"></span>`;
 

@@ -29,22 +29,22 @@
 <script src="objects-dial.js" defer></script>
 <script type="module" src="../_shared/agentation.js" data-app-name="Grammar 06: Objects"></script>
 </head>
-<body class="jig" data-jig="grammar-06-objects" data-align="c" data-challenge="c">
+<body class="jig" data-jig="grammar-06-objects" data-align="c" data-challenge="c" data-fresh="weight">
 
 <header class="jig-head">
   <h1>Grammar 06: Objects, preview, peek, full</h1>
-  <p><b>Proposed.</b> Every object in Aber follows one anatomy and appears at three rungs: a <b>preview</b> where it's mentioned (a list row, a card, a chip), a <b>peek</b> that grows from that preview, and a <b>full</b> view that fills the main area. Built only from 00–05 and the decided type-first navigation. The list rows here replace the nav jig's placeholders.</p>
+  <p><b>Decided 4 Nov 2026.</b> Every object in Aber follows one anatomy and appears at three rungs: a <b>preview</b> where it's mentioned (a list row, a card, a chip), a <b>peek</b> that grows from that preview, and a <b>full</b> view that fills the main area. Built only from 00–05 and the decided type-first navigation. The list rows here replace the nav jig's placeholders.</p>
 </header>
 
 <div class="decide">
   <div class="decide-box">
-    <h2>Decide on this page</h2>
+    <h2>Decided 4 Nov (Maggie): her picks on this page</h2>
     <ol>
-      <li data-pick="align"><a href="#align">Tile and text alignment</a> <span class="pick"></span><span class="why">Recommended c: the tile sits inside the name's first line, 2px above the capitals, so one-line and two-line rows align the same way and nothing overhangs; 18 with a 14 glyph is already 03's card-meta tile.</span></li>
-      <li data-pick="challenge"><a href="#challenge">A challenged theory on previews</a> <span class="pick"></span><span class="why">Recommended c: it follows "beautiful or not at all"; a challenge still can't be missed, because Briefing lists it first and the peek and full view open on the tripped tripwire.</span></li>
-      <li data-pick="fresh"><a href="#fresh">Unseen activity: nothing on objects, unread weight, or text</a> <span class="pick"></span><span class="why">Recommended a: Briefing home already lists what arrived since you last looked; repeating it on every object adds a mark you don't act on.</span></li>
-      <li data-pick="peek"><a href="#peek">Peek: essentials and relations, or essentials only</a> <span class="pick"></span><span class="why">Recommended a: a peek should answer "what is this tied to" without costing your place.</span></li>
-      <li data-pick="full"><a href="#full">Full view: prose first, or a fields table</a> <span class="pick"></span><span class="why">Recommended a: the key line under the title carries the same values with no labels; you called the label table noisy (DI-010).</span></li>
+      <li data-pick="align"><a href="#align">Tile and text alignment</a> <span class="pick"></span><span class="why">Decided c. The tile sits inside the name's first line, 2px above the capitals, so one-line and two-line rows align the same way and nothing overhangs; 18 with a 14 glyph is already 03's card-meta tile.</span></li>
+      <li data-pick="challenge"><a href="#challenge">A challenged theory on previews</a> <span class="pick"></span><span class="why">Decided c. It follows "beautiful or not at all"; a challenge still can't be missed, because Briefing lists it first and the peek and full view open on the tripped tripwire.</span></li>
+      <li data-pick="fresh"><a href="#fresh">Unseen activity: nothing on objects, unread weight, or text</a> <span class="pick"></span><span class="why">Decided b. Rows with unseen activity set their name in ink at 600; seen rows keep their usual weight. Cards and peeks are unchanged (their names are already 600, and only signals and themes have unseen activity, which show as rows).</span></li>
+      <li data-pick="peek"><a href="#peek">Peek: essentials and relations, or essentials only</a> <span class="pick"></span><span class="why">Decided a. A peek should answer "what is this tied to" without costing your place.</span></li>
+      <li data-pick="full"><a href="#full">Full view: prose first, or a fields table</a> <span class="pick"></span><span class="why">Decided a. The key line under the title carries the same values with no labels; you called the label table noisy (DI-010).</span></li>
     </ol>
     <h2 class="decided-h">Decided 4 Nov (Maggie)</h2>
     <ul class="decided">
@@ -54,6 +54,8 @@
       <li><b>No red challenge dot</b> on previews or cards. Tripwire text is ink; only the Signpost glyph is red.</li>
       <li><b>Counts are a bare glyph and a number</b>, no noun: a theme's peek reads [Target] 5 [Pulse] 23 on the title's line.</li>
       <li><b>A peek shows as many relations as fit, then fades out</b> at the bottom (a surface-colour gradient). No scrolling, no "Show more"; Open shows everything.</li>
+      <li><b>Confidence on previews is a small meter track</b> right of the name (06b option C); the full view keeps the five-segment setter with its history.</li>
+      <li><b>Briefing is the first rail item</b> and the default on open; "Aber" is just the app name.</li>
       <li><b>Signals always show Pulse</b> on their tile; kind, if shown, is text.</li>
     </ul>
   </div>
@@ -82,7 +84,7 @@
     <thead><tr><th>Type</th><th>Key value</th><th>Preview</th><th>On hover</th><th>Peek adds</th><th>Full adds</th><th>Removed</th></tr></thead>
     <tbody>
       <tr><td>Theme</td><td>Theory count (a bare number; a ring for none)</td><td>One line: tile, name, count</td><td>–</td><td>[Target] 5 [Pulse] 23 on the title line, theories</td><td>Theories as cards, signals by day</td><td>"Theories" word, signal count, the new dot, the second line</td></tr>
-      <tr><td>Theory</td><td>Confidence</td><td>Tile, claim, confidence</td><td>–</td><td>Supports and undermines as [↑]2 [↓]1, horizon, note, tripwire line, Supports with any suggestion first</td><td>Confidence setter, year stepper, note, tripwire, suggestions, themes, supports, undermines, rival, follows from, leads to, prototypes</td><td>Evidence balance and prototype count from cards; the pending-suggestion badge</td></tr>
+      <tr><td>Theory</td><td>Confidence</td><td>Tile, claim, confidence meter at the right of the first line</td><td>–</td><td>Supports and undermines as [↑]2 [↓]1, horizon, note, tripwire line, Supports with any suggestion first</td><td>Confidence setter, year stepper, note, tripwire, suggestions, themes, supports, undermines, rival, follows from, leads to, prototypes</td><td>Evidence balance and prototype count from cards; the pending-suggestion badge</td></tr>
       <tr><td>Prototype</td><td>Status (glyph; the word in peek and full)</td><td>One line: tile, name, status glyph</td><td>–</td><td>Body (3 lines), theories it tests</td><td>Body, tests</td><td>"Tests N"; the type-word chip; status inside status groups</td></tr>
       <tr><td>Signal</td><td>Source</td><td>Tile, gist, source</td><td>Captured day</td><td>Day, note, theories it bears on</td><td>Note (or Add a note), supports, undermines, Add theory, themes, File in theme, came from</td><td>Day at rest, theme chips on rows, kind glyphs, the new dot, the word "Signal", the Source/Came from table</td></tr>
       <tr><td>Dump</td><td>Kind and time</td><td>Tile, first line, kind and time, failed</td><td>Day</td><td>Day, length, text (3 lines), signals made</td><td>Via, full text, reply, signals, drafts</td><td>"Made N"; via from everything but full; the date inside day groups</td></tr>
@@ -147,7 +149,7 @@
   </div>
 </section>
 
-<section class="jig-section" id="fresh" data-decision="fresh" data-question="3. How does unseen activity show on objects, if at all?" data-default="a Nothing on objects">
+<section class="jig-section" id="fresh" data-decision="fresh" data-question="3. How does unseen activity show on objects, if at all?" data-default="b Unread weight">
   <p class="lede">The dot meant "arrived since you last looked": a signal you haven't seen, or a theme with signals you haven't seen (design model: a signal's seen state; a theme's new count). Each window shows the Themes list and Cost of intelligence, which has 3 unseen signals.</p>
   <div class="jig-compare" style="--jig-min:100%">
     <div class="jig-option" data-option="a Nothing on objects"><div class="jig-label"><b>a</b> Nothing on objects: Briefing home is where new things are shown</div><p class="jig-note">Objects look the same seen or unseen. Briefing, the first item in the rail, lists new signals by theme.</p>

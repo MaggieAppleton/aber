@@ -395,3 +395,9 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 4 Nov 2026 (Maggie): peeks show as many relations as fit, then fade out at the bottom (surface-colour gradient); no scrolling, no 'show more'; Open shows everything.
 
 4 Nov 2026 (Maggie): no red challenge dot on previews or cards; tripwire text is ink with only the tripped glyph in red; challenged state shown another way (see 06 choice).
+
+4 Nov 2026 (Maggie): Briefing is its own rail item, the first in the type rail, and the default selection on open; the app name 'Aber' is not a link. Revises the earlier 'Briefing is the home of the main area via Aber'.
+
+4 Nov 2026 (Maggie): confidence on previews is a small meter track (06b option C), right of the name; the full view keeps the five-segment setter with its history.
+
+4 Nov 2026 (Maggie, 06-objects): picks: tile alignment c (an 18 tile with a 12 glyph centred on the name's first line); a challenge is not shown on previews (peek, full view and Briefing only); unseen activity is unread weight (a row's name in ink at 600; cards and peeks unchanged since they are already 600); peeks show essentials and relations; full views are prose first. The 06 section of RULES.md is DECIDED, with its amendments to 01 (card inset 10/8, peek inset 16, tile-to-text gap 8 and 12, key-line gap 6), 02 (times in Geist tabular, mono for keys only), 03 (tile 18/12 in rows and peeks, 32/20 for the full-view title, chip tile 24/14, glyph on a tile one step smaller) and 05 (chip tile fills the chip's height).

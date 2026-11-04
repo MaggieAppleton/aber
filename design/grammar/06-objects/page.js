@@ -93,7 +93,7 @@
       t.style.left = `${r.left - b.left - 7}px`; t.style.top = `${r.top - b.top - 7}px`; an.append(t); };
     const mark = () => { an.querySelectorAll(".an-tag").forEach(t => t.remove());
       an.querySelectorAll(".an-item").forEach(it => { tag(it.querySelector(".g"), 1); tag(it.querySelector(".nm, .ob-pk-name, .ob-title"), 2);
-        tag(it.querySelector(".kv > *, .ob-meta > *"), 3); tag(it.querySelector(".st > *"), 4); });
+        tag(it.querySelector(".ob-rk > *, .ob-pk-key > *, .kv > *, .ob-meta > *"), 3); tag(it.querySelector(".st > *"), 4); });
       const p = an.querySelector(".an-peek"); tag(p.querySelector(".ob-meta > span:nth-child(3)"), 5); tag(p.querySelector(".ob-attach, .ob-row.suggested"), 6); tag(p.querySelector(".ob-pk-rel"), 7);
       const r = an.querySelector(".an-row"); tag(r.querySelector(".when"), 5); };
     document.fonts.ready.then(mark); addEventListener("resize", mark);
@@ -125,6 +125,7 @@
       const patch = {}; for (const [id, [key, vals]] of Object.entries(MAP)) { const v = pick(id); if (vals[v]) patch[key] = vals[v]; }
       if (patch.align) document.body.dataset.align = patch.align;
       if (patch.challenge) document.body.dataset.challenge = patch.challenge;
+      if (patch.fresh) document.body.dataset.fresh = patch.fresh;
       document.querySelectorAll("[data-follows-picks]").forEach(h => h._s && window.AberObjectFrames.set(h, patch));
     };
     paint(); document.addEventListener("click", e => { if (e.target.closest(".jig-choose")) setTimeout(paint, 0); });
