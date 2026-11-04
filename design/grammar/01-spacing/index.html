@@ -63,7 +63,8 @@
     <li><b>Gaps climb a ladder, and each level is at least 1.5× the one inside it</b> (2× at Regular), so grouping reads without boxes:
       <code>--gap-tight</code> 4 (one unit: label over value, icon and count), <code>--gap-item</code> 8 (siblings in a group), <code>--gap-group</code> 16 (groups in a region), <code>--gap-section</code> 32 (sections).</li>
     <li><b>Icon to text is its own gap:</b> <code>--gap-icon</code> 6, a touch more than letters need.</li>
-    <li><b>Insets grow with the container:</b> <code>--inset-chip</code> 8, <code>--inset-control</code> 10, <code>--inset-row</code> 8, <code>--inset-card</code> 12, <code>--inset-rail</code> 8, <code>--inset-region</code> 24 (main column and pane). A container's inset is never smaller than the largest gap inside it.</li>
+    <li><b>Insets grow with the container:</b> <code>--inset-chip</code> 8, <code>--inset-control</code> 10, <code>--inset-row</code> 8, <code>--inset-card</code> 12. Inside a card or control, the inset is never smaller than the largest gap inside it.</li>
+    <li><b>Padding grows with focus: navigation &lt; list &lt; pane.</b> The rail is most compact (<code>--inset-nav</code> 12 top, 8 sides), the main column a step up (<code>--inset-list</code> 12, 16), the pane where you read and work most generous (<code>--inset-pane</code> 20, 24). The rail and main column share a top line; the pane is its own surface and starts lower.</li>
     <li><b>Two heights for things you click:</b> <code>--row</code> 32 for list and rail rows, <code>--control</code> 28 for buttons and inputs (<code>--control-sm</code> 24 inside dense rows). Every one has a 40px hit area, extended invisibly when the mark is smaller.</li>
     <li><b>Text inputs pad to centre their text in <code>--control</code></b>, with horizontal padding = vertical + 4.</li>
     <li><b>Separate with space first.</b> Use a gap between things that are separate objects. Use a hairline divider only between uniform rows inside one container. Use a container only when the group is an object you act on, or needs its own surface level.</li>
@@ -72,7 +73,8 @@
     <thead><tr><th>Role</th><th>Compact</th><th>Regular</th><th>Comfortable</th></tr></thead>
     <tbody>
       <tr><td>gap tight / icon / item / group / section</td><td>4 / 4 / 6 / 12 / 24</td><td>4 / 6 / 8 / 16 / 32</td><td>6 / 8 / 12 / 24 / 40</td></tr>
-      <tr><td>inset chip / control / row / card / rail / region</td><td>6 / 8 / 6 / 10 / 6 / 20</td><td>8 / 10 / 8 / 12 / 8 / 24</td><td>10 / 12 / 10 / 16 / 10 / 32</td></tr>
+      <tr><td>inset chip / control / row / card</td><td>6 / 8 / 6 / 10</td><td>8 / 10 / 8 / 12</td><td>10 / 12 / 10 / 16</td></tr>
+      <tr><td>region inset (top / sides): nav, list, pane</td><td>10/6, 10/12, 16/20</td><td>12/8, 12/16, 20/24</td><td>16/10, 16/20, 24/32</td></tr>
       <tr><td>row / control / small control / chip</td><td>28 / 26 / 22 / 22</td><td>32 / 28 / 24 / 24</td><td>36 / 32 / 28 / 28</td></tr>
     </tbody>
   </table>

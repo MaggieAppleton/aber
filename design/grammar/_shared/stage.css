@@ -19,7 +19,7 @@
 [data-mark="bare"] .stg .g, .stg[data-mark="bare"] .g { background: transparent; outline: 0; width: auto; }
 
 /* Rail */
-.stg-rail { display: flex; flex-direction: column; gap: var(--gap-group, var(--s-3)); padding: var(--inset-region, 14px) var(--inset-rail, 10px); background: var(--ground-2); box-shadow: inset -0.5px 0 0 var(--hairline); min-width: 0; }
+.stg-rail { display: flex; flex-direction: column; gap: var(--gap-group, var(--s-3)); padding: var(--inset-nav-block, 14px) var(--inset-nav-inline, 10px); background: var(--ground-2); box-shadow: inset -0.5px 0 0 var(--hairline); min-width: 0; }
 .stg-brand { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--brand-pad-r, var(--s-1h)) 0 var(--inset-row, var(--s-1h)); font-weight: var(--w-strong); }
 .stg-index { display: grid; gap: var(--gap-rail, 1px); }
 .stg-index a, .stg-protos { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-item, var(--s-2)); height: var(--row); padding: 0 var(--inset-row, var(--s-2)); border-radius: var(--r-icon); color: var(--ink-2); cursor: pointer; transition: background-color var(--t-hover) var(--ease-out); }
@@ -36,7 +36,7 @@
 .stg-iconbtn:active, .stg-btn:active, .stg-chip:active, .stg-card:active { scale: var(--press-scale); }
 
 /* Main: theme sections of contained cards */
-.stg-main { min-width: 0; overflow: hidden; padding: var(--inset-region, 24px) var(--inset-region, 28px); display: grid; align-content: start; gap: var(--gap-section, 22px); }
+.stg-main { min-width: 0; overflow: hidden; padding: var(--inset-list-block, 24px) var(--inset-list-inline, 28px); display: grid; align-content: start; gap: var(--gap-section, 22px); }
 .stg-sec-head { display: flex; align-items: center; gap: var(--gap-icon, var(--s-2)); height: var(--control); margin-bottom: var(--gap-item, var(--s-2)); }
 .stg-sec-head .n { color: var(--ink-2); }
 .stg-cards { display: grid; gap: var(--gap-item, 10px); }
@@ -57,8 +57,8 @@
 .stg-dot.new { background: var(--new); box-shadow: 0 0 0 3px color-mix(in oklab, var(--new) 18%, transparent); }
 
 /* Pane: docked right, top-aligned, a hairline seam, no shadow */
-.stg-pane { position: relative; min-width: 0; background: var(--surface); box-shadow: -0.5px 0 0 var(--hairline-strong); overflow: hidden; padding: var(--inset-region, 28px) var(--inset-region, 32px) var(--inset-region, 24px); display: grid; align-content: start; gap: var(--gap-group, var(--s-4)); }
-.stg-pane-close { position: absolute; top: var(--inset-rail, 10px); right: var(--inset-rail, 10px); display: flex; gap: 2px; }
+.stg-pane { position: relative; min-width: 0; background: var(--surface); box-shadow: -0.5px 0 0 var(--hairline-strong); overflow: hidden; padding: var(--inset-pane-block, 28px) var(--inset-pane-inline, 32px) var(--inset-pane-block, 24px); display: grid; align-content: start; gap: var(--gap-group, var(--s-4)); }
+.stg-pane-close { position: absolute; top: var(--inset-pane-block, 10px); right: calc(var(--inset-pane-inline, 18px) - 8px); display: flex; gap: 2px; }
 .stg-chip { display: inline-flex; align-items: center; gap: var(--gap-tight, var(--s-1)); height: var(--chip-h, 24px); max-width: 100%; padding: 0 var(--inset-chip, var(--s-2)) 0 calc(var(--inset-chip, 8px) - 4px); border: 0; border-radius: var(--r-icon); background: var(--surface);
   box-shadow: inset 0 0 0 0.5px var(--hairline-strong); font-size: var(--text-label); color: var(--ink-2); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background-color var(--t-hover); }
 .stg-chip:hover { background: var(--hover); color: var(--ink); }

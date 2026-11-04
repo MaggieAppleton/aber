@@ -15,7 +15,7 @@
     </div>`;
 
   const html = () => `
-    <aside class="stg-rail" data-sp="region inset y, rail inset x, group gap" data-gap>
+    <aside class="stg-rail" data-sp="nav inset, group gap" data-gap>
       <div class="stg-brand"><span>Aber</span>${iconBtn("magnifying-glass", "Find")}</div>
       <nav class="stg-index">${THEMES.map(([n, c, a], i) => `<a href="#"${a ? " data-active" : ""}${i === 1 ? ' data-sp="row inset, row height"' : ""}><span>${n}</span><span>${c ?? ""}</span></a>`).join("")}</nav>
       <a href="#" class="stg-protos">${g("prototype")}<span>Prototypes</span><span>4</span></a>
@@ -26,7 +26,7 @@
         <button type="button" aria-pressed="false" aria-label="Timeline"><i class="ph ph-chart-scatter"></i></button>
       </div>
     </aside>
-    <main class="stg-main" data-sp="region inset, section gap" data-gap>
+    <main class="stg-main" data-sp="list inset, section gap" data-gap>
       <section>
         <div class="stg-sec-head">${g("theme")}<span>Cost of intelligence</span><span class="n">23 signals</span></div>
         <div class="stg-cards" data-sp="item gap" data-gap>
@@ -40,7 +40,7 @@
         <div class="stg-cards">${card("Agents keep context across months, not sessions", { c: 4, up: 8, down: 1, proto: 1, neg: true })}</div>
       </section>
     </main>
-    <aside class="stg-pane" aria-label="Open object" data-sp="region inset, group gap" data-gap>
+    <aside class="stg-pane" aria-label="Open object" data-sp="pane inset, group gap" data-gap>
       <div class="stg-pane-close">${iconBtn("arrows-out-simple", "Full width")}${iconBtn("x", "Close")}</div>
       <div class="stg-chips"><a href="#" class="stg-chip" data-sp="chip inset">${g("theme")}Cost of intelligence</a></div>
       <h3 class="stg-title">Tokens become nearly free for routine work</h3>

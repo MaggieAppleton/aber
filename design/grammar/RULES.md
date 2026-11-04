@@ -76,13 +76,20 @@ Evidence: today's CSS uses 36 distinct paddings, 18 gaps, 18 margins and 19 row 
 | `--inset-control` | 10 |
 | `--inset-row` | 8 |
 | `--inset-card` | 12 |
-| `--inset-rail` | 8 |
-| `--inset-region` | 24 (main column, pane) |
 
-   A container's inset is never smaller than the largest gap inside it.
-5. **Two click heights.** `--row` is 32, for list and rail rows. `--control` is 28, for buttons and inputs; `--control-sm` is 24, inside dense rows. Every target has a 40px hit area.
-6. **Text inputs** centre their text in `--control`. Their horizontal padding is the vertical padding plus 4.
-7. **Separate with space first.**
+   Inside a card or control, the inset is never smaller than the largest gap inside it.
+5. **Padding grows with focus: navigation < list < pane.**
+
+| Region | Regular (top / sides) | Compact | Comfortable |
+| --- | --- | --- | --- |
+| `--inset-nav` (rail) | 12 / 8 | 10 / 6 | 16 / 10 |
+| `--inset-list` (main column) | 12 / 16 | 10 / 12 | 16 / 20 |
+| `--inset-pane` (pane) | 20 / 24 | 16 / 20 | 24 / 32 |
+
+   The rail and main column share a top line; the pane is its own surface and starts lower.
+6. **Two click heights.** `--row` is 32, for list and rail rows. `--control` is 28, for buttons and inputs; `--control-sm` is 24, inside dense rows. Every target has a 40px hit area.
+7. **Text inputs** centre their text in `--control`. Their horizontal padding is the vertical padding plus 4.
+8. **Separate with space first.**
    - A gap separates objects.
    - A hairline separates only uniform rows inside one container.
    - A container is for an object you act on, or a group that needs its own surface level.

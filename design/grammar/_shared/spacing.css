@@ -14,19 +14,21 @@
   --inset-control: 10px;/* button and input x padding; inputs pad y so text centres in --control */
   --inset-row: 8px;     /* list rows and rail rows */
   --inset-card: 12px;   /* cards and contained boxes */
-  --inset-rail: 8px;    /* sidebar edge */
-  --inset-region: 24px; /* main column and pane edge */
+  /* Region insets grow with focus: navigation < list < pane. The two browsing columns share a top line. */
+  --inset-nav-block: 12px;  --inset-nav-inline: 8px;    /* rail */
+  --inset-list-block: 12px; --inset-list-inline: 16px;  /* main column */
+  --inset-pane-block: 20px; --inset-pane-inline: 24px;  /* pane */
   /* Heights */
   --row: 32px; --control: 28px; --control-sm: 24px; --chip-h: 24px; --hit: 40px;
 }
 [data-density="compact"] {
   --gap-tight: 4px; --gap-icon: 4px; --gap-item: 6px; --gap-group: 12px; --gap-section: 24px;
-  --inset-chip: 6px; --inset-control: 8px; --inset-row: 6px; --inset-card: 10px; --inset-rail: 6px; --inset-region: 20px;
+  --inset-chip: 6px; --inset-control: 8px; --inset-row: 6px; --inset-card: 10px; --inset-nav-block: 10px; --inset-nav-inline: 6px; --inset-list-block: 10px; --inset-list-inline: 12px; --inset-pane-block: 16px; --inset-pane-inline: 20px;
   --row: 28px; --control: 26px; --control-sm: 22px; --chip-h: 22px;
 }
 [data-density="comfortable"] {
   --gap-tight: 6px; --gap-icon: 8px; --gap-item: 12px; --gap-group: 24px; --gap-section: 40px;
-  --inset-chip: 10px; --inset-control: 12px; --inset-row: 10px; --inset-card: 16px; --inset-rail: 10px; --inset-region: 32px;
+  --inset-chip: 10px; --inset-control: 12px; --inset-row: 10px; --inset-card: 16px; --inset-nav-block: 16px; --inset-nav-inline: 10px; --inset-list-block: 16px; --inset-list-inline: 20px; --inset-pane-block: 24px; --inset-pane-inline: 32px;
   --row: 36px; --control: 32px; --control-sm: 28px; --chip-h: 28px;
 }
 
@@ -48,3 +50,6 @@
 
 :root, [data-density] { --brand-pad-r: 0px; }
 [data-overlay] .stg [data-sp]:not([data-gap]) { color: var(--ink) !important; }
+
+/* The pane's first row is control-high, so its header centres with the close and expand controls */
+:root .stg-pane > .stg-chips { min-height: var(--control); align-items: center; }
