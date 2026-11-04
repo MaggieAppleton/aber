@@ -8,7 +8,7 @@ Status tags:
 
 Decision history and sources are in [PRIOR-DECISIONS.md](PRIOR-DECISIONS.md).
 
-The app's layout and navigation stay as they are: a rail of themes on the left, theme sections of contained cards in the main column, and a docked object pane on the right that aligns to the top of the main area. Jigs restyle; they don't re-layout. **DECIDED, 4 Nov.**
+The app keeps four views. The default view is type-first (a rail of types, a list of that type's items, the selected item filling the main area, with Briefing as its home); see Navigation. Columns, Atlas and Timeline keep today's layout and their docked pane, aligned to the top of the main area. Jigs restyle those three; they don't re-layout them. **DECIDED, 4 Nov.**
 
 ## 00 Colour — DECIDED (system D, "Linen, bright types", 4 Nov)
 
