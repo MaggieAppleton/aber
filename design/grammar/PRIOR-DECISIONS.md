@@ -373,3 +373,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 4 Nov 2026 (Maggie): theories column stays at the app's width; never widens implicitly; width is a token (`--list-w`, 296, measured in jig /app at 1440). The pane takes the remaining width. Columns view: Themes 230, Theories `--list-w`.
 
 4 Nov 2026 (Maggie, 03-icons): icons are 16 beside 13 body and 14 beside 12px text; object glyphs sit on their pale tile everywhere (lists, headers, chips, card meta). The one-icon-per-meaning vocabulary, tooltips (name + key in mono) and icon-button sizes (28, 24 dense, 40 hit) in RULES.md section 03 are the default on every stage. Rejecting a suggestion stays a labelled "Dismiss" text button left of Accept, never an icon (DI-009).
+
+4 Nov 2026 (Maggie): navigation is type-first: rail of types → second sidebar of that type's items → the selected item fills the main area as its full view; no docked right pane. This replaces the default (Sections) view only: the default view is type-first and includes Briefing; Columns, Atlas and Timeline stay as they are, with their docked pane. Jig: `nav/`.

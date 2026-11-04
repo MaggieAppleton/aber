@@ -1,10 +1,10 @@
-// Grammar nav: a working prototype of type-first navigation, in three structures.
-// Usage: <div class="nv-host" data-nav='{"v":"B"}'></div>   v: A (item fills main), B (contents as boxes + pane), C (icon rail + item + pane)
+// Grammar nav round 2: the type-first default view (structure A, decided 4 Nov) with preview → peek → full, plus round-1 B and C for reference.
+// Usage: <div class="nv-host" data-nav='{"v":"A","type":"theory","opt":{"peek":"card"},"peekOn":"s1"}'></div>   v: A (decided), B, C (round 1)
 // Each host keeps its own state; the window renders at 1280 wide and zooms to fit its host.
 (() => {
   /* ── Content ─────────────────────────────────────────── */
   const TYPES = {
-    briefing: { name: "Briefing", icon: "sun-horizon" },
+    briefing: { name: "Briefing", icon: "newspaper" },
     theme: { name: "Themes", one: "Theme", icon: "binoculars" },
     theory: { name: "Theories", one: "Theory", icon: "target" },
     prototype: { name: "Prototypes", one: "Prototype", icon: "pencil-ruler" },
@@ -127,35 +127,36 @@
   };
   const defaultPane = (o, v) => o.kind === "theme" ? theoriesOf(o)[0]?.id ?? null : v === "B" ? o.id : null;
 
+
   /* ── Atoms ─────────────────────────────────────────── */
-  const g = (t, draft) => `<span class="g${draft ? " draft" : ""}" data-type="${t}"><i class="ph ph-${TYPES[t].icon}" aria-hidden="true"></i></span>`;
+  // Object glyphs sit on their tile everywhere: 24 in rows, headers, the rail and chips; 18 (glyph 14) in card meta.
+  const g = (t, draft, sm) => `<span class="g${sm ? " sm" : ""}${draft ? " draft" : ""}" data-type="${t}"><i class="ph ph-${TYPES[t].icon}" aria-hidden="true"></i></span>`;
   const conf = (n, lg) => `<span class="nv-conf${lg ? " lg" : ""}" role="img" aria-label="Confidence ${n} of 5">${[1, 2, 3, 4, 5].map(i => `<i${i <= n ? " data-on" : ""}></i>`).join("")}</span>`;
-  const ib = (icon, label, attr = "") => `<button type="button" class="nv-ib" aria-label="${label}" title="${label}" ${attr}><i class="ph ph-${icon}" aria-hidden="true"></i></button>`;
-  const chip = (o, cls = "") => `<button type="button" class="nv-chip ${cls}${o.draft ? " draft" : ""}" data-open="${o.id}" title="${o.name}">${g(o.kind, o.draft)}${o.name}</button>`;
+  const ib = (icon, label, attr = "", key = "") => `<button type="button" class="nv-ib" aria-label="${label}" data-tip="${label}"${key ? ` data-key="${key}"` : ""} ${attr}><i class="ph ph-${icon}" aria-hidden="true"></i></button>`;
+  const chip = o => `<button type="button" class="nv-chip${o.draft ? " draft" : ""}" data-open="${o.id}">${g(o.kind, o.draft)}<span class="t">${o.name}</span></button>`;
   const dot = (kind, label) => `<span class="nv-dot ${kind}" role="img" aria-label="${label}" title="${label}"></span>`;
   const statusIcon = p => `<i class="ph ph-${STATUS[p.status][1]} st" role="img" aria-label="${STATUS[p.status][0]}" title="${STATUS[p.status][0]}"></i>`;
   const subOf = o => ({
     theme: () => `<span>${o.signals} signals</span><span>${theoriesOf(o).length} theories</span>`,
-    theory: () => o.retired ? `<span>Retired, ${o.retired.toLowerCase()}</span>` : o.draft ? `<span>Draft</span><span>+${ups(o)} −${downs(o)}</span>` : `${conf(o.c)}<span>+${ups(o)} −${downs(o)}</span>`,
+    theory: () => o.retired ? `<span>Retired, ${o.retired.toLowerCase()}</span>` : o.draft ? `<span>Draft</span><span>+${ups(o)} −${downs(o)}</span><span>By ${o.by}</span>` : `${conf(o.c)}<span>+${ups(o)} −${downs(o)}</span><span>By ${o.by}</span>`,
     signal: () => `<span>${o.src}</span><span>${DAYS[o.day]}</span>`,
     prototype: () => `<span>${STATUS[o.status][0]}</span><span>Tests ${o.tests.length}</span>`,
     dump: () => `<span class="nv-mono">${o.time}</span><span>${DAYS[o.day]}</span><span>Made ${o.made.length}</span>`,
   })[o.kind]();
+  const typeLabel = o => o.kind === "prototype" ? STATUS[o.status][0] : o.draft ? `Draft ${TYPES[o.kind].one.toLowerCase()}` : TYPES[o.kind].one;
 
-  // A card: a contained box for an object listed inside another
   const card = (o, cur) => {
     const meta = o.kind === "theory"
-      ? `${o.c && !o.draft ? conf(o.c) : ""}<span>+${ups(o)} −${downs(o)}</span>${protosOf(o).length ? `<span class="in">${g("prototype")}${protosOf(o).length}</span>` : ""}${o.pending ? `<span class="nv-pending" aria-label="${o.pending} pending suggestions">${o.pending}</span>` : ""}${o.challenge ? dot("neg", "Challenge") : ""}`
+      ? `${o.c && !o.draft ? conf(o.c) : ""}<span>+${ups(o)} −${downs(o)}</span>${protosOf(o).length ? `<span class="in">${g("prototype", false, true)}${protosOf(o).length}</span>` : ""}${o.pending ? `<span class="nv-pending" aria-label="${o.pending} pending suggestions">${o.pending}</span>` : ""}${o.challenge ? dot("neg", "Challenge") : ""}`
       : o.kind === "signal" ? `<span>${o.src}</span>${o.fresh ? dot("new", "New") : ""}`
       : o.kind === "theme" ? `<span>${o.signals} signals</span><span>${theoriesOf(o).length} theories</span>`
       : o.kind === "prototype" ? `<span class="in">${statusIcon(o)}${STATUS[o.status][0]}</span>`
       : `<span class="nv-mono">${o.time}</span><span>${DAYS[o.day]}</span>`;
     return `<button type="button" class="nv-card${o.draft ? " draft" : ""}" data-open="${o.id}" aria-current="${o.id === cur}"><span class="cn">${o.name}</span><span class="cm">${meta}</span></button>`;
   };
-  // A row inside a box (evidence, a feed): glyph, name, source
   const item = (o, cur, extra = "") => {
-    const src = o.kind === "signal" ? `<span>${o.src}</span>` : o.kind === "dump" ? `<span class="nv-mono">${o.time}</span><span>${DAYS[o.day]}</span>` : o.kind === "theory" ? subOf(o) : "";
-    return `<button type="button" class="nv-item${o.draft ? " draft" : ""}" data-open="${o.id}" aria-current="${o.id === cur}">${g(o.kind, o.draft)}<span class="t"><span>${o.name}</span>${o.fresh ? dot("new", "New") : ""}</span>${src || extra ? `<span class="src">${extra}${src}</span>` : ""}</button>`;
+    const src = o.kind === "signal" ? `<span>${o.src}</span>` : o.kind === "dump" ? `<span class="nv-mono">${o.time}</span><span>${DAYS[o.day]}</span>` : o.kind === "theory" ? subOf(o) : o.kind === "theme" ? `<span>${o.signals} signals</span>` : o.kind === "prototype" ? `<span>${STATUS[o.status][0]}</span>` : "";
+    return `<button type="button" class="nv-item${o.draft ? " draft" : ""}" data-open="${o.id}" aria-current="${o.id === cur}">${g(o.kind, o.draft)}<span class="t"><span>${o.name}</span>${o.fresh ? dot("new", "New") : ""}${o.challenge ? dot("neg", "Challenge") : ""}</span>${src || extra ? `<span class="src">${extra}${src}</span>` : ""}</button>`;
   };
   const feed = (list, cur) => {
     let out = "", day = -1;
@@ -163,50 +164,66 @@
     return `<div class="nv-box">${out}</div>`;
   };
 
+  /* ── Options (the open questions) ──────────────────── */
+  const OPT = { peek: "card", brief: "rail", order: "refined", tf: "yes", unseen: "no", switchAt: "rail" };
+  const orderOf = s => s.opt.order === "raw" ? ["dump", "signal", "theme", "theory", "prototype"] : RAIL;
+
+  /* ── View switcher: Default (type-first + Briefing), then the three views that stay as they are ── */
+  const VIEWS = [["default", "rows", "Default", "⌘1"], ["columns", "columns", "Columns", "⌘2"], ["atlas", "map-trifold", "Atlas", "⌘3"], ["timeline", "chart-scatter", "Timeline", "⌘4"]];
+  const switcher = () => `<div class="nv-switch" role="group" aria-label="Views">${VIEWS.map(([v, i, l, k]) =>
+    `<button type="button" data-view="${v}" aria-pressed="${v === "default"}" aria-label="${l}" data-tip="${l}" data-key="${k}"><i class="ph${v === "default" ? "-fill" : ""} ph-${i}" aria-hidden="true"></i></button>`).join("")}</div>`;
+
   /* ── Rail ──────────────────────────────────────────── */
-  const LENSES = [["list", "list-dashes", "List"], ["columns", "columns", "Columns"], ["atlas", "map-trifold", "Atlas"], ["timeline", "chart-scatter", "Timeline"]];
   const countOf = t => t === "briefing" ? BRIEF.reduce((n, [, ids]) => n + ids.length, 0) : TOTAL[t] ?? all(t).filter(o => !o.retired).length;
-  const rail = s => `
+  const rail = s => {
+    const home = s.opt.brief === "home", types = [...(home ? [] : ["briefing"]), ...orderOf(s)];
+    const brand = s.v === "C" ? "" : home ? `<button type="button" class="nv-home" data-home aria-current="${s.type === "home"}">Aber${dot("new", "New since yesterday")}</button>` : "<span>Aber</span>";
+    return `
     <aside class="nv-rail">
-      <div class="nv-brand">${s.v === "C" ? "" : "<span>Aber</span>"}${ib("magnifying-glass", "Find")}</div>
+      <div class="nv-brand">${brand}${ib("magnifying-glass", "Find", "", "⌘K")}</div>
       <nav class="nv-types" aria-label="Types">
-        ${["briefing", ...RAIL].map(t => `<button type="button" class="nv-type${t === "briefing" ? " brief" : ""}" data-go="${t}" aria-current="${s.type === t}" title="${TYPES[t].name}" aria-label="${TYPES[t].name}">${g(t)}<span class="nm">${TYPES[t].name}</span>${t === "signal" || t === "briefing" ? dot("new", "New since yesterday") : ""}<span class="nv-n">${countOf(t)}</span></button>`).join("")}
+        ${types.map(t => `<button type="button" class="nv-type${t === "briefing" ? " brief" : ""}" data-go="${t}" aria-current="${s.type === t}" aria-label="${TYPES[t].name}"${s.v === "C" ? ` data-tip="${TYPES[t].name}"` : ""}><span class="gw">${g(t)}${t === "signal" || t === "briefing" ? dot("new", "New since yesterday") : ""}</span><span class="nm">${TYPES[t].name}</span><span class="nv-n">${countOf(t)}</span></button>`).join("")}
       </nav>
-      <div class="nv-lenses" role="group" aria-label="Lens">${LENSES.map(([v, i, l]) => `<button type="button" data-lens="${v}" aria-pressed="${s.lens === v}" aria-label="${l}" title="${l}"><i class="ph ph-${i}" aria-hidden="true"></i></button>`).join("")}</div>
+      ${s.opt.switchAt === "rail" ? switcher() : ""}
     </aside>`;
+  };
 
   /* ── Item list (second sidebar) ────────────────────── */
+  // Rows: one status slot on the left (new teal, challenge red), the name, then quantity on the right (a count, or a ring for none).
   const list = s => {
     const t = s.type, cur = s.sel[t], q = s.q.toLowerCase();
     const hit = o => (!q || o.name.toLowerCase().includes(q)) && (!s.tf || (o.themes || []).includes(s.tf));
-    const row = (o, inner, cls = "") => `<button type="button" class="nv-row ${cls}${o.draft ? " draft" : ""}" data-sel="${o.id}" aria-current="${o.id === cur}" title="${o.name}">${inner}</button>`;
-    const group = (label, rows, opts = {}) => rows.length || opts.always ? `<div class="nv-group">${label ? `<div class="nv-glabel">${label}${opts.n != null ? `<span class="nv-n">${opts.n}</span>` : ""}</div>` : ""}${rows.join("")}</div>` : "";
-    const fold = (key, label, n, rows) => `<div class="nv-group"><button type="button" class="nv-glabel" data-toggle="${key}" aria-expanded="${!!s.open[key]}"><i class="ph ph-caret-${s.open[key] ? "down" : "right"}" aria-hidden="true"></i>${label}<span class="nv-n">${n}</span></button>${s.open[key] ? rows.join("") : ""}</div>`;
+    const row = (o, inner, cls = "", status = null) => `<button type="button" class="nv-row ${cls}${o.draft ? " draft" : ""}" data-sel="${o.id}" aria-current="${o.id === cur}" title="${o.name}">${status !== null ? `<span class="slot">${status}</span>` : ""}${inner}</button>`;
+    const group = (label, rows, opts = {}) => rows.length ? `<div class="nv-group">${label ? `<div class="nv-glabel">${label}${opts.n != null ? `<span class="nv-n">${opts.n}</span>` : ""}${opts.act || ""}</div>` : ""}${rows.join("")}</div>` : "";
+    const fold = (key, label, n, rows) => `<div class="nv-group"><button type="button" class="nv-glabel" data-toggle="${key}" aria-expanded="${!!s.open[key]}"><i class="ph ph-caret-down${s.open[key] ? "" : " shut"}" aria-hidden="true"></i>${label}<span class="nv-n">${n}</span></button>${s.open[key] ? rows.join("") : ""}</div>`;
     const search = ph => `<label class="nv-search"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input data-q type="search" placeholder="${ph}" value="${s.q}" aria-label="${ph}"></label>`;
+    const filter = () => s.opt.tf === "yes" ? `<label class="nv-filter"><i class="ph ph-funnel" aria-hidden="true"></i><select data-tf aria-label="Filter by theme"><option value="">All themes</option>${all("theme").filter(o => !o.draft).map(o => `<option value="${o.id}"${s.tf === o.id ? " selected" : ""}>${o.name}</option>`).join("")}</select></label>` : "";
     let tools = "", body = "", add = true, meta = countOf(t);
 
     if (t === "briefing") {
       add = false; meta = "";
-      body = BRIEF.map(([label, ids]) => group(label, ids.map(id => O[id]).map(o => row(o, `${g(o.kind, o.draft)}<span class="nm">${o.name}</span>${o.challenge ? dot("neg", "Challenge") : o.pending ? `<span class="nv-pending">${o.pending}</span>` : ""}`, "mixed")), { n: ids.length })).join("");
+      body = BRIEF.map(([label, ids]) => group(label, ids.map(id => O[id]).map(o => row(o, `${g(o.kind, o.draft)}<span class="nm">${o.name}</span>${o.pending ? `<span class="nv-pending">${o.pending}</span>` : ""}`, "mixed", o.challenge ? dot("neg", "Challenge") : o.fresh ? dot("new", "New") : "")), { n: ids.length })).join("");
     } else if (t === "theme") {
-      const r = o => row(o, `<span class="nm">${o.name}</span>${o.fresh ? dot("new", `${o.fresh} new signals`) : ""}${theoriesOf(o).length ? `<span class="nv-n">${theoriesOf(o).length}</span>` : '<span class="nv-ring" role="img" aria-label="Open: no theory yet" title="Open: no theory yet"></span>'}`);
+      const r = o => row(o, `<span class="nm">${o.name}</span>${theoriesOf(o).length ? `<span class="nv-n" title="${theoriesOf(o).length} theories">${theoriesOf(o).length}</span>` : '<span class="nv-ring" role="img" aria-label="Open: no theory yet" title="Open: no theory yet"></span>'}`, "", o.fresh ? dot("new", `${o.fresh} new signals`) : "");
       const mine = all("theme").filter(o => !o.draft).sort((a, b) => (b.fresh || 0) - (a.fresh || 0));
       body = group("", mine.map(r)) + group("Drafts", all("theme").filter(o => o.draft).map(r));
     } else if (t === "theory") {
-      tools = search("Find a theory");
-      const r = o => row(o, `<span class="nm">${o.name}</span><span class="marks">${o.pending ? `<span class="nv-pending" aria-label="${o.pending} pending suggestions">${o.pending}</span>` : ""}${o.challenge ? dot("neg", "Challenge") : ""}</span>`, "two");
+      tools = search("Find a theory") + filter();
+      const r = o => row(o, `<span class="nm">${o.name}</span><span class="marks">${o.pending ? `<span class="nv-pending" aria-label="${o.pending} pending suggestions">${o.pending}</span>` : ""}</span>`, "two", o.challenge ? dot("neg", "Challenge") : "");
       const ts = all("theory").filter(hit);
       body = group("Held", ts.filter(o => !o.draft && !o.retired).map(r)) + group("Drafts", ts.filter(o => o.draft).map(r))
-        + fold("retired", "Retired", ts.filter(o => o.retired).length, ts.filter(o => o.retired).map(r));
+        + (ts.some(o => o.retired) ? fold("retired", "Retired", ts.filter(o => o.retired).length, ts.filter(o => o.retired).map(r)) : "");
     } else if (t === "prototype") {
       const r = o => row(o, `<span class="nm">${o.name}</span>${statusIcon(o)}`);
       body = Object.entries(STATUS).map(([k, [label]]) => group(label, all("prototype").filter(o => o.status === k && !o.draft).map(r))).join("")
         + group("Drafts", all("prototype").filter(o => o.draft).map(r));
     } else if (t === "signal") {
       add = false;
-      tools = search("Find a signal") + `<select class="nv-filter" data-tf aria-label="Filter by theme"><option value="">All themes</option>${all("theme").filter(o => !o.draft).map(o => `<option value="${o.id}"${s.tf === o.id ? " selected" : ""}>${o.name}</option>`).join("")}</select>`;
-      const r = o => row(o, `<span class="nm">${o.name}</span><span class="marks">${o.fresh ? dot("new", "New") : ""}</span><span class="sub"><span>${o.src}</span></span>`, "two");
-      body = DAYS.map((d, i) => group(d, all("signal").filter(o => o.day === i && hit(o)).map(r))).join("") + OLDER.signal.map(([m, n]) => fold(m, m, n, [])).join("");
+      tools = search("Find a signal") + filter();
+      const r = o => row(o, `<span class="nm">${o.name}</span><span class="sub"><span>${o.src}</span></span>`, "two", o.fresh ? dot("new", "New") : "");
+      const unseen = s.opt.unseen === "yes", sigs = all("signal").filter(hit);
+      body = (unseen ? group("Unseen", sigs.filter(o => o.fresh).map(r), { n: sigs.filter(o => o.fresh).length, act: ib("check", "Mark all seen", 'class="nv-ib sm"', "A") }) : "")
+        + DAYS.map((d, i) => group(d, sigs.filter(o => o.day === i && !(unseen && o.fresh)).map(r))).join("") + OLDER.signal.map(([m, n]) => fold(m, m, n, [])).join("");
     } else if (t === "dump") {
       add = false;
       tools = search("Find a dump");
@@ -222,14 +239,14 @@
       </section>`;
   };
 
-  /* ── The full view of one object ───────────────────── */
+  /* ── Full: one object as the main area's page ──────── */
+  const backLabel = ([t, id]) => t === "home" ? "Since yesterday" : O[id].name;
   const doc = (o, s, where) => {
     const cur = where === "main" ? s.pane : null;
-    const back = where === "main" && s.v === "A" && s.back.length ? (() => { const [, id] = s.back.at(-1); return `<button type="button" class="nv-back" data-back><i class="ph ph-arrow-left" aria-hidden="true"></i><span>${O[id].name}</span></button>`; })() : "";
-    const ctl = where === "pane" ? `<span class="ctl">${ib("arrows-out-simple", "Open in the main area", "data-promote")}${ib("x", "Close", "data-close")}</span>` : "";
-    const lead = o.kind === "theory" || o.kind === "signal" ? o.themes.map(id => chip(O[id])).join("")
-      : `<span class="nv-chip plain">${g(o.kind, o.draft)}${o.kind === "prototype" ? STATUS[o.status][0] : o.draft ? `Draft ${TYPES[o.kind].one.toLowerCase()}` : TYPES[o.kind].one}</span>`;
-    const top = `${back ? `<div class="nv-top">${back}${ctl}</div>` : ""}<div class="nv-top"><div class="nv-chips">${lead}</div>${back ? "" : ctl}</div>`;
+    const back = where === "main" && s.v === "A" && s.back.length ? `<div class="nv-top"><button type="button" class="nv-back" data-back><i class="ph ph-arrow-left" aria-hidden="true"></i><span>${backLabel(s.back.at(-1))}</span></button></div>` : "";
+    const ctl = where === "pane" ? `<span class="ctl">${ib("arrows-out-simple", "Open in the main area", "data-promote")}${ib("x", "Close", "data-close", "Esc")}</span>` : "";
+    const lead = o.kind === "theory" || o.kind === "signal" ? o.themes.map(id => chip(O[id])).join("") : `<span class="nv-chip plain">${g(o.kind, o.draft)}<span class="t">${typeLabel(o)}</span></span>`;
+    const top = `${back}<div class="nv-top"><div class="nv-chips">${lead}</div>${ctl}</div>`;
     const title = `<h3 class="nv-title${o.draft ? " draft" : ""}">${o.name}</h3>`;
     let body = "";
     if (o.kind === "theory") {
@@ -238,7 +255,7 @@
       const rel = [...protosOf(o), ...followers(o)];
       body = `
         <dl class="nv-fields">
-          ${o.draft ? `<dt>Draft</dt><dd><span class="nv-decide"><button type="button" class="nv-btn secondary">Discard</button><button type="button" class="nv-btn primary">Accept</button></span></dd>`
+          ${o.draft ? `<dt>Draft</dt><dd><span class="nv-decide"><button type="button" class="nv-btn secondary">Dismiss</button><button type="button" class="nv-btn primary">Accept</button></span></dd>`
             : o.retired ? `<dt>Retired</dt><dd>${o.retired}</dd>` : `<dt>Confidence</dt><dd>${conf(o.c, true)}</dd>`}
           <dt>Happens by</dt><dd>${o.by}</dd>
           ${o.rival ? `<dt>Rival</dt><dd>${chip(O[o.rival])}</dd>` : ""}
@@ -272,7 +289,14 @@
     return `<article class="nv-doc">${top}${title}${body}</article>`;
   };
 
-  /* ── B: the object's contents as boxes ─────────────── */
+  /* ── Briefing as the home of the main area (option) ── */
+  const digest = () => `<article class="nv-doc nv-digest">
+      <div class="nv-top"><span class="nv-chip plain">${g("briefing")}<span class="t">Briefing</span></span></div>
+      <h3 class="nv-title">Since yesterday</h3><div class="nv-sub"><span>${countOf("briefing")} changes</span><span>Last looked 18:40</span></div>
+      ${BRIEF.map(([label, ids]) => `<section class="nv-section"><div class="nv-shead">${label}<span class="nv-meta">${ids.length}</span></div><div class="nv-box">${ids.map(id => item(O[id], null)).join("")}</div></section>`).join("")}
+    </article>`;
+
+  /* ── B: the object's contents as boxes (round 1) ───── */
   const boxes = (o, s) => {
     const cur = s.pane;
     const sec = (type, label, items, render = "cards") => `<section class="nv-section"><div class="nv-shead">${g(type)}${label}<span class="nv-meta">${items.length}</span></div>${
@@ -285,117 +309,172 @@
       prototype: () => sec("theory", "Tests", o.tests.map(id => O[id])),
       dump: () => sec("signal", "Made", o.made.map(id => O[id])),
     };
-    return `<div class="nv-boxes"><button type="button" class="nv-mhead" data-open="${o.id}" aria-current="${s.pane === o.id}" title="Open ${o.name}">${g(o.kind, o.draft)}<span class="h">${o.name}</span><span class="nv-sub">${subOf(o)}</span></button>${groups[o.kind]()}</div>`;
+    return `<div class="nv-boxes"><button type="button" class="nv-mhead" data-open="${o.id}" aria-current="${s.pane === o.id}">${g(o.kind, o.draft)}<span class="h">${o.name}</span><span class="nv-sub">${subOf(o)}</span></button>${groups[o.kind]()}</div>`;
   };
 
-  /* ── Lenses ────────────────────────────────────────── */
-  const focusOf = s => (s.v !== "A" && s.pane) || s.sel[s.type];
-  const columnsLens = s => {
-    const f = O[focusOf(s)], lin = lineage(f);
-    return `<div class="nv-cols">${["dump", "signal", "theme", "theory", "prototype"].map(t => {
-      const items = all(t).filter(o => !o.retired).sort((a, b) => lin.has(b.id) - lin.has(a.id));
-      return `<section class="nv-col"${s.type === t ? " data-cur" : ""}><div class="nv-lhead">${g(t)}<span class="h">${TYPES[t].name}</span><span class="nv-meta">${countOf(t)}</span></div>
-        ${items.map(o => `<button type="button" class="nv-ci${lin.has(o.id) ? " rel" : ""}${o.draft ? " draft" : ""}" data-open="${o.id}" aria-current="${o.id === f.id}" title="${o.name}">${o.name}</button>`).join("")}
-        ${TOTAL[t] ? `<div class="nv-cols-more">${TOTAL[t] - items.length} earlier</div>` : ""}</section>`; }).join("")}</div>`;
+  /* ── Peek: the essentials of a related object, with Open ── */
+  const more = (arr, n = 3) => arr.length ? `<div class="nv-box">${arr.slice(0, n).map(x => item(x, null)).join("")}</div>${arr.length > n ? `<span class="nv-meta">${arr.length - n} more</span>` : ""}` : "";
+  const peekBody = o => ({
+    theory: () => `${o.note ? `<p class="nv-pk-prose">${o.note}</p>` : ""}<div class="nv-pk-ev"><span><i class="ph ph-arrow-up" aria-hidden="true"></i>Supports ${ups(o)}</span><span><i class="ph ph-arrow-down" aria-hidden="true"></i>Undermines ${downs(o)}</span></div>${more(evOf(o).map(e => e.s), 2)}`,
+    theme: () => more(theoriesOf(o)),
+    signal: () => more(o.ev.map(([id]) => O[id])),
+    prototype: () => `${o.body ? `<p class="nv-pk-prose">${o.body}</p>` : ""}${more(o.tests.map(id => O[id]))}`,
+    dump: () => `<p class="nv-pk-prose">${o.text}</p>${more(o.made.map(id => O[id]))}`,
+  })[o.kind]();
+  const peekHTML = (o, mode) => `<div class="nv-peek ${mode}" role="dialog" aria-label="${o.name}">
+      <div class="nv-pk-head"><span class="nv-chip plain">${g(o.kind, o.draft)}<span class="t">${typeLabel(o)}</span></span>${mode === "panel" ? ib("x", "Close", "data-peek-close", "Esc") : ""}</div>
+      <div class="nv-pk-name${o.draft ? " draft" : ""}">${o.name}</div><div class="nv-pk-sub">${subOf(o)}</div>
+      ${peekBody(o)}
+      <div class="nv-pk-foot"><button type="button" class="nv-btn secondary" data-full="${o.id}">Open<i class="ph ph-arrow-right" aria-hidden="true"></i></button></div>
+    </div>`;
+  // Position of el inside base, in base's own (unzoomed) pixels
+  const local = (base, el) => { const br = base.getBoundingClientRect(), k = br.width / base.offsetWidth || 1, r = el.getBoundingClientRect();
+    return { x: (r.left - br.left) / k, y: (r.top - br.top) / k, w: r.width / k, h: r.height / k }; };
+  const closePeek = host => { host.querySelectorAll(".nv-peek").forEach(p => p.remove()); host.querySelectorAll("[data-open][aria-expanded]").forEach(a => a.removeAttribute("aria-expanded")); host._s.peek = null; };
+  const showPeek = (host, id, anchor, pinned) => {
+    const s = host._s, o = O[id], main = host.querySelector(".nv-main"), scroller = main.querySelector(".nv-scroller");
+    const at = s.opt.peek === "card" ? local(scroller, anchor) : null;
+    closePeek(host);
+    s.peek = { id, pinned };
+    if (anchor.isConnected) anchor.setAttribute("aria-expanded", "true");
+    if (s.opt.peek === "panel") { main.insertAdjacentHTML("beforeend", peekHTML(o, "panel")); return; }
+    scroller.insertAdjacentHTML("beforeend", peekHTML(o, "card"));
+    const el = scroller.lastElementChild, W = scroller.clientWidth, top = at.y + scroller.scrollTop;
+    const left = Math.max(12, Math.min(W - el.offsetWidth - 12, at.x));
+    let y = top + at.h + 6;
+    if (y + el.offsetHeight > scroller.scrollTop + scroller.clientHeight - 12 && top - el.offsetHeight - 6 > scroller.scrollTop + 12) { y = top - el.offsetHeight - 6; el.classList.add("up"); }
+    Object.assign(el.style, { left: `${left}px`, top: `${y}px`, transformOrigin: `${Math.max(12, at.x - left + 12)}px ${el.classList.contains("up") ? "100%" : "0"}` });
   };
-  const AREAS = { coi: [32.2, 41.2, 19.3], mem: [77.3, 27.5, 14.8], rev: [78.6, 71.4, 12.2], fund: [32.2, 85.2, 11.6], ps: [16, 13, 7.7], aid: [55.4, 76.9, 8], local: [7.7, 64.6, 6.4], nai: [54.1, 8.2, 6.2], obs: [87.6, 52.2, 5.8], evals: [60.6, 93.4, 5.2] };
-  const atlasLens = s => {
-    const f = O[focusOf(s)];
-    const selThemes = new Set(f.kind === "theme" ? [f.id] : f.kind === "theory" || f.kind === "signal" ? f.themes : f.kind === "prototype" ? f.tests.flatMap(id => O[id].themes) : f.made.flatMap(id => O[id].themes || []));
-    return `<div class="nv-float">${ib("plus", "Zoom in")}${ib("minus", "Zoom out")}${ib("corners-in", "Fit")}</div>
-      <div class="nv-canvas">${Object.entries(AREAS).map(([id, [x, y, r]]) => {
-        const th = O[id], ts = theoriesOf(th).filter(t => t.themes[0] === id);
-        return `<div class="nv-area${selThemes.has(id) ? " is-sel" : ""}" style="left:${x}%;top:${y}%;width:${r * 2}%">
-          <button type="button" class="nv-area-label" data-open="${id}">${g("theme")}${th.name}<span class="nv-meta">${th.signals}</span></button>
-          ${ts.map((t, i) => `<button type="button" class="nv-pt${t.draft ? " draft" : ""}" data-open="${t.id}" aria-current="${t.id === f.id}" title="${t.name}" style="left:${24 + (i % 2) * 10}%;top:${36 + i * 13}%"><i class="m"></i><span>${t.name}</span></button>`).join("")}
-        </div>`; }).join("")}</div>`;
-  };
-  const YEARS = [2027, 2028, 2029, 2030];
-  const timelineLens = s => {
-    const f = O[focusOf(s)], lin = lineage(f);
-    const ts = all("theory").filter(t => !t.retired);
-    const rows = [5, 4, 3, 2, 1, 0];
-    return `<div class="nv-float">${ib("binoculars", "Filter by theme")}</div>
-      <div class="nv-tl" style="top:calc(var(--inset-float) + var(--control) + 12px)"><div class="nv-tl-gut" style="box-shadow:none"></div>${YEARS.map(y => `<div class="nv-tl-year">${y}</div>`).join("")}
-      ${rows.map(c => `<div class="nv-tl-gut">${c ? conf(c) : "Drafts"}</div>${YEARS.map(y => `<div class="nv-tl-cell">${ts.filter(t => (c ? !t.draft && t.c === c : t.draft) && t.by === y).map(t =>
-        `<div role="button" tabindex="0" class="nv-tl-item${t.draft ? " draft" : ""}${lin.has(t.id) || f.kind === "theory" && f.id === t.id ? "" : " dim"}" data-open="${t.id}" aria-current="${t.id === f.id}" title="${t.name}"><i class="m"></i><span>${t.name}</span></div>`).join("")}</div>`).join("")}`).join("")}</div>`;
-  };
-  const peek = s => s.v === "A" && s.peek ? (() => { const o = O[s.sel[s.type]]; return `<div class="nv-peek">${g(o.kind, o.draft)}<span class="nm">${o.name}</span><button type="button" class="nv-btn primary" data-lens="list">Open</button>${ib("x", "Close", "data-peek-close")}</div>`; })() : "";
 
   /* ── Frame ─────────────────────────────────────────── */
   const W = { A: [200, 280, 0], B: [200, 272, 440], C: [56, 272, 448] };
   const frame = s => {
-    const [rw, lw, pw] = W[s.v], pane = s.v !== "A" && s.pane && O[s.pane];
-    const cols = [`${rw}px`, s.lens === "columns" ? null : `${lw}px`, "minmax(0, 1fr)", pane ? `${pw}px` : null].filter(Boolean).join(" ");
-    const o = O[s.sel[s.type]];
-    const main = s.lens === "columns" ? `<main class="nv-main nv-lens">${columnsLens(s)}${peek(s)}</main>`
-      : s.lens === "atlas" ? `<main class="nv-main nv-lens">${atlasLens(s)}${peek(s)}</main>`
-      : s.lens === "timeline" ? `<main class="nv-main nv-lens">${timelineLens(s)}${peek(s)}</main>`
-      : `<main class="nv-main">${s.v === "B" ? boxes(o, s) : doc(o, s, "main")}</main>`;
-    return `<div class="nv" data-v="${s.v}" data-lens="${s.lens}" style="grid-template-columns:${cols}">${rail(s)}${s.lens === "columns" ? "" : list(s)}${main}${pane ? `<aside class="nv-pane" aria-label="Open object">${doc(pane, s, "pane")}</aside>` : ""}</div>`;
+    if (s.view !== "default") return `<div class="stg-host nv-stagehost" data-stage='{"view":"${s.view}"}'></div>`;
+    const [rw, lw, pw] = W[s.v], pane = s.v !== "A" && s.pane && O[s.pane], home = s.type === "home";
+    const cols = [`${rw}px`, home ? null : `${lw}px`, "minmax(0, 1fr)", pane ? `${pw}px` : null].filter(Boolean).join(" ");
+    const content = home ? digest() : s.v === "B" ? boxes(O[s.sel[s.type]], s) : doc(O[s.sel[s.type]], s, "main");
+    return `<div class="nv" data-v="${s.v}" data-switch="${s.opt.switchAt}" data-at-home="${home}" style="grid-template-columns:${cols}">${rail(s)}${home ? "" : list(s)}<main class="nv-main"><div class="nv-scroller">${content}</div>${s.opt.switchAt === "main" ? switcher() : ""}</main>${pane ? `<aside class="nv-pane" aria-label="Open object">${doc(pane, s, "pane")}</aside>` : ""}</div>`;
   };
 
-  const fit = host => { const el = host.firstElementChild; if (el) el.style.zoom = Math.min(1, host.clientWidth / 1280); };
+  /* ── Tooltips: name, then key; after 500ms ─────────── */
+  let tipTimer;
+  const showTip = btn => {
+    const nv = btn.closest(".nv"); if (!nv) return; nv.querySelector(".nv-tip")?.remove();
+    const t = document.createElement("div"); t.className = "nv-tip"; t.setAttribute("role", "tooltip");
+    t.innerHTML = `<span>${btn.dataset.tip}</span>${btn.dataset.key ? `<kbd>${btn.dataset.key}</kbd>` : ""}`; nv.append(t);
+    const r = local(nv, btn), tw = t.offsetWidth, th = t.offsetHeight;
+    let left = r.x + r.w / 2 - tw / 2, top = r.y + r.h + 4;
+    if (btn.closest(".nv-rail .nv-switch")) top = r.y - th - 4;
+    if (btn.closest(".nv[data-v='C'] .nv-types")) { left = r.x + r.w + 6; top = r.y + r.h / 2 - th / 2; }
+    Object.assign(t.style, { left: `${Math.max(4, Math.min(nv.offsetWidth - tw - 4, left))}px`, top: `${top}px` });
+  };
+  document.addEventListener("pointerover", e => { const b = e.target.closest(".nv [data-tip]"); if (!b) return; clearTimeout(tipTimer); tipTimer = setTimeout(() => showTip(b), 500); });
+  document.addEventListener("pointerout", e => { const b = e.target.closest(".nv [data-tip]"); if (!b) return; clearTimeout(tipTimer); b.closest(".nv")?.querySelector(".nv-tip")?.remove(); });
+
+  const fit = host => { const el = host.firstElementChild; if (el?.classList.contains("nv") && host.clientWidth) el.style.zoom = Math.min(1, host.clientWidth / 1280); };
   const ro = new ResizeObserver(es => es.forEach(e => fit(e.target)));
   const render = host => {
     const s = host._s;
-    const scrolls = [...host.querySelectorAll(".nv-scroll, .nv-main, .nv-pane")].map(el => el.scrollTop);
+    const scrolls = [...host.querySelectorAll(".nv-scroll")].map(el => el.scrollTop);
     const focused = document.activeElement?.matches?.("[data-q]") && host.contains(document.activeElement);
+    s.peek = null;
     host.innerHTML = frame(s); fit(host);
+    if (s.view !== "default") {
+      const st = host.firstElementChild; window.AberStage.render(st);
+      const b = st.querySelector('.stg-switch button[data-view="sections"]'); if (b) { b.dataset.tip = "Default"; b.dataset.key = "⌘1"; b.setAttribute("aria-label", "Default"); }
+    }
     if (focused) { const i = host.querySelector("[data-q]"); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
     host.querySelectorAll(".nv-scroll").forEach((el, i) => el.scrollTop = scrolls[i] || 0);
   };
+  const navigate = (s, o) => {
+    if (s.type === o.kind && s.sel[o.kind] === o.id) return;
+    s.back.push([s.type, s.sel[s.type]]); s.type = o.kind; s.sel[o.kind] = o.id; s.q = ""; s.tf = "";
+  };
+
   const init = host => {
     const o = JSON.parse(host.dataset.nav || "{}");
-    host._s = { v: o.v || "B", type: o.type || "theme", lens: o.lens || "list", q: "", tf: "", back: [], open: {}, peek: false,
+    const s = host._s = { v: o.v || "A", type: o.type || "theme", view: "default", q: "", tf: o.tf || "", back: [], open: {}, peek: null, opt: { ...OPT, ...(o.opt || {}) },
       sel: { briefing: "t4", theme: "coi", theory: "t1", prototype: "p1", signal: "s1", dump: "d1", ...(o.sel || {}) } };
-    host._s.pane = o.pane !== undefined ? o.pane : host._s.v === "A" ? null : defaultPane(O[host._s.sel[host._s.type]], host._s.v);
+    s.pane = o.pane !== undefined ? o.pane : s.v === "A" ? null : defaultPane(O[s.sel[s.type]], s.v);
     render(host); ro.observe(host);
+    if (o.peekOn) document.fonts.ready.then(() => { const a = host.querySelector(`.nv-scroller [data-open="${o.peekOn}"]`); if (a) showPeek(host, o.peekOn, a, true); });
+
+    let hoverT, leaveT;
+    host.addEventListener("pointerover", e => {
+      const s = host._s; if (s.v !== "A" || s.opt.peek !== "card") return;
+      if (e.target.closest(".nv-peek")) { clearTimeout(leaveT); return; }
+      const a = e.target.closest(".nv-scroller [data-open]"); if (!a) return;
+      clearTimeout(leaveT); clearTimeout(hoverT);
+      if (s.peek?.pinned) return;
+      hoverT = setTimeout(() => { if (a.isConnected && !host._s.peek?.pinned) showPeek(host, a.dataset.open, a, false); }, 500);
+    });
+    host.addEventListener("pointerout", e => {
+      const s = host._s; clearTimeout(hoverT);
+      if (!s.peek || s.peek.pinned) return;
+      const to = e.relatedTarget;
+      if (to && (to.closest?.(".nv-peek") || to.closest?.("[aria-expanded='true']"))) return;
+      leaveT = setTimeout(() => { if (host._s.peek && !host._s.peek.pinned) closePeek(host); }, 250);
+    });
+    // Views: the type-first default and the three views that stay as they are. Capture, so the stage's own handler doesn't run.
     host.addEventListener("click", e => {
-      const el = e.target.closest("[data-go],[data-sel],[data-open],[data-lens],[data-back],[data-close],[data-promote],[data-toggle],[data-peek-close]");
+      const vb = e.target.closest(".stg-switch button[data-view], .nv-switch button[data-view]"); if (!vb) return;
+      e.stopPropagation(); e.preventDefault();
+      host._s.view = vb.dataset.view === "sections" ? "default" : vb.dataset.view; render(host);
+    }, true);
+    host.addEventListener("click", e => {
+      const s = host._s;
+      const el = e.target.closest("[data-go],[data-sel],[data-open],[data-full],[data-home],[data-back],[data-close],[data-promote],[data-toggle],[data-peek-close]");
+      const inPeek = e.target.closest(".nv-peek");
+      if (s.peek && !inPeek && !(el && "open" in el.dataset)) closePeek(host);
       if (!el || !host.contains(el)) return;
-      const s = host._s, d = el.dataset;
-      if (d.go) { s.type = d.go; s.q = ""; s.tf = ""; s.back = []; s.peek = false; if (s.v !== "A" && s.lens === "list") s.pane = defaultPane(O[s.sel[s.type]], s.v); }
-      else if (d.sel) { s.sel[s.type] = d.sel; s.back = []; if (s.v !== "A") s.pane = defaultPane(O[d.sel], s.v); }
-      else if (d.open) {
-        const o = O[d.open];
-        if (s.v === "A") {
-          if (s.lens === "list") { if (o.id === s.sel[s.type]) return; s.back.push([s.type, s.sel[s.type]]); } else s.peek = true;
-          s.type = o.kind; s.sel[o.kind] = o.id; s.q = ""; s.tf = "";
-        } else s.pane = o.id;
+      const d = el.dataset;
+      if (d.open && s.v === "A") {
+        if (s.peek?.id === d.open && s.peek.pinned && !inPeek) { closePeek(host); return; }
+        showPeek(host, d.open, el, true); return;
       }
-      else if (d.lens) { if (d.lens !== s.lens && s.v !== "A") s.pane = d.lens === "list" ? defaultPane(O[s.sel[s.type]], s.v) : null; s.lens = d.lens; s.peek = false; }
-      else if ("back" in d) { const [t, id] = s.back.pop(); s.type = t; s.sel[t] = id; }
+      if (d.full) { navigate(s, O[d.full]); }
+      else if (d.go) { s.type = d.go; s.q = ""; s.tf = ""; s.back = []; if (s.v !== "A") s.pane = defaultPane(O[s.sel[s.type]], s.v); }
+      else if ("home" in d) { s.type = "home"; s.back = []; }
+      else if (d.sel) { s.sel[s.type] = d.sel; s.back = []; if (s.v !== "A") s.pane = defaultPane(O[d.sel], s.v); }
+      else if (d.open) s.pane = d.open;
+      else if ("back" in d) { const [t, id] = s.back.pop(); s.type = t; if (id) s.sel[t] = id; }
       else if ("close" in d) s.pane = null;
-      else if ("peekClose" in d) s.peek = false;
-      else if ("promote" in d) { const o = O[s.pane]; s.type = o.kind; s.sel[o.kind] = o.id; s.pane = defaultPane(o, s.v); s.lens = "list"; }
+      else if ("peekClose" in d) { closePeek(host); return; }
+      else if ("promote" in d) { const o = O[s.pane]; s.type = o.kind; s.sel[o.kind] = o.id; s.pane = defaultPane(o, s.v); }
       else if (d.toggle) s.open[d.toggle] = !s.open[d.toggle];
       render(host);
-      if (d.go || d.sel || d.open || "back" in d || "promote" in d) host.querySelectorAll(".nv-main, .nv-pane").forEach(x => x.scrollTop = 0);
+      if (d.go || d.sel || d.full || "home" in d || "back" in d || "promote" in d) host.querySelectorAll(".nv-scroller, .nv-pane").forEach(x => x.scrollTop = 0);
     });
     host.addEventListener("input", e => { if (e.target.matches("[data-q]")) { host._s.q = e.target.value; render(host); } });
     host.addEventListener("change", e => { if (e.target.matches("[data-tf]")) { host._s.tf = e.target.value; render(host); } });
   };
-  window.AberNav = { init, set: (host, patch) => { Object.assign(host._s, patch); render(host); } };
-  const go = () => document.querySelectorAll("[data-nav]").forEach(init);
-  if (document.readyState === "loading") addEventListener("DOMContentLoaded", go); else go();
+  document.addEventListener("keydown", e => { if (e.key === "Escape") document.querySelectorAll(".nv-host").forEach(h => h._s?.peek && closePeek(h)); });
+  window.AberNav = {
+    init,
+    set: (host, patch) => { const s = host._s; Object.assign(s, patch);
+      if (s.opt.brief === "home" && s.type === "briefing") s.type = "home";
+      if (s.opt.brief === "rail" && s.type === "home") s.type = "briefing";
+      if (s.opt.tf === "no") s.tf = "";
+      render(host); },
+  };
+  const start = () => document.querySelectorAll("[data-nav]").forEach(init);
+  if (document.readyState === "loading") addEventListener("DOMContentLoaded", start); else start();
 
-  /* ── Page: hero variant switch and decide-box picks ── */
+  /* ── Page: the hero follows the picks; the decide box shows them ── */
+  const MAP = { peek: ["peek", { "a Tethered card": "card", "b Peek panel": "panel" }], briefing: ["brief", { "a Rail entry": "rail", "b Home of the main area": "home" }],
+    order: ["order", { "a Refined to raw": "refined", "b Raw to refined": "raw" }], themefilter: ["tf", { "a Yes": "yes", "b No": "no" }],
+    unseen: ["unseen", { "a Yes": "yes", "b No": "no" }], switcher: ["switchAt", { "a Rail foot": "rail", "b Top right of the main area": "main" }] };
   addEventListener("load", () => {
     const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d);
-    const hero = document.getElementById("hero");
-    document.querySelectorAll("[data-seg]").forEach(seg => seg.addEventListener("click", e => {
-      const b = e.target.closest("button"); if (!b) return;
-      seg.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-      const v = b.value, s = hero._s;
-      window.AberNav.set(hero, { v, back: [], peek: false, pane: v === "A" ? null : defaultPane(O[s.sel[s.type]], v) });
-    }));
-    const page = document.body.dataset.jig;
-    const paint = () => document.querySelectorAll("[data-pick]").forEach(li => {
-      const id = li.dataset.pick, sec = document.querySelector(`[data-decision="${id}"]`);
-      let v = null; try { v = JSON.parse(localStorage.getItem(`jig:${page}:${id}`))?.choice; } catch {}
-      li.querySelector(".pick").innerHTML = v ? `Current pick: <b>${v}</b>` : "No pick yet";
-    });
+    const page = document.body.dataset.jig, hero = document.getElementById("hero");
+    const pick = id => { let v = null; try { v = JSON.parse(localStorage.getItem(`jig:${page}:${id}`))?.choice; } catch {} return v === undefined ? document.querySelector(`[data-decision="${id}"]`)?.dataset.default : v; };
+    const paint = () => {
+      document.querySelectorAll("[data-pick]").forEach(li => { const v = pick(li.dataset.pick); li.querySelector(".pick").innerHTML = v ? `Current pick: <b>${v}</b>` : "No pick yet"; });
+      if (!hero?._s) return;
+      const opt = { ...hero._s.opt };
+      for (const [id, [key, vals]] of Object.entries(MAP)) { const v = pick(id); opt[key] = vals[v] ?? OPT[key]; }
+      window.AberNav.set(hero, { opt });
+    };
     paint(); document.addEventListener("click", e => { if (e.target.closest(".jig-choose")) setTimeout(paint, 0); });
   });
 })();
