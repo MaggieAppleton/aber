@@ -8,12 +8,11 @@ import { DUMPS, PROTOTYPES } from "./data";
 import { Icon, IconButton, type IconName } from "./atoms";
 import { useEdit } from "./edits";
 import { ObjectPane, type ObjKind, type PaneNav } from "./panes";
-import { CurrentHome } from "./current";
+import { TypeFirst, useTypeFirst, writeRoute, type ItemKind } from "./type-first";
 import { ColumnsDeveloped, columnsWidth } from "./columns2";
 import { AtlasHosted } from "./atlas2";
 import { TimelineHosted } from "./timeline-app";
 import { DumpOrAsk, DOCK_W, PRIOR, escapeDump, useDump, type Sees } from "./pill-study";
-import { BriefingView } from "./briefing-app";
 import { DumpLog, useDumpLog, useLogFromDump } from "./dump-log";
 import "./homes.css";
 import "./panes.css";
@@ -31,13 +30,12 @@ export const APP_W = 1360, APP_H = 820;
 const EASE = [0.16, 1, 0.3, 1] as const;
 const DOCK_T = { type: "spring", duration: 0.5, bounce: 0.08 } as const;
 
-export type View = "current" | "columns" | "atlas" | "timeline" | "briefing";
+export type View = "default" | "columns" | "atlas" | "timeline";
 export const VIEWS: { id: View; name: string; icon: IconName }[] = [
-  { id: "current", name: "Theme sections", icon: "sections" },
+  { id: "default", name: "Default", icon: "sections" },
   { id: "columns", name: "Columns", icon: "columns" },
   { id: "atlas", name: "Atlas", icon: "map" },
   { id: "timeline", name: "Timeline", icon: "timeline" },
-  { id: "briefing", name: "Briefing", icon: "briefing" },
 ];
 type Obj = { kind: ObjKind; id: string };
 type Layer = "pane" | "dump" | "log";
@@ -52,9 +50,9 @@ const SNAP_NAME: Record<Snap, string> = { compact: "Compact", half: "Half", wide
 const MERGE = 40;
 const COMPACT = 480, PANE_MIN = 400;
 /** What each view keeps at full width: Columns its rails, Current its index, Atlas and Timeline a strip. */
-const STRIP: Record<View, number> = { columns: columnsWidth(undefined, undefined, true), current: 232, atlas: 180, timeline: 200, briefing: 240 };
+const STRIP: Record<View, number> = { columns: columnsWidth(undefined, undefined, true), default: 0, atlas: 180, timeline: 200 };
 /** What each view keeps beside the pane by default. */
-const KEEP: Record<View, number> = { columns: 0, current: 232 + 296, atlas: 420, timeline: 0, briefing: 560 };
+const KEEP: Record<View, number> = { columns: 0, default: 0, atlas: 420, timeline: 0 };
 const TIMELINE_PANE = 560;
 
 function paneStops(view: View, avail: number, open?: Obj, unfolded?: string): Record<Snap, number> {
@@ -92,10 +90,12 @@ const stateFromUrl = () => {
   const value = params.get("open");
   const colon = value?.indexOf(":") ?? -1;
   const kind = value?.slice(0,colon) as ObjKind;
-  return {view: VIEWS.some(v=>v.id===view) ? view! : "current" as View, open: value && colon>0 && ["theme","theory","prototype"].includes(kind) ? {kind,id:value.slice(colon+1)} : undefined};
+  // The old Sections and Briefing views are now the default view.
+  const known = VIEWS.some(v=>v.id===view);
+  return {view: known ? view! : "default" as View, open: known && view!=="default" && value && colon>0 && ["theme","theory","prototype"].includes(kind) ? {kind,id:value.slice(colon+1)} : undefined};
 };
 
-export function AppShell({ initial = "current" }: { initial?: View }) {
+export function AppShell({ initial = "default" }: { initial?: View }) {
   const { error, loading, revision } = useWorld();
   const [size,setSize] = useState({w:window.innerWidth,h:window.innerHeight});
   const APP_W = size.w, APP_H = size.h;
@@ -103,11 +103,13 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
   useEffect(()=>{ const resize=()=>setSize({w:window.innerWidth,h:window.innerHeight}); window.addEventListener("resize",resize); return ()=>window.removeEventListener("resize",resize); },[]);
   const reduced = !!useReducedMotion();
   const frame = useRef<HTMLDivElement>(null);
-  const [view, setView] = useState<View>(()=>window.innerWidth<640 ? "briefing" : stateFromUrl().view ?? initial);
+  const [view, setView] = useState<View>(()=>window.innerWidth<640 ? "default" : stateFromUrl().view ?? initial);
+  const tf = useTypeFirst();
+  const viewRef = useRef(view); viewRef.current = view;
   const [open, setOpenState] = useState<Obj|undefined>(()=>stateFromUrl().open);
   const [unfolded, setUnfolded] = useState<string>();
   // The pane's width stop per view (in memory, for the session), the stop to restore from full, and a live drag width.
-  const [snaps, setSnaps] = useState<Record<View, Snap>>({ current: "wide", columns: "wide", atlas: "wide", timeline: "wide", briefing: "wide" });
+  const [snaps, setSnaps] = useState<Record<View, Snap>>({ default: "wide", columns: "wide", atlas: "wide", timeline: "wide" });
   const [restore, setRestore] = useState<Partial<Record<View, Snap>>>({});
   const [dragW, setDragW] = useState<number | null>(null);
   const { s, api } = useDump({ ctx: [], thread: [] });
@@ -121,9 +123,19 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
   const push = (l: Layer) => { stack.current = [...stack.current.filter(x => x !== l), l]; };
   const drop = (l: Layer) => { stack.current = stack.current.filter(x => x !== l); };
 
-  const openObj = (kind: ObjKind, id: string) => { setUnfolded(undefined);push("pane");setOpenState({kind,id}); if(rowFor(kind,id)?.seenAt===null||rowFor(kind,id)?.seen_at===null)act("markSeen",{kind,id}); };
+  // The default view has no docked pane: opening an object moves its rail and list there (Open → Back).
+  const openObj = (kind: ObjKind, id: string) => { if (viewRef.current === "default") { tf.open(kind, id); return; } setUnfolded(undefined);push("pane");setOpenState({kind,id}); if(rowFor(kind,id)?.seenAt===null||rowFor(kind,id)?.seen_at===null)act("markSeen",{kind,id}); };
   useEffect(()=>{if(open)push("pane");},[]);
   const closeObj = () => { drop("pane"); setUnfolded(undefined); setOpenState(undefined); };
+  /* Switching views keeps the object you're on: the default view's full view becomes the docked pane, and back. */
+  const switchView = (v: View) => {
+    const cur = viewRef.current; if (v === cur) return;
+    const r = tf.route, id = r.type !== "briefing" ? r.sel[r.type] : undefined;
+    if (v === "default" && open) { tf.select(open.kind, open.id); closeObj(); }
+    else if (cur === "default" && id && (r.type === "theme" || r.type === "theory" || r.type === "prototype")) { push("pane"); setOpenState({ kind: r.type, id }); }
+    setView(v);
+  };
+  const switchRef = useRef(switchView); switchRef.current = switchView;
   useEffect(() => { if (s.open) push("dump"); else drop("dump"); }, [s.open]);
   const setLogOpen = (o: boolean) => {
     if (o) {
@@ -144,30 +156,33 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
   }, [logOpen]);
 
   useEffect(()=>{
-    const openEvent=(e: Event)=>{ const {kind,id,unfolded}=(e as CustomEvent).detail; openObj(kind,id);if(unfolded){setUnfolded(unfolded);if(rowFor("signal",unfolded))markRead("signal",unfolded);} };
+    const openEvent=(e: Event)=>{ const {kind,id,unfolded}=(e as CustomEvent).detail; if(viewRef.current==="default"){tf.open(unfolded&&kind!=="theory"?"signal":kind,unfolded&&kind!=="theory"?unfolded:id);return;} openObj(kind,id);if(unfolded){setUnfolded(unfolded);if(rowFor("signal",unfolded))markRead("signal",unfolded);} };
     const closeEvent=()=>closeObj();
-    const browseEvent=(e:Event)=>{const {kind,id}=(e as CustomEvent).detail;closeObj();setView("columns");setUnfolded(id);if(kind==="signal")markRead("signal",id);};
-    const pop=()=>{ const state=stateFromUrl(); setView(phone ? "briefing" : state.view); setOpenState(state.open); };
+    const browseEvent=(e:Event)=>{const {kind,id}=(e as CustomEvent).detail;if(viewRef.current==="default"&&(kind==="signal"||kind==="dump")){tf.open(kind as ItemKind,id);return;}closeObj();setView("columns");setUnfolded(id);if(kind==="signal")markRead("signal",id);};
+    const pop=()=>{ const state=stateFromUrl(); setView(phone ? "default" : state.view); setOpenState(state.open); tf.fromUrl(); };
     const blur=()=>flushEdit();
     const find=(e: KeyboardEvent)=>{ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k") {e.preventDefault(); void findObjects();} };
     window.addEventListener("aber:browse",browseEvent);window.addEventListener("aber:open",openEvent); window.addEventListener("aber:close",closeEvent);window.addEventListener("popstate",pop);window.addEventListener("keydown",find);document.addEventListener("focusout",blur);
     return ()=>{window.removeEventListener("aber:browse",browseEvent);window.removeEventListener("aber:open",openEvent);window.removeEventListener("aber:close",closeEvent);window.removeEventListener("popstate",pop);window.removeEventListener("keydown",find);document.removeEventListener("focusout",blur);};
   },[phone]);
   useEffect(()=>{
-    const params=new URLSearchParams(location.search); params.set("view",phone?"briefing":view); if(open)params.set("open",`${open.kind}:${open.id}`);else params.delete("open");
-    const url=`${location.pathname}?${params}`;if(url!==location.pathname+location.search) history.pushState({},"",url);
-  },[view,open?.kind,open?.id,phone]);
-  useEffect(()=>{ if(phone && view!=="briefing")setView("briefing"); },[phone,view]);
+    const params=new URLSearchParams(location.search); const v=phone?"default":view; params.set("view",v);
+    if(open&&v!=="default")params.set("open",`${open.kind}:${open.id}`);else params.delete("open");
+    if(v==="default")writeRoute(params,tf.route);else{params.delete("type");params.delete("item");}
+    const url=`${location.pathname}?${params}`;if(decodeURIComponent(url)!==decodeURIComponent(location.pathname+location.search)) history.pushState({},"",url);
+  },[view,open?.kind,open?.id,phone,tf.route]);
+  useEffect(()=>{ if(phone && view!=="default")setView("default"); },[phone,view]);
   useEffect(()=>{ if(open && !loading && !rowFor(open.kind,open.id)) closeObj(); },[revision]);
   useEffect(()=>{if(open)void loadObject(open.kind,open.id);},[open?.kind,open?.id]);
   const dumpW = s.open ? (phone ? APP_W : DOCK_W) : 0;
   const avail = APP_W - dumpW;
   const stops = paneStops(view, avail, open, unfolded);
   const snap = snaps[view];
-  const paneW = open ? (phone ? APP_W : (dragW ?? stops[snap])) : 0;
+  const paned = !!open && view !== "default";
+  const paneW = paned ? (phone ? APP_W : (dragW ?? stops[snap])) : 0;
   const contentW = Math.max(0, APP_W - dumpW - (phone ? 0 : paneW));
   // The view folds to its strip once the pane is (or is being dragged) past halfway from wide to full.
-  const compact = !!open && paneW > (stops.wide + stops.full) / 2 + 1;
+  const compact = paned && paneW > (stops.wide + stops.full) / 2 + 1;
   const setSnap = (k: Snap) => {
     if (k === "full" && snap !== "full") setRestore(r => ({ ...r, [view]: snap }));
     setSnaps(m => ({ ...m, [view]: k }));
@@ -181,7 +196,7 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
     const onKey = (e: KeyboardEvent) => {
       if(document.querySelector(".ab-dialog"))return;
       const mod = e.metaKey || e.ctrlKey;
-      if (mod && /^[1-5]$/.test(e.key)) { e.preventDefault(); if (!phone) setView(VIEWS[+e.key - 1].id); return; }
+      if (mod && /^[1-4]$/.test(e.key)) { e.preventDefault(); if (!phone) switchRef.current(VIEWS[+e.key - 1].id); return; }
       if (mod && e.shiftKey && e.key.toLowerCase() === "l") { e.preventDefault(); if (live.current.s.open) api.close(); setLogOpen(!live.current.logOpen); return; }
       if (mod && e.key.toLowerCase() === "j") { e.preventDefault(); live.current.s.open ? api.close() : api.open(); return; }
       // ⌘[ / ⌘] (or ⌥← / ⌥→ outside text) widen or narrow the pane by one stop, while focus is in the pane.
@@ -189,7 +204,7 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
       if (inPane && live.current.open && ((e.metaKey && (e.key === "[" || e.key === "]")) || (e.altKey && !mod && (e.key === "ArrowLeft" || e.key === "ArrowRight") && !isTyping(e.target)))) {
         e.preventDefault(); live.current.step(e.key === "[" || e.key === "ArrowLeft" ? 1 : -1); return;
       }
-      if((inPane||stack.current.at(-1)==="pane")&&!live.current.s.picking&&live.current.s.rec==null&&!mod&&!e.altKey&&!e.shiftKey&&!isTyping(e.target)&&live.current.open&&["a"].includes(e.key.toLowerCase())){
+      if(frame.current?.dataset.view!=="default"&&(inPane||stack.current.at(-1)==="pane")&&!live.current.s.picking&&live.current.s.rec==null&&!mod&&!e.altKey&&!e.shiftKey&&!isTyping(e.target)&&live.current.open&&["a"].includes(e.key.toLowerCase())){
         const object=live.current.open,row=rowFor(object.kind,object.id);
         if(row&&(row.status==="draft"||row.draft)){e.preventDefault();act("acceptDraft",{kind:object.kind,id:object.id});return;}
       }
@@ -199,7 +214,7 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
       const top = stack.current.at(-1);
       if (top === "log" && live.current.logOpen) { setLogOpen(false); (logReturnFocus.current?.isConnected ? logReturnFocus.current : frame.current?.querySelector<HTMLElement>(".ps-pill"))?.focus({ preventScroll: true }); return; }
       if (top === "dump" && st.open) { api.close(); return; }
-      if (top === "pane" && o) { const timelineEscape=new Event("aber:timeline-escape",{cancelable:true});if(frame.current?.dataset.view==="timeline"){window.dispatchEvent(timelineEscape);if(timelineEscape.defaultPrevented)return;} if (u) setUnfolded(undefined); else closeObj(); return; }
+      if (top === "pane" && o && frame.current?.dataset.view !== "default") { const timelineEscape=new Event("aber:timeline-escape",{cancelable:true});if(frame.current?.dataset.view==="timeline"){window.dispatchEvent(timelineEscape);if(timelineEscape.defaultPrevented)return;} if (u) setUnfolded(undefined); else closeObj(); return; }
       if (u) setUnfolded(undefined);
     };
     window.addEventListener("keydown", onKey);
@@ -208,9 +223,13 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
 
   const viewName = VIEWS.find(v => v.id === view)!.name;
   const objLabel = useObjLabel(open);
-  const sees: Sees[] = open
+  const tfKind = view === "default" && tf.route.type !== "briefing" ? tf.route.type : undefined;
+  const tfId = tfKind ? tf.route.sel[tfKind] : undefined;
+  const tfLabel = tfKind && tfId ? (tfKind === "signal" ? rowFor("signal", tfId)?.gist : tfKind === "dump" ? undefined : labelFor(tfKind, tfId)) : undefined;
+  const sees: Sees[] = paned && open
     ? [{ label: objLabel, kind: open.kind, id: open.id, region: "pane" }, { label: viewName, kind: "screen", region: "main" }]
-    : [{ label: viewName, kind: "screen", region: "main" }];
+    : tfKind && tfKind !== "dump" && tfId && tfLabel ? [{ label: tfLabel, kind: tfKind, id: tfId, region: "main" }, { label: viewName, kind: "screen", region: "main" }]
+    : [{ label: view === "default" && tf.route.type === "briefing" ? "Briefing" : viewName, kind: "screen", region: "main" }];
 
   const toggleUnfold = (id: string) => setUnfolded(u => (u === id ? undefined : id));
   const nav: PaneNav = view === "columns"
@@ -218,9 +237,8 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
     : { onOpen: openObj, inline: true, unfolded, onUnfold: (_k, id) => toggleUnfold(id) };
 
   let body: ReactNode;
-  if (view === "current") body = <CurrentHome host={{ open, onOpen: openObj, compact }} />;
+  if (view === "default") body = <TypeFirst tf={tf} width={contentW} onLog={() => setLogOpen(true)} />;
   else if (view === "columns") body = <ColumnsDeveloped fold="rails" host={{ open, onOpen: (k, id) => openObj(k as ObjKind, id), onClose: closeObj, unfolded, onUnfold: setUnfolded, compact, onRestore: () => setSnap(restore[view] ?? "wide") }} />;
-  else if (view === "briefing") body = <BriefingView host={{ open, onOpen: openObj, compact, onLog: () => setLogOpen(true) }} phone={phone} />;
   else if (view === "atlas") body = <AtlasHosted open={open} onOpen={openObj} width={contentW} height={APP_H} mapStyle="circles" treatment="paper" signals="zoom" />;
   else body = <TimelineHosted width={contentW} height={APP_H} open={open} onOpen={openObj} compact={compact} />;
 
@@ -246,7 +264,7 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
 
         {/* The object pane: docked, enters from the right edge and leaves the same way */}
         <AnimatePresence>
-          {open && (
+          {paned && open && (
             <motion.aside key="pane" className="as-pane" data-region="pane" aria-label="Open object"
               initial={{ x: paneW + DOCK_W, width: paneW, right: dumpW }} animate={{ x: 0, width: paneW, right: dumpW }} exit={{ x: paneW + dumpW + 24 }}
               transition={dock}>
@@ -269,13 +287,13 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
         </AnimatePresence>
 
         {/* View switcher: functional chrome, floating bottom-left, opposite the pill */}
-        {!phone && <nav className="as-switch" aria-label="Views">
+        {!phone && !(view === "default" && contentW < 720) && <nav className="as-switch" aria-label="Views">
           <LayoutGroup id="as-switch">
             {VIEWS.map((v, i) => {
               const on = v.id === view;
               const label = `${v.name} (⌘${i + 1})`;
               return (
-                <TooltipButton key={v.id} className="as-switch-btn" aria-label={label} tooltip={label} aria-pressed={on} onClick={() => setView(v.id)}>
+                <TooltipButton key={v.id} className="as-switch-btn" aria-label={label} tooltip={label} aria-pressed={on} onClick={() => switchView(v.id)}>
                   {on && <motion.span layoutId="as-switch-on" className="as-switch-on" transition={{ type: "spring", duration: 0.3, bounce: 0.1 }} />}
                   <Icon name={v.icon} size={16} weight={on ? "fill" : "regular"} />
                 </TooltipButton>
