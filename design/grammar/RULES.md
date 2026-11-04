@@ -302,6 +302,40 @@ Evidence: about 14 text-button recipes at seven heights (24 to 40) and 16 contro
 - Text fields: **A filled**, a sunk well with no edge; on focus a surface with a hairline and the ring.
 - The one destructive confirmation (Delete dump): **A ink**, like every primary. Red stays for challenge and down.
 
+## 06 Objects — PROPOSED (preview, peek, full)
+
+Every object follows one anatomy and appears at three rungs: a **preview** where it's mentioned (list row, card, chip), a **peek** (tier-4 tethered card, 340 wide, grows from the preview after 500ms or on click), and a **full** view that fills the main area. Row, card, peek and full are built from one set of components. Jig: `06-objects/`. Open choices there: list rows two lines or one; peek with relations or essentials only; full view prose-first or a fields table.
+
+1. **One anatomy, slots in a fixed order at every rung.**
+
+| Slot | What | Row | Card | Chip | Peek | Full |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 Tile | Type glyph on its 24 tile; a signal shows its kind glyph on the signal tile. No type word. | ● | ● | ● (flush) | ● | ● |
+| 2 Name | List name 13/400; card and peek 13/600; title 24/600 | 2 lines | 3 lines | 1 line | In full | In full |
+| 3 Key value | The one attribute that tells it from its neighbours; "Draft" for drafts | ● | ● | – | ● | ● (editable) |
+| 4 Status | One mark, directly after the key value: challenge (red dot) > pending suggestion (dashed count) > new (jade dot) | ● | ● | – | ● | ● |
+| 5 On demand | The date, at the right end of the key line on hover; the rest of the key line in peek and full | Hover | Hover | – | ● | ● |
+| 6 Attached | Tripwire, suggestions: a mark on the host's preview, one line in its peek, a block with Dismiss \| Accept in full | Mark | Mark | – | Line | Block |
+| 7 Relations | The most important relation, as preview rows; all relations in full | – | – | – | Up to 3 | All |
+
+2. **The tile hangs; everything else shares the name's left edge.** Rows, cards, peeks and full views all use a 24 column, a 6 gap, then one content edge. Relation rows inside a peek or full view bleed their hover layer into the padding (−8) so their tiles sit on that content edge. A peek opens with its tile on its trigger's tile.
+3. **The card is the row, raised.** Same grid and slots; surface, `--sh-raised`, 12 inset, name at card weight. Hover is the surface hover fill; selected is `--sel`; draft is dashed with draft fill.
+4. **A row never repeats what its group says.** Prototypes grouped by status drop the status; signals and dumps grouped by day show the day only on hover; drafts in a Drafts group drop "Draft". One-line rows in narrow columns use the key value's short form (a bare count, the time, the status glyph).
+5. **Hover reveals dates and actions** (DI-010): the date on any preview; Remove (minus, 24) on relation rows in a full view. Nothing else changes on hover except the 5% layer.
+6. **Full view, top to bottom:** Back (quiet) left and the object's verbs right (drafts: Discard | Accept); tile and title; the key line (key value, status, then on-demand attributes, editable in place); prose (note, body, text); attached objects; relation sections (13/600 ink 2 header and count, preview rows at most 560 wide, themes as chips, decided "Add theory" and "File in theme" slots).
+
+| Type | Key value | Preview | On hover | Peek adds | Full adds |
+| --- | --- | --- | --- | --- | --- |
+| Theme | Theory count ("No theories yet") | Tile, name, theory count, new | – | Signal count, new count, top 3 theories | Theories as cards, signals by day |
+| Theory | Confidence | Tile, claim, confidence, one status mark | By year | Evidence balance, horizon, note (3 lines), tripwire or suggestion line, top 3 supports | Confidence setter, year stepper, note, tripwire, suggestions, themes, supports, undermines, rival, follows from, leads to, prototypes |
+| Prototype | Status (glyph and word) | Tile, name, status | – | Body (3 lines), theories it tests | Body, tests |
+| Signal | Source | Kind tile, gist, source, new | Captured day | Day, note, theories it bears on | Note, supports, undermines, themes, came from |
+| Dump | Kind and time | Tile, first line, kind and time, failed | Day | Day, length, text (3 lines), signals made | Via, text, reply, signals, drafts |
+| Tripwire | Its sentence | Red dot on the host when tripped | – | One line (red when tripped) | Sentence, tripping signal, Dismiss \| Accept |
+| Suggestion | What it proposes | Dashed count on the host | – | One line | Dashed block: stance, signal row, why, Dismiss \| Accept |
+
+**Removed as unnecessary metadata:** evidence balance and prototype count from theory cards (to the peek); signal count from theme rows and section headers; dates at rest; theme chips on signal rows; "Tests N" and "Made N"; type words and type-label chips ("Signal", "Building" chip); "via" outside the full view; the label/value table (choice open); the separate pending badge and challenge dot side by side (one status slot).
+
 ## Still to come
 
-06 objects, 07 rungs.
+07 rungs.

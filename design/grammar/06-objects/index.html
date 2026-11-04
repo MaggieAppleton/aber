@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grammar 06: Objects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="../../explorations/_shell/jig.css">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/stage.css">
+<link rel="stylesheet" href="../_shared/spacing.css">
+<link rel="stylesheet" href="../_shared/type.css">
+<link rel="stylesheet" href="../_shared/icons.css">
+<link rel="stylesheet" href="../_shared/surfaces.css">
+<link rel="stylesheet" href="../nav/nav.css">
+<link rel="stylesheet" href="../_shared/controls.css">
+<link rel="stylesheet" href="objects.css">
+<link rel="stylesheet" href="page.css">
+<script src="../../explorations/_shell/jig.js" defer></script>
+<script src="objects.js" defer></script>
+<script src="frames.js" defer></script>
+<script src="page.js" defer></script>
+<script type="module" src="../_shared/agentation.js" data-app-name="Grammar 06: Objects"></script>
+</head>
+<body class="jig" data-jig="grammar-06-objects">
+
+<header class="jig-head">
+  <h1>Grammar 06: Objects, preview, peek, full</h1>
+  <p><b>Proposed.</b> Every object in Aber follows one anatomy and appears at three rungs: a <b>preview</b> where it's mentioned (a list row, a card, a chip), a <b>peek</b> that grows from that preview, and a <b>full</b> view that fills the main area. Built only from 00–05 and the decided type-first navigation. The list rows here replace the nav jig's placeholders.</p>
+</header>
+
+<div class="decide">
+  <div class="decide-box">
+    <h2>Decide on this page</h2>
+    <ol>
+      <li data-pick="rows"><a href="#rows">List rows: two lines, or one</a> <span class="pick"></span><span class="why">Recommended a: theory claims and signal gists are sentences; one line cuts most of them off at 296 wide.</span></li>
+      <li data-pick="peek"><a href="#peek">Peek: essentials and relations, or essentials only</a> <span class="pick"></span><span class="why">Recommended a: a peek should answer "what is this tied to" without costing your place.</span></li>
+      <li data-pick="full"><a href="#full">Full view: prose first, or a fields table</a> <span class="pick"></span><span class="why">Recommended a: the key line under the title carries the same values with no labels; you called the label table noisy (DI-010).</span></li>
+    </ol>
+  </div>
+</div>
+
+<section class="jig-section" id="grammar">
+  <h2>The object grammar</h2>
+  <p>One anatomy, the same slots in the same order at every rung. The tile hangs in its own column; everything else shares the name's left edge (the two guides below).</p>
+  <ol class="rules">
+    <li><b>1 Tile:</b> the type's glyph on its tile. A signal shows its kind (link, voice, note) on the signal tile. No type word is ever written.</li>
+    <li><b>2 Name:</b> wraps (two lines in rows, three in cards, in full in a peek or full view).</li>
+    <li><b>3 One key value:</b> the attribute that tells this object apart from its neighbours. A draft shows "Draft" here until accepted.</li>
+    <li><b>4 Status:</b> one mark, always directly after the key value: challenge (red) beats a pending suggestion (dashed count) beats new (jade). The peek and full view say what the mark means.</li>
+    <li><b>5 On-demand attributes:</b> the date appears at the right end of the key line on hover; the peek and full view add the rest to the key line.</li>
+    <li><b>6 Attached objects:</b> tripwires and suggestions never stand alone. A mark on the host's preview, one line in its peek, a block with Dismiss | Accept in its full view.</li>
+    <li><b>7 Relations:</b> the peek shows the most important one, up to three rows; the full view shows all of them, as the same rows (chips for themes). Rows remove with a minus on hover.</li>
+    <li><b>A row never repeats its group.</b> Prototypes grouped by status drop the status; signals and dumps grouped by day show the day only on hover.</li>
+  </ol>
+  <div class="anatomy" id="anatomy"></div>
+
+  <h3 class="sub">Attribute ranking</h3>
+  <div class="table-wrap">
+  <table class="audit rank">
+    <thead><tr><th>Type</th><th>Key value</th><th>Preview</th><th>On hover</th><th>Peek adds</th><th>Full adds</th><th>Removed</th></tr></thead>
+    <tbody>
+      <tr><td>Theme</td><td>Theory count, or "No theories yet"</td><td>Tile, name, theory count, new</td><td>–</td><td>Signal count, new count, top 3 theories</td><td>Theories as cards, signals by day</td><td>Signal count from rows and section headers</td></tr>
+      <tr><td>Theory</td><td>Confidence</td><td>Tile, claim, confidence, one status mark</td><td>Horizon (By 2028)</td><td>Evidence balance, horizon, note (3 lines), tripwire or suggestion line, top 3 supporting signals</td><td>Confidence setter, year stepper, note, tripwire, suggestions, themes, supports, undermines, rival, follows from, leads to, prototypes</td><td>Evidence balance and prototype count from cards; pending badge and challenge dot side by side (now one slot)</td></tr>
+      <tr><td>Prototype</td><td>Status (glyph and word)</td><td>Tile, name, status</td><td>–</td><td>Body (3 lines), theories it tests</td><td>Body, tests</td><td>"Tests N"; the type-word chip; status inside status groups</td></tr>
+      <tr><td>Signal</td><td>Source</td><td>Kind tile, gist, source, new</td><td>Captured day</td><td>Day, note, theories it bears on</td><td>Note (or Add a note), supports, undermines, Add theory, themes, File in theme, came from</td><td>Day at rest, theme chips on rows, the word "Signal", the Source/Came from table</td></tr>
+      <tr><td>Dump</td><td>Kind and time</td><td>Tile, first line, kind and time, failed</td><td>Day</td><td>Day, length, text (3 lines), signals made</td><td>Via, full text, reply, signals, drafts</td><td>"Made N"; via from everything but full; the date inside day groups</td></tr>
+      <tr><td>Tripwire</td><td>Its sentence</td><td>Red dot on the host when tripped</td><td>–</td><td>One line: the sentence, or "Tripped by" the signal</td><td>The sentence, the tripping signal, Dismiss | Accept</td><td>–</td></tr>
+      <tr><td>Suggestion</td><td>What it proposes</td><td>Dashed count on the host</td><td>–</td><td>One line: the proposal</td><td>Dashed block: stance, the signal as a row, why, Dismiss | Accept</td><td>Agent and model (rare, history only)</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section class="jig-section wide" id="matrix">
+  <h2>The matrix</h2>
+  <p>Read down a column to see every object at one rung. Every cell comes from the same four components. Hover a row or card to see its date. Click a full view to open it at full size.</p>
+  <div class="mx" id="matrix-grid"></div>
+</section>
+
+<section class="jig-section" id="context">
+  <h2>In context</h2>
+  <p>The type-first default view with the new rows, peeks and full views. It opens on Briefing. Pick a type in the rail, then an item. Point at or click any row, card or chip in the main area to peek; Open goes there, and Back returns. This window follows the three picks.</p>
+  <div class="ob-host" id="hero" data-follows-picks data-ob='{"frame":"app","type":"home"}'></div>
+  <h3 class="sub">Columns, with the same previews</h3>
+  <p class="lede">Columns keeps today's layout and docked pane; only the objects change. Themes are one-line rows, theories are cards, and the pane holds the full view. Click a card to open it in the pane.</p>
+  <div class="ob-host" id="columns" data-follows-picks data-ob='{"frame":"columns","pane":"t1"}'></div>
+</section>
+
+<section class="jig-section" id="before">
+  <h2>Before and after</h2>
+  <p>Today's rows and cards from /app (screenshots) beside the proposed previews. The theory card keeps what worked: the claim at card weight with confidence beneath it.</p>
+  <div class="ba-grid" id="ba-grid"></div>
+</section>
+
+<section class="jig-section wide" id="states">
+  <h2>States</h2>
+  <p>One treatment per state, the same at every rung. Hover reveals dates and the Remove action; selected is the neutral raise; drafts are dashed; one status mark.</p>
+  <div class="board-wrap"><div class="st-grid" id="states-grid"></div></div>
+</section>
+
+<section class="jig-section" id="rows" data-decision="rows" data-question="1. How dense are list rows?" data-default="a Two lines">
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="a Two lines"><div class="jig-label"><b>a</b> Two lines: the name wraps, the key value sits under it</div><p class="jig-note">Names up to two lines; the key value and status on the second line. Rows are 50 high.</p>
+      <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theory","opt":{"rows":"two"}}'></div></div>
+    <div class="jig-option" data-option="b One line"><div class="jig-label"><b>b</b> One line: the name truncates, the key value at the right</div><p class="jig-note">32 high, nearly twice as many per screen; the full name is in the peek.</p>
+      <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theory","opt":{"rows":"one"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" id="peek" data-decision="peek" data-question="2. What does a peek show?" data-default="a Essentials and relations">
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="a Essentials and relations"><div class="jig-label"><b>a</b> Its essentials, then up to three of its most important relations</div><p class="jig-note">Clicking a relation peeks it in place; you can walk a chain without leaving the page you're on.</p>
+      <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theory","opt":{"peek":"rel"},"peekOn":"s1"}'></div></div>
+    <div class="jig-option" data-option="b Essentials only"><div class="jig-label"><b>b</b> Its essentials only</div><p class="jig-note">Smaller and calmer; relations are one Open away.</p>
+      <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theory","opt":{"peek":"own"},"peekOn":"s1"}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" id="full" data-decision="full" data-question="3. How does a full view lay out its attributes?" data-default="a Prose first">
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="a Prose first"><div class="jig-label"><b>a</b> Prose first: a key line under the title, no labels</div><p class="jig-note">The same values as the peek's key line, now editable in place, then the note.</p>
+      <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theory","opt":{"full":"prose"}}'></div></div>
+    <div class="jig-option" data-option="b Fields table"><div class="jig-label"><b>b</b> A fields table: each value with its label</div><p class="jig-note">Labels on every value, as the pane has today.</p>
+      <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theory","opt":{"full":"fields"}}'></div></div>
+  </div>
+</section>
+
+<dialog class="big" id="big" aria-label="Full view at full size">
+  <div class="big-bar"><button type="button" class="big-x" data-big-close aria-label="Close"><i class="ph ph-x" aria-hidden="true"></i></button></div>
+  <div class="big-body"></div>
+</dialog>
+
+</body>
+</html>
