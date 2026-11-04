@@ -10,7 +10,7 @@ import { mergeSignal } from "../app/signal-merge";
 import { useState, useRef, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { DUMPS, SIGNALS, THEORIES, PROTOTYPES, theoriesIn, theme, theory, signalsFor, prototypesFor, type Signal } from "./data";
-import { Icon, IconButton, Conf, DumpIcon, Mark, Meter, ProtoGlyph, Tile, Decide } from "./atoms";
+import { Icon, IconButton, Conf, DumpIcon, Mark, Meter, ProtoGlyph, Tile, Decide, type TileKind } from "./atoms";
 import { flushEdit, useEdit } from "./edits";
 import { Editable } from "./editable";
 import { Tripwire, tripState, type Decision } from "./tripwire";
@@ -43,7 +43,8 @@ export type OnUnfold = (kind: "signal" | "dump", id: string) => void;
  * - `inline`: with `onUnfold`, still unfold inside the pane, but let the host hold which one is open (e.g. so Esc can fold it).
  * - `unfolded`: the signal the host has unfolded, shown open inline, or marked as current when it unfolds elsewhere.
  */
-export type PaneNav = { onOpen: OnOpen; onUnfold?: OnUnfold; inline?: boolean; unfolded?: string };
+/** - `back`: a Back control the host puts at the left of the top bar (the default view's Open → Back). */
+export type PaneNav = { onOpen: OnOpen; onUnfold?: OnUnfold; inline?: boolean; unfolded?: string; back?: ReactNode };
 
 function useUnfold(nav: PaneNav) {
   const [local, setLocal] = useState<string>();
@@ -103,13 +104,13 @@ export function SignalDetail({ s, onOpen, onDump, context }: { s: Signal; onOpen
       <Editable className="pn-note" value={edit.gist} onChange={gist=>set({gist})} aria-label="Signal gist" />
       <Editable className="pn-note" value={edit.note} onChange={note => set({ note })} placeholder="Add a note" aria-label="Note" />
       {s.evidence.filter(e => e.theory !== context).map(e => (
-        <button key={e.theory} className="pn-link" data-suggested={e.suggested ? "" : undefined} onClick={() => onOpen("theory", e.theory)}
+        <button key={e.theory} className="pn-link" data-peek={`theory:${e.theory}`} data-suggested={e.suggested ? "" : undefined} onClick={() => onOpen("theory", e.theory)}
           title={e.stance === "supports" ? "Supports" : "Undermines"}>
           <Icon name={e.stance === "supports" ? "arrowUp" : "arrowDown"} size={12} /><Claim id={e.theory} />
         </button>
       ))}
       <div className="pn-chips">
-        {s.themes.filter(t => t !== context).map(t => <button key={t} className="pn-chip" title="Theme" onClick={() => onOpen("theme", t)}><Tile kind="theme" size="chip" /><ThemeName id={t} /></button>)}
+        {s.themes.filter(t => t !== context).map(t => <button key={t} className="pn-chip" title="Theme" data-peek={`theme:${t}`} onClick={() => onOpen("theme", t)}><Tile kind="theme" size="chip" /><ThemeName id={t} /></button>)}
         {origins.map(dump=><button key={dump!.id} className="pn-chip pn-origin" title={dump!.text??dump!.first} onClick={()=>onDump?onDump(dump!.id):inspectDump(dump!.id)}><DumpIcon d={dump as any}/><span>{dump!.first??dump!.text?.split("\n")[0]??"Voice note"}</span></button>)}
       </div>
       <div className="pn-chips">{json<any[]>(rowFor("signal",s.id)?.sources,[]).map((source,i)=>source.url ? <a key={source.id??i} className="pn-chip" href={source.url} target="_blank" rel="noreferrer"><Icon name="link" size={12}/>{source.title??source.url}</a> : <span key={i} className="ap-muted">{source.author??"Own observation"}</span>)}</div>
@@ -120,7 +121,7 @@ export function SignalDetail({ s, onOpen, onDump, context }: { s: Signal; onOpen
 
 /* ── Full-view parts (06 rung 3): head with a 32 title tile, labelled sections, relations as rows, suggestions as dashed blocks ── */
 /** The head: an optional eyebrow, the 32 tile hanging so the title starts on the text edge, the title, then the key line. */
-function FullHead({ kind, draft, eyebrow, title, keyLine }: { kind: ObjKind; draft?: boolean; eyebrow?: ReactNode; title: ReactNode; keyLine?: ReactNode }) {
+export function FullHead({ kind, draft, eyebrow, title, keyLine }: { kind: TileKind; draft?: boolean; eyebrow?: ReactNode; title: ReactNode; keyLine?: ReactNode }) {
   return <div className="ab-head">
     {eyebrow && <div className="ab-eyebrow">{eyebrow}</div>}
     <Tile kind={kind} size="title" draft={draft} />
@@ -128,20 +129,20 @@ function FullHead({ kind, draft, eyebrow, title, keyLine }: { kind: ObjKind; dra
   </div>;
 }
 /** A labelled relation section: the label on the tile column, a bare count, an optional add. */
-function Section({ label, n, add, children }: { label: string; n?: number; add?: ReactNode; children: ReactNode }) {
+export function Section({ label, n, add, children }: { label: string; n?: number; add?: ReactNode; children: ReactNode }) {
   return <section className="ab-sec" aria-label={label}>
     <h2 className="ab-sh"><span>{label}</span>{n != null && <span className="ab-count">{n}</span>}{add && <span className="ab-sh-add">{add}</span>}</h2>
     {children}
   </section>;
 }
 /** A relation row: tile, name, one short key value right of the first line. */
-function RelRow({ kind, name, rk, kv, draft, onClick }: { kind: ObjKind; name: ReactNode; rk?: ReactNode; kv?: ReactNode; draft?: boolean; onClick: () => void }) {
-  return <button type="button" className="ab-obj ab-rel" data-draft={draft ? "" : undefined} onClick={onClick}>
+export function RelRow({ kind, id, name, rk, kv, draft, onClick }: { kind: TileKind; id?: string; name: ReactNode; rk?: ReactNode; kv?: ReactNode; draft?: boolean; onClick: () => void }) {
+  return <button type="button" className="ab-obj ab-rel" data-draft={draft ? "" : undefined} data-peek={id ? `${kind}:${id}` : undefined} onClick={onClick}>
     <Tile kind={kind} draft={draft} /><span className="ab-nm">{name}</span>{rk && <span className="ab-rk">{rk}</span>}{kv && <span className="ab-kv">{kv}</span>}
   </button>;
 }
-const TheoryRel = ({ id, onOpen }: { id: string; onOpen: OnOpen }) => { const t = theory(id); return <RelRow kind="theory" draft={t.draft} name={<Claim id={id} />} rk={t.draft ? undefined : <TheoryConf id={id} />} onClick={() => onOpen("theory", id)} />; };
-const ProtoRel = ({ id, onOpen }: { id: string; onOpen: OnOpen }) => <RelRow kind="prototype" name={<ProtoName id={id} />} rk={<ProtoStatus id={id} />} onClick={() => onOpen("prototype", id)} />;
+const TheoryRel = ({ id, onOpen }: { id: string; onOpen: OnOpen }) => { const t = theory(id); return <RelRow kind="theory" id={id} draft={t.draft} name={<Claim id={id} />} rk={t.draft ? undefined : <TheoryConf id={id} />} onClick={() => onOpen("theory", id)} />; };
+const ProtoRel = ({ id, onOpen }: { id: string; onOpen: OnOpen }) => <RelRow kind="prototype" id={id} name={<ProtoName id={id} />} rk={<ProtoStatus id={id} />} onClick={() => onOpen("prototype", id)} />;
 /** A suggested piece of evidence, first in the group it would join: a dashed block with the row, why, and Dismiss | Accept. */
 function EvidenceBlock({ suggestion: sg, onOpen, context }: { suggestion: any; onOpen: OnOpen; context: string }) {
   const payload = json<any>(sg.payload ?? sg.payload_json, {});
@@ -188,6 +189,7 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
   return (
     <div className="pn-doc pn-theory-doc ab-full" data-draft={t.draft ? "" : undefined}>
       <div className="ab-top">
+        {nav.back}
         {t.draft && <Decide dismiss="Discard" acceptKey="a" acceptTitle="Accept (A)" onDismiss={() => act("discardDraft", { kind: "theory", id })} onAccept={acceptDraft} />}
         <span className="ab-tools"><IconButton icon="plus" label="Add a relationship" onClick={() => void addRelation()} /><RetireButton label="Retire theory" onClick={() => void retireObject("theory", id)} /></span>
       </div>
@@ -206,7 +208,7 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
       <TheoryTripwire id={id} />
       {otherSugs.map(s => <div key={s.id} className="ab-block ab-block-review"><SuggestionReview suggestion={s} /></div>)}
       <hr className="ab-div" />
-      {t.themes.length > 0 && <Section label="Themes"><div className="pn-chips">{t.themes.map(th => <button key={th} className="pn-chip" onClick={() => onOpen("theme", th)}><Tile kind="theme" size="chip" /><span className="pn-chip-name"><ThemeName id={th} /></span></button>)}</div></Section>}
+      {t.themes.length > 0 && <Section label="Themes"><div className="pn-chips">{t.themes.map(th => <button key={th} className="pn-chip" data-peek={`theme:${th}`} onClick={() => onOpen("theme", th)}><Tile kind="theme" size="chip" /><span className="pn-chip-name"><ThemeName id={th} /></span></button>)}</div></Section>}
       {(["supports", "undermines"] as const).map(st => {
         const sugs = evidenceSugs.filter(s => stanceOf(s) === st);
         const blocked = new Set(sugs.map(signalOf));
@@ -239,6 +241,7 @@ export function ThemePane({ id, nav }: { id: string; nav: PaneNav }) {
   return (
     <div className="pn-doc ab-full">
       <div className="ab-top">
+        {nav.back}
         {rowFor("theme",id)?.status==="draft"&&<Decide dismiss="Discard" acceptKey="a" acceptTitle="Accept draft theme (A)" onDismiss={()=>act("discardDraft",{kind:"theme",id})} onAccept={()=>act("acceptDraft",{kind:"theme",id})} />}
         <span className="ab-tools"><RetireButton label="Retire theme" onClick={()=>void retireObject("theme",id)}/></span>
       </div>
@@ -286,7 +289,7 @@ export function TheoryTile({ id, onClick, layoutId, hidden, large, deck }: { id:
   const t = theory(id);
   const [edit] = useEdit("theory", id);
   return (
-    <motion.button draggable onDragStartCapture={event=>beginObjectDrag(event,{kind:"theory",id,label:edit.claim})} onDragEndCapture={endObjectDrag} layoutId={layoutId} className="pn-tile" data-pick={id} data-kind="theory" data-label={edit.claim} data-region={id} data-large={large ? "" : undefined} data-deck={deck ? "" : undefined} data-draft={t.draft ? "" : undefined}
+    <motion.button draggable onDragStartCapture={event=>beginObjectDrag(event,{kind:"theory",id,label:edit.claim})} onDragEndCapture={endObjectDrag} layoutId={layoutId} className="pn-tile" data-peek={`theory:${id}`} data-pick={id} data-kind="theory" data-label={edit.claim} data-region={id} data-large={large ? "" : undefined} data-deck={deck ? "" : undefined} data-draft={t.draft ? "" : undefined}
       style={{ visibility: hidden ? "hidden" : undefined, borderRadius: SURFACE_RADII.card }} onClick={onClick} transition={{ duration: 0.45, ease: EASE }}>
       <motion.span layout="position" className="pn-tile-inner ab-obj ab-card-body">
         <Tile kind="theory" draft={t.draft} />
@@ -327,6 +330,7 @@ export function PrototypePane({ id, nav }: { id: string; nav: PaneNav }) {
   return (
     <div className="pn-doc ab-full" data-draft={raw?.draft?"":undefined}>
       <div className="ab-top">
+        {nav.back}
         {raw?.draft&&<Decide dismiss="Discard" acceptKey="a" acceptTitle="Accept draft prototype (A)" onDismiss={()=>act("discardDraft",{kind:"prototype",id})} onAccept={()=>act("acceptDraft",{kind:"prototype",id})} />}
       </div>
       <FullHead kind="prototype" draft={!!raw?.draft} eyebrow={raw?.draft ? <DraftFrom id={id} onOpen={nav.onOpen} /> : undefined}
@@ -337,7 +341,7 @@ export function PrototypePane({ id, nav }: { id: string; nav: PaneNav }) {
       {json<any[]>(raw?.media,[]).map((media,i)=>{const src=`/media/${media.mediaId??media.media_id??media.id}`;return media.mime?.startsWith("video/") ? <video key={i} className="pn-media" src={src} controls/> : <img key={i} className="pn-media" src={src} alt={media.title??edit.name}/>;})}
       <Editable className="pn-body" value={edit.body} onChange={body => set({ body })} placeholder="What it is and what you learned" aria-label="Notes" />
       <hr className="ab-div" />
-      <Section label="Tests" n={p.theories.length}><div className="ab-rows">{p.theories.map(t => <RelRow key={t} kind="theory" draft={theory(t).draft} name={<Claim id={t}/>} kv={retirementLabel(rowFor("theory",t)) ? <span>{retirementLabel(rowFor("theory",t))}</span> : undefined} onClick={() => nav.onOpen("theory", t)} />)}</div></Section>
+      <Section label="Tests" n={p.theories.length}><div className="ab-rows">{p.theories.map(t => <RelRow key={t} kind="theory" id={t} draft={theory(t).draft} name={<Claim id={t}/>} kv={retirementLabel(rowFor("theory",t)) ? <span>{retirementLabel(rowFor("theory",t))}</span> : undefined} onClick={() => nav.onOpen("theory", t)} />)}</div></Section>
       <div className="pn-chips">{json<any[]>(raw?.links??raw?.links_json,[]).map((link,i)=><a key={i} className="pn-chip" href={typeof link==="string"?link:link.url} target="_blank" rel="noreferrer"><Icon name="link" size={12}/>{typeof link==="string"?link:link.title??link.url}</a>)}<IconButton icon="link" label="Add link" onClick={async()=>{const url=await ask({title:"Add link",field:"URL"});if(url)act("editPrototype",{id,links:[...json<any[]>(raw?.links??raw?.links_json,[]),{url}]});}}/><IconButton icon="theory" label="Add theory to test" onClick={async()=>{const theoryId=await ask({title:"Tests",choices:THEORIES.map(t=>({id:t.id,label:t.claim,kind:"theory"}))});if(theoryId)act("linkPrototypeTheory",{prototypeId:id,theoryId});}}/><IconButton icon="paperclip" label="Attach media" onClick={()=>mediaInput.current?.click()}/><input ref={mediaInput} aria-label="Attach prototype media" type="file" accept="image/*,video/*" hidden onChange={async e=>{const file=e.target.files?.[0];if(!file||uploading)return;setUploading(true);try{const media=await uploadMedia(file);await mutate("attachPrototypeMedia",{prototypeId:id,mediaId:media.id,position:json<any[]>(raw?.media,[]).length});}catch(error){reportError(error);}finally{setUploading(false);if(mediaInput.current)mediaInput.current.value="";}}}/>{uploading&&<span role="status" className="ap-muted">Uploading media…</span>}</div>
     </div>
   );

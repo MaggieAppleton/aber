@@ -58,7 +58,7 @@ export function BriefingView({host,phone}:{host:BriefingHost;phone?:boolean}) {
     window.addEventListener("keydown",key);return()=>window.removeEventListener("keydown",key);
   },[]);
   return <div className="ap br" ref={root} data-phone={phone?"":undefined} data-compact={host.compact?"":undefined}><div className="br-scroll ap-scroll"><div className="br-col">
-    <header className="br-head"><span className="ap-h">Since you last looked</span><span className="br-left ap-muted ap-num" aria-live="polite">{items.length?`${items.length} left`:"Done"}</span></header>
+    <header className="br-head"><Tile kind="briefing" size="title"/><h1 className="ap-h br-title-text">Since you last looked</h1><span className="br-left ap-muted ap-num" aria-live="polite">{items.length?`${items.length} left`:"Done"}</span></header>
     <Overnight onLog={host.onLog} processing={processing}/>
     {!items.length&&<p className="ap-muted">All caught up.</p>}
     {GROUPS.map(group=><section className="br-group" key={group}>{items.some(x=>x.group===group)&&<h3 className="ap-label br-group-name">{group}<span className="ap-num">{items.filter(x=>x.group===group).length}</span></h3>}<AnimatePresence initial={false}>{items.filter(x=>x.group===group).map(item=><motion.div layout="position" key={item.id} className="br-item" data-bid={item.id} data-cursor={current?.id===item.id?"":undefined} onPointerEnter={()=>setCursor(item.id)} onFocus={()=>setCursor(item.id)} onPointerDown={()=>setCursor(item.id)} exit={{opacity:0,x:40}} transition={{duration:.2}}>

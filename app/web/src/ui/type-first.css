@@ -1,0 +1,154 @@
+/* The type-first default view (RULES Navigation): rail 160, list 296, the main area pads 48 on every side with a 720 column,
+   left-aligned. Values come from the grammar tokens in design-tokens.css. */
+.ap.tf { --rail-w: 160px; position: relative; display: grid; grid-template-columns: var(--rail-w) var(--list-w) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr);
+  height: 100%; background: var(--ground); color: var(--ink); font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); overflow: hidden; }
+.ap.tf[data-type="briefing"] { grid-template-columns: var(--rail-w) minmax(0, 1fr); }
+.tf .tf-n { font-size: var(--fs-small); font-weight: var(--w-medium); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+/* ── Rail ── */
+.tf-rail { display: flex; flex-direction: column; gap: var(--gap-group); min-width: 0; min-height: 0; padding: var(--inset-nav-block) var(--inset-nav-inline) 64px; background: var(--ground-2); box-shadow: inset -0.5px 0 0 var(--hairline); }
+.tf-brand { display: flex; align-items: center; justify-content: space-between; height: var(--control); padding-left: var(--inset-row); font-weight: var(--w-strong); color: var(--ink); }
+.tf-types { display: grid; gap: 1px; }
+.tf-type { display: flex; align-items: center; gap: var(--gap-tile); height: var(--row); padding: 0 var(--inset-row) 0 calc(var(--inset-row) - 2px); border: 0; border-radius: var(--r-control); background: transparent;
+  color: var(--ink-2); font: inherit; text-align: left; cursor: pointer; transition: background-color var(--t-hover) var(--ease-out); }
+.tf-type:first-child { margin-bottom: var(--gap-item); }
+.tf-type:hover { background: var(--hover); }
+.tf-type[aria-current] { background: var(--surface); color: var(--ink); font-weight: var(--w-medium); box-shadow: var(--sh-raised); }
+.tf-type:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.tf-tn { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tf-tw { position: relative; display: inline-grid; }
+.tf-fail { position: absolute; right: -2px; top: -2px; width: 7px; height: 7px; border-radius: 50%; background: var(--neg-dot); box-shadow: 0 0 0 2px var(--ground-2); }
+.tf-working { display: inline-grid; color: var(--ink-2); }
+.tf-working svg { animation: tf-spin 1s linear infinite; }
+@keyframes tf-spin { to { rotate: 360deg; } }
+
+/* ── List (second sidebar) ── */
+.tf-list { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--ground); box-shadow: inset -0.5px 0 0 var(--hairline); }
+.tf-lhead { display: flex; align-items: center; gap: var(--gap-icon); height: var(--control); margin: var(--inset-nav-block) var(--inset-nav-inline) 0; padding-left: var(--inset-row); }
+.tf-lname { font-weight: var(--w-strong); color: var(--sechead-ink); }
+.tf-lhead .ap-iconbtn { margin-left: auto; }
+.tf-tools { display: flex; gap: var(--gap-tight); min-width: 0; padding: var(--gap-item) var(--inset-nav-inline) 0; }
+.tf-search, .tf-filter { display: flex; align-items: center; gap: var(--gap-icon); height: var(--control); padding: 0 var(--inset-control); border-radius: var(--r-control); background: var(--in-bg); color: var(--ink-2); transition: background-color var(--t-hover) var(--ease-out); }
+.tf-search:hover, .tf-filter:hover { background: var(--in-bg-hover); }
+.tf-search:focus-within { background: var(--in-bg-focus); box-shadow: var(--edge); outline: 2px solid var(--focus); outline-offset: 2px; }
+.tf-search { flex: 1; min-width: 0; }
+.tf-search input { all: unset; flex: 1; min-width: 0; font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); }
+.tf-search input::placeholder { color: var(--ink-2); }
+.tf-search input::-webkit-search-cancel-button { display: none; }
+.tf-filter { flex: none; width: 112px; padding-right: 4px; }
+.tf-filter[data-on] { color: var(--ink); }
+.tf-filter select { all: unset; flex: 1; min-width: 0; font: var(--w-medium) var(--fs-label)/var(--lh-ui) var(--font); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.tf-filter:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
+.tf-scrollist { flex: 1; min-height: 0; overflow: hidden auto; display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; gap: var(--gap-group); padding: var(--gap-item) var(--inset-nav-inline) 80px; }
+.tf-group { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1px; min-width: 0; }
+.tf-glabel { display: flex; align-items: center; gap: var(--gap-icon); height: var(--control-sm); padding: 0 var(--inset-row); font: var(--w-medium) var(--fs-label)/var(--lh-ui) var(--font); color: var(--ink-2); white-space: nowrap; }
+.tf-glabel .tf-n { margin-left: auto; font-weight: var(--w-regular); }
+.tf-fold { width: 100%; border: 0; border-radius: var(--r-control); background: transparent; cursor: pointer; text-align: left; }
+.tf-fold:hover { background: var(--hover); }
+.tf-fold .tf-n { margin-left: auto; }
+.tf-caret { display: inline-grid; transition: rotate var(--t-hover) var(--ease-out); }
+.tf-caret[data-shut] { rotate: -90deg; }
+.ap .tf-row { width: 100%; padding: calc((var(--row) - var(--line-ui)) / 2) var(--inset-row); border: 0; border-radius: var(--r-control); background: transparent; cursor: pointer; transition: background-color var(--t-hover) var(--ease-out); }
+.ap .tf-row:hover { background: var(--hover); }
+.ap .tf-row[aria-current] { background: var(--surface); box-shadow: var(--sh-raised); }
+.ap .tf-row.ab-one[aria-current] > .ab-nm { color: var(--ink); font-weight: var(--w-medium); }
+.ap .tf-row[data-draft] > .ab-nm { color: var(--ink-2); }
+.ap .tf-row[data-draft][aria-current] { background: var(--draft-fill); box-shadow: none; outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
+.ap .tf-row:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.tf-empty, .tf-none { margin: 0; padding: var(--inset-row); color: var(--ink-2); }
+.tf-empty .ab-btn { margin-left: var(--gap-tight); }
+
+/* ── Main: the focus region. 48 on every side, a 720 column on the left; an empty top bar takes no height. ── */
+.tf-main { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: var(--surface); }
+.tf-scroll { position: absolute; inset: 0; overflow: hidden auto; }
+.ap .tf-main .pn-doc.ab-full { margin: 0; padding: var(--main-inset-block) var(--main-inset-inline) 120px; max-width: calc(var(--main-max) + var(--main-inset-inline) * 2); }
+.ap .tf-main .pn-doc.ab-full > * { max-width: var(--main-max); }
+.ap .tf-main .ab-top { padding-right: 0; }
+.ap .tf-main .ab-top:empty { display: none; }
+.ap .tf-main .ab-top:has(> .tf-back) > .ab-decide { margin-left: auto; }
+.ap .tf-main .ab-top:has(> .ab-decide) > .ab-tools { margin-left: var(--gap-item); }
+.tf-back { display: inline-flex; align-items: center; gap: var(--gap-icon); min-width: 0; max-width: 60%; height: var(--control); margin-left: calc(var(--inset-control) * -1 + 2px); padding: 0 var(--inset-control) 0 calc(var(--inset-control) - 2px);
+  border: 0; border-radius: var(--r-control); background: transparent; color: var(--ink-2); font: var(--w-medium) var(--fs-label)/1 var(--font); cursor: pointer; transition: background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out); }
+.tf-back > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tf-back:hover { background: var(--hover); color: var(--ink); }
+.tf-back:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ap .tf-main .pn-doc > .pn-body.pn-edit { font-size: var(--fs-read); }
+.tf-prose { margin: 0; line-height: var(--lh-prose); max-width: var(--measure); }
+.tf-muted { color: var(--ink-2); }
+.tf-well { display: grid; gap: var(--gap-item); padding: var(--inset-card); border-radius: var(--r-control); background: var(--ground); line-height: var(--lh-prose); max-width: var(--measure); }
+.tf-well > p { margin: 0; white-space: pre-wrap; }
+.ap .pn-title.tf-static { margin: 0; padding: 0; }
+.tf-adds { display: inline-flex; gap: 2px; }
+/* Hover reveals Remove on a full view's relation rows */
+.tf-rel-host { position: relative; display: block; }
+.tf-rel-host[data-suggested] > .ab-rel { outline: 1px dashed var(--hairline-strong); outline-offset: -1px; background: var(--draft-fill); }
+.tf-rm { position: absolute; right: calc(var(--inset-row) * -1 + 2px); top: calc((var(--row) - var(--control)) / 2); opacity: 0; transition: opacity var(--t-hover) var(--ease-out); }
+.tf-rel-host:hover .tf-rm, .tf-rm:focus-within { opacity: 1; }
+.tf-rel-host:hover > .ab-rel { padding-right: calc(var(--control) + var(--inset-row)); }
+
+/* ── Briefing in the main area: the full view's head and insets, items as 06 cards ── */
+.ap .tf-main .br { position: absolute; inset: 0; height: auto; border-radius: 0; box-shadow: none; background: var(--surface); }
+.ap .tf-main .br-col { max-width: calc(var(--main-max) + var(--main-inset-inline) * 2); margin: 0; padding: var(--main-inset-block) var(--main-inset-inline) 120px; gap: var(--gap-item); }
+.ap .tf-main .br-head { display: grid; grid-template-columns: var(--tile-title) minmax(0, 1fr); column-gap: var(--gap-tile-title); align-items: start; min-height: 0;
+  margin-left: calc(var(--hang) - var(--tile-title) - var(--gap-tile-title)); }
+.ap .tf-main .br-head > .ab-tile { margin-top: calc((var(--fs-title) * var(--lh-head) - var(--tile-title)) / 2); }
+.ap .tf-main .br-head .br-title-text { margin: 0; white-space: normal; font: var(--w-strong) var(--fs-title)/var(--lh-head) var(--font); letter-spacing: -0.01em; color: var(--ink); }
+.ap .tf-main .br-head .br-left { grid-column: 2; margin: 0; font-size: var(--fs-label); color: var(--ink-2); min-height: var(--control); display: flex; align-items: center; }
+.ap .tf-main .br-flow { margin: 0 0 0 calc(var(--inset-row) * -1); }
+.ap .tf-main .br-group { gap: var(--gap-item); margin-top: var(--gap-group); }
+.ap .tf-main .br-group-name { font: var(--w-strong) var(--fs-body)/var(--lh-ui) var(--font); color: var(--sechead-ink); padding: 0; gap: var(--gap-icon); align-items: center; min-height: var(--control-sm); }
+.ap .tf-main .br-group-name .ap-num { font-size: var(--fs-small); font-weight: var(--w-medium); color: var(--ink-2); }
+.ap .tf-main .br-item { border-radius: var(--r-control); }
+.ap .tf-main .br-item[data-cursor] { box-shadow: var(--sel); }
+.ap .tf-main .br-row { grid-template-columns: var(--tile) minmax(0, 1fr) auto; gap: var(--gap-tight) var(--gap-tile); padding: var(--card-block) var(--card-inline); border-radius: var(--r-control); background: var(--surface); box-shadow: var(--sh-raised); }
+.ap .tf-main .br-row[data-draft] { background: var(--draft-fill); box-shadow: none; outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
+.ap .tf-main .br-title { font-weight: var(--w-strong); min-height: var(--line-ui); }
+.ap .tf-main .br-detail { font-size: var(--fs-body); }
+
+/* ── Peek: tier 4, tethered, 340 wide; inset 16 (12 at the top); head, a full-bleed hairline, prose, relations with a fade, Open ── */
+.tf-peek { position: absolute; z-index: var(--z-pop); width: 340px; display: grid; gap: var(--gap-item); padding: var(--inset-peek-top) var(--inset-peek) var(--inset-peek); border-radius: var(--r-box);
+  background: var(--surface); box-shadow: var(--sh-pop); text-align: left; animation: tf-grow 160ms var(--ease-out); }
+@keyframes tf-grow { from { opacity: 0; scale: 0.96; } }
+@media (prefers-reduced-motion: reduce) { .tf-peek { animation: tf-fade 120ms linear; } }
+@keyframes tf-fade { from { opacity: 0; } }
+.ap .tf-pk-head { pointer-events: none; }
+.ap .tf-pk-name { font-weight: var(--w-strong); -webkit-line-clamp: 4; }
+.ap .tf-pk-name[data-draft] { color: var(--ink-2); }
+.ap .tf-pk-kv { gap: var(--gap-item); }
+.tf-pk-div { height: 0; margin: var(--gap-tight) calc(var(--inset-peek) * -1) 0; border: 0; border-top: 0.5px solid var(--hairline-strong); }
+.tf-pk-body { display: grid; gap: var(--gap-item); }
+.tf-pk-prose { margin: 0; line-height: var(--lh-prose); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
+.tf-pk-trip { display: grid; grid-template-columns: var(--tile) minmax(0, 1fr); gap: var(--gap-tile); align-items: start; color: var(--ink); }
+.tf-pk-trip > .ab-tile { margin-top: calc((var(--line-ui) - var(--tile)) / 2); background: var(--type-tile); color: var(--neg-dot); }
+.tf-pk-trip > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.tf-pk-body + .tf-pk-rel { margin-top: var(--gap-item); }
+.tf-pk-rel { display: grid; gap: 2px; }
+.tf-pk-label { display: flex; align-items: center; gap: var(--gap-icon); font: var(--w-medium) var(--fs-label)/var(--lh-ui) var(--font); color: var(--ink-2); }
+.tf-pk-list { position: relative; display: grid; max-height: 156px; overflow: hidden; margin-inline: calc(var(--inset-peek) * -1); padding-inline: var(--inset-peek); }
+.ap .tf-pk-list .ab-rel { flex: none; }
+.tf-fade { display: none; }
+.tf-pk-rel[data-overflows] .tf-fade { display: block; position: absolute; left: 0; right: 0; bottom: 0; height: 40px; pointer-events: none; background: linear-gradient(to bottom, transparent, var(--surface)); }
+.tf-pk-foot { display: flex; justify-content: flex-end; }
+.tf-status { display: inline-flex; align-items: center; gap: var(--gap-icon); font-size: var(--fs-label); text-transform: capitalize; }
+/* A narrow screen: the peek is a bottom sheet */
+.tf-peek[data-sheet] { position: absolute; left: 0; right: 0; bottom: 0; width: auto; max-height: 70%; overflow: auto; border-radius: var(--r-bar) var(--r-bar) 0 0; box-shadow: var(--sh-sheet);
+  padding-bottom: calc(var(--inset-peek) + env(safe-area-inset-bottom)); animation: tf-sheet 200ms var(--ease-out); }
+@keyframes tf-sheet { from { translate: 0 24px; opacity: 0; } }
+
+/* ── Narrow (< 720): the rail becomes a bottom tab bar, the list goes full screen, the full view pushes in ── */
+.ap.tf[data-narrow] { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
+.ap.tf[data-narrow] > .tf-list, .ap.tf[data-narrow] > .tf-main { grid-row: 1; box-shadow: none; }
+.ap.tf[data-narrow] .tf-main { animation: tf-push 200ms var(--ease-out); }
+.ap.tf[data-narrow][data-type="briefing"] .tf-main { animation: none; }
+@keyframes tf-push { from { translate: 24px 0; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .ap.tf[data-narrow] .tf-main { animation: none; } }
+.ap.tf[data-narrow] .pn-doc.ab-full { padding: var(--gap-group) 20px 48px calc(20px + var(--hang)); }
+.ap.tf[data-narrow] .ab-head { margin-left: calc(var(--hang) - var(--tile-title) - var(--gap-tile-title)); }
+.ap.tf[data-narrow] .br-col { padding: var(--gap-group) 20px 48px calc(20px + var(--hang)); }
+.ap.tf[data-narrow] .tf-scrollist { padding-bottom: var(--gap-group); }
+/* The tabs sit above the Dump or ask pill, which keeps its own place at the bottom */
+.tf-tabs { grid-row: 2; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 2px; padding: 4px 4px calc(64px + env(safe-area-inset-bottom)) 4px; background: var(--ground-2); box-shadow: inset 0 0.5px 0 var(--hairline); }
+.tf-tab { display: grid; justify-items: center; gap: 2px; min-width: 0; padding: 6px 2px; border: 0; border-radius: var(--r-control); background: transparent; color: var(--ink-2); font: var(--w-medium) var(--fs-small)/1.2 var(--font); cursor: pointer; }
+.tf-tab > span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tf-tab[aria-current] { background: var(--surface); color: var(--ink); box-shadow: var(--sh-raised); }
+.tf-tab:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
