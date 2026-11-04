@@ -79,9 +79,10 @@
     { id: "s11", name: "Bank issues API keys to customers' agents", src: "x.com", day: 2, themes: ["aid"], ev: [["t10", "+"]] },
     { id: "s12", name: "Inference chip startup halves its per-token price", src: "x.com", day: 2, themes: ["coi"], ev: [] },
     { id: "s13", name: "Small model runs a full coding agent on a laptop", src: "simonwillison.net", day: 3, themes: ["local", "coi"], ev: [["t11", "+"], ["t2", "-"]] },
-    { id: "s14", name: "Agent tracing tool goes open source", src: "github.com", day: 3, themes: ["obs"], ev: [] },
+    { id: "s14", name: "Agent tracing tool goes open source", src: "github.com", day: 3, themes: ["obs", "rev"], ev: [["t6", "+"]] },
     { id: "s15", name: "Lab raises at a lower valuation than its last round", src: "ft.com", day: 3, themes: ["fund"], ev: [["t9", "+"]] },
     { id: "s17", name: "Data-centre power contracts are booked years ahead", src: "ft.com", day: 3, themes: ["coi"], ev: [] },
+    { id: "s18", name: "Review bots now comment on a third of open-source pull requests", src: "github.blog", day: 2, themes: ["rev"], ev: [["t6", "+"]] },
   ]);
   add("dump", [
     { id: "d1", name: "Three X links and a ramble about pricing", kw: "Links", day: 0, time: "09:12", via: "Shortcut", made: ["s1", "s2", "s3", "t11"],
@@ -115,7 +116,6 @@
   const glyphOf = o => ICON[o.kind];
   const tile = (type, icon, cls = "") => `<span class="g${cls ? ` ${cls}` : ""}" data-type="${type}"><i class="ph ph-${icon}" aria-hidden="true"></i></span>`;
   const tileOf = (o, cls = "") => tile(o.kind, glyphOf(o), `${o.draft ? "draft" : ""} ${cls}`.trim());
-  const dot = (kind, label) => `<span class="ob-dot ${kind}" role="img" aria-label="${label}" title="${label}"></span>`;
   const conf = (n, label = true) => `<span class="ob-conf" role="img"${label ? ` aria-label="Confidence ${n} of 5"` : ""}>${[1, 2, 3, 4, 5].map(i => `<i${i <= n ? " data-on" : ""}></i>`).join("")}</span>`;
   const ib = (icon, label, attr = "", key = "") => `<button type="button" class="nv-ib" aria-label="${esc(label)}" data-tip="${esc(label)}"${key ? ` data-key="${key}"` : ""} ${attr}><i class="ph ph-${icon}" aria-hidden="true"></i></button>`;
   const mono = t => `<span class="ob-mono">${t}</span>`;
@@ -138,21 +138,26 @@
     })[o.kind]();
   };
   // Revealed on hover: the object's date
-  const whenOf = o => o.kind === "signal" || o.kind === "dump" ? DAYS[o.day] : o.kind === "theory" && !o.retired ? `By ${o.by}` : "";
+  const whenOf = o => o.kind === "signal" || o.kind === "dump" ? DAYS[o.day] : "";   // a theory's horizon is not on previews; peek and full only
   // 4. Status: the single most urgent mark. Challenge > pending suggestion > new. A failed dump is "bad", so red.
   // Status: one quiet red mark, only for what needs you: a challenge, or a dump that couldn't be read.
   // Not marks (Maggie, 4 Nov): pending suggestions (peek, full view and Briefing only) and "new" (see the unseen-activity choice).
-  const statusOf = o => o.challenge ? dot("neg", "Challenged") : o.failed ? dot("neg", "Couldn't read") : "";
+  // No dots (Maggie, 4 Nov): a failed dump says so in words; a challenge shows by the page's choice (data-challenge), never as a red dot.
+  const statusOf = o => o.failed ? `<span>Couldn't read</span>` : "";
+  const chalOf = o => o.challenge ? `<span class="ob-chal" role="img" aria-label="Challenged" title="Challenged">${tile("tripwire", ICON.tripwire, "xs")}</span>` : "";
+  // A count is a bare type glyph (ink 2, 14) and a tabular number, no noun
+  const cnt = (icon, n, label) => `<span class="ob-cnt" role="img" aria-label="${n} ${label}"><i class="ph ph-${icon}" aria-hidden="true"></i>${n}</span>`;
+  const bal = o => `<span class="ob-cnts">${cnt("arrow-up", ups(o), "supporting")}${cnt("arrow-down", downs(o), "undermining")}</span>`;
   // Unseen activity, rendered for every object and shown only by the page's choice (data-fresh on a window): weight, text or nothing
   const freshOf = o => o.kind === "theme" && o.fresh ? `${o.fresh} new` : o.kind === "signal" && o.fresh ? "New" : "";
   // 5. On-demand attributes: label + value, so the meta line (prose-first) and the fields table come from one list
   const attrsOf = (o, rung) => {
     const full = rung === "full";
     const A = ({
-      theme: () => [["Theories", keyOf(o)], ["Signals", `<span>${plural(o.signals, "signal", "signals")}</span>`], o.fresh && ["New", `<span class="ob-fresh">${o.fresh} new</span>`]],
-      theory: () => o.draft ? [["Status", keyOf(o)], ["Evidence", `<span class="ob-bal">+${ups(o)} −${downs(o)}</span>`], ["Happens by", full ? stepper(o.by) : `<span>By ${o.by}</span>`]]
-        : o.retired ? [["Status", keyOf(o)], ["Evidence", `<span class="ob-bal">+${ups(o)} −${downs(o)}</span>`]]
-        : [["Confidence", full ? setter(o.c) : conf(o.c)], ["Evidence", `<span class="ob-bal">+${ups(o)} −${downs(o)}</span>`], ["Happens by", full ? stepper(o.by) : `<span>By ${o.by}</span>`]],
+      theme: () => [["Counts", `<span class="ob-cnts">${cnt(ICON.theory, theoriesOf(o).length, "theories")}${cnt(ICON.signal, o.signals, "signals")}</span>`]],
+      theory: () => o.draft ? [["Status", keyOf(o)], ["Evidence", bal(o)], ["Happens by", full ? stepper(o.by) : `<span>By ${o.by}</span>`]]
+        : o.retired ? [["Status", keyOf(o)], ["Evidence", bal(o)]]
+        : [["Confidence", full ? setter(o.c) : conf(o.c)], ["Evidence", bal(o)], ["Happens by", full ? stepper(o.by) : `<span>By ${o.by}</span>`]],
       prototype: () => [["Status", keyOf(o)]],
       signal: () => [["Source", keyOf(o)], ["Captured", `<span>${DAYS[o.day]}</span>`], o.fresh && ["New", `<span class="ob-fresh">New</span>`]],
       dump: () => [["Kind", `<span>${o.kw}${o.len ? `, ${o.len}` : ""}</span>`], ["Captured", `<span>${DAYS[o.day]}</span>${mono(o.time)}`], full && ["Via", `<span>${o.via}</span>`]],
@@ -174,11 +179,11 @@
     if (label) cls = `${cls} label`;
     if (o.fresh) cls = `${cls} unseen`;
     const k = omit.includes("key") ? "" : keyOf(o, one), w = omit.includes("when") || one ? "" : whenOf(o), st = statusOf(o);
-    const f = freshOf(o) ? `<span class="ob-fresh">${freshOf(o)}</span>` : "";
+    const f = (freshOf(o) ? `<span class="ob-fresh">${freshOf(o)}</span>` : "") + (/\bsuggested\b/.test(cls) ? `<span>Suggested</span>` : "");
     const line = k || w || st || f ? `<span class="kv">${one ? f + k : k + f}${st ? `<span class="st">${st}</span>` : ""}${w ? `<span class="when">${w}</span>` : ""}</span>` : "";
     const attr = act === "sel" ? `data-sel="${o.id}"` : act === "pane" ? `data-pane="${o.id}"` : act === "none" ? "" : `data-open="${o.id}"`;
     return `<div class="ob-${as}${o.draft ? " draft" : ""}${o.retired ? " retired" : ""}${line ? "" : " solo"}${cls ? ` ${cls}` : ""}"${cur === o.id ? ' aria-current="true"' : ""} data-id="${o.id}"${host ? ` data-host="${host}"` : ""}>
-      ${tileOf(o)}<button type="button" class="nm" ${attr}>${o.name}</button>${line}${rm ? `<span class="rm">${ib("minus", rm, 'class="nv-ib sm"')}</span>` : ""}</div>`;
+      ${tileOf(o)}<button type="button" class="nm" ${attr}>${o.name}</button>${line}${chalOf(o)}${rm ? `<span class="rm">${ib("minus", rm, 'class="nv-ib sm"')}</span>` : ""}</div>`;
   };
   const row = (o, opt) => preview(o, { ...opt, as: "row" });
   const card = (o, opt) => preview(o, { ...opt, as: "card" });
@@ -189,21 +194,19 @@
   const tripLine = (o, rung) => {
     if (!o.trip) return "";
     const by = o.challenge && O[o.challenge];
-    if (rung === "peek") return `<div class="ob-attach${by ? " tripped" : ""}">${tile("tripwire", ICON.tripwire)}<span>${by ? `Tripped by <b>${by.name}</b>` : o.trip}</span></div>`;
+    if (rung === "peek") return `<div class="ob-attach${by ? " tripped" : ""}">${tile("tripwire", ICON.tripwire)}<span>${by ? `Tripped by <b>${by.name}</b>` : o.trip}</span></div>`;   // text in ink; only the glyph is red
     // One glyph column: the signpost hangs where the title's tile hangs; the sentence starts on the body's text edge
     return `<div class="ob-trip${by ? " tripped" : ""}"><div class="ob-attach lg">${tile("tripwire", ICON.tripwire)}<p class="ob-prose">${o.trip}</p></div>
-        ${by ? `<div class="ob-block"><div class="ob-blabel neg">Tripped by a new signal</div>${row(by, { omit: "when" })}<p class="ob-why-t">Accepting lowers confidence by one step.</p>
+        ${by ? `<div class="ob-block"><div class="ob-blabel">Tripped by a new signal</div>${row(by, { omit: "when" })}<p class="ob-why-t">Accepting lowers confidence by one step.</p>
           <div class="ob-decide"><button type="button" class="nv-btn secondary">Dismiss</button><button type="button" class="nv-btn primary">Accept</button></div></div>` : ""}</div>`;
   };
-  const sugBlock = (o, rung) => {
-    const list = SUG[o.id] || []; if (!list.length) return "";
-    // A dashed block (dashed = not yet mine): a label line, the proposed object as an ordinary row, then (full only) why and Dismiss | Accept.
-    // No Sparkle inside the block; Sparkle is only a suggestion's own tile where it is listed on its own.
-    const label = x => `<div class="ob-blabel">Suggested ${x.st === "+" ? "support" : "undermining"}</div>`;
-    if (rung === "peek") return `<div class="ob-block sug">${label(list[0])}${row(O[list[0].s], { omit: "when" })}${list.length > 1 ? `<span class="ob-more">${list.length - 1} more</span>` : ""}</div>`;
-    return list.map(x => `<div class="ob-block sug">${label(x)}${row(O[x.s], { omit: "when" })}<p class="ob-why-t">${x.why}</p>
-        <div class="ob-decide"><button type="button" class="nv-btn secondary">Dismiss</button><button type="button" class="nv-btn primary">Accept</button></div></div>`).join("");
-  };
+  // A suggested relation sits inside the group it would join (a suggested support first in Supports), dashed = not yet mine.
+  // Peek: a dashed row whose key line says "Suggested". Full: a dashed block with that row, why, and Dismiss | Accept. No Sparkle inside.
+  const sugsFor = (o, st) => (SUG[o.id] || []).filter(x => x.st === st);
+  const sugRow = x => row(O[x.s], { omit: "when", cls: "suggested" });
+  const sugBlock = x => `<div class="ob-block sug"><div class="ob-blabel">Suggested</div>${row(O[x.s], { omit: "when" })}<p class="ob-why-t">${x.why}</p>
+        <div class="ob-decide"><button type="button" class="nv-btn secondary">Dismiss</button><button type="button" class="nv-btn primary">Accept</button></div></div>`;
+  const stanceOf = label => label === "Supports" ? "+" : label === "Undermines" ? "-" : null;
 
   /* ═══ 7. Relations, in order of importance per type ═══════════════════════════ */
   const relsOf = o => ({
@@ -214,28 +217,36 @@
       ["Themes", o.themes.map(id => O[id]), "chips", "", "File in theme"], ["Came from", dumpsOf(o), "rows"]],
     prototype: () => [["Tests", o.tests.map(id => O[id]), "rows", "Remove theory"]],
     dump: () => [["Signals", o.made.map(id => O[id]).filter(x => x.kind === "signal"), "rows"], ["Drafts", o.made.map(id => O[id]).filter(x => x.kind !== "signal"), "rows"]],
-  })[o.kind]().filter(([, items, , , slot]) => items.length || slot);
+  })[o.kind]().filter(([label, items, , , slot]) => items.length || slot || (o.kind === "theory" && stanceOf(label) && sugsFor(o, stanceOf(label)).length));
   // The peek shows the first relation that holds objects, as up to three one-line rows
+  // As many relations as fit, then a fade rising from the bottom edge; no scroll, no "show more"; Open shows everything (Maggie, 4 Nov)
   const peekRel = o => {
-    const r = relsOf(o).find(([, items, how]) => items.length && how !== "chips"); if (!r) return "";
-    const [label, items] = r;
-    return `<div class="ob-pk-rel"><div class="ob-label">${label}<span class="ob-n">${items.length}</span></div>${items.slice(0, 3).map(x => row(x, { omit: "when" })).join("")}${items.length > 3 ? `<span class="ob-more">${items.length - 3} more</span>` : ""}</div>`;
+    const r = relsOf(o).find(([label, items, how]) => how !== "chips" && (items.length || (o.kind === "theory" && stanceOf(label) && sugsFor(o, stanceOf(label)).length))); if (!r) return "";
+    const [label, held] = r, sugs = o.kind === "theory" && stanceOf(label) ? sugsFor(o, stanceOf(label)) : [];
+    const items = [...sugs.map(x => ({ ...O[x.s], _sug: true })), ...held], extra = items.length - 3;
+    return `<div class="ob-pk-rel${extra > 0 ? " has-more" : ""}"><div class="ob-label">${label}<span class="ob-n">${held.length}</span></div>
+      <div class="ob-pk-list">${items.map((x, i) => row(x._sug ? O[x.id] : x, { omit: "when", cls: `${i >= 3 ? "extra" : ""}${x._sug ? " suggested" : ""}`.trim() })).join("")}${extra > 0 ? '<span class="ob-fade" aria-hidden="true"></span>' : ""}</div>
+</div>`;
   };
 
   /* ═══ Prose: the object's own words ═══════════════════════════════════════════ */
   const proseOf = o => ({ theory: o.note, prototype: o.body, signal: o.note, dump: o.text })[o.kind] || "";
 
   /* ═══ Rung 2: peek (tethered card). Same header as the row, its own essentials, then up to three relations, then Open ═══ */
+  // Every peek: a head (tile, title, key line), a full-bleed hairline, then the body (prose, attached lines) and the relation group.
   const peek = (o, { rel = true, cls = "" } = {}) => {
-    const p = proseOf(o);
-    return `<div class="ob-peek${cls ? ` ${cls}` : ""}" role="dialog" aria-label="${esc(o.name)}" data-id="${o.id}">
+    const p = proseOf(o), trip = o.kind === "theory" ? tripLine(o, "peek") : "", rels = rel ? peekRel(o) : "";
+    // A short key value (a status, a count) sits right-aligned on the title's first line; the key line below keeps only what's left
+    const short = (o.kind === "prototype" || o.kind === "theme") && !o.draft;
+    const st = statusOf(o), rest = attrsOf(o, "peek").slice(short ? 1 : 0).map(([, v]) => v);
+    const meta = short ? rest.join("") : metaLine(o, "peek");
+    const body = p || trip ? `<div class="ob-pk-body">${p ? `<p class="ob-prose clamp">${p}</p>` : ""}${trip}</div>` : "";
+    return `<div class="ob-peek${meta ? " has-meta" : ""}${cls ? ` ${cls}` : ""}" role="dialog" aria-label="${esc(o.name)}" data-id="${o.id}">
       <div class="ob-hang">${tileOf(o)}<div class="ob-col">
-        <div class="ob-pk-name${o.draft ? " draft" : ""}">${o.name}</div>
-        <div class="ob-meta">${metaLine(o, "peek")}</div>
-        ${p ? `<p class="ob-prose clamp">${p}</p>` : ""}
-        ${o.kind === "theory" ? tripLine(o, "peek") + sugBlock(o, "peek") : ""}
-        ${rel ? peekRel(o) : ""}
+        ${short ? `<div class="ob-pk-title"><div class="ob-pk-name${o.draft ? " draft" : ""}">${o.name}</div><span class="ob-pk-key">${o.kind === "theme" ? attrsOf(o, "peek")[0][1] : keyOf(o)}</span></div>` : `<div class="ob-pk-name${o.draft ? " draft" : ""}">${o.name}</div>`}
+        ${meta ? `<div class="ob-meta">${meta}</div>` : ""}
       </div></div>
+      ${body || rels ? `<hr class="ob-div">${body}${rels}` : ""}
       <div class="ob-pk-foot"><button type="button" class="nv-btn secondary" data-full="${o.id}">Open<i class="ph ph-arrow-right" aria-hidden="true"></i></button></div>
     </div>`;
   };
@@ -246,7 +257,7 @@
     if (how === "chips") body = `<div class="ob-chips">${items.map(x => chip(x)).join("")}${slot ? `<button type="button" class="ob-slot sm"><i class="ph ph-plus" aria-hidden="true"></i>${slot}</button>` : ""}</div>`;
     else if (how === "cards") body = items.length ? `<div class="ob-cards">${items.map(x => card(x, { cur })).join("")}</div>` : `<button type="button" class="ob-slot"><i class="ph ph-plus" aria-hidden="true"></i>Add theory</button>`;
     else if (how === "days") { let d = -1; body = `<div class="ob-rows">${items.map(x => (x.day !== d ? `<div class="ob-day">${DAYS[d = x.day]}</div>` : "") + row(x, { cur, omit: "when" })).join("")}</div>`; }
-    else body = `<div class="ob-rows">${items.map(x => row(x, { cur, rm: rm ? `${rm}: ${x.name}` : "" })).join("")}${slot ? `<button type="button" class="ob-slot"><i class="ph ph-plus" aria-hidden="true"></i>${slot}</button>` : ""}</div>`;
+    else body = `<div class="ob-rows">${o.kind === "theory" && stanceOf(label) ? sugsFor(o, stanceOf(label)).map(sugBlock).join("") : ""}${items.map(x => row(x, { cur, rm: rm ? `${rm}: ${x.name}` : "" })).join("")}${slot ? `<button type="button" class="ob-slot"><i class="ph ph-plus" aria-hidden="true"></i>${slot}</button>` : ""}</div>`;
     const n = how === "days" ? o.signals : items.length;
     return `<section class="ob-sec"><div class="ob-sh"><span>${label}</span>${items.length ? `<span class="ob-n">${n}</span>` : ""}</div>${body}</section>`;
   };
@@ -264,8 +275,8 @@
     const reply = o.reply ? `<div class="ob-reply"><div class="ob-label">Reply</div><p class="ob-prose">${o.reply}</p></div>` : "";
     return `<article class="ob-full${o.draft ? " draft" : ""}" data-id="${o.id}">${top}
       <header class="ob-hang ob-head">${tileOf(o)}<div class="ob-col"><h3 class="ob-title">${o.name}</h3>${meta}</div></header>
-      <div class="ob-body">${prose}${reply}${o.kind === "theory" ? tripLine(o, "full") + sugBlock(o, "full") : ""}
-        <div class="ob-rels">${relsOf(o).map(r => section(o, r, cur)).join("")}</div></div>
+      <div class="ob-body">${prose}${reply}${o.kind === "theory" ? tripLine(o, "full") : ""}
+        ${relsOf(o).length ? `<hr class="ob-div"><div class="ob-rels">${relsOf(o).map(r => section(o, r, cur)).join("")}</div>` : ""}</div>
     </article>`;
   };
 
@@ -274,5 +285,5 @@
       <header class="ob-hang ob-head">${tile("briefing", ICON.briefing)}<div class="ob-col"><h3 class="ob-title">Since yesterday</h3><div class="ob-meta lg"><span>${BRIEF.reduce((n, [, ids]) => n + ids.length, 0)} changes</span><span>Last looked 18:40</span></div></div></header>
       <div class="ob-body"><div class="ob-rels">${BRIEF.map(([label, ids]) => `<section class="ob-sec"><div class="ob-sh"><span>${label}</span><span class="ob-n">${ids.length}</span></div><div class="ob-rows">${ids.map(id => row(O[id])).join("")}</div></section>`).join("")}</div></div></article>`;
 
-  window.AberObjects = { O, SUG, ICON, all, tile, tileOf, row, card, chip, peek, full, keyOf, statusOf, attrsOf, tripLine, sugBlock, digest, relsOf, DAYS };
+  window.AberObjects = { O, SUG, ICON, all, tile, tileOf, row, card, chip, peek, full, keyOf, statusOf, attrsOf, tripLine, sugBlock, sugsFor, digest, relsOf, DAYS };
 })();

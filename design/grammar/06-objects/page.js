@@ -27,15 +27,15 @@
     const t4 = O.t4, t1 = O.t1;
     const attached = `
       <div class="mx-type"><span class="ob-scope ctl">${A.tile("tripwire", A.ICON.tripwire)}</span><b>Tripwire</b><span>Attached to a theory. Key value: its sentence</span></div>
-        <div class="mx-c" data-rung="Preview: list row"><p class="mx-note">A red dot in the host's status slot when tripped</p>${list(row(t4, { act: "none" }))}</div>
-        <div class="mx-c" data-rung="Preview: card and chip"><p class="mx-note">The host's card carries the mark</p><div class="ob-scope ctl mx-stack">${card(t4, { act: "none" })}</div></div>
+        <div class="mx-c" data-rung="Preview: list row"><p class="mx-note">Nothing on the host's row by default (choice 2)</p>${list(row(t4, { act: "none" }))}</div>
+        <div class="mx-c" data-rung="Preview: card and chip"><p class="mx-note">Nothing on the host's card by default (choice 2)</p><div class="ob-scope ctl mx-stack">${card(t4, { act: "none" })}</div></div>
         <div class="mx-c" data-rung="Peek"><p class="mx-note">One line inside the host's peek</p><div class="ob-scope ctl">${peek(t4).replace('class="ob-peek"', 'class="ob-peek static"')}</div></div>
         <div class="mx-c" data-rung="Full"><p class="mx-note">The sentence, the tripping signal and Dismiss | Accept</p><div class="ob-scope ctl">${scaled(t4)}</div></div>
       <div class="mx-type"><span class="ob-scope ctl">${A.tile("suggestion", A.ICON.suggestion, "draft")}</span><b>Suggestion</b><span>Attached to what it would change. Key value: what it proposes</span></div>
-        <div class="mx-c" data-rung="Preview: list row"><p class="mx-note">A dashed count in the host's status slot</p>${list(row(t1, { act: "none" }))}</div>
-        <div class="mx-c" data-rung="Preview: card and chip"><p class="mx-note">The host's card carries the count</p><div class="ob-scope ctl mx-stack">${card(t1, { act: "none" })}</div></div>
-        <div class="mx-c" data-rung="Peek"><p class="mx-note">One line inside the host's peek</p><div class="ob-scope ctl">${peek(t1).replace('class="ob-peek"', 'class="ob-peek static"')}</div></div>
-        <div class="mx-c" data-rung="Full"><p class="mx-note">A dashed block: what it proposes, the signal as a row, why, Dismiss | Accept</p><div class="ob-scope ctl"><div class="mx-sugwrap ob-full"><div class="ob-body">${A.sugBlock(t1, "full")}</div></div></div></div>`;
+        <div class="mx-c" data-rung="Preview: list row"><p class="mx-note">Not on previews (decided)</p>${list(row(t1, { act: "none" }))}</div>
+        <div class="mx-c" data-rung="Preview: card and chip"><p class="mx-note">Not on previews (decided)</p><div class="ob-scope ctl mx-stack">${card(t1, { act: "none" })}</div></div>
+        <div class="mx-c" data-rung="Peek"><p class="mx-note">A dashed row, first in the group it would join</p><div class="ob-scope ctl">${peek(t1).replace('class="ob-peek"', 'class="ob-peek static"')}</div></div>
+        <div class="mx-c" data-rung="Full"><p class="mx-note">Inside the group it would join: a dashed block with the signal as a row, why, Dismiss | Accept</p><div class="ob-scope ctl"><div class="mx-sugwrap ob-full"><div class="ob-body"><section class="ob-sec"><div class="ob-sh"><span>Supports</span><span class="ob-n">2</span></div><div class="ob-rows">${A.sugsFor(t1, "+").map(A.sugBlock).join("")}</div></section></div></div></div></div>`;
     matrix.innerHTML = head + TYPES.map(typeRow).join("") + attached;
   }
 
@@ -94,7 +94,7 @@
     const mark = () => { an.querySelectorAll(".an-tag").forEach(t => t.remove());
       an.querySelectorAll(".an-item").forEach(it => { tag(it.querySelector(".g"), 1); tag(it.querySelector(".nm, .ob-pk-name, .ob-title"), 2);
         tag(it.querySelector(".kv > *, .ob-meta > *"), 3); tag(it.querySelector(".st > *"), 4); });
-      const p = an.querySelector(".an-peek"); tag(p.querySelector(".ob-meta > span:nth-child(3)"), 5); tag(p.querySelector(".ob-attach"), 6); tag(p.querySelector(".ob-pk-rel"), 7);
+      const p = an.querySelector(".an-peek"); tag(p.querySelector(".ob-meta > span:nth-child(3)"), 5); tag(p.querySelector(".ob-attach, .ob-row.suggested"), 6); tag(p.querySelector(".ob-pk-rel"), 7);
       const r = an.querySelector(".an-row"); tag(r.querySelector(".when"), 5); };
     document.fonts.ready.then(mark); addEventListener("resize", mark);
   }
@@ -114,7 +114,7 @@
   dlg?.addEventListener("click", e => { if (e.target === dlg || e.target.closest("[data-big-close]")) dlg.close(); });
 
   /* ── Hero follows the picks; the decide box shows them ── */
-  const MAP = { fresh: ["fresh", { "a Nothing on objects": "none", "b Unread weight": "weight", "c Text in the key value": "text" }], peek: ["peek", { "a Essentials and relations": "rel", "b Essentials only": "own" }], full: ["full", { "a Prose first": "prose", "b Fields table": "fields" }] };
+  const MAP = { challenge: ["challenge", { "a Signpost at the bottom right": "a", "b Under the type tile": "b", "c Not on previews": "c" }], align: ["align", { "a Tile matches the line": "a", "b Tile top on the caps": "b", "c Smaller tile, centred": "c" }], fresh: ["fresh", { "a Nothing on objects": "none", "b Unread weight": "weight", "c Text in the key value": "text" }], peek: ["peek", { "a Essentials and relations": "rel", "b Essentials only": "own" }], full: ["full", { "a Prose first": "prose", "b Fields table": "fields" }] };
   addEventListener("load", () => {
     const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d);
     const page = document.body.dataset.jig;
@@ -122,6 +122,8 @@
     const paint = () => {
       document.querySelectorAll("[data-pick]").forEach(li => { const v = pick(li.dataset.pick); li.querySelector(".pick").innerHTML = v ? `Current pick: <b>${v}</b>` : "No pick yet"; });
       const patch = {}; for (const [id, [key, vals]] of Object.entries(MAP)) { const v = pick(id); if (vals[v]) patch[key] = vals[v]; }
+      if (patch.align) document.body.dataset.align = patch.align;
+      if (patch.challenge) document.body.dataset.challenge = patch.challenge;
       document.querySelectorAll("[data-follows-picks]").forEach(h => h._s && window.AberObjectFrames.set(h, patch));
     };
     paint(); document.addEventListener("click", e => { if (e.target.closest(".jig-choose")) setTimeout(paint, 0); });

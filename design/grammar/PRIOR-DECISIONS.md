@@ -391,3 +391,7 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 4 Nov 2026 (Maggie): no dashed-circle count badge for pending suggestions; its meaning was unclear and it looks ugly. Shown another way (see 06 choice); decided: not shown on previews at all; only in peek, full view and Briefing. Her principle: "If we can't find a beautiful way to show it, we should not show it."
 
 4 Nov 2026 (Maggie, 06 before/after): theme list rows go back to the compact one-line design: the theme's glyph on its tile, the name in ink 2 (ink and 500 when current), the theory count as a bare number at the right. No "theories" word, no dot, no second line. Short-label rows (prototypes) follow the same form; two-line rows only where the name is a sentence (theories, signals, dumps).
+
+4 Nov 2026 (Maggie): peeks show as many relations as fit, then fade out at the bottom (surface-colour gradient); no scrolling, no 'show more'; Open shows everything.
+
+4 Nov 2026 (Maggie): no red challenge dot on previews or cards; tripwire text is ink with only the tripped glyph in red; challenged state shown another way (see 06 choice).

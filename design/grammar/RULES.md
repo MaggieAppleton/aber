@@ -313,7 +313,7 @@ Every object follows one anatomy and appears at three rungs: a **preview** where
 | 1 Tile | Type glyph on its 24 tile, the same size for every row, line and header within one peek or full view; a signal is always Pulse (kind, if shown, is text in the key value). No type word. | ● | ● | ● (flush) | ● | ● |
 | 2 Name | List name 13/400; card and peek 13/600; title 24/600 | 2 lines | 3 lines | 1 line | In full | In full |
 | 3 Key value | The one attribute that tells it from its neighbours; "Draft" for drafts | ● | ● | – | ● | ● (editable) |
-| 4 Status | One quiet red mark directly after the key value, only when something needs you: a challenge, or a dump that couldn't be read. Pending suggestions and "new" are not marks (decided 4 Nov) | ● | ● | – | ● | ● |
+| 4 Status | No dots or badges. A dump that couldn't be read says so in words. A challenge: open (06 choice; recommended not on previews). Pending suggestions and "new" are not marks (decided 4 Nov) | – | – | – | – | – |
 | 5 On demand | The date, at the right end of the key line on hover; the rest of the key line in peek and full | Hover | Hover | – | ● | ● |
 | 6 Attached | Tripwire, suggestions: a mark on the host's preview, one line in its peek, a block with Dismiss \| Accept in full | Mark | Mark | – | Line | Block |
 | 7 Relations | The most important relation, as preview rows; all relations in full | – | – | – | Up to 3 | All |
@@ -326,8 +326,8 @@ Every object follows one anatomy and appears at three rungs: a **preview** where
 
 | Type | Key value | Preview | On hover | Peek adds | Full adds |
 | --- | --- | --- | --- | --- | --- |
-| Theme | Theory count (bare number) | One line: tile, name in ink 2, count at the right | – | Signal count, new count, top 3 theories | Theories as cards, signals by day |
-| Theory | Confidence | Tile, claim, confidence, one status mark | By year | Evidence balance, horizon, note (3 lines), tripwire or suggestion line, top 3 supports | Confidence setter, year stepper, note, tripwire, suggestions, themes, supports, undermines, rival, follows from, leads to, prototypes |
+| Theme | Theory count (bare number) | One line: tile, name in ink 2, count at the right | – | [Target] 5 [Pulse] 23 on the title line, top theories | Theories as cards, signals by day |
+| Theory | Confidence | Tile, claim, confidence | – | Evidence balance, horizon, note (3 lines), tripwire or suggestion line, top 3 supports | Confidence setter, year stepper, note, tripwire, suggestions, themes, supports, undermines, rival, follows from, leads to, prototypes |
 | Prototype | Status (glyph; the word in peek and full) | One line: tile, name in ink 2, status glyph at the right | – | Body (3 lines), theories it tests | Body, tests |
 | Signal | Source | Tile (Pulse), gist, source | Captured day | Day, note, theories it bears on | Note, supports, undermines, themes, came from |
 | Dump | Kind and time | Tile, first line, kind and time, failed | Day | Day, length, text (3 lines), signals made | Via, text, reply, signals, drafts |
@@ -338,6 +338,20 @@ Every object follows one anatomy and appears at three rungs: a **preview** where
 8. **Short labels are one line; sentences are two.** Themes and prototypes: tile, name in ink 2 (ink and 500 when current), a bare count or status glyph at the right, row 32. Theories, signals and dumps: the name, then the key value under it.
 9. **One glyph column.** Within a peek or full view every leading tile (title, relation rows, attached lines and blocks) is 24 and sits in one column; every text starts on one edge. Chips and cards keep their own tile inside them.
 10. **Unseen activity** (the old jade dot): open in the 06 jig. Recommended: nothing on objects; Briefing home shows what's new. Alternatives: unread weight (ink 600 name), or "3 new" / "New" as ink 2 text in the key value.
+
+11. **Peek anatomy.** Inset 16 at the sides and bottom (new spacing role, peek inset) and 12 at the top, so the head has equal visual space above and below: 12 from the card's top edge to the tile, 12 from the head's visual bottom (the key line's baseline, or the tile when the title line is the whole head) to the hairline; 16 from the hairline to the first label's capitals. Values on any key line are 6 apart (`--gap-key`), at every rung. The head (tile, name, key line, short body, attached lines) is separated from its relations by a full-bleed hairline: the one sanctioned exception to "space first", a hairline between an object's own head and its relations inside a peek (and above the relation sections in a full view). Relation group labels ("Theories 5", "Supports 2") sit on the tile column, above the tiles they introduce. A peek shows as many relations as fit, then fades out at the bottom (a surface-colour gradient, edge to edge); no scrolling, no "show more", never inert "N more" text; Open, below the fade, shows everything (decided 4 Nov).
+12. **Attached objects.** A suggested relation sits inside the group it would join (a suggested support first in Supports, so a group can hold only a suggestion): a dashed row in a peek; in a full view a dashed block with the row, the reason and Dismiss | Accept at the bottom right. Inside a dashed block everything starts at the block's own inset. No Sparkle inside it. Tripwire text is ink; only the Signpost glyph is red.
+13. **Peek structure, every type:** head (tile, title, key line; a short key value such as a status or counts sits right-aligned on the title's first line and the key line below is dropped if empty), full-bleed hairline, body (prose, tripwire line), relation group, Open. Every labelled section in a peek or full view has the group gap (16) above its label when content sits above it; label to first row stays tight.
+14. **Counts** are a bare type glyph (ink 2, 14) and a tabular number, no noun: 4 inside a pair, 8 between pairs (theme: [Target] 5 [Pulse] 23; theory: [arrow-up] 2 [arrow-down] 1). In the Themes list the count stays a bare number: every count in that column is theories, so a glyph would repeat on every row.
+
+**Proposed amendments to decided foundations (06 jig; not yet applied to their sections):**
+- **03 Icons, rule 4 (alignment):** a 24 tile centred on an 18.2 line sits 2.9px above the line box and 7.3px above the capitals, and reads as too high. Choice in the 06 jig; recommended: an 18 tile centred on the first line (tile top 2px above the capitals, identical for one-line and two-line rows). Alternatives: a 20 tile with names at 13/20; a 24 tile with its top 2px above the capitals.
+- **03 Icons (glyph on a tile):** a glyph on a tile is one step smaller than a bare glyph: tile 24 → glyph 14, 20 → 12, 18 → 12.
+- **01 Spacing / 03 Icons (tile–text gap):** a new token, `--gap-tile`, between a tile and its text: 10 beside a 24 or 20 tile, 8 beside an 18 tile. Bare glyphs keep `--gap-icon` 6.
+- **01 Spacing (card inset):** cards inset 10 inline and 8 block; block is always inline − 2. Rows already follow it (8 inline, 7 block from the 32 row); chips are fixed-height and don't need it.
+- **02 Type (times):** exact times and durations use Geist with tabular figures in the surrounding text's role (size, weight, ink), not Geist Mono; mono is only for keyboard keys.
+- **01 Spacing (peek inset):** a named role, `--inset-peek`, 16 all round.
+- **05 Controls (chip tile):** the chip's tile is the chip's full height, flush in its left corner. In `_shared/controls.css`, `:is(.ctl, .stg, .nv) .ctl-chip > .g` sizes the tile by `--tile`; it should use `--chip-h` for width and height, so it can't fall short when `--tile` changes.
 
 **Removed as unnecessary metadata:** evidence balance and prototype count from theory cards (to the peek); signal count from theme rows and section headers; dates at rest; theme chips on signal rows; "Tests N" and "Made N"; type words and type-label chips ("Signal", "Building" chip); "via" outside the full view; the label/value table (choice open); the pending-suggestion badge and the jade new dot (decided 4 Nov); kind glyphs on signal tiles; "theories" after a theme's count.
 

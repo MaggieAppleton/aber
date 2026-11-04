@@ -9,7 +9,7 @@
   const TOTAL = { signal: 412, dump: 286 };
   const OLDER = { signal: [["October", 288], ["September", 109]], dump: [["October", 201], ["September", 78]] };
   const STATUS = [["building", "Building"], ["idea", "Idea"], ["built", "Built"], ["shelved", "Shelved"]];
-  const OPT = { fresh: "none", peek: "rel", full: "prose" };
+  const OPT = { fresh: "none", peek: "rel", full: "prose", align: document.body.dataset.align || "c", challenge: document.body.dataset.challenge || "c" };
   const ib = (icon, label, attr = "", key = "") => `<button type="button" class="nv-ib" aria-label="${label}" data-tip="${label}"${key ? ` data-key="${key}"` : ""} ${attr}><i class="ph ph-${icon}" aria-hidden="true"></i></button>`;
   const dot = (kind, label) => `<span class="nv-dot ${kind}" role="img" aria-label="${label}"></span>`;
 
@@ -63,13 +63,13 @@
     const home = s.type === "home", o = !home && s.sel[s.type] && O[s.sel[s.type]];
     const cols = home ? "var(--nv-rail-w) minmax(0, 1fr)" : "var(--nv-rail-w) var(--list-w) minmax(0, 1fr)";
     const main = o ? full(o, { layout: s.opt.full, back: backBtn(s) }) : digest();
-    return `<div class="nv ctl ob-win" data-v="A" data-fresh="${s.opt.fresh}" style="grid-template-columns:${cols}">${rail(s)}${home ? "" : list(s)}<main class="nv-main"><div class="nv-scroller">${main}</div></main></div>`;
+    return `<div class="nv ctl ob-win" data-v="A" data-fresh="${s.opt.fresh}" data-align="${s.opt.align}" data-challenge="${s.opt.challenge}" style="grid-template-columns:${cols}">${rail(s)}${home ? "" : list(s)}<main class="nv-main"><div class="nv-scroller">${main}</div></main></div>`;
   };
   // Columns, as it stays: dump and signal strips, Themes (navigation), Theories (cards), the docked pane. Its objects are the new previews.
   const colFrame = s => {
     const th = O[s.colTheme], ts = A.all("theory").filter(t => t.themes.includes(th.id) && !t.retired);
     const pane = s.pane && O[s.pane];
-    return `<div class="nv ctl ob-win ob-columns" data-fresh="${s.opt.fresh}" style="grid-template-columns:36px 36px var(--colnav-w, 230px) var(--list-w) minmax(0, 1fr)">
+    return `<div class="nv ctl ob-win ob-columns" data-fresh="${s.opt.fresh}" data-align="${s.opt.align}" data-challenge="${s.opt.challenge}" style="grid-template-columns:36px 36px var(--colnav-w, 230px) var(--list-w) minmax(0, 1fr)">
       <div class="ob-strip">${tile("dump", ICON.dump)}</div><div class="ob-strip">${tile("signal", ICON.signal)}</div>
       <section class="ob-colnav"><div class="ob-colhead">${tile("theme", ICON.theme)}<span>Themes</span></div>
         <div class="ob-rows">${A.all("theme").filter(o => !o.draft).map(o => row(o, { act: "sel", cur: s.colTheme })).join("")}</div></section>
@@ -100,7 +100,7 @@
     const at = local(scroller, anchor);
     scroller.insertAdjacentHTML("beforeend", peek(O[id], { rel: s.opt.peek === "rel", cls: "live" }));
     const el = scroller.lastElementChild, W = scroller.clientWidth, top = at.y + scroller.scrollTop;
-    const left = Math.max(8, Math.min(W - el.offsetWidth - 8, at.x - (anchor.matches(".ob-row") ? 4 : 0)));   // the peek's tile lands on the row's tile
+    const left = Math.max(8, Math.min(W - el.offsetWidth - 8, at.x - (anchor.matches(".ob-row") ? 16 - 8 : anchor.matches(".ob-card") ? 16 - 10 : 0)));   // the peek's tile lands on the row's tile
     let y = top + at.h + 4;
     if (y + el.offsetHeight > scroller.scrollTop + scroller.clientHeight - 8 && top - el.offsetHeight - 4 > scroller.scrollTop + 8) { y = top - el.offsetHeight - 4; el.classList.add("up"); }
     Object.assign(el.style, { left: `${left}px`, top: `${y}px`, transformOrigin: `${Math.max(12, at.x - left + 12)}px ${el.classList.contains("up") ? "100%" : "0"}` });
