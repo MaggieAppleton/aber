@@ -401,3 +401,11 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 4 Nov 2026 (Maggie): confidence on previews is a small meter track (06b option C), right of the name; the full view keeps the five-segment setter with its history.
 
 4 Nov 2026 (Maggie, 06-objects): picks: tile alignment c (an 18 tile with a 12 glyph centred on the name's first line); a challenge is not shown on previews (peek, full view and Briefing only); unseen activity is unread weight (a row's name in ink at 600; cards and peeks unchanged since they are already 600); peeks show essentials and relations; full views are prose first. The 06 section of RULES.md is DECIDED, with its amendments to 01 (card inset 10/8, peek inset 16, tile-to-text gap 8 and 12, key-line gap 6), 02 (times in Geist tabular, mono for keys only), 03 (tile 18/12 in rows and peeks, 32/20 for the full-view title, chip tile 24/14, glyph on a tile one step smaller) and 05 (chip tile fills the chip's height).
+
+## 07 Moving between levels — PROPOSED (4 Nov 2026, jig `07-rungs/`)
+
+- Builds on: Navigation 3 and 06 (a peek opens on a 500ms hover or a click; Open moves the rail and list; Back returns); 04 rules 7 and 10 (one transient layer; tethered surfaces become bottom sheets on narrow screens); 05 rule 4 (90 and 160ms, peeks on the spring); 11 rule 3 (the pane on the 380ms spring, contents in over 160ms); 1 Nov motion (reduced motion swaps movement for a cross-fade); DI-010's "a link inside a peek replaces it".
+- New and proposed: the 150ms swap of an open peek, the 300ms grace and its triangle, chips peeking below, the 380ms shared tile and title on Open and Back, the 260ms pane close, the keyboard map. Not approved.
+- Open: the Open transition (shared tile and title, or cross-fade and slide); the peek's position (beside or below); where Back lands (the preview or the peek).
+
+4 Nov 2026 (Maggie): the 20px type size is removed (scale 11/12/13, pane title 24); the old 01-foundations page is retired.

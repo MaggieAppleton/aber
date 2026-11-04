@@ -103,14 +103,14 @@ Evidence: today's CSS uses 36 distinct paddings, 18 gaps, 18 margins and 19 row 
 - Density is **Regular**: the values above. Compact and Comfortable are not used.
 - The middle column's theories are **separate cards with gaps** (`--gap-item` between them), not one container with dividers.
 
-## 02 Type — DECIDED (4 Nov 2026: scale B 11/12/13/20, pane title 24, section headers ink 2)
+## 02 Type — DECIDED (4 Nov 2026: scale 11/12/13, pane title 24 (20 removed 4 Nov), section headers ink 2)
 
 Geist (Geist Mono for keys and exact times), body 13, colour system D inks. Jig: `02-type/`. Values live in `_shared/type.css`, which every grammar page loads.
 
 Evidence: today's CSS uses 11 px font sizes (including 9, 10 and 14.5) plus 10 size tokens for the same values, 16 line heights, weight 700 three times, 32 text colours across five ink families, and ink 3 for text 228 times.
 
 1. **Every piece of text has one role**, and each role has one size, weight, ink and line height. A new kind of text means a new role, never a one-off value.
-2. **Four sizes; peers differ by weight and ink first.**
+2. **Scale 11/12/13, pane title 24 (20 removed 4 Nov); peers differ by weight and ink first.**
 
 | Token | Size | Used for |
 | --- | --- | --- |
@@ -119,7 +119,7 @@ Evidence: today's CSS uses 11 px font sizes (including 9, 10 and 14.5) plus 10 s
 | `--fs-body` | 13 | Everything you read: names, values, nav, prose |
 | `--fs-title` | 24 | The pane title, the only text at 24 |
 
-   Nothing is smaller than 11. 20 stays in the scale for a future title role but nothing uses it today.
+   Nothing is smaller than 11. 20 was removed from the scale (4 Nov).
 3. **Two inks for text.** Ink is for what you read and act on; ink 2 is for what names or describes it. Ink 3 is never text.
 4. **Three weights.**
    - 600: the subject.
@@ -410,7 +410,7 @@ Evidence: 9 of the 13 ways to make or link something open the same centred modal
    - The description is 13 / 400 ink 2 at prose leading.
    - The foot sits at the bottom right: Cancel (secondary) left of the primary.
    - Focus starts on Cancel and stays inside. Esc, the X and the scrim close it. No 15px title.
-5. **The name is the title.** The 24 / 600 title is the field, with an ink 2 placeholder ("Name this theme", "State the claim"). It reads as the title at rest, gets the 5% layer on hover, and the field's surface, hairline and ring while it has the caret. Notes work the same way at prose size.
+5. **The name is the title.** The 24 / 600 title is the field, with an ink 2 placeholder ("Name this theme", "State the claim"). In-place editable text (titles, notes, field values) has no ring, no hairline and no field surface: plain text at rest; the 5% layer behind the text block (radius 7, padded with a matching negative margin) on hover and while editing, where it and the caret are the focus indicator. The text never moves between rest, hover and editing. The jade ring is for controls only. Notes work the same way at prose size.
 6. **Validation is inline, never a tooltip and never red.**
    - A message sits under its field: a 14 icon, 12 / 500 ink, `aria-invalid` on the field and a polite live region.
    - A theme name that already exists says so with a chip to the other theme, without blocking.
@@ -456,6 +456,61 @@ Evidence (`app/web/src/ui/briefing-app.tsx`, `.css`): every item is a raised car
 
 **Open (choices on the jig):** new signals grouped A by theme (recommended) or B by the theory they bear on; a decided item A leaves with an Undo toast (recommended) or B settles to one line in place until you leave; a signal counts as seen A once Briefing has shown it (recommended) or B only when peeked, opened or marked seen.
 
+## 07 Moving between levels — PROPOSED (jig `07-rungs/`)
+
+How you move between 06's three rungs, preview → peek → full, and back; and how Columns' docked pane opens and closes. Built only from 04's tiers and origins, 05's 90 and 160ms and 11's 380ms pane spring. The jig runs the default view and Columns live, with slow motion (0.25×), a reduced-motion switch and a "show origins" overlay.
+
+1. **Every move starts from the thing you acted on and returns to it.** A peek grows from its trigger's tile (`transform-origin` on the tile's centre). Open carries the tile and title to the full view's title. Back carries them home.
+2. **Preview → peek.** A 500ms rest or a click (Space or → from the keyboard) opens it. It grows from 0.96 with a fade, 160ms on the spring. It leaves in 90ms ease-out, shrinking to 0.98 toward the same origin. Tier 4: `--sh-pop`, radius 10, z 40.
+   - **Position (choice 2):** beside a row or card, its tile level with the row's tile, falling back to below when there's no room; or below, its tile on the row's tile column, flipping above near the bottom. Chips always peek below, since their siblings sit beside them.
+3. **One peek, ever.**
+   - While a peek is open, a 150ms rest on another preview slides the same card to it (160ms spring) and fades its contents in (90ms).
+   - A preview inside a peek replaces it in place: the row's tile and name travel to the head (260ms spring).
+   - Opening any other transient surface closes it.
+4. **Hover intent and grace.**
+   - A hover peek stays while the pointer is on its trigger, inside it, or inside the triangle from the last point on the trigger to the peek's near edge. Previews crossed inside that triangle don't swap it.
+   - Leaving all three closes it after 300ms.
+   - No hover peek opens under a pointer that hasn't moved since the view changed.
+5. **Click commits; hover never takes focus.**
+   - A clicked peek stays until Esc, a click elsewhere, or a second click on its trigger. A click on a hover peek's trigger pins it.
+   - Keyboard and click peeks keep focus on the trigger. Tab enters the peek; Esc, ←, or Tab past either end closes it and returns focus to the trigger.
+   - A keyboard peek follows ↑ ↓ to the next preview, like Quick Look.
+6. **Peek → full: Open, Enter on a preview, or ⌘↵.**
+   - The rail's current item slides to the object's type (160ms spring). The list shows the object selected and scrolled to the middle. The main area shows its full view; focus moves to its title.
+   - **Transition (choice 1):** the tile and title travel from the peek (or the preview) to the full view's title, 380ms on the spring, the two wordings cross-fading on one path. The peek and old view fade in 90ms; the rest of the full view fades in over 160ms after them. Or: the old view fades out (90ms, 16px left) and the full view slides in 16px from the right (260ms spring).
+7. **Back: the Back button, Esc (when nothing transient is open) or ⌘[.**
+   - Back restores the type, selection, list scroll and main scroll, and focus on the preview you opened from. The tile and title travel back to it.
+   - **Landing (choice 3):** on the preview, or in the peek you opened from, open again.
+8. **Selecting in a list or the rail is instant.** ↑ ↓ select in the item list and the main area follows (like Mail). It is the most frequent move, so only the rail's current item slides.
+9. **The docked pane (Columns, Atlas, Timeline).**
+   - Selecting pushes the pane in from its edge: 380ms spring, contents fading in over 160ms. In Columns, Prototypes folds to a 40 rail.
+   - Another selection changes its contents in place with a 160ms fade.
+   - Esc or the X closes it the way it came, in 260ms ease-out. Focus returns to the card that opened it.
+   - Peeks in the pane open in the pane; Back steps back through what the pane showed.
+10. **Interrupt anything.** Every animation starts from the on-screen value. Peeks and the pane read their live opacity, transform or width. Shared elements in flight become the next move's source. A new move cancels the running one, and nothing queues. One hover timer, one peek, one flight per window.
+11. **Reduced motion keeps the map.** Nothing scales, slides or travels: peeks fade in place in 90ms; Open and Back cross-fade (90ms out, 160ms in); the pane appears and its contents fade in over 160ms. Anchors, destinations, focus and timings of intent (500, 150, 300) are unchanged.
+12. **Screen readers.**
+    - The trigger has `aria-expanded` and `aria-controls`; the peek is a non-modal `role="dialog"` named by its object.
+    - A keyboard peek is announced with how to enter, open and close it. Hover peeks are silent.
+    - Open focuses the full view's title (`tabindex="-1"`) and a polite status names what opened; Back returns focus to the preview.
+13. **Narrow screens (below 640).** A peek is a bottom sheet from the bottom edge (04 rule 10), opened by a tap. Open pushes the full view in from the right over the list; Back slides it out to the right.
+
+| Move | Time | Curve |
+| --- | --- | --- |
+| Hover intent; swap an open peek; grace | 500; 150; 300ms | – |
+| Peek in; out | 160; 90ms | Spring; ease-out |
+| Peek slides to the next trigger; chain in place | 160; 260ms | Spring |
+| Open and Back: tile and title travel | 380ms | Spring |
+| Old view out; new content in | 90; 160ms after 90 | Ease-out; linear |
+| Rail current item | 160ms | Spring |
+| Select in a list | 0 | – |
+| Pane in; out; contents change | 380; 260; 160ms | Spring; ease-out; linear |
+
+**Open (choices on the jig):**
+- How Open moves you to the full view: A shared tile and title (recommended), or B cross-fade and slide.
+- Where a peek sits: A beside the trigger (recommended), or B below it.
+- Where Back lands: A the preview (recommended), or B the peek you opened from.
+
 ## Still to come
 
 07 rungs.
@@ -496,7 +551,7 @@ Evidence: each view draws its floating controls differently. The view switcher i
    - An item is an 8 dot plus a list name (13/400 ink).
 9. **Timeline with something open.**
    - Related items drop to one line, unrelated items to their dot.
-   - Follows lines are 1.5 ink 2 elbows with a head. They run along the target lane's edge, never through a label. Rivals are 1 ink 3 with no head.
+   - Connecting lines keep today's geometry (`timeline2-fieldx.tsx`): each related theory gets its own line in its row; a line leaves the cause's dot straight down or up (or jogs once to a gutter lane when a dot is in the way), turns once with a 6 radius and arrives at the consequence from the left with an open chevron; ink 1.5, ink 3 1.25 further along the chain. Rivals are not drawn as lines.
    - Chain appears only while something is open.
    - Filter by theme is the funnel, opening a tethered menu; once set, it becomes a labelled button.
 10. **Vocabulary:** Fold a column uses `sidebar-simple`.

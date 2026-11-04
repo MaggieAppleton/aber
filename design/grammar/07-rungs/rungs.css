@@ -1,0 +1,84 @@
+/* Grammar 07: moving between levels. The live window (type-first default view and Columns at 1440 × 820),
+   the effects layer for shared elements and origins, and the page chrome. Values from _shared tokens and 06's objects. */
+
+/* ── The window ── */
+.r7-host { min-width: 0; }
+.r7-win { position: relative; width: 1440px; height: 820px; border-radius: var(--r-md); box-shadow: var(--window-shadow);
+  font: 400 var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; text-align: left; }
+.r7-win > .r7-frame { position: absolute; inset: 0; }
+.r7-win .nv { width: 1440px; height: 820px; }
+.r7-win > .nv-tip { z-index: var(--z-7); }
+.r7-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* Slow motion (0.25×): the motion tokens themselves are stretched, so every transition keeps its proportions */
+body[data-slow="4"] .r7-win { --t-hover: 360ms; --t-float: 640ms; --t-press: 360ms; }
+
+/* ── Peek: tier 4, tethered. Motion comes from rungs-motion.js (interruptible WAAPI), not the 06 keyframes ── */
+.r7-win .ob-peek.r7-peek { position: absolute; z-index: var(--z-4); animation: none; will-change: transform, opacity; }
+.r7-win .ob-peek.r7-peek:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.r7-win .ob-title:focus { outline: none; }
+/* The preview whose peek is open keeps the hover layer (06), whatever the pointer does */
+.r7-win .ob-chip[aria-expanded="true"] { background: var(--surface-hover); color: var(--ink); }
+
+/* ── Effects layer: shared elements in flight, snapshots of what is leaving, the origins overlay ── */
+.r7-fx { position: absolute; inset: 0; z-index: var(--z-4); pointer-events: none; overflow: hidden; border-radius: inherit; }
+.r7-fx > * { position: absolute; margin: 0; }
+.r7-ghost { box-sizing: border-box; pointer-events: none; will-change: transform, opacity; }
+.r7-ghost.text { padding: 0; background: none; }
+.r7-snap { overflow: hidden; pointer-events: none; }
+.r7-snap.ground { background: var(--surface); }
+.r7-snap > * { box-sizing: border-box; }
+.r7-snap .ob-peek { box-shadow: var(--sh-pop); }
+/* The rail's current item, sliding to the new type */
+.r7-win .nv-types { position: relative; }
+.r7-win .nv-types > .nv-type { position: relative; z-index: 1; }
+.r7-pill { position: absolute; z-index: 0; border-radius: var(--r-icon); background: var(--surface); box-shadow: var(--elev-2); pointer-events: none; }
+.r7-win .nv-type.r7-pilled { background: transparent; box-shadow: none; }
+
+/* Show origins: where each surface came from, and the hover grace area. A design overlay, not part of the app. */
+.r7-orig { inset: 0; width: 100%; height: 100%; overflow: visible; }
+.r7-orig .box { fill: none; stroke: oklch(0.5 0.17 300); stroke-width: 1.25; stroke-dasharray: 4 3; }
+.r7-orig .ring { fill: none; stroke: oklch(0.5 0.17 300); stroke-width: 1.5; }
+.r7-orig .dot, .r7-orig .head { fill: oklch(0.5 0.17 300); }
+.r7-orig .path { stroke: oklch(0.5 0.17 300); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.r7-orig .tri { fill: oklch(0.6 0.17 300 / 0.12); stroke: oklch(0.5 0.17 300 / 0.6); stroke-width: 1; }
+.r7-orig .lab { font: 500 11px/1 var(--font); fill: oklch(0.42 0.17 300); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; }
+
+/* ── Columns: strips, Themes, Theories, Prototypes, then the docked pane, which pushes in from the right edge ── */
+.r7-win .r7-cols { display: flex; }
+.r7-cols > .ob-strip { flex: 0 0 36px; }
+.r7-cols > .ob-colnav { flex: 0 0 var(--colnav-w, 230px); }
+.r7-cols > .ob-colist { flex: 0 0 var(--list-w); }
+.r7-protos { position: relative; flex: 1 1 220px; min-width: 40px; overflow: hidden; box-shadow: inset -0.5px 0 0 var(--hairline); }
+.r7-protos-in { width: 220px; height: 100%; padding: var(--inset-list-block) var(--inset-list-inline); transition: opacity var(--t-float) var(--ease-out); }
+.r7-fold { position: absolute; inset: 0 auto 0 0; width: 40px; display: flex; justify-content: center; padding-top: calc(var(--inset-list-block) + (var(--control) - var(--tile)) / 2); opacity: 0; transition: opacity var(--t-float) var(--ease-out); pointer-events: none; }
+.r7-cols[data-pane-open] .r7-protos-in { opacity: 0; visibility: hidden; transition: opacity var(--t-hover) var(--ease-out), visibility 0s linear var(--t-hover); }
+.r7-cols[data-pane-open] .r7-fold { opacity: 1; }
+.r7-pslot { position: relative; flex: none; overflow: hidden; }
+.r7-pslot > .ob-pane { position: absolute; top: 0; bottom: 0; left: 0; width: 802px; box-shadow: inset 0.5px 0 0 var(--hairline-strong); }
+
+/* ── Page ── */
+.jig-section.wide { max-width: 1504px; }
+.r7-bar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; padding: 10px 0; background: #e9e6e1; }
+.r7-tog { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #cfc9bf; background: #fff; color: #2b2925; font: 600 13px/1 ui-sans-serif, system-ui, -apple-system, sans-serif; cursor: pointer; }
+.r7-tog:hover { border-color: #2b2925; }
+.r7-tog:focus-visible { outline: 2px solid #2b2925; outline-offset: 2px; }
+.r7-tog[aria-pressed="true"] { background: #2b2925; border-color: #2b2925; color: #fff; }
+.r7-bar .hint { color: #5d5850; font-size: 13px; }
+.r7-try { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 4px 24px; margin: 0 0 16px; padding: 0; list-style: none; font-size: 13px; color: #3d3a34; }
+.r7-try b { color: #2b2925; }
+kbd.k { font: 500 12px/1 ui-monospace, "Geist Mono", monospace; padding: 2px 5px; border-radius: 4px; background: #fff; box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.15); color: #2b2925; }
+.r7-sub { margin: 28px 0 8px; font-size: 14px; font-weight: 650; }
+.r7-play { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #cfc9bf; background: transparent; color: #2b2925; font: 600 13px/1 ui-sans-serif, system-ui, sans-serif; cursor: pointer; }
+.r7-play:hover { border-color: #2b2925; background: #fff; }
+.r7-play i.ph { font-size: 14px; }
+.r7-spec h3 { margin: 24px 0 8px; font-size: 14px; font-weight: 650; }
+.r7-spec .audit td:first-child { white-space: normal; }
+.r7-spec .audit td.n { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.r7-spec .table-wrap { margin-bottom: 8px; }
+.r7-spec .audit { min-width: 640px; }
+.decide-box .inherit { margin: 0; padding-left: 20px; display: grid; gap: 4px; color: #3d3a34; font-size: 13px; }
+.decide-box .decided-h { margin-top: 14px; }
+@media (max-width: 640px) {
+  .jig-section { padding: 24px 16px; } .decide { padding: 16px 16px 0; } .jig-head { padding: 32px 16px 8px; }
+  .r7-bar .hint { flex-basis: 100%; }
+}

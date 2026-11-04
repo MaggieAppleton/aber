@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grammar 07: Moving between levels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="../../explorations/_shell/jig.css">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/stage.css">
+<link rel="stylesheet" href="../_shared/spacing.css">
+<link rel="stylesheet" href="../_shared/type.css">
+<link rel="stylesheet" href="../_shared/icons.css">
+<link rel="stylesheet" href="../_shared/surfaces.css">
+<link rel="stylesheet" href="../nav/nav.css">
+<link rel="stylesheet" href="../_shared/controls.css">
+<link rel="stylesheet" href="../06-objects/objects.css">
+<link rel="stylesheet" href="rungs.css">
+<script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../06-objects/objects.js" defer></script>
+<script src="rungs-motion.js" defer></script>
+<script src="rungs-app.js" defer></script>
+<script src="page.js" defer></script>
+<script type="module" src="../_shared/agentation.js" data-app-name="Grammar 07: Moving between levels"></script>
+</head>
+<body class="jig" data-jig="grammar-07-rungs">
+
+<header class="jig-head">
+  <h1>Grammar 07: Moving between levels</h1>
+  <p><b>Proposed.</b> How you move from a preview to its peek, from the peek to the full view, and back, in the type-first default view and in Columns' docked pane. Built only from 00–06 and Navigation: the components are 06's, the tiers and origins are 04's, the timings are 05's 90 and 160ms and 11's 380ms pane spring.</p>
+</header>
+
+<div class="decide">
+  <div class="decide-box">
+    <h2>Decide (Maggie): three open choices</h2>
+    <ol>
+      <li data-pick="open"><a href="#open">How Open moves you to the full view</a> <span class="pick"></span><span class="why">Recommend a. The tile and title you were looking at become the full view's title, so you never lose the thing you chose. b is calmer but says only "you went deeper".</span></li>
+      <li data-pick="pos"><a href="#pos">Where a peek sits</a> <span class="pick"></span><span class="why">Recommend a. Beside the row leaves the rows under it visible, so you can keep pointing down the list while the peek follows. It falls back to below when there's no room.</span></li>
+      <li data-pick="back"><a href="#back">Where Back lands</a> <span class="pick"></span><span class="why">Recommend a. A peek lasts a moment (04: persistence "moment"), so Back returns to the preview with focus on it. b restores the peek exactly as you left it.</span></li>
+    </ol>
+    <h2 class="decided-h">Already decided, applied here</h2>
+    <ul class="inherit">
+      <li>A peek opens on a 500ms hover or a click, grows from its preview and shows the essentials and relations; Open moves the rail and list to the object; Back returns (Navigation 3, 06).</li>
+      <li>Peeks are tier 4: tethered, crisp shadow (<code>--sh-pop</code>), radius 10, z 40. One transient layer at a time; a link inside a peek replaces it (04 rule 7).</li>
+      <li>Tethered surfaces take 160ms on the spring; hover and press 90ms; the docked pane 380ms on the spring with contents fading in over 160ms (05 rule 4, 11 rule 3).</li>
+      <li>Reduced motion swaps movement for a cross-fade. X only closes transient surfaces.</li>
+    </ul>
+  </div>
+</div>
+
+<section class="jig-section" id="rules">
+  <h2>The rules</h2>
+  <ol class="rules">
+    <li><b>Every move starts from the thing you acted on and returns to it.</b> A peek grows from its trigger's tile. Open carries that tile and title to the full view's title. Back carries them home again.</li>
+    <li><b>One peek, ever.</b> Pointing at another preview while a peek is open slides the same card to it after 150ms. A preview inside the peek replaces it in place. Nothing stacks.</li>
+    <li><b>Hover is forgiving.</b> Moving from the trigger toward its peek never closes it or swaps it, even across other rows (the grace area). Leaving both closes it after 300ms.</li>
+    <li><b>Click commits.</b> A clicked peek stays until Esc, a click elsewhere or a second click on its trigger. Hover never takes focus; Esc always returns focus to the trigger.</li>
+    <li><b>Duration follows distance.</b> 90ms for what leaves, 160ms for a peek, 380ms for anything that crosses the window (the title travelling, the pane docking). Selecting in a list doesn't animate at all: it's the most frequent move.</li>
+    <li><b>Interrupt anything.</b> Every animation starts from where things are on screen now; a new move cancels the running one. Rapid pointing or clicking never queues.</li>
+    <li><b>Reduced motion keeps the map.</b> Nothing scales or travels; things fade where they land. Anchors, destinations and focus are unchanged.</li>
+  </ol>
+</section>
+
+<section class="jig-section wide" id="demo">
+  <h2>Try it</h2>
+  <p>The default view opens on Briefing. Columns is one click away in the view switcher at the rail foot, or below. Both follow the three picks.</p>
+  <div class="r7-bar" role="toolbar" aria-label="Demo controls">
+    <button type="button" class="r7-tog" data-tog="slow" aria-pressed="false"><i class="ph ph-timer" aria-hidden="true"></i>Slow motion 0.25×</button>
+    <button type="button" class="r7-tog" data-tog="origins" aria-pressed="false"><i class="ph ph-crosshair" aria-hidden="true"></i>Show origins</button>
+    <button type="button" class="r7-tog" data-tog="reduce" aria-pressed="false"><i class="ph ph-person-simple" aria-hidden="true"></i>Reduce motion</button>
+    <span class="hint">Show origins marks each surface's origin, where moves start and land, and the hover grace area.</span>
+  </div>
+  <ul class="r7-try">
+    <li><b>Peek:</b> rest on a row in the main area for half a second, or click it. Then point down the rows.</li>
+    <li><b>Grace:</b> from a row, move diagonally into its peek across the rows below. It stays put.</li>
+    <li><b>Chain:</b> click a row inside a peek. The same card shows the next object.</li>
+    <li><b>Open:</b> the Open button, <kbd class="k">⌘↵</kbd>, or <kbd class="k">Enter</kbd> on a focused row.</li>
+    <li><b>Back:</b> the Back button, <kbd class="k">Esc</kbd> or <kbd class="k">⌘[</kbd>. The list scroll and selection come back.</li>
+    <li><b>Keys:</b> Tab to a row, <kbd class="k">↑</kbd> <kbd class="k">↓</kbd> to move, <kbd class="k">Space</kbd> or <kbd class="k">→</kbd> to peek (it follows the arrows), <kbd class="k">Tab</kbd> into it, <kbd class="k">Esc</kbd> to close.</li>
+  </ul>
+  <div class="r7-host" id="hero" data-follows-picks data-r7='{"view":"default","type":"home"}'></div>
+  <h3 class="r7-sub">Columns: the docked pane</h3>
+  <p class="lede">Click a theory card: the pane pushes in from the right edge and Prototypes folds to a rail. Another card changes the pane's contents in place. Esc or the X closes it the way it came. Rows in the pane peek and open like the default view's.</p>
+  <div class="r7-host" id="columns" data-follows-picks data-r7='{"view":"columns"}'></div>
+</section>
+
+<section class="jig-section wide" id="open" data-decision="open" data-question="1. How does Open move you to the full view?" data-default="a Shared tile and title">
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="a Shared tile and title"><div class="jig-label"><b>a</b> The peek's tile and title travel to the full view's title</div>
+      <p class="jig-note">380ms on the spring. The peek's surface fades in 90ms; the rest of the full view fades in after it. Back runs the same path in reverse.</p>
+      <button type="button" class="r7-play" data-play="open"><i class="ph ph-play" aria-hidden="true"></i>Play: peek, Open, Back</button>
+      <div class="r7-host" data-option-stage data-r7='{"view":"default","type":"home","opt":{"open":"morph"}}'></div></div>
+    <div class="jig-option" data-option="b Cross-fade and slide"><div class="jig-label"><b>b</b> The old view fades out; the full view slides in 16px from the right</div>
+      <p class="jig-note">90ms out, 260ms in on the spring. Direction says deeper (from the right) or back (from the left); nothing in particular is followed.</p>
+      <button type="button" class="r7-play" data-play="open"><i class="ph ph-play" aria-hidden="true"></i>Play: peek, Open, Back</button>
+      <div class="r7-host" data-option-stage data-r7='{"view":"default","type":"home","opt":{"open":"fade"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="pos" data-decision="pos" data-question="2. Where does a peek sit?" data-default="a Beside the trigger">
+  <p class="lede">Both grow from the trigger's tile and slide along when you point at the next row. Each window opens on Cost of intelligence's full view.</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="a Beside the trigger"><div class="jig-label"><b>a</b> Beside the row, its tile level with the row's tile</div>
+      <p class="jig-note">The rows below stay visible, so pointing down the list walks the peek along it. Falls back to below where there's no room (Columns' pane, narrow windows). Chips always peek below: their siblings sit beside them.</p>
+      <button type="button" class="r7-play" data-play="pos"><i class="ph ph-play" aria-hidden="true"></i>Play: peek, then the next three rows</button>
+      <div class="r7-host" data-option-stage data-r7='{"view":"default","type":"theme","opt":{"pos":"beside"}}'></div></div>
+    <div class="jig-option" data-option="b Below the trigger"><div class="jig-label"><b>b</b> Below the row, its tile on the row's tile column</div>
+      <p class="jig-note">Reads like a menu and fits any width, but covers the rows under the trigger; flips above near the bottom.</p>
+      <button type="button" class="r7-play" data-play="pos"><i class="ph ph-play" aria-hidden="true"></i>Play: peek, then the next three rows</button>
+      <div class="r7-host" data-option-stage data-r7='{"view":"default","type":"theme","opt":{"pos":"below"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="back" data-decision="back" data-question="3. Where does Back land?" data-default="a The preview">
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="a The preview"><div class="jig-label"><b>a</b> On the preview you opened from, with focus on it</div>
+      <p class="jig-note">The title travels back into the row. Scroll and selection are restored; the peek, a moment's surface, is not.</p>
+      <button type="button" class="r7-play" data-play="open"><i class="ph ph-play" aria-hidden="true"></i>Play: peek, Open, Back</button>
+      <div class="r7-host" data-option-stage data-r7='{"view":"default","type":"home","opt":{"back":"preview"}}'></div></div>
+    <div class="jig-option" data-option="b The peek"><div class="jig-label"><b>b</b> In the peek you opened from, open again</div>
+      <p class="jig-note">The title travels back into the peek's head. Exactly where you were; Esc once more closes it.</p>
+      <button type="button" class="r7-play" data-play="open"><i class="ph ph-play" aria-hidden="true"></i>Play: peek, Open, Back</button>
+      <div class="r7-host" data-option-stage data-r7='{"view":"default","type":"home","opt":{"back":"peek"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section r7-spec" id="spec">
+  <h2>07 Moving between levels: rules for RULES.md</h2>
+  <p>The same text is in <code>RULES.md</code> as "07 Moving between levels — PROPOSED".</p>
+  <h3>Timings</h3>
+  <div class="table-wrap"><table class="audit">
+    <thead><tr><th>Move</th><th>Time</th><th>Curve</th><th>Under reduced motion</th></tr></thead>
+    <tbody>
+      <tr><td>Hover to peek (intent)</td><td class="n">500ms rest</td><td>–</td><td>Same</td></tr>
+      <tr><td>Hover to the next preview while a peek is open</td><td class="n">150ms rest</td><td>–</td><td>Same</td></tr>
+      <tr><td>Grace before a hover peek closes</td><td class="n">300ms</td><td>–</td><td>Same</td></tr>
+      <tr><td>Peek grows from the trigger's tile (scale 0.96 to 1, fade)</td><td class="n">160ms</td><td>Spring</td><td>Fade 90ms in place</td></tr>
+      <tr><td>Peek leaves toward its origin (to 0.98, fade)</td><td class="n">90ms</td><td>Ease-out</td><td>Fade 90ms</td></tr>
+      <tr><td>Peek slides to the next trigger; contents fade in</td><td class="n">160ms; 90ms</td><td>Spring; linear</td><td>Jumps; contents fade 90ms</td></tr>
+      <tr><td>Chain in place: the row's tile and name travel to the head</td><td class="n">260ms</td><td>Spring</td><td>Contents fade 90ms</td></tr>
+      <tr><td>Open: tile and title travel to the full view's title</td><td class="n">380ms</td><td>Spring</td><td>Old view fades 90ms, new fades in 160ms</td></tr>
+      <tr><td>Open: the peek and old view fade; the rest of the full view fades in</td><td class="n">90ms; 160ms after 90ms</td><td>Ease-out; linear</td><td>Same</td></tr>
+      <tr><td>The rail's current item slides to the new type</td><td class="n">160ms</td><td>Spring</td><td>Jumps</td></tr>
+      <tr><td>Back: the same path in reverse</td><td class="n">380ms</td><td>Spring</td><td>Cross-fade</td></tr>
+      <tr><td>Select in a list or the rail; the main area changes</td><td class="n">0</td><td>–</td><td>0</td></tr>
+      <tr><td>Docked pane pushes in from its edge; contents fade in</td><td class="n">380ms; 160ms</td><td>Spring; ease-out</td><td>Contents fade 160ms in place</td></tr>
+      <tr><td>Docked pane closes, the way it came</td><td class="n">260ms</td><td>Ease-out</td><td>Disappears</td></tr>
+      <tr><td>Pane contents change (another card)</td><td class="n">160ms</td><td>Linear fade</td><td>Same</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Keyboard</h3>
+  <div class="table-wrap"><table class="audit">
+    <thead><tr><th>Where focus is</th><th>Key</th><th>Does</th></tr></thead>
+    <tbody>
+      <tr><td>Rail</td><td class="n">↑ ↓; Enter or Space</td><td>Move between types; choose one</td></tr>
+      <tr><td>The item list</td><td class="n">↑ ↓ Home End</td><td>Select; the main area follows at once</td></tr>
+      <tr><td>A preview in the main area or pane</td><td class="n">↑ ↓</td><td>Next or previous preview; an open keyboard peek follows it</td></tr>
+      <tr><td></td><td class="n">Space or →</td><td>Peek (Space again closes)</td></tr>
+      <tr><td></td><td class="n">Enter</td><td>Open</td></tr>
+      <tr><td></td><td class="n">Tab</td><td>Into the open peek</td></tr>
+      <tr><td>Inside a peek</td><td class="n">↑ ↓; Space or →; Enter</td><td>Move between its rows; peek that row in place; open it</td></tr>
+      <tr><td></td><td class="n">← or Esc; Tab past either end</td><td>Close; focus returns to the trigger</td></tr>
+      <tr><td>Anywhere with a peek open</td><td class="n">⌘↵</td><td>Open the peeked object</td></tr>
+      <tr><td>A full view</td><td class="n">Esc or ⌘[</td><td>Back</td></tr>
+      <tr><td>Columns</td><td class="n">↑ ↓; → or Enter; Esc</td><td>Move between cards (the pane follows once open); dock the pane; close it</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Screen readers</h3>
+  <ul class="rules">
+    <li>The trigger is a button with <code>aria-expanded</code> and <code>aria-controls</code>; the peek is a non-modal <code>role="dialog"</code> named by its object.</li>
+    <li>Open moves focus to the full view's title (a heading, <code>tabindex="-1"</code>) and a polite status says what opened. Back returns focus to the preview.</li>
+    <li>A keyboard peek is announced with how to enter, open and close it. Hover peeks are not announced and never take focus.</li>
+  </ul>
+  <h3>Narrow screens (below 640)</h3>
+  <ul class="rules">
+    <li>A peek becomes a bottom sheet rising from the bottom edge (04 rule 10); its origin is the edge, and it leaves the same way.</li>
+    <li>Open pushes the full view in from the right over the list; Back slides it out to the right. No hover; a tap peeks.</li>
+  </ul>
+</section>
+
+</body>
+</html>
