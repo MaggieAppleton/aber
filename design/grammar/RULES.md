@@ -87,6 +87,10 @@ Evidence: today's CSS uses 36 distinct paddings, 18 gaps, 18 margins and 19 row 
 | `--inset-pane` (pane) | 20 / 24 | 16 / 20 | 24 / 32 |
 
    The rail and main column share a top line; the pane is its own surface and starts lower.
+   - Canvases (Atlas, Timeline) sit at list level: `--inset-canvas` is 12 / 16 / 20 (compact / regular / comfortable).
+   - Floating controls (zoom, filter, view switcher) sit `--inset-float` from the window edge in every view: 8 / 12 / 16.
+   - Columns view: the Themes column is navigation (`--inset-nav`); the Theories column is a list (`--inset-list`).
+   - Timeline cells pad by `--inset-row` and stack items with `--gap-item`.
 6. **Two click heights.** `--row` is 32, for list and rail rows. `--control` is 28, for buttons and inputs; `--control-sm` is 24, inside dense rows. Every target has a 40px hit area.
 7. **Text inputs** centre their text in `--control`. Their horizontal padding is the vertical padding plus 4.
 8. **Separate with space first.**

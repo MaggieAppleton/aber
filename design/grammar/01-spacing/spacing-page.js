@@ -3,7 +3,10 @@
   addEventListener("load", () => { const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d); paintPicks(); });
 
   const viewer = document.getElementById("viewer");
-  const state = { density: "regular", list: "cards" };
+  // The stage's own view switcher also updates the View segmented control
+  viewer.addEventListener("click", e => { const vb = e.target.closest(".stg-switch button[data-view]"); if (!vb) return;
+    state.view = vb.dataset.view; document.querySelectorAll('[data-seg="view"] button').forEach(x => x.setAttribute("aria-pressed", String(x.value === state.view))); });
+  const state = { density: "regular", list: "cards", view: "sections" };
   for (const seg of document.querySelectorAll("[data-seg]")) {
     seg.addEventListener("click", e => {
       const b = e.target.closest("button"); if (!b) return;
@@ -13,6 +16,9 @@
       state[key] = b.value;
       viewer.dataset.stage = JSON.stringify(state);
       window.AberStage.render(viewer);
+      if (key !== "view") for (const h of document.querySelectorAll(".views-grid .stg-host")) {
+        const o = JSON.parse(h.dataset.stage); o[key] = b.value; h.dataset.stage = JSON.stringify(o); window.AberStage.render(h);
+      }
     });
   }
 

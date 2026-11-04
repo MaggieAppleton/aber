@@ -18,17 +18,19 @@
   --inset-nav-block: 12px;  --inset-nav-inline: 8px;    /* rail */
   --inset-list-block: 12px; --inset-list-inline: 16px;  /* main column */
   --inset-pane-block: 20px; --inset-pane-inline: 24px;  /* pane */
+  --inset-canvas: 16px;     /* map and timeline content from the canvas edge (list level) */
+  --inset-float: 12px;      /* floating controls (zoom, filter, view switcher) from the window edge */
   /* Heights */
   --row: 32px; --control: 28px; --control-sm: 24px; --chip-h: 24px; --hit: 40px;
 }
 [data-density="compact"] {
   --gap-tight: 4px; --gap-icon: 4px; --gap-item: 6px; --gap-group: 12px; --gap-section: 24px;
-  --inset-chip: 6px; --inset-control: 8px; --inset-row: 6px; --inset-card: 10px; --inset-nav-block: 10px; --inset-nav-inline: 6px; --inset-list-block: 10px; --inset-list-inline: 12px; --inset-pane-block: 16px; --inset-pane-inline: 20px;
+  --inset-chip: 6px; --inset-control: 8px; --inset-row: 6px; --inset-card: 10px; --inset-nav-block: 10px; --inset-nav-inline: 6px; --inset-list-block: 10px; --inset-list-inline: 12px; --inset-pane-block: 16px; --inset-pane-inline: 20px; --inset-canvas: 12px; --inset-float: 8px;
   --row: 28px; --control: 26px; --control-sm: 22px; --chip-h: 22px;
 }
 [data-density="comfortable"] {
   --gap-tight: 6px; --gap-icon: 8px; --gap-item: 12px; --gap-group: 24px; --gap-section: 40px;
-  --inset-chip: 10px; --inset-control: 12px; --inset-row: 10px; --inset-card: 16px; --inset-nav-block: 16px; --inset-nav-inline: 10px; --inset-list-block: 16px; --inset-list-inline: 20px; --inset-pane-block: 24px; --inset-pane-inline: 32px;
+  --inset-chip: 10px; --inset-control: 12px; --inset-row: 10px; --inset-card: 16px; --inset-nav-block: 16px; --inset-nav-inline: 10px; --inset-list-block: 16px; --inset-list-inline: 20px; --inset-pane-block: 24px; --inset-pane-inline: 32px; --inset-canvas: 20px; --inset-float: 16px;
   --row: 36px; --control: 32px; --control-sm: 28px; --chip-h: 28px;
 }
 
@@ -53,3 +55,9 @@
 
 /* The pane's first row is control-high, so its header centres with the close and expand controls */
 :root .stg-pane > .stg-chips { min-height: var(--control); align-items: center; }
+
+/* The spacing page shows a wider window so all four views have room */
+body[data-jig="grammar-01-spacing"] .stg { --stg-w: 1240px; --pane-w: 520px; }
+/* Absolutely positioned parts keep their position under the overlay */
+[data-overlay] .stg .stg-switch[data-sp], [data-overlay] .stg .stg-zoom[data-sp], [data-overlay] .stg .stg-canvas[data-sp], [data-overlay] .stg .stg-tl[data-sp] { position: absolute; }
+[data-overlay] .stg .stg-canvas > *, [data-overlay] .stg .stg-switch > *, [data-overlay] .stg .stg-zoom > * { background-color: transparent; }

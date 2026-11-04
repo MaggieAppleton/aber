@@ -32,3 +32,6 @@
 .seg-group button:focus-visible { outline: 2px solid #29a383; outline-offset: 1px; }
 .stage-label { margin: 0 0 8px; color: #5d5850; font-size: 13px; }
 @media (max-width: 640px) { .audit { display: block; overflow-x: auto; } }
+
+.views-grid { display: grid; gap: 20px 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); }
+.view-name { margin: 0 0 6px; font-weight: 600; }

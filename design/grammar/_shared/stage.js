@@ -14,17 +14,17 @@
       <div class="stg-meta">${c ? conf(c) : ""}<span>+${up} −${down}</span>${proto ? `<span class="stg-inline">${g("prototype")}${proto}</span>` : ""}${pending ? `<span class="stg-pending" aria-label="${pending} pending suggestions">${pending}</span>` : ""}${neg ? `<span class="stg-dot neg" role="img" aria-label="Challenge"></span>` : ""}</div>
     </div>`;
 
-  const html = () => `
+  const switcher = view => `
+      <div class="stg-switch" role="group" aria-label="Views" data-sp="float offset">
+        ${[["sections", "rows", "Theme sections"], ["columns", "columns", "Columns"], ["atlas", "map-trifold", "Atlas"], ["timeline", "chart-scatter", "Timeline"]].map(([v, i, l]) =>
+          `<button type="button" data-view="${v}" aria-pressed="${v === view}" aria-label="${l}"><i class="ph ph-${i}"></i></button>`).join("")}
+      </div>`;
+
+  const sections = () => `
     <aside class="stg-rail" data-sp="nav inset, group gap" data-gap>
       <div class="stg-brand"><span>Aber</span>${iconBtn("magnifying-glass", "Find")}</div>
       <nav class="stg-index">${THEMES.map(([n, c, a], i) => `<a href="#"${a ? " data-active" : ""}${i === 1 ? ' data-sp="row inset, row height"' : ""}><span>${n}</span><span>${c ?? ""}</span></a>`).join("")}</nav>
       <a href="#" class="stg-protos">${g("prototype")}<span>Prototypes</span><span>4</span></a>
-      <div class="stg-switch" role="group" aria-label="Views">
-        <button type="button" aria-pressed="true" aria-label="Theme sections"><i class="ph ph-rows"></i></button>
-        <button type="button" aria-pressed="false" aria-label="Columns"><i class="ph ph-columns"></i></button>
-        <button type="button" aria-pressed="false" aria-label="Atlas"><i class="ph ph-map-trifold"></i></button>
-        <button type="button" aria-pressed="false" aria-label="Timeline"><i class="ph ph-chart-scatter"></i></button>
-      </div>
     </aside>
     <main class="stg-main" data-sp="list inset, section gap" data-gap>
       <section>
@@ -39,7 +39,43 @@
         <div class="stg-sec-head">${g("theme")}<span>Agent memory</span><span class="n">31 signals</span></div>
         <div class="stg-cards">${card("Agents keep context across months, not sessions", { c: 4, up: 8, down: 1, proto: 1, neg: true })}</div>
       </section>
-    </main>
+    </main>`;
+
+  const columns = () => `
+    <div class="stg-strip">${g("dump")}</div><div class="stg-strip">${g("signal")}</div>
+    <section class="stg-col stg-col-nav" data-sp="nav inset, row height">
+      <div class="stg-col-head">${g("theme")}<span>Themes</span></div>
+      <nav class="stg-index">${THEMES.map(([n, , a], i) => `<a href="#"${a ? " data-active" : ""}><span>${n}</span>${i < 5 ? '<span class="stg-dot new" role="img" aria-label="New"></span>' : '<span class="stg-ring" aria-label="Open"></span>'}</a>`).join("")}</nav>
+    </section>
+    <section class="stg-col" data-sp="list inset, item gap" data-gap>
+      <div class="stg-col-head">${g("theory")}<span>Theories</span></div>
+      <div class="stg-cards">
+        ${card("Tokens become nearly free for routine work", { c: 3, up: 5, down: 2, pending: 2, open: true })}
+        ${card("Frontier intelligence stays scarce and expensive", { c: 2, up: 3, down: 4, pending: 1 })}
+        ${card("Agents keep context across months, not sessions", { c: 4, up: 8, down: 1, neg: true })}
+        ${card("Local models absorb most everyday agent work", { up: 3, down: 0, draft: true })}
+      </div>
+    </section>`;
+
+  const AREAS = [["Cost of intelligence", 5, 40, 42, 22, true], ["Agent memory", 2, 72, 30, 20], ["Personal software", 2, 24, 18, 16], ["AI funding cycle", 3, 36, 78, 16], ["Code review after agents", 2, 74, 74, 18], ["Novel agent interfaces", 1, 16, 58, 13]];
+  const atlas = () => `
+    <div class="stg-zoom" data-sp="float offset">${iconBtn("plus", "Zoom in")}${iconBtn("minus", "Zoom out")}${iconBtn("corners-in", "Fit")}</div>
+    <div class="stg-canvas" data-sp="canvas inset">
+      ${AREAS.map(([n, c, x, y, r, sel]) => `<div class="stg-area${sel ? " is-sel" : ""}" style="left:${x}%;top:${y}%;width:${r * 2}%;"><span class="stg-area-label" ${sel ? 'data-sp="label inset"' : ""}>${g("theme")}${n}<span class="n">${c}</span></span><i class="stg-pt" style="left:40%;top:55%"></i>${c > 2 ? '<i class="stg-pt" style="left:62%;top:38%"></i>' : ""}</div>`).join("")}
+    </div>`;
+
+  const YEARS = ["2027", "2028", "2029"];
+  const LANES = [[4, [["Agents keep context across months, not sessions"], [], []]], [3, [[], ["Tokens become nearly free for routine work", true], ["Agents run continuously in the background by default"]]], [2, [["Labs face a funding correction before agents pay their way"], [], ["Frontier intelligence stays scarce and expensive"]]], [0, [[], ["Local models absorb most everyday agent work", false, true], []]]];
+  const timeline = () => `
+    <div class="stg-zoom" data-sp="float offset">${iconBtn("binoculars", "Filter by theme")}</div>
+    <div class="stg-tl" data-sp="canvas inset">
+      <div class="stg-tl-gutter"></div>${YEARS.map(y => `<div class="stg-tl-year">${y}</div>`).join("")}
+      ${LANES.map(([c, cells], li) => `<div class="stg-tl-gutter">${c ? conf(c) : '<span class="stg-ring" aria-label="Draft"></span>'}</div>${cells.map(([t, sel, draft], ci) => `<div class="stg-tl-cell"${li === 1 && ci === 1 ? ' data-sp="row inset, item gap" data-gap' : ""}>${t ? `<a href="#" class="stg-tl-item${sel ? " is-sel" : ""}${draft ? " is-draft" : ""}">${draft ? '<span class="stg-ring"></span>' : '<i class="stg-pt"></i>'}<span>${t}</span></a>` : ""}</div>`).join("")}`).join("")}
+    </div>`;
+
+  const VIEWS = { sections, columns, atlas, timeline };
+  const html = (view = "sections") => `
+    <div class="stg-view" data-view="${view}">${VIEWS[view]()}${switcher(view)}</div>
     <aside class="stg-pane" aria-label="Open object" data-sp="pane inset, group gap" data-gap>
       <div class="stg-pane-close">${iconBtn("arrows-out-simple", "Full width")}${iconBtn("x", "Close")}</div>
       <div class="stg-chips"><a href="#" class="stg-chip" data-sp="chip inset">${g("theme")}Cost of intelligence</a></div>
@@ -76,11 +112,13 @@
   const render = host => {
     const o = JSON.parse(host.dataset.stage || "{}");
     const attrs = [o.system && `data-system="${o.system}"`, o.primary && `data-primary="${o.primary}"`, o.mark && `data-mark="${o.mark}"`, o.density && `data-density="${o.density}"`, o.list && `data-list="${o.list}"`].filter(Boolean).join(" ");
-    host.innerHTML = `<div class="stg" ${attrs}>${html()}</div>`;
+    host.innerHTML = `<div class="stg" ${attrs}>${html(o.view)}</div>`;
     fit(host); ro.observe(host);
   };
   document.addEventListener("click", e => {
     if (e.target.closest(".stg a")) e.preventDefault();
+    const vb = e.target.closest(".stg-switch button[data-view]");
+    if (vb) { const host = vb.closest(".stg-host"); const o = JSON.parse(host.dataset.stage || "{}"); o.view = vb.dataset.view; host.dataset.stage = JSON.stringify(o); render(host); return; }
     const c = e.target.closest(".stg-card"); if (!c) return;
     c.parentElement.closest(".stg-main").querySelectorAll(".stg-card").forEach(x => x.toggleAttribute("data-open", x === c));
   });
