@@ -4,20 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DI-003: Themes and prototypes in the sidebar</title>
-<link rel="stylesheet" href="../../../app/web/src/design-tokens.css">
-<link rel="stylesheet" href="../../../app/web/src/app/base.css">
-<link rel="stylesheet" href="../../../app/web/src/ui/homes.css">
-<link rel="stylesheet" href="../../../app/web/src/ui/app-shell.css">
-<link rel="stylesheet" href="../../../app/web/src/ui/panes.css">
-<link rel="stylesheet" href="../../../app/web/src/ui/surface-patterns.css">
-<link rel="stylesheet" href="../../../app/web/src/app/production.css">
-<link rel="stylesheet" href="../../../app/web/src/app/hit-areas.css">
-<link rel="stylesheet" href="../../../app/web/src/ui/current-sidebar.css">
-<link rel="stylesheet" href="../../../app/web/src/ui/confidence-spark.css">
-<link rel="stylesheet" href="../../../app/web/src/ui/tooltip.css">
-<link rel="stylesheet" href="../../../app/web/src/ui/pill-study.css">
-<link rel="stylesheet" href="../_shell/jig.css">
-<script src="../_shell/jig.js" defer></script>
+<link rel="stylesheet" href="../../../../app/web/src/design-tokens.css">
+<link rel="stylesheet" href="../../../../app/web/src/app/base.css">
+<link rel="stylesheet" href="../../../../app/web/src/ui/homes.css">
+<link rel="stylesheet" href="../../../../app/web/src/ui/app-shell.css">
+<link rel="stylesheet" href="../../../../app/web/src/ui/panes.css">
+<link rel="stylesheet" href="../../../../app/web/src/ui/surface-patterns.css">
+<link rel="stylesheet" href="../../../../app/web/src/app/production.css">
+<link rel="stylesheet" href="../../../../app/web/src/app/hit-areas.css">
+<link rel="stylesheet" href="../../../../app/web/src/ui/current-sidebar.css">
+<link rel="stylesheet" href="../../../../app/web/src/ui/confidence-spark.css">
+<link rel="stylesheet" href="../../../../app/web/src/ui/tooltip.css">
+<link rel="stylesheet" href="../../../../app/web/src/ui/pill-study.css">
+<link rel="stylesheet" href="../../_shell/jig.css">
+<script src="../../_shell/jig.js" defer></script>
 <script src="icons.js"></script>
 <style>
 /* Proposed variants use the app's primary green for "building" (Maggie, DI-007); Current keeps the app's blue. */
@@ -682,7 +682,7 @@
   }));
 
   /* ── Boot: read captured fixtures, then build stages ── */
-  const get = f => fetch(`../_fixtures/${f}`).then(r => { if (!r.ok) throw new Error(`${f}: ${r.status}`); return r.text(); });
+  const get = f => fetch(`../../_fixtures/${f}`).then(r => { if (!r.ok) throw new Error(`${f}: ${r.status}`); return r.text(); });
   Promise.all([get("current-view-prototype-open.html"), get("prototype-pane-doc.html"), get("theme-pane-doc.html")]).then(([view, proto, theme]) => {
     const doc = new DOMParser().parseFromString(`<div id="r">${view}</div>`, "text/html");
     const strip = el => { el.querySelectorAll("[id]").forEach(x => x.removeAttribute("id")); el.querySelectorAll("[contenteditable]").forEach(x => x.removeAttribute("contenteditable")); return el; };

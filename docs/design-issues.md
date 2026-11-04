@@ -11,6 +11,8 @@ The grammar and encoding source of truth is [`design-model.md`](design-model.md)
 
 Jigs live in `design/explorations/<id>/index.html`. They share a shell in `design/explorations/_shell/` and use DOM fixtures captured read-only from the fictional demo in `design/explorations/_fixtures/`. To view them, serve the repo root, for example with `python3 -m http.server 5190`, and open the jig's path.
 
+Jigs for DI-001 to DI-010 moved to design/explorations/_retired/ on 4 Nov 2026; a new grammar jig set replaces them.
+
 Status values are `observed`, `scoped`, `exploring`, `decided` and `done`.
 
 ---

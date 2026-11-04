@@ -1,19 +1,8 @@
 import { createRoot } from "react-dom/client";
 import { Agentation } from "agentation";
-import { DecisionsJig } from "./decisions";
-import { BoardsJig } from "./boards";
-import { ObjectsJig } from "./objects";
-import { HomesJig } from "./homes";
-import { DevelopColumnsJig } from "./develop-columns";
-import { DevelopAtlasJig } from "./develop-atlas";
-import { DevelopPillJig } from "./develop-pill";
 import { DevelopAppJig } from "./develop-app";
-import { DevelopTimelineJig } from "./develop-timeline";
-import { DevelopDetailsJig } from "./develop-details";
 import { DevelopIconsJig } from "./develop-icons";
-import { DevelopDecideJig } from "./develop-decide";
 import { ReferenceJig } from "./reference";
-import { DevelopThemeContentsJig } from "./develop-theme-contents";
 import { Deck } from "./deck/deck";
 import "./jig.css";
 import "./minis/wf.css";
@@ -22,18 +11,7 @@ const JIGS = {
   reference: { title: "Reference (start here)", view: ReferenceJig },
   deck: { title: "Talk deck", view: Deck },
   app: { title: "App (canonical)", view: DevelopAppJig },
-  decide: { title: "Decide", view: DevelopDecideJig },
-  details: { title: "Pane details", view: DevelopDetailsJig },
-  "theme-contents": { title: "Theme pane contents", view: DevelopThemeContentsJig },
   icons: { title: "Icons", view: DevelopIconsJig },
-  timeline: { title: "Timeline", view: DevelopTimelineJig },
-  pill: { title: "Dump or ask", view: DevelopPillJig },
-  atlas: { title: "Atlas, developed", view: DevelopAtlasJig },
-  columns: { title: "Columns, developed", view: DevelopColumnsJig },
-  homes: { title: "Homepages", view: HomesJig },
-  objects: { title: "Objects and how many there are", view: ObjectsJig },
-  decisions: { title: "Open questions (parked until the shape is chosen)", view: DecisionsJig },
-  boards: { title: "Space and motion boards", view: BoardsJig },
 };
 
 const LOCAL = ["localhost", "127.0.0.1", "::1", "[::1]"].includes(location.hostname);

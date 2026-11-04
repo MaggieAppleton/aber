@@ -1,4 +1,4 @@
-// Phosphor paths copied from the captured app DOM fixtures (../_fixtures). Do not hand-draw.
+// Phosphor paths copied from the captured app DOM fixtures (../../_fixtures). Do not hand-draw.
 window.DI3_ICONS = {
   search: "<path d=\"M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z\"></path>",
   plus: "<path d=\"M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z\"></path>",
