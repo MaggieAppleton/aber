@@ -1,0 +1,89 @@
+/* Aber grammar: surfaces and layers (PROPOSED, see RULES.md). Every surface has one tier; tier sets its shadow, z-index and radius.
+   Fill says which plane you're on; a hairline says "edge between peers"; a shadow says "above" and nothing else; dashed says "not yet mine".
+   Choices: data-cards="shadow" | "hairline" | "fill"; data-pop="quiet" | "crisp" | "deep"; data-float="shadow" | "flat". */
+
+:root {
+  /* Shadow per tier: same tier, same shadow; nothing on tier 0 or docked chrome */
+  --sh-raised: var(--elev-2);   /* 2 raised objects: cards (choice 1) */
+  --sh-float:  var(--elev-2);   /* floating chrome over the canvas: view switch, zoom, filter (choice 3) */
+  --sh-pop:    var(--elev-4);   /* 4 tethered: peek, menu (choice 2) */
+  --sh-modal:  var(--elev-5);   /* 5 modal */
+  --sh-toast:  var(--elev-6);   /* 6 ephemeral */
+  --sh-tip:    var(--elev-7);   /* 7 tooltip */
+  --ring:      0 0 0 0.5px var(--hairline-strong);   /* an edge on the same plane */
+  /* z-index only from tier tokens */
+  --z-chrome: var(--z-1); --z-raised: var(--z-2); --z-sheet: var(--z-3); --z-pop: var(--z-4); --z-modal: var(--z-5); --z-toast: var(--z-6); --z-tip: var(--z-7);
+  /* Radius grows with what a surface contains: 4 marks and tiles; 7 controls and objects; 10 containers that hold rounded things; 14 floating bars and modals.
+     A rounded thing inside another is the outer radius minus the inset between them. */
+  --r-control: var(--r-sm);   /* 7: buttons, chips, rows, cards, tooltip (was 6 for controls) */
+  --r-box: var(--r-md);       /* 10: evidence box, peek, menu, toast */
+  --r-bar: var(--r-lg);       /* 14: view switch, zoom, modal */
+  --scrim: oklch(var(--shade) / 18%);
+}
+[data-pop="quiet"] { --sh-pop: 0 0 0 0.5px oklch(var(--shade) / 10%), 0 4px 12px -4px oklch(var(--shade) / 12%); }
+[data-pop="deep"]  { --sh-pop: var(--elev-5); }
+[data-cards="hairline"] { --sh-raised: var(--ring); }
+[data-cards="fill"]     { --sh-raised: none; }
+[data-float="flat"]     { --sh-float: var(--ring); }
+
+/* ── Tier 0, base: the main column and canvases sit on ground; no edge, no shadow ── */
+/* ── Tier 1, docked chrome: the rail sinks (sunk fill) and meets the base at a seam; the pane is a surface with a seam, no shadow ── */
+.stg .stg-rail { box-shadow: inset -0.5px 0 0 var(--hairline); }
+.stg .stg-pane { box-shadow: -0.5px 0 0 var(--hairline-strong); }
+/* Floating chrome: chrome that covers the canvas gets the smallest "above" */
+.stg :is(.stg-switch, .stg-zoom) { z-index: var(--z-chrome); box-shadow: var(--sh-float); border-radius: var(--r-bar); }
+.stg .stg-zoom { padding: 2px; }
+.stg .stg-zoom .stg-iconbtn { border-radius: calc(var(--r-bar) - 2px); }
+
+/* ── Tier 2, raised objects: cards rest on the base and lift when picked up. Selected is --sel at every choice ── */
+.stg .stg-card { box-shadow: var(--sh-raised); border-radius: var(--r-control); }
+.stg .stg-card[data-open] { box-shadow: var(--sel); }
+.stg .stg-card[data-draft] { box-shadow: none; }
+/* The current nav item is a surface on the plane, treated like a card */
+.stg .stg-index a[data-active] { box-shadow: var(--sh-raised); }
+.stg :is(.stg-index a, .stg-protos, .stg-iconbtn, .stg-chip, .stg-btn) { border-radius: var(--r-control); }
+.stg .stg-area.is-sel .stg-area-label, .stg .stg-tl-item.is-sel { box-shadow: var(--sel); border-radius: var(--r-control); }
+
+/* Flush containers on a surface: hairline ring, no shadow. The evidence box holds rounded rows, so it's one step up (10) */
+.stg .stg-ev { border-radius: var(--r-box); box-shadow: var(--ring); }
+.stg .stg-ev-item[data-draft] { border-radius: calc(var(--r-box) - var(--gap-tight)); }
+/* A well (the note) sinks into the surface: fill only */
+.stg .stg-note { border-radius: var(--r-control); box-shadow: none; }
+
+/* ── Tier 4, tethered: grows from its trigger, covers, casts the pop shadow ── */
+.stg :is(.stg-peek, .stg-menu) { position: absolute; z-index: var(--z-pop); background: var(--surface); border-radius: var(--r-box); box-shadow: var(--sh-pop); }
+.stg .stg-peek { width: 312px; display: grid; gap: var(--gap-item); padding: var(--inset-card); }
+.stg .stg-peek-head { display: flex; align-items: center; gap: var(--gap-icon); font-weight: 600; color: var(--ink); }
+.stg .stg-peek-gist { margin: 0; color: var(--ink); line-height: var(--lh-prose); }
+.stg .stg-peek-meta { display: flex; align-items: center; gap: var(--gap-item) var(--inset-card); font-size: var(--fs-label); color: var(--ink-2); }
+.stg .stg-peek-stance { display: inline-flex; align-items: center; gap: var(--gap-icon); margin-left: auto; color: var(--ink-2); font-weight: 500; }
+.stg .stg-peek-stance i { --isz: var(--icon-label); }
+.stg .stg-menu { width: 232px; display: grid; padding: var(--gap-tight); }
+.stg .stg-menu-item { display: flex; align-items: center; gap: var(--gap-icon); height: var(--row); padding: 0 var(--inset-row) 0 var(--gap-tight); border: 0; border-radius: calc(var(--r-box) - var(--gap-tight)); background: transparent; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.stg .stg-menu-item:first-child, .stg .stg-menu-item:hover { background: var(--hover); }
+.stg .stg-menu-item kbd { margin-left: auto; font: var(--w-medium) var(--fs-label)/1 var(--font-mono); color: var(--ink-2); }
+.stg .stg-ev-item[data-hover] { background: var(--hover); }
+.stg .stg-iconbtn[aria-expanded="true"] { background: var(--hover); color: var(--ink); }
+
+/* ── Tier 5, modal: a paused, dimmed world; the one surface centred on the window ── */
+.stg .stg-scrim { position: absolute; inset: 0; z-index: var(--z-modal); background: var(--scrim); }
+.stg .stg-modal { position: absolute; z-index: var(--z-modal); left: 50%; top: 50%; translate: -50% -50%; width: 400px; display: grid; gap: var(--gap-group); padding: var(--inset-pane-block);
+  background: var(--surface); border-radius: var(--r-bar); box-shadow: var(--sh-modal); }
+.stg .stg-modal h4 { margin: 0; font-size: var(--fs-body); font-weight: 600; color: var(--ink); }
+.stg .stg-modal p { margin: calc(var(--gap-group) * -1 + var(--gap-tight)) 0 0; color: var(--ink-2); line-height: var(--lh-prose); }
+.stg .stg-modal-foot { display: flex; justify-content: flex-end; gap: var(--gap-item); }
+.stg .stg-modal .stg-btn { height: var(--control); }
+
+/* ── Tiers 6 and 7, inked: a momentary message from the system. Ink fill, on-ink text, no ring ── */
+.stg .stg-toast { position: absolute; z-index: var(--z-toast); right: var(--inset-float); bottom: var(--inset-float); display: flex; align-items: center; gap: var(--inset-card);
+  height: 40px; padding: 0 var(--gap-tight) 0 var(--inset-card); border-radius: var(--r-box); background: var(--ink); color: var(--on-primary); box-shadow: var(--sh-toast); font-weight: 500; }
+.stg .stg-toast-act { height: var(--control); padding: 0 var(--inset-control); border: 0; border-radius: calc(var(--r-box) - 6px); background: transparent; color: var(--on-primary); font: inherit; font-weight: 600; cursor: pointer; }
+.stg .stg-toast-act:hover { background: oklch(1 0 0 / 12%); }
+.stg[data-icons] .stg-tip { z-index: var(--z-tip); border-radius: var(--r-control); box-shadow: var(--sh-tip); }
+
+/* ── Show layers overlay: every surface outlined and tagged with tier, fill, edge, shadow, radius ── */
+.ly-tag { display: none; }
+[data-layeroverlay] .stg [data-ly] { outline: 1px solid oklch(0.55 0.16 280 / 0.7); outline-offset: -1px; }
+[data-layeroverlay] .ly-tag { display: block; position: absolute; z-index: 90; padding: 1px 4px; border-radius: 3px; background: oklch(0.42 0.15 280); color: #fff;
+  font: 600 9px/1.3 var(--font); white-space: nowrap; pointer-events: none; }
+.stg .ly-layer { position: absolute; inset: 0; z-index: 90; pointer-events: none; }

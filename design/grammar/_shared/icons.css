@@ -23,7 +23,7 @@
 
 /* Tile contexts. "lists": headers and list rows (section and column heads, rail rows, the column strips, evidence rows, the tripwire row, map labels).
    "always": also chips and inline meta. "never": colour alone carries the type. */
-.stg[data-icons]:is([data-tile="lists"], [data-tile="always"], :not([data-tile])) :is(.stg-sec-head, .stg-col-head, .stg-protos, .stg-strip, .stg-ev-item, .stg-trip, .stg-area-label) > .g,
+.stg[data-icons]:is([data-tile="lists"], [data-tile="always"], :not([data-tile])) :is(.stg-sec-head, .stg-col-head, .stg-protos, .stg-strip, .stg-ev-item, .stg-trip, .stg-area-label, .stg-peek-head, .stg-menu-item) > .g,
 .stg[data-icons]:is([data-tile="always"], :not([data-tile])) :is(.stg-chip, .stg-inline) > .g { --slot: var(--tile); background: var(--type-tile); }
 .stg[data-icons]:is([data-tile="lists"], [data-tile="always"], :not([data-tile])) .g[data-type="suggestion"]:is(.stg-ev-item > *),
 .stg[data-icons]:is([data-tile="always"], :not([data-tile])) .stg-chip > .g[data-type="suggestion"] { outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grammar 04: Surfaces and layers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="../../explorations/_shell/jig.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dialkit@2.1.0/dist/vanilla/styles.css">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/stage.css">
+<link rel="stylesheet" href="../_shared/spacing.css">
+<link rel="stylesheet" href="../_shared/type.css">
+<link rel="stylesheet" href="../_shared/icons.css">
+<link rel="stylesheet" href="../_shared/surfaces.css">
+<link rel="stylesheet" href="surfaces-page.css">
+<script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/stage.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/dialkit@2.1.0/dist/vanilla/browser.global.js" defer></script>
+<script src="../_shared/list-dial.js" defer></script>
+<script src="surfaces-page.js" defer></script>
+<script type="module" src="../_shared/agentation.js" data-app-name="Grammar 04: Surfaces and layers"></script>
+</head>
+<body class="jig" data-jig="grammar-04-surfaces">
+
+<header class="jig-head">
+  <h1>Grammar 04: Surfaces and layers</h1>
+  <p>Which surface sits at which height, and what fill, edge, shadow, radius and z-index each height gets. Already decided: colour system D surfaces, Crisp shadows (a 0.5px ring plus soft drops), radii 4 / 7 / 10 / 14 and pill, concentric; selected is the neutral raise (<code>--sel</code>); hover a 5% layer; press 0.98; drafts dashed; the pane docks with a seam and no shadow; X only closes transient surfaces.</p>
+</header>
+
+<div class="decide">
+  <div class="decide-box">
+    <h2>Decide on this page</h2>
+    <ol>
+      <li data-pick="cards"><a href="#cards">Cards: soft shadow, hairline only, or fill only</a> <span class="pick"></span></li>
+      <li data-pick="pop"><a href="#pop">Peeks and menus: quiet, crisp or deep shadow</a> <span class="pick"></span></li>
+      <li data-pick="float"><a href="#float">Floating controls: shadow or flat</a> <span class="pick"></span></li>
+    </ol>
+  </div>
+</div>
+
+<section class="jig-section" id="today">
+  <h2>Today, measured</h2>
+  <p>Every surface value in the canonical CSS (<code>app/web/src/ui/</code> and <code>jig/src/homes/</code>, near-copies; counts are both together).</p>
+  <table class="audit">
+    <thead><tr><th>Property</th><th>Distinct</th><th>Uses</th><th>What's there</th></tr></thead>
+    <tbody>
+      <tr><td>Background</td><td class="n">176</td><td class="n">817</td><td>surface(150) transparent(142) hover(77) ink(74) sunk(53), then <em>171 more</em>: raw <code>#fff</code>, <code>rgb(255 255 255 / 50%)</code>, <code>--bg-elevated</code>, <code>--text-primary</code> as a fill, ink 3 as a fill (15)</td></tr>
+      <tr><td>Box shadow</td><td class="n">158</td><td class="n">412</td><td>Only 127 use a shadow token. <em>108 distinct raw shadows</em>. Two names for selection (<code>--ap-sel</code>, <code>--ap-shadow-selected</code>, 18 each).</td></tr>
+      <tr><td>Radius (px)</td><td class="n">30</td><td class="n">467</td><td>On the 4 / 7 / 10 / 14 scale: 73. Most used are off it: <em>8</em>(74) <em>6</em>(61) <em>5</em>(24) <em>2</em>(24) <em>9</em>(19) <em>3</em>(18) <em>12</em>(18) <em>13</em>(12) <em>16</em>(12)</td></tr>
+      <tr><td>z-index</td><td class="n">18</td><td class="n">149</td><td>Raw numbers 0–12, 20, 29, 30 and 80; <em>none</em> from the <code>--z</code> tokens</td></tr>
+      <tr><td>Edges and dividers</td><td class="n">17</td><td class="n">~110</td><td>Side borders in 7 styles (<code>--ap-line</code>, <code>--ap-line-2</code>, <code>--border-primary</code>, <code>--border-secondary</code>, raw grey) plus inset-shadow hairlines in 10 forms</td></tr>
+    </tbody>
+  </table>
+  <ul class="offenders">
+    <li><b>One shadow, five heights.</b> <code>--ap-shadow-float</code> is on the view switch (app-shell.css:31), the dump pill (homes.css:52), the Atlas popover card (homes.css:230), the confidence tooltip (confidence-spark.css:17) and the overlay sidebar (current-sidebar.css:8): chrome, tethered, tooltip and sheet all claim the same height.</li>
+    <li><b>The sheet and pop shadows exist only in the jig copy</b> (jig/src/homes/homes.css:25–26). <code>app/web</code> has <code>--ap-shadow-1</code> and <code>--ap-shadow-float</code> only, so its menus and peeks use raw shadows (pill-study.css:195, :200).</li>
+    <li><b>The tooltip sits at z 80</b> (tooltip.css:1) above everything, while popovers use 6–12 (atlas2.css:117, :120) and the dump log 29–30 (pill-study.css:223, :226).</li>
+    <li><b>The tooltip is pure black in Inter</b> at radius 6 (tooltip.css:5–8): off the ink, off the font, off the radius scale.</li>
+    <li>Cards are 8 (panes.css:32), Briefing cards 10, deck tiles 12 (panes.css:142), icon buttons 6, the column 14: five radii for things on the same plane.</li>
+  </ul>
+</section>
+
+<section class="jig-section" id="rules">
+  <h2>The rules (proposed)</h2>
+  <ol class="rules">
+    <li><b>Every surface has one tier</b>, and the tier sets its shadow, z-index and radius. The table below is the whole set; a new surface type is a decision, not a default.</li>
+    <li><b>One meaning per mark.</b> Fill says which plane you're on (ground, sunk, surface). A hairline is an edge between peers on one plane: a docked seam, rows in one container, a flush box or chip. A shadow means "above" and nothing else. Dashed means "not yet mine".</li>
+    <li><b>Shadow grows with tier; same tier, same shadow.</b> No shadow on the base or on docked chrome. Shadows come only from the tier tokens (<code>--sh-raised</code> … <code>--sh-tip</code>).</li>
+    <li><b>Radius grows with what a surface holds.</b> 4 for marks and tiles; 7 for controls and objects (buttons, chips, rows, cards, tooltip); 10 for boxes that hold rounded things (evidence, peek, menu, toast); 14 for floating bars and modals. Inside another rounded surface: outer minus the inset.</li>
+    <li><b>Separate with space first</b> (spacing rule 8). A gap between objects; a hairline only between uniform rows in one container; a seam between docked regions. No lines between sections.</li>
+    <li><b>z-index only from tier tokens</b>: 0, 10, 20 … 70 for tiers 0–7.</li>
+    <li><b>One transient layer at a time.</b> Opening a peek, menu, modal or toast closes any other; only a tooltip may sit over one.</li>
+    <li><b>Inked surfaces are momentary messages.</b> The tooltip and the toast are the only ink-filled surfaces besides the primary button: ink fill, on-ink text, no ring.</li>
+    <li><b>Only liftable things lift.</b> Selected raises within its tier (<code>--sel</code>); hover is a 5% layer; press shrinks to 0.98. Nothing lifts on hover.</li>
+    <li><b>On a narrow screen</b> the rail and the pane become tier-3 sheets from their own edge; tethered surfaces become bottom sheets.</li>
+  </ol>
+  <table class="audit tiers">
+    <thead><tr><th>Tier</th><th>Aber surfaces</th><th>Attachment</th><th>Origin</th><th>Persistence</th><th>Fill</th><th>Edge</th><th>Shadow</th><th>Radius</th><th>z</th></tr></thead>
+    <tbody>
+      <tr><td>0 Base</td><td>Main column; Atlas and Timeline canvases</td><td>Is the world</td><td>—</td><td>Permanent</td><td>Ground</td><td>None</td><td>None</td><td>—</td><td>0</td></tr>
+      <tr><td>1 Docked</td><td>Rail, object pane, Columns strips</td><td>Docked, pushes</td><td>Its edge</td><td>Session</td><td>Rail sunk; pane surface</td><td>Seam</td><td>None</td><td>0</td><td>10</td></tr>
+      <tr><td>1 Floating</td><td>View switch, zoom, filter</td><td>Pinned to the window edge, over the canvas</td><td>Its edge</td><td>Session</td><td>Surface</td><td>Ring</td><td>Float</td><td>14</td><td>10</td></tr>
+      <tr><td>2 Raised</td><td>Cards, the current nav row; selected map label and timeline item</td><td>Rests on the base, lifts when picked up</td><td>In place</td><td>Session</td><td>Surface</td><td>Ring</td><td>Raised; selected <code>--sel</code></td><td>7</td><td>20</td></tr>
+      <tr><td>3 Sheet</td><td>Dump log; rail and pane on a narrow screen</td><td>Covers, casts shadow</td><td>Its edge</td><td>Task</td><td>Surface</td><td>Ring</td><td>Sheet</td><td>14</td><td>30</td></tr>
+      <tr><td>4 Tethered</td><td>Signal peek, menus, hover cards</td><td>Anchored to its trigger</td><td>Grows from the trigger</td><td>Moment</td><td>Surface</td><td>Ring</td><td>Pop</td><td>10</td><td>40</td></tr>
+      <tr><td>5 Modal</td><td>Retire confirmation, focused editor</td><td>Over a paused, dimmed world</td><td>Centre</td><td>Task, blocking</td><td>Surface</td><td>Ring</td><td>Modal</td><td>14</td><td>50</td></tr>
+      <tr><td>6 Toast</td><td>Undo after retire or delete</td><td>Above all, never takes focus</td><td>Bottom edge, above the pill</td><td>Seconds</td><td>Ink</td><td>None</td><td>Toast</td><td>10</td><td>60</td></tr>
+      <tr><td>7 Tooltip</td><td>Icon names and keys</td><td>Tethered</td><td>Its trigger</td><td>While hovered</td><td>Ink</td><td>None</td><td>Tip</td><td>7</td><td>70</td></tr>
+    </tbody>
+  </table>
+  <p class="stage-label">Side elevation: each plate is drawn with its tier's real fill, shadow and radius.</p>
+  <div class="elev" aria-label="Side elevation of Aber's tiers">
+    <span>7 Tooltip</span><div class="elev-track"><i class="ink" style="left:76%;width:8%;box-shadow:var(--sh-tip)"></i></div><span>Icon name and key</span>
+    <span>6 Toast</span><div class="elev-track"><i class="ink" style="left:70%;width:22%;box-shadow:var(--sh-toast)"></i></div><span>Undo, bottom edge</span>
+    <span>5 Modal</span><div class="elev-track"><i style="left:32%;width:34%;box-shadow:var(--sh-modal)"></i></div><span>Retire confirmation, centre</span>
+    <span>4 Tethered</span><div class="elev-track"><i style="left:56%;width:20%;box-shadow:var(--sh-pop)"></i></div><span>Peek, menu, from trigger</span>
+    <span>3 Sheet</span><div class="elev-track"><i style="left:62%;width:38%;box-shadow:var(--elev-3)"></i></div><span>Dump log, from its edge</span>
+    <span>2 Raised</span><div class="elev-track"><i style="left:20%;width:12%;box-shadow:var(--sh-raised)"></i><i style="left:34%;width:12%;box-shadow:var(--sel)"></i></div><span>Cards; selected raises</span>
+    <span>1 Docked</span><div class="elev-track"><i class="sunk" style="left:0;width:17%"></i><i style="left:4%;width:9%;box-shadow:var(--sh-float);top:2px;height:10px"></i><i class="seam" style="left:52%;width:48%"></i></div><span>Rail, pane (seams); floating controls</span>
+    <span>0 Base</span><div class="elev-track"><i class="base"></i></div><span>Main column, canvases</span>
+  </div>
+</section>
+
+<section class="jig-section" id="stage">
+  <h2>The stage, built only from these rules</h2>
+  <div class="viewer-bar">
+    <span class="seg" data-seg="view"><span>View</span><span class="seg-group"><button type="button" value="sections" aria-pressed="true">Sections</button><button type="button" value="columns">Columns</button><button type="button" value="atlas">Atlas</button><button type="button" value="timeline">Timeline</button></span></span>
+    <span class="seg" data-seg="layer"><span>Transient layer</span><span class="seg-group"><button type="button" value="">None</button><button type="button" value="peek" aria-pressed="true">Peek</button><button type="button" value="menu">Menu</button><button type="button" value="modal">Modal</button><button type="button" value="toast">Toast</button><button type="button" value="tip">Tooltip</button></span></span>
+    <span class="seg" data-seg="overlay"><span>Show layers</span><span class="seg-group"><button type="button" value="off" aria-pressed="true">Off</button><button type="button" value="on">On</button></span></span>
+  </div>
+  <div class="viewer-bar">
+    <span class="seg" data-seg="cards"><span>Cards</span><span class="seg-group"><button type="button" value="shadow" aria-pressed="true">Soft shadow</button><button type="button" value="hairline">Hairline</button><button type="button" value="fill">Fill only</button></span></span>
+    <span class="seg" data-seg="pop"><span>Pop</span><span class="seg-group"><button type="button" value="quiet">Quiet</button><button type="button" value="crisp" aria-pressed="true">Crisp</button><button type="button" value="deep">Deep</button></span></span>
+    <span class="seg" data-seg="float"><span>Floating</span><span class="seg-group"><button type="button" value="shadow" aria-pressed="true">Shadow</button><button type="button" value="flat">Flat</button></span></span>
+  </div>
+  <p class="stage-label">The app's layout with one transient layer at a time. Show layers tags every surface with its tier, fill, edge, shadow and radius.</p>
+  <div class="stg-host" id="viewer" data-stage='{"view":"sections","layer":"peek"}'></div>
+</section>
+
+<section class="jig-section" id="views">
+  <h2>Same rules, four views</h2>
+  <div class="views-grid" data-layeroverlay>
+    <div><p class="view-name">Theme sections</p><div class="stg-host" data-stage='{"view":"sections","layer":"menu"}'></div></div>
+    <div><p class="view-name">Columns</p><div class="stg-host" data-stage='{"view":"columns"}'></div></div>
+    <div><p class="view-name">Atlas</p><div class="stg-host" data-stage='{"view":"atlas","layer":"toast"}'></div></div>
+    <div><p class="view-name">Timeline</p><div class="stg-host" data-stage='{"view":"timeline","layer":"modal"}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" id="cards" data-decision="cards" data-question="1. How does a card sit on the base?" data-default="A soft shadow">
+  <p>Cards are tier 2: they rest on the base and can be picked up. The open card is <code>--sel</code> in all three. Look at the theory cards and the current rail row.</p>
+  <div class="jig-compare" style="--jig-min:300px">
+    <div class="jig-option" data-option="A soft shadow"><div class="jig-label"><b>A</b> Soft shadow</div><p class="jig-note">The Crisp ring plus a 1px drop: says "you can pick this up". Today's card.</p><div class="stg-host" data-option-stage data-stage='{"cards":"shadow"}'></div></div>
+    <div class="jig-option" data-option="B hairline"><div class="jig-label"><b>B</b> Hairline only</div><p class="jig-note">The ring with no drop: flat on the base. Lift appears only when selected or dragged.</p><div class="stg-host" data-option-stage data-stage='{"cards":"hairline"}'></div></div>
+    <div class="jig-option" data-option="C fill only"><div class="jig-label"><b>C</b> Fill only</div><p class="jig-note">White on ground, no edge at all. Quietest; the white is the only boundary.</p><div class="stg-host" data-option-stage data-stage='{"cards":"fill"}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" id="pop" data-decision="pop" data-question="2. How far above do peeks and menus float?" data-default="B crisp">
+  <p>Tier 4, tethered to the evidence row. Look at how much the peek separates from the pane behind it.</p>
+  <div class="jig-compare" style="--jig-min:300px">
+    <div class="jig-option" data-option="A quiet"><div class="jig-label"><b>A</b> Quiet</div><p class="jig-note">Ring plus a short 12px drop. Barely above; reads like a card.</p><div class="stg-host" data-option-stage data-stage='{"layer":"peek","pop":"quiet"}'></div></div>
+    <div class="jig-option" data-option="B crisp"><div class="jig-label"><b>B</b> Crisp</div><p class="jig-note">Ring plus a 6px and a 36px drop: clearly above, still tight. The 1 Nov pop token.</p><div class="stg-host" data-option-stage data-stage='{"layer":"peek","pop":"crisp"}'></div></div>
+    <div class="jig-option" data-option="C deep"><div class="jig-label"><b>C</b> Deep</div><p class="jig-note">The modal's 56px drop. Most separation; leaves less room for the modal to read higher.</p><div class="stg-host" data-option-stage data-stage='{"layer":"peek","pop":"deep"}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" id="float" data-decision="float" data-question="3. Do floating controls cast a shadow?" data-default="A shadow">
+  <p>The view switch and the zoom stack are chrome pinned to the window edge but sitting over the canvas. Look at them over the Atlas.</p>
+  <div class="jig-compare" style="--jig-min:440px">
+    <div class="jig-option" data-option="A shadow"><div class="jig-label"><b>A</b> Smallest shadow</div><p class="jig-note">They cover the canvas, so they're above it: the card's shadow, the least "above" there is.</p><div class="stg-host" data-option-stage data-stage='{"view":"atlas","float":"shadow"}'></div></div>
+    <div class="jig-option" data-option="B flat"><div class="jig-label"><b>B</b> Flat with a hairline</div><p class="jig-note">Chrome, so no shadow, like the rail and pane. Points and areas can seem to pass under a flat plate.</p><div class="stg-host" data-option-stage data-stage='{"view":"atlas","float":"flat"}'></div></div>
+  </div>
+</section>
+
+</body>
+</html>

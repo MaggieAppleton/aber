@@ -78,6 +78,24 @@
     </div>`;
 
   const VIEWS = { sections, columns, atlas, timeline };
+  // One transient layer at a time (04-surfaces): {"layer":"peek"|"menu"|"modal"|"toast"}
+  let L = "";
+  const layers = {
+    peek: () => `<div class="stg-peek" role="dialog" aria-label="Signal preview">
+        <div class="stg-peek-head">${g("signal")}<span class="t">Lab cuts API prices again for its small tier</span></div>
+        <p class="stg-peek-gist">The small tier drops to a fifth of last year's price; routine calls now cost less than the logging around them.</p>
+        <div class="stg-peek-meta"><span>x.com</span><span>2 days ago</span><span class="stg-peek-stance"><i class="ph ph-arrow-up" aria-hidden="true"></i>Supports</span></div>
+      </div>`,
+    menu: () => `<div class="stg-menu" role="menu" aria-label="Add support">
+        <button type="button" role="menuitem" class="stg-menu-item">${g("signal")}<span>Link a signal</span><kbd>L</kbd></button>
+        <button type="button" role="menuitem" class="stg-menu-item">${g("dump")}<span>Dump new evidence</span><kbd>D</kbd></button>
+      </div>`,
+    modal: () => `<div class="stg-scrim"></div><div class="stg-modal" role="dialog" aria-label="Retire this theory?">
+        <h4>Retire this theory?</h4><p>It leaves the theme and its evidence stays. You can bring it back from Retired.</p>
+        <div class="stg-modal-foot"><button type="button" class="stg-btn secondary">Cancel</button><button type="button" class="stg-btn primary">Retire</button></div>
+      </div>`,
+    toast: () => `<div class="stg-toast" role="status"><span>Theory retired</span><button type="button" class="stg-toast-act">Undo</button></div>`,
+  };
   const html = (view = "sections") => `
     <div class="stg-view" data-view="${view}">${VIEWS[view]()}${switcher(view)}</div>
     <aside class="stg-pane" aria-label="Open object" data-sp="pane inset, group gap" data-gap>
@@ -105,7 +123,7 @@
         </div>
       </div>
       <div class="stg-related"><a href="#" class="stg-chip">${g("theory")}Most software is made for an audience of one</a><a href="#" class="stg-chip">${g("prototype")}Token budget meter</a></div>
-    </aside>`;
+    </aside>${L && layers[L] ? layers[L]() : ""}`;
 
   const fit = host => {
     const el = host.firstElementChild; if (!el) return;
@@ -115,10 +133,12 @@
   const ro = new ResizeObserver(entries => entries.forEach(e => fit(e.target)));
   const render = host => {
     const o = JSON.parse(host.dataset.stage || "{}");
-    const attrs = [o.scale && `data-scale="${o.scale}"`, o.title && `data-title="${o.title}"`, o.sechead && `data-sechead="${o.sechead}"`, o.system && `data-system="${o.system}"`, o.primary && `data-primary="${o.primary}"`, o.mark && `data-mark="${o.mark}"`, o.density && `data-density="${o.density}"`, o.list && `data-list="${o.list}"`, o.iconsize && `data-iconsize="${o.iconsize}"`, o.tile && `data-tile="${o.tile}"`, o.icons !== 0 && "data-icons"].filter(Boolean).join(" ");
-    V = o.icons !== 0;
+    const pass = ["scale", "title", "sechead", "system", "primary", "mark", "density", "list", "iconsize", "tile", "cards", "pop", "float", "layer"];
+    const attrs = [...pass.filter(k => o[k]).map(k => `data-${k}="${o[k]}"`), o.icons !== 0 && "data-icons"].filter(Boolean).join(" ");
+    V = o.icons !== 0; L = o.layer || "";
     host.innerHTML = `<div class="stg" ${attrs}>${html(o.view)}</div>`;
     fit(host); ro.observe(host);
+    if (o.layer) place(host.firstElementChild);
   };
   document.addEventListener("click", e => {
     if (e.target.closest(".stg a")) e.preventDefault();
@@ -149,6 +169,15 @@
   document.addEventListener("focusin", e => { const b = e.target.closest(".stg[data-icons] [data-tip]"); if (b && !b.hasAttribute("data-tip-pin")) showTip(b); });
   document.addEventListener("focusout", e => { e.target.closest(".stg")?.querySelector(".stg-tip:not([data-pinned])")?.remove(); });
 
+  // Tethered layers grow from their trigger: the peek from its evidence row, the menu from Add support
+  const place = stg => {
+    const peek = stg.querySelector(".stg-peek"), menu = stg.querySelector(".stg-menu");
+    if (peek) { const row = stg.querySelector(".stg-ev-item"); row.setAttribute("data-hover", ""); const r = local(stg, row), gl = local(stg, row.querySelector(".g"));
+      Object.assign(peek.style, { left: `${gl.x - 12}px`, top: `${r.y + r.h + 4}px`, transformOrigin: "24px 0" }); }
+    if (menu) { const b = stg.querySelector('.stg-iconbtn[aria-label="Add support"]'); b.setAttribute("aria-expanded", "true"); const r = local(stg, b);
+      Object.assign(menu.style, { left: `${r.x + r.w - menu.offsetWidth}px`, top: `${r.y + r.h + 4}px`, transformOrigin: "100% 0" }); }
+  };
+  document.fonts?.ready.then(() => document.querySelectorAll(".stg[data-layer]").forEach(place));
   window.AberStage = { renderAll: (root = document) => root.querySelectorAll("[data-stage]").forEach(render), render, showTip };
   if (document.readyState === "loading") addEventListener("DOMContentLoaded", () => window.AberStage.renderAll()); else window.AberStage.renderAll();
 })();

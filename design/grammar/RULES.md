@@ -201,6 +201,49 @@ Evidence: 159 icons at six sizes (11, 12, 13, 14, 15, 16; 83 are 12, smaller tha
 
 **Decided (Maggie, 4 Nov):** icon size B (16 and 14); tiles B (everywhere).
 
+## 04 Surfaces and layers — PROPOSED (choose on `04-surfaces/`)
+
+Already decided: colour system D surfaces; Crisp shadows (a 0.5px ring plus soft drops); radii 4 / 7 / 10 / 14 and pill, concentric; selected is the neutral raise `--sel`; hover a 5% layer; press 0.98; drafts dashed; the pane docks with a seam and no shadow; X only closes transient surfaces. Values live in `_shared/surfaces.css`.
+
+Evidence: 176 distinct backgrounds; 158 distinct box shadows, with only 127 of 412 using a token; two names for selection; one shadow (`--ap-shadow-float`) on five heights (view switch, dump pill, Atlas popover, confidence tooltip, overlay sidebar); 30 radii, with 8, 6, 5, 2 and 9 most used and off the scale; 18 raw z-index values (0–80), none from tokens; edges drawn 17 ways.
+
+1. **Every surface has one tier**, and the tier sets its shadow, z-index and radius. A new surface type is a decision, not a default.
+2. **One meaning per mark.**
+   - Fill says which plane you're on: ground, sunk or surface.
+   - A hairline is an edge between peers on one plane: a docked seam, rows in one container, a flush box or a chip.
+   - A shadow means "above" and nothing else.
+   - Dashed means "not yet mine".
+3. **Shadow grows with tier; same tier, same shadow.** No shadow on the base or on docked chrome. Shadows come only from the tier tokens `--sh-raised`, `--sh-float`, `--sh-pop`, `--sh-modal`, `--sh-toast`, `--sh-tip` (plus `--sel`).
+4. **Radius grows with what a surface holds.**
+   - 4: marks and tiles.
+   - 7: controls and objects (buttons, chips, rows, cards, tooltip). Controls move from 6 to 7.
+   - 10: boxes that hold rounded things (evidence, peek, menu, toast).
+   - 14: floating bars and modals.
+   - Inside another rounded surface: outer minus the inset.
+5. **Separate with space first** (spacing rule 8): a gap between objects, a hairline only between uniform rows in one container, a seam between docked regions.
+6. **z-index only from tier tokens:** 0, 10, 20 … 70 for tiers 0–7.
+7. **One transient layer at a time.** Opening a peek, menu, modal or toast closes any other; only a tooltip may sit over one.
+8. **Inked surfaces are momentary messages.** The tooltip and toast are the only ink-filled surfaces besides the primary button: ink fill, on-ink text, no ring.
+9. **Only liftable things lift.** Selected raises within its tier; nothing lifts on hover.
+10. **Narrow screens:** the rail and pane become tier-3 sheets from their own edge; tethered surfaces become bottom sheets.
+
+| Tier | Aber surfaces | Attachment | Origin | Persistence | Fill | Edge | Shadow | Radius | z |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 0 Base | Main column, Atlas and Timeline canvases | Is the world | — | Permanent | Ground | None | None | — | 0 |
+| 1 Docked | Rail, object pane, Columns strips | Docked, pushes | Its edge | Session | Rail sunk, pane surface | Seam | None | 0 | 10 |
+| 1 Floating | View switch, zoom, filter | Pinned to the window edge, over the canvas | Its edge | Session | Surface | Ring | Float | 14 | 10 |
+| 2 Raised | Cards, current nav row, selected map label and timeline item | Rests on the base, lifts when picked up | In place | Session | Surface | Ring | Raised; selected `--sel` | 7 | 20 |
+| 3 Sheet | Dump log; rail and pane on narrow screens | Covers, casts shadow | Its edge | Task | Surface | Ring | Sheet | 14 | 30 |
+| 4 Tethered | Signal peek, menus, hover cards | Anchored to its trigger | Grows from the trigger | Moment | Surface | Ring | Pop | 10 | 40 |
+| 5 Modal | Retire confirmation, focused editor | Over a paused, dimmed world | Centre | Task, blocking | Surface | Ring | Modal | 14 | 50 |
+| 6 Toast | Undo after retire or delete | Above all, never takes focus | Bottom edge, above the pill | Seconds | Ink | None | Toast | 10 | 60 |
+| 7 Tooltip | Icon names and keys | Tethered | Its trigger | While hovered | Ink | None | Tip | 7 | 70 |
+
+**Open:**
+- Cards: soft shadow (today, proposed), hairline only, or fill only.
+- Peeks and menus: quiet, crisp (the 1 Nov pop token, proposed) or deep shadow.
+- Floating controls (view switch, zoom, filter): the smallest shadow (proposed) or flat with a hairline.
+
 ## Still to come
 
-04 surfaces and layers, 05 controls, 06 objects, 07 rungs.
+05 controls, 06 objects, 07 rungs.
