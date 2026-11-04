@@ -375,24 +375,29 @@ Every object follows one anatomy and appears at three rungs: a **preview** where
 - **03 Icons:** an object tile in rows, cards and peeks is 18 with a 12 glyph, centred on the name's first line (replaces 24 centred, which sat 7.3px above the capitals); a glyph on a tile is one step smaller than a bare glyph; the full view's title tile is 32 with a 20 glyph; counts use bare glyphs at 14.
 - **05 Controls:** a chip's tile is the chip's full height, flush in its left corner (`_shared/controls.css` should size `.ctl-chip > .g` by `--chip-h`, not `--tile`).
 
-## 10 States — PROPOSED (jig `10-states/`)
+## 10 States — DECIDED (4 Nov 2026: work on the Dumps rail entry; finished dump toasts with Undo; offline beside the view switcher)
+
+Jig: `10-states/`. **Capture is being rebuilt around the "Dump or ask" chat sidebar in 09, not a bottom composer: every placement below that refers to "the composer" is pending 09's chat-sidebar rebuild.**
 
 Evidence: six loading treatments and no skeleton ("Loading Aber…" hides the whole window); empty copy in nine phrasings; every error goes to one top-centre banner in a third red, away from its object; the pill's processing dot is computed but never drawn; `connected` is tracked but never shown; Undo exists for two of seven reversible actions; four modals where one was decided (merge, retire, unfile, delete).
 
 1. **Empty: one line naming what's absent (empty-state role, no full stop), plus the action that fills it.** No illustration, instructions or sample content.
    - Made by me (themes, theories, prototypes, a group inside an object): an Add slot where the first item would sit, at its height.
-   - Made by the agent (signals, dumps): the line only; the composer is the action.
+   - Made by the agent (signals, dumps): the line only; the composer is the action (pending 09's chat-sidebar rebuild).
    - Filtered to nothing: search and filter stay; the line names query and scope; Clear filters; Esc clears search.
-   - First run: no counts; the composer has the caret; Briefing says "Nothing yet". Caught up: "Nothing new since 18:40".
-2. **Loading: nothing under 300ms, then a skeleton in the content's own geometry; never a layout shift.** Chrome that needs no data renders at once and the composer works before data arrives. Canvases draw their frame and fade marks in. Media of known size keeps its box. Opening an object has no loading state. Spinners only inside the control you just pressed (05 Loading).
+   - First run: no counts; the composer has the caret (pending 09's chat-sidebar rebuild); Briefing says "Nothing yet". Caught up: "Nothing new since 18:40".
+2. **Loading: nothing under 300ms, then a skeleton in the content's own geometry; never a layout shift.** Chrome that needs no data renders at once and the composer works before data arrives (pending 09's chat-sidebar rebuild). Canvases draw their frame and fade marks in. Media of known size keeps its box. Opening an object has no loading state. Spinners only inside the control you just pressed (05 Loading).
 3. **Background work: only work I started shows progress.** A dump appears at once at the top of Today, "Processing" in words with the Working spinner, and resolves in place (status goes, results appear; Briefing lists them). Paused is a hollow ring and the reason. Agent jobs I didn't start show nothing until they produce something, which arrives dashed; Briefing lists it. No new dots and no pending-suggestion badges on rows or cards (Maggie, 4 Nov); suggestions show only in the peek, the full view and Briefing.
-4. **Errors sit beside their object, in words, with the way out.** Never only a tooltip, never a global banner. Words in ink do the work; no red dot on the row, page or field. One red dot stays: the global mark for a failed dump (composer, Dumps type or Columns strip), where there is no room for words and it leads to the dump that says why. Recoverable: reason + Retry. Not recoverable: reason + what's still possible. A failed dump stays visible with everything I sent; a failed save keeps my text with "Not saved" + Retry; a list that didn't load says so in its place. No raw error messages.
+4. **Errors sit beside their object, in words, with the way out.** Never only a tooltip, never a global banner. Words in ink do the work; no red dot on the row, page or field. One red dot stays: the global mark for a failed dump (the Dumps rail entry, or Columns' Dumps strip), where there is no room for words and it leads to the dump that says why. Recoverable: reason + Retry. Not recoverable: reason + what's still possible. A failed dump stays visible with everything I sent; a failed save keeps my text with "Not saved" + Retry; a list that didn't load says so in its place. No raw error messages.
 5. **Offline is shown once, for as long as it lasts, and changes nothing else.** Edits save locally and sync; an offline dump waits ("Waiting to send", hollow ring); reconnecting shows nothing.
-6. **Toasts (tier 6) carry Undo.** Ink, one line, 44 high, radius 10, only the name truncates; just above the composer, right edges aligned, in every view; 5s, held while hovered or focused; ⌘Z while shown; one at a time, a new one commits and replaces the last; never stacks, never takes focus, never carries an error.
+6. **Toasts (tier 6) carry Undo.** Ink, one line, 44 high, radius 10, only the name truncates; just above the composer, right edges aligned, in every view (position pending 09's chat-sidebar rebuild); 5s, held while hovered or focused; ⌘Z while shown; one at a time, a new one commits and replaces the last; never stacks, never takes focus, never carries an error.
 7. **Only Delete dump asks first:** a modal with the real counts, Cancel and an ink "Delete dump"; Esc and X close; no toast after. Discard, remove, unfile, retire, merge, move to the bin: at once, with Undo.
 8. **Success is mostly silent; the object appearing is the feedback.** Accept solidifies in place; saves show nothing; creating opens the object. A toast appears only when something leaves the screen.
 
-**Open (choices on the jig):** where in-progress work shows beyond the dump (A composer segment, B the Dumps type in the rail, C only the dump); whether a finished dump gets a toast (A toast with Undo, B silent: it appears in Briefing); where offline shows (A beside the view switcher, B in the composer).
+**Decided (Maggie, 4 Nov):**
+- Agent work in progress: **B on the Dumps type**: the Working spinner takes the Dumps rail entry's count; a failed dump is a red dot on its tile (the one red dot errors keep). Columns, Atlas and Timeline show it only on the dump (Columns' Dumps strip).
+- A finished dump: **A a toast with Undo** ("Made 3 signals"; Undo removes the dump and what it made). The one success toast, since its result lands where you may not be looking.
+- Offline: **A beside the view switcher** (at the rail foot, above the switcher; beside it in the other views).
 
 ## 09 Making things — PROPOSED (jig `09-making/`)
 

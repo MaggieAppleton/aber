@@ -409,3 +409,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 - Open: the Open transition (shared tile and title, or cross-fade and slide); the peek's position (beside or below); where Back lands (the preview or the peek).
 
 4 Nov 2026 (Maggie): the 20px type size is removed (scale 11/12/13, pane title 24); the old 01-foundations page is retired.
+
+4 Nov 2026 (Maggie, 10): agent work in progress shows on the Dumps rail entry; a finished dump reports with a toast with Undo; offline shows beside the view switcher.

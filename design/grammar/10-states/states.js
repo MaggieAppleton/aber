@@ -159,7 +159,7 @@
         main: theoryDoc(HELD[0], { extraEv: `<div class="ob-block sug"><div class="ob-blabel">Suggested</div>${item("signal", SIGNALS[3][0], SIGNALS[3][1])}<div class="ob-decide">${btn("secondary", "Dismiss")}${btn("primary", "Accept")}</div></div>` }) }) },
 
     failed: { g: "Error", label: "Dump failed", views: ALL, work: "failed",
-      note: "<b>A failed dump stays where it was, with the reason in words and Retry beside it.</b> Words beside the object, in ink; no red dot on the row or page. The one red dot left is the composer's global mark (choice 1 A), where there's no room for words. What you sent is never lost. Try Retry.",
+      note: "<b>A failed dump stays where it was, with the reason in words and Retry beside it.</b> Words beside the object, in ink; no red dot on the row or page. The one red dot left is the global mark on the Dumps rail entry (decided), where there's no room for words. What you sent is never lost. Try Retry.",
       o: () => ({ cur: "dump", work: "failed", list: list("dump", dumpRows(row(NEW_DUMP, { cur: true, sub: `<span class="neg-t">Couldn't read the page</span>` })), { plus: false }),
         main: dumpDoc({ status: `<div class="st-status"><span class="msg">Couldn't read stratechery.com. The page needs a login.</span>${btn("secondary", "Retry", 'data-act="retry"')}</div>` }) }),
       stg: { columns: s => strip(s, `<span class="stg-dot neg" role="img" aria-label="A dump failed"></span>`) } },
@@ -225,7 +225,7 @@
   const page = document.body.dataset.jig;
   const PICK = { work: ["work", { "A In the composer": "composer", "B On the Dumps type": "rail", "C Only on the dump": "row" }],
     done: ["done", { "A Toast with Undo": "toast", "B Silent: it appears in Briefing": "silent" }], offline: ["offline", { "A Beside the view switcher": "switcher", "B In the composer": "composer" }] };
-  const DEF = { work: "composer", done: "silent", offline: "switcher" };
+  const DEF = { work: "rail", done: "toast", offline: "switcher" };   // decided 4 Nov 2026
   const picks = () => {
     const out = { ...DEF };
     for (const [id, [key, vals]] of Object.entries(PICK)) {

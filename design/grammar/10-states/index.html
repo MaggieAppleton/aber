@@ -29,7 +29,7 @@
 
 <header class="jig-head">
   <h1>Grammar 10: States</h1>
-  <p><b>Proposed, 4 Nov 2026.</b> Empty, loading, background work, errors, offline, toasts, the one confirmation and success, each shown in the type-first default view and, where it applies, in Columns, Atlas and Timeline. Built only from 00–05 and the decided navigation. The item-list rows, cards and the Add slot are placeholders until 06 Objects; only the state treatments are proposed here.</p>
+  <p><b>Decided 4 Nov 2026:</b> agent work in progress shows on the Dumps rail entry; a finished dump reports with a toast with Undo; offline shows beside the view switcher. Anything placed relative to "the composer" (toasts, the composer status segment) is pending 09's rebuild of capture around the "Dump or ask" chat sidebar. Empty, loading, background work, errors, offline, toasts, the one confirmation and success, each shown in the type-first default view and, where it applies, in Columns, Atlas and Timeline. Built only from 00–05 and the decided navigation. The item-list rows, cards and the Add slot are placeholders until 06 Objects; only the state treatments are proposed here.</p>
 </header>
 
 <div class="decide">
@@ -67,7 +67,7 @@
 </section>
 
 <section class="jig-section" id="rules">
-  <h2>The rules (proposed)</h2>
+  <h2>The rules (decided 4 Nov 2026)</h2>
   <ol class="rules">
     <li><b>Empty: say what's absent in one line, and show the action that fills it.</b> One line in the empty-state role (13 / 400 / ink 2), no full stop, no illustration, no instructions.
       <ul>
@@ -115,7 +115,7 @@
   <div class="thumbs" id="thumbs"></div>
 </section>
 
-<section class="jig-section" id="work" data-decision="work" data-question="1. Where does agent work in progress show, beyond the dump itself?" data-default="A In the composer">
+<section class="jig-section" id="work" data-decision="work" data-question="1. Where does agent work in progress show, beyond the dump itself?" data-default="B On the Dumps type">
   <p>A link dump is processing. The dump's own row and page always say so; this is about the one mark you'd see from anywhere else.</p>
   <div class="jig-compare">
     <div class="jig-option" data-option="A In the composer"><div class="jig-label"><b>A</b> In the composer</div><p class="jig-note">A Working spinner at the composer's left while anything you sent is processing; a red dot if one failed (the one red dot errors keep: no room for words there, and it opens the dump that says why). Same place in all four views, right where you dumped. What the spec'd pill dot was meant to be.</p><div class="st-mount" data-scene="processing" data-ch='{"work":"composer"}'></div></div>
@@ -124,7 +124,7 @@
   </div>
 </section>
 
-<section class="jig-section" id="done" data-decision="done" data-question="2. When a dump finishes, does a toast report it?" data-default="B Silent: it appears in Briefing">
+<section class="jig-section" id="done" data-decision="done" data-question="2. When a dump finishes, does a toast report it?" data-default="A Toast with Undo">
   <p>The dump made three signals. Today the app shows a toast with the counts and Undo (which deletes the dump).</p>
   <div class="jig-compare">
     <div class="jig-option" data-option="A Toast with Undo"><div class="jig-label"><b>A</b> Toast with Undo</div><p class="jig-note">"Made 3 signals" above the composer for 5 seconds, wherever you are. Undo removes the dump and what it made. A success toast: the one exception to rule 8.</p><div class="st-mount" data-scene="done" data-ch='{"done":"toast"}'></div></div>
