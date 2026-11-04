@@ -102,14 +102,23 @@ Evidence: today's CSS uses 36 distinct paddings, 18 gaps, 18 margins and 19 row 
 - Density is **Regular**: the values above. Compact and Comfortable are not used.
 - The middle column's theories are **separate cards with gaps** (`--gap-item` between them), not one container with dividers.
 
-## 02 Type — PROPOSED (choose on `02-type/`)
+## 02 Type — DECIDED (4 Nov 2026: scale B 11/12/13/20, pane title 24, section headers ink 2)
 
-Already decided: Geist (Geist Mono for keys and exact times), body 13, colour system D inks.
+Geist (Geist Mono for keys and exact times), body 13, colour system D inks. Jig: `02-type/`. Values live in `_shared/type.css`, which every grammar page loads.
 
 Evidence: today's CSS uses 11 px font sizes (including 9, 10 and 14.5) plus 10 size tokens for the same values, 16 line heights, weight 700 three times, 32 text colours across five ink families, and ink 3 for text 228 times.
 
 1. **Every piece of text has one role**, and each role has one size, weight, ink and line height. A new kind of text means a new role, never a one-off value.
-2. **Few sizes; peers differ by weight and ink first.** Body is 13. There is one size below it (for labels, meta and counts) and one above it (for the pane title). Nothing is smaller than the small size.
+2. **Four sizes; peers differ by weight and ink first.**
+
+| Token | Size | Used for |
+| --- | --- | --- |
+| `--fs-small` (count) | 11 | Counts and badges only |
+| `--fs-label` | 12 | Labels, meta, button and chip labels, tooltips, keys |
+| `--fs-body` | 13 | Everything you read: names, values, nav, prose |
+| `--fs-title` | 24 | The pane title, the only text at 24 |
+
+   Nothing is smaller than 11. 20 stays in the scale for a future title role but nothing uses it today.
 3. **Two inks for text.** Ink is for what you read and act on; ink 2 is for what names or describes it. Ink 3 is never text.
 4. **Three weights.**
    - 600: the subject.
@@ -120,30 +129,25 @@ Evidence: today's CSS uses 11 px font sizes (including 9, 10 and 14.5) plus 10 s
    - Names wrap: cards up to three lines, the pane title in full.
    - Nav items, chips and meta truncate to one line, with the full text in a tooltip.
    - Labels never wrap.
-7. **Numbers are tabular wherever they count or compare.** Keys and exact times use Geist Mono at the small size.
+7. **Numbers are tabular wherever they count or compare.** Keys and exact times use Geist Mono at 12.
 8. **No uppercase and no letter-spacing**, except −0.01em on the pane title.
 
 | Role | Size / weight / ink / line height |
 | --- | --- |
-| Pane title | title (20) / 600 / ink / 1.2 |
-| Card name | body (13) / 600 / ink / 1.4 |
-| Section header | body / 600 / ink 2 / 1.4 |
-| List name (an object listed or referenced) | body / 400 / ink |
-| Nav item | body / 400 / ink 2; when current: 500 / ink |
-| Field value | body / 400 / ink |
-| Prose (note, tripwire sentence) | read (13) / 400 / ink / 1.55, max 68ch |
-| Field or group label | small (12) / 500 / ink 2, no wrap |
-| Meta (source, time, counts beside a header) | small / 400 / ink 2, tabular |
-| Count, badge | small / 500 / ink 2, tabular |
-| Button or chip label | small / 500 |
-| Tooltip | small / 500 / on ink |
-| Key, exact time | small / 500 / Geist Mono / ink 2 |
-| Empty state | body / 400 / ink 2 |
-
-**Open:**
-- Scale: 12/13/20 (proposed), 11/12/13/20 (the 1 Nov scale), or 12/13/15/20 (adds a reading size for prose).
-- Pane title: 20 or 24.
-- Section-header ink: ink 2 or ink.
+| Pane title | 24 / 600 / ink / 1.2, −0.01em |
+| Card name | 13 / 600 / ink / 1.4 |
+| Section header | 13 / 600 / ink 2 / 1.4 |
+| List name (an object listed or referenced) | 13 / 400 / ink / 1.4 |
+| Nav item | 13 / 400 / ink 2; when current: 500 / ink |
+| Field value | 13 / 400 / ink |
+| Prose (note, tripwire sentence) | 13 / 400 / ink / 1.55, max 68ch |
+| Field or group label | 12 / 500 / ink 2, no wrap |
+| Meta (source, time, counts beside a header) | 12 / 400 / ink 2, tabular |
+| Count, badge | 11 / 500 / ink 2, tabular |
+| Button or chip label | 12 / 500 |
+| Tooltip | 12 / 500 / on ink |
+| Key, exact time | 12 / 500 / Geist Mono / ink 2 |
+| Empty state | 13 / 400 / ink 2 |
 
 ## Still to come
 
