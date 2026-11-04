@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grammar 02: Type</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="../../explorations/_shell/jig.css">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/stage.css">
+<link rel="stylesheet" href="../_shared/spacing.css">
+<link rel="stylesheet" href="../_shared/type.css">
+<link rel="stylesheet" href="type-page.css">
+<script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/stage.js" defer></script>
+<script src="type-page.js" defer></script>
+<script type="module" src="../_shared/agentation.js" data-app-name="Grammar 02: Type"></script>
+</head>
+<body class="jig" data-jig="grammar-02-type">
+
+<header class="jig-head">
+  <h1>Grammar 02: Type</h1>
+  <p>When each size, weight and ink is used. Already decided: Geist (Geist Mono for keys and times), body 13, colour system D inks, Regular spacing. The stage keeps the app's layout; only type changes.</p>
+</header>
+
+<div class="decide">
+  <div class="decide-box">
+    <h2>Decide on this page</h2>
+    <ol>
+      <li data-pick="scale"><a href="#scale">Scale: three sizes, the 1 Nov four, or four with a reading size</a> <span class="pick"></span></li>
+      <li data-pick="title"><a href="#title">Pane title: 20 or 24</a> <span class="pick"></span></li>
+      <li data-pick="sechead"><a href="#sechead">Section headers: quiet ink 2, or ink</a> <span class="pick"></span></li>
+    </ol>
+  </div>
+</div>
+
+<section class="jig-section" id="today">
+  <h2>Today, measured</h2>
+  <p>Every type value in the canonical CSS (27 files in <code>jig/src/homes/</code> and <code>app/web/src/ui/</code>).</p>
+  <table class="audit">
+    <thead><tr><th>Property</th><th>Distinct</th><th>Uses</th><th>Values in use (count)</th></tr></thead>
+    <tbody>
+      <tr><td>Font size (px)</td><td class="n">11</td><td class="n">102</td><td><em>9</em>(2) <em>10</em>(2) 11(9) 12(67) 13(11) <em>14.5</em>(1) <em>15</em>(5) <em>16</em>(1) 20(1) <em>24</em>(1) <em>26</em>(2), plus 10 different size tokens (<code>--size-px-12</code>, <code>--text-sm</code>, <code>--text-xs</code>, <code>--text-lg</code>…) for the same values</td></tr>
+      <tr><td>Weight</td><td class="n">4</td><td class="n">205</td><td>400(23) 500(77) 600(102) <em>700</em>(3)</td></tr>
+      <tr><td>Line height</td><td class="n">16</td><td class="n">56</td><td>1 1.2 1.3 1.35 1.4 1.45 1.5 1.6 1.65, and in px 11 16 17 18 20 22 28: ratios and fixed heights mixed for the same roles</td></tr>
+      <tr><td>Text colour</td><td class="n">32</td><td class="n">590</td><td>Five ink families at once (<code>--ap-ink-*</code>, <code>--ab-ink-*</code>, <code>--ink-*</code>, <code>--text-primary/secondary/tertiary</code>, raw hex). Ink 3, which fails 4.5:1, is used for text 228 times.</td></tr>
+    </tbody>
+  </table>
+  <ul class="offenders">
+    <li>The pane title is 26px (panes.css:19) while the decided scale says 20; 24px appears once (homes.css:163).</li>
+    <li>Reading text at <code>14.5px</code> with <code>line-height: 1.6</code> (homes.css:167) and 15px elsewhere (homes.css:165, :272): three reading sizes, none in the scale.</li>
+    <li>Sizes below 11: <code>9px</code> (homes.css:220, pill-study.css:377), <code>10px</code> (homes.css:345, pill-study.css:126).</li>
+    <li>Counts and secondary text in ink 3 (e.g. briefing-app.css:17): too light to read comfortably.</li>
+    <li>No uppercase anywhere, and letter-spacing only on titles. Keep both that way.</li>
+  </ul>
+</section>
+
+<section class="jig-section" id="rules">
+  <h2>The rules (proposed)</h2>
+  <ol class="rules">
+    <li><b>Every piece of text has one role, and each role has one size, weight, ink and line height.</b> If it isn't in the table, it doesn't exist yet: add a role, never a one-off.</li>
+    <li><b>Few sizes; tell peers apart with weight and ink first.</b> Body is 13. One size below it, for labels, meta and counts. One size above it, for the pane title. Nothing is smaller than the small size.</li>
+    <li><b>Two inks for text.</b> Ink for what you read and act on; ink 2 for what names or describes it. Ink 3 is never text.</li>
+    <li><b>Three weights.</b> 600 for the subject (card names, section headers, pane title). 500 for things you press or that name a value (buttons, chips, labels, counts, the current nav item). 400 for everything else.</li>
+    <li><b>Line height:</b> 1.4 for interface text, 1.55 for prose, 1.2 for the pane title. Prose stops at 68 characters a line.</li>
+    <li><b>Wrap or truncate by role.</b> Names wrap (cards up to three lines, the pane title in full). Nav items, chips and meta truncate to one line with an ellipsis and show the full text in a tooltip. Labels never wrap.</li>
+    <li><b>Numbers are tabular</b> wherever they count or compare. Keys and exact times use Geist Mono at the small size.</li>
+    <li><b>No uppercase, no letter-spacing</b>, except −0.01em on the pane title.</li>
+  </ol>
+  <table class="audit roles">
+    <thead><tr><th>If it's…</th><th>Size / weight / ink / height</th><th>Examples on the stage</th></tr></thead>
+    <tbody>
+      <tr><td>Pane title</td><td>title (20) / 600 / ink / 1.2</td><td>Tokens become nearly free for routine work, in the pane</td></tr>
+      <tr><td>Card name</td><td>body (13) / 600 / ink / 1.4</td><td>Theory names on cards</td></tr>
+      <tr><td>Section header</td><td>body / 600 / ink 2 / 1.4</td><td>Cost of intelligence above its cards; Themes column head; map area labels</td></tr>
+      <tr><td>List name</td><td>body / 400 / ink / 1.4</td><td>Signals in Supports, timeline items: objects listed inside something else</td></tr>
+      <tr><td>Nav item</td><td>body / 400 / ink 2; current: 500 / ink</td><td>Themes in the rail</td></tr>
+      <tr><td>Field value</td><td>body / 400 / ink</td><td>2028</td></tr>
+      <tr><td>Prose</td><td>read (13) / 400 / ink / 1.55, max 68ch</td><td>The note; the tripwire sentence</td></tr>
+      <tr><td>Field or group label</td><td>small (12) / 500 / ink 2, no wrap</td><td>Confidence, Happens by, Supports 2</td></tr>
+      <tr><td>Meta</td><td>small / 400 / ink 2, tabular</td><td>23 signals, x.com, +5 −2, year axis</td></tr>
+      <tr><td>Count, badge</td><td>small / 500 / ink 2, tabular</td><td>Rail counts, pending-suggestion badge</td></tr>
+      <tr><td>Button, chip label</td><td>small / 500 / button ink</td><td>Accept, Dismiss, theme chip</td></tr>
+      <tr><td>Tooltip</td><td>small / 500 / on ink</td><td>Icon button names</td></tr>
+      <tr><td>Key, exact time</td><td>small / 500 / Geist Mono / ink 2</td><td>⌘K, 14:02</td></tr>
+      <tr><td>Empty state</td><td>body / 400 / ink 2</td><td>"Add theory" slot</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="jig-section" id="stage">
+  <h2>The stage, built only from these rules</h2>
+  <div class="viewer-bar">
+    <span class="seg" data-seg="view"><span>View</span><span class="seg-group"><button type="button" value="sections" aria-pressed="true">Sections</button><button type="button" value="columns">Columns</button><button type="button" value="atlas">Atlas</button><button type="button" value="timeline">Timeline</button></span></span>
+    <span class="seg" data-seg="scale"><span>Scale</span><span class="seg-group"><button type="button" value="three" aria-pressed="true">12/13/20</button><button type="button" value="decided">11/12/13/20</button><button type="button" value="reading">12/13/15/20</button></span></span>
+    <span class="seg" data-seg="title"><span>Title</span><span class="seg-group"><button type="button" value="20" aria-pressed="true">20</button><button type="button" value="24">24</button></span></span>
+    <span class="seg" data-seg="sechead"><span>Section header</span><span class="seg-group"><button type="button" value="quiet" aria-pressed="true">Ink 2</button><button type="button" value="ink">Ink</button></span></span>
+    <span class="seg" data-seg="overlay"><span>Show type roles</span><span class="seg-group"><button type="button" value="off" aria-pressed="true">Off</button><button type="button" value="on">On</button></span></span>
+  </div>
+  <p class="stage-label">Stage: the app's current layout, unchanged. Show type roles labels one example of each role with its size, weight and ink.</p>
+  <div class="stg-host" id="viewer" data-stage='{"view":"sections","scale":"three","title":"20","sechead":"quiet"}'></div>
+</section>
+
+<section class="jig-section" id="views">
+  <h2>Same rules, four views</h2>
+  <div class="views-grid" data-typeoverlay>
+    <div><p class="view-name">Theme sections</p><div class="stg-host" data-stage='{"view":"sections"}'></div></div>
+    <div><p class="view-name">Columns</p><div class="stg-host" data-stage='{"view":"columns"}'></div></div>
+    <div><p class="view-name">Atlas</p><div class="stg-host" data-stage='{"view":"atlas"}'></div></div>
+    <div><p class="view-name">Timeline</p><div class="stg-host" data-stage='{"view":"timeline"}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" id="scale" data-decision="scale" data-question="1. How many sizes?" data-default="A three sizes">
+  <div class="jig-compare" style="--jig-min:300px">
+    <div class="jig-option" data-option="A three sizes"><div class="jig-label"><b>A</b> Three: 12 / 13 / 20</div><p class="jig-note">Labels, meta and counts share 12; nothing smaller. Fewest sizes, and answers "some things are too small".</p><div class="stg-host" data-option-stage data-stage='{"scale":"three"}'></div></div>
+    <div class="jig-option" data-option="B 1 Nov four"><div class="jig-label"><b>B</b> Four: 11 / 12 / 13 / 20</div><p class="jig-note">The scale decided on 1 Nov: counts and badges drop to 11. One more step to tell apart.</p><div class="stg-host" data-option-stage data-stage='{"scale":"decided"}'></div></div>
+    <div class="jig-option" data-option="C reading size"><div class="jig-label"><b>C</b> Four: 12 / 13 / 15 / 20</div><p class="jig-note">Adds 15 for prose in the pane (the note), so reading feels different from scanning.</p><div class="stg-host" data-option-stage data-stage='{"scale":"reading"}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" id="title" data-decision="title" data-question="2. How big is the pane title?" data-default="A 20">
+  <p>The real app uses 26 today (panes.css:19); the 1 Nov scale says 20.</p>
+  <div class="jig-compare" style="--jig-min:440px">
+    <div class="jig-option" data-option="A 20"><div class="jig-label"><b>A</b> 20</div><p class="jig-note">Leads without shouting; long claims stay on two lines.</p><div class="stg-host" data-option-stage data-stage='{"title":"20"}'></div></div>
+    <div class="jig-option" data-option="B 24"><div class="jig-label"><b>B</b> 24</div><p class="jig-note">More of a document heading; wraps sooner.</p><div class="stg-host" data-option-stage data-stage='{"title":"24"}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" id="sechead" data-decision="sechead" data-question="3. What ink are section headers?" data-default="A ink 2">
+  <p>Both are 13 / 600. Look at the theme headers above their cards and the column heads.</p>
+  <div class="jig-compare" style="--jig-min:440px">
+    <div class="jig-option" data-option="A ink 2"><div class="jig-label"><b>A</b> Ink 2</div><p class="jig-note">The header names the group and steps back, so the card names lead.</p><div class="stg-host" data-option-stage data-stage='{"sechead":"quiet"}'></div></div>
+    <div class="jig-option" data-option="B ink"><div class="jig-label"><b>B</b> Ink</div><p class="jig-note">The header matches the card names; grouping relies on space alone.</p><div class="stg-host" data-option-stage data-stage='{"sechead":"ink"}'></div></div>
+  </div>
+</section>
+
+</body>
+</html>

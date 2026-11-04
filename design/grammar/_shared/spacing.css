@@ -57,7 +57,7 @@
 :root .stg-pane > .stg-chips { min-height: var(--control); align-items: center; }
 
 /* The spacing page shows a wider window so all four views have room */
-body[data-jig="grammar-01-spacing"] .stg { --stg-w: 1240px; --pane-w: 520px; }
+body:is([data-jig="grammar-01-spacing"], [data-jig="grammar-02-type"]) .stg { --stg-w: 1240px; --pane-w: 520px; }
 /* Absolutely positioned parts keep their position under the overlay */
 [data-overlay] .stg .stg-switch[data-sp], [data-overlay] .stg .stg-zoom[data-sp], [data-overlay] .stg .stg-canvas[data-sp], [data-overlay] .stg .stg-tl[data-sp] { position: absolute; }
 [data-overlay] .stg .stg-canvas > *, [data-overlay] .stg .stg-switch > *, [data-overlay] .stg .stg-zoom > * { background-color: transparent; }

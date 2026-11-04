@@ -1,0 +1,59 @@
+/* Aber grammar: type (PROPOSED, see RULES.md). Every piece of text on the stage takes exactly one role.
+   Sizes come from a scale scope (data-scale on any ancestor); roles never name a px value directly.
+   Load this file to apply the type rules; pages that don't keep the stage's original type. */
+
+/* ── Scales (choice 1) ─────────────────────────────────── */
+:root, [data-scale="three"] { --fs-small: 12px; --fs-label: 12px; --fs-body: 13px; --fs-read: 13px; }   /* A: 12 / 13 / 20 */
+[data-scale="decided"]      { --fs-small: 11px; --fs-label: 12px; --fs-body: 13px; --fs-read: 13px; }   /* B: 11 / 12 / 13 / 20 (1 Nov scale) */
+[data-scale="reading"]      { --fs-small: 12px; --fs-label: 12px; --fs-body: 13px; --fs-read: 15px; }   /* C: 12 / 13 / 15 / 20 */
+
+/* ── Pane title (choice 2) ─────────────────────────────── */
+:root, [data-title="20"] { --fs-title: 20px; }
+[data-title="24"] { --fs-title: 24px; }
+
+/* ── Section header ink (choice 3) ─────────────────────── */
+:root, [data-sechead="quiet"] { --sechead-ink: var(--ink-2); }
+[data-sechead="ink"] { --sechead-ink: var(--ink); }
+
+/* ── Line heights and measure ──────────────────────────── */
+:root { --lh-ui: 1.4; --lh-prose: 1.55; --lh-head: 1.2; --measure: 68ch; }
+
+/* ── Roles ─────────────────────────────────────────────── */
+/* Pane title: the one large thing on screen */
+.stg .stg-title { font-size: var(--fs-title); line-height: var(--lh-head); font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+/* Card name: the subject of a card */
+.stg .stg-claim { font-size: var(--fs-body); line-height: var(--lh-ui); font-weight: 600; color: var(--ink); }
+.stg .stg-card[data-draft] .stg-claim { color: var(--ink-2); }
+/* List name: an object listed or referenced (evidence, timeline items, canvas points) */
+.stg .stg-ev-item .t, .stg .stg-tl-item { font-size: var(--fs-body); line-height: var(--lh-ui); font-weight: 400; color: var(--ink); }
+.stg .stg-tl-item.is-draft { color: var(--ink-2); }
+/* Nav item: rail rows; ink 2 at rest, ink and 500 when current */
+.stg .stg-index a, .stg .stg-protos { font-size: var(--fs-body); font-weight: 400; color: var(--ink-2); }
+.stg .stg-index a[data-active] { color: var(--ink); font-weight: 500; }
+.stg .stg-brand { font-size: var(--fs-body); font-weight: 600; color: var(--ink); }
+/* Section header: a group's name (theme sections, column heads, map areas) */
+.stg .stg-sec-head > span:not(.n):not(.g), .stg .stg-col-head > span:not(.g) { font-size: var(--fs-body); font-weight: 600; color: var(--sechead-ink); }
+.stg .stg-area-label { font-size: var(--fs-body); font-weight: 600; color: var(--sechead-ink); }
+.stg .stg-area.is-sel .stg-area-label { color: var(--ink); }
+/* Field label and group label: names a value; never wraps */
+.stg .stg-fields dt, .stg .stg-ev-head { font-size: var(--fs-label); font-weight: 500; color: var(--ink-2); white-space: nowrap; }
+/* Field value */
+.stg .stg-fields dd { font-size: var(--fs-body); font-weight: 400; color: var(--ink); }
+/* Prose: the note and tripwire sentence; reading size, longer leading, capped measure */
+.stg .stg-note, .stg .stg-trip > span:not(.g) { font-size: var(--fs-read); line-height: var(--lh-prose); font-weight: 400; color: var(--ink); max-width: var(--measure); }
+/* Meta: sources, times, counts beside a header, axis labels */
+.stg .stg-sec-head .n, .stg .stg-ev-item .src, .stg .stg-tl-year, .stg .stg-meta, .stg .stg-area-label .n { font-size: var(--fs-label); font-weight: 400; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+/* Count and badge: numbers on their own */
+.stg .stg-index a span:last-child, .stg .stg-protos span:last-child, .stg .stg-pending { font-size: var(--fs-small); font-weight: 500; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.stg .stg-pending { color: var(--ink); }
+/* Button and chip labels */
+.stg .stg-btn { font-size: var(--fs-label); font-weight: 500; }
+.stg .stg-chip { font-size: var(--fs-label); font-weight: 500; color: var(--ink-2); }
+
+/* ── Type roles overlay ────────────────────────────────── */
+[data-typeoverlay] .stg [data-tr] { position: relative; outline: 1px dashed oklch(0.55 0.15 250 / 0.6); outline-offset: 1px; }
+[data-typeoverlay] .stg [data-tr]::after { content: attr(data-tr) " " attr(data-trs); position: absolute; z-index: 6; left: 0; bottom: 100%;
+  padding: 1px 4px; border-radius: 3px; background: oklch(0.42 0.14 250); color: #fff; font: 600 9px/1.3 var(--font); letter-spacing: 0; white-space: nowrap; pointer-events: none; }
+[data-typeoverlay] .stg [data-tr="meta"]::after { bottom: auto; top: 100%; }
+[data-typeoverlay] .stg [data-tr="count"]::after { left: auto; right: 0; bottom: auto; top: 100%; }
+[data-typeoverlay] .stg [data-tr="badge"]::after { bottom: auto; top: 100%; }
