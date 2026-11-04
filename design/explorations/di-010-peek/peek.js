@@ -216,7 +216,7 @@
     signal(id, stage) {
       const s = sig(id), L = layoutOf(stage), c = sigConn(s, { pane: true });
       const para = s.id in EXTRA ? null : W.passageFor(s);
-      const note = `<label class="pk-vh" for="note-${s.id}-${uid + 1}">Note</label><textarea class="pk-note pk-sig-note" id="note-${s.id}-${++uid}" rows="2" placeholder="Add a note">${esc(s.note || "")}</textarea>`;
+      const note = `<label class="pk-vh" for="note-${s.id}-${uid + 1}">Note</label><textarea class="pk-note pk-sig-note" id="note-${s.id}-${++uid}" rows="1" placeholder="Add a note">${esc(s.note || "")}</textarea>`;
       const origin = c.d ? `<div class="pk-line"><span class="pk-i">${ic(dumpGlyph(c.d))}</span><span class="pk-line-text"><button type="button" class="pk-ref" data-peek="dump:${c.d.id}" aria-haspopup="dialog" aria-expanded="false">${esc(fromLine(s))}</button></span></div>${para ? `<div class="pk-read pk-passage"><p>${markQuote(para.text, para.quote)}</p></div>` : ""}` : "";
       const merged = s.merged ? `<div class="pk-line"><span class="pk-i">${ic("arrows-merge")}</span><span class="pk-line-text">Merged from ${esc(s.merged.from)} <span class="pk-2">${esc(s.merged.at)}</span></span></div>` : "";
       let conn;
@@ -510,7 +510,15 @@
     document.querySelectorAll("[data-static-rung]").forEach(el => { el.innerHTML = STATIC[el.dataset.staticRung](); });
     document.querySelectorAll("[data-sref]").forEach(el => { el.innerHTML = staticRef(el); });
   }
+  // Notes grow with their text so they read as prose (fallback where field-sizing isn't supported).
+  function fitNotes(root = document) {
+    if (CSS.supports("field-sizing", "content")) return;
+    root.querySelectorAll("textarea.pk-sig-note").forEach(t => { t.style.height = "auto"; t.style.height = `${t.scrollHeight}px`; });
+  }
   function boot() {
+    document.addEventListener("input", e => { if (e.target.matches?.("textarea.pk-sig-note")) fitNotes(e.target.parentElement); });
+    new MutationObserver(() => fitNotes()).observe(document.body, { childList: true, subtree: true });
+    addEventListener("resize", () => fitNotes());
     paintStatic();
     document.querySelectorAll(".pk-stage[data-build]").forEach(st => BUILD[st.dataset.build](st));
     document.querySelector('[data-decision="signal-peek"]')?.addEventListener("click", e => {

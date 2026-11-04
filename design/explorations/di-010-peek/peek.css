@@ -183,6 +183,12 @@ textarea.pk-sig-note { width: calc(100% + var(--pk-space-4)); margin-left: calc(
 .pk-note { width: 100%; min-height: var(--pk-note-min); padding: var(--pk-space-3) var(--pk-space-4); border-radius: var(--pk-r-m); border: 0; box-shadow: inset 0 0 0 var(--pk-stroke) var(--pk-line); background: var(--pk-surface); color: var(--pk-ink); font: inherit; resize: vertical; }
 .pk-note:hover { box-shadow: inset 0 0 0 var(--pk-stroke) var(--pk-line-strong); }
 .pk-note:focus { outline: none; box-shadow: inset 0 0 0 var(--pk-stroke-2) var(--pk-ink); }
+/* The signal's note is its prose: it reads as text at rest and shows its field only while editing. Same box in both states, so nothing moves. */
+textarea.pk-sig-note { min-height: 0; resize: none; overflow: hidden; field-sizing: content; background: transparent; box-shadow: none; cursor: text; }
+textarea.pk-sig-note::placeholder { color: var(--pk-ink-2); opacity: 1; }
+textarea.pk-sig-note:hover { background: var(--pk-hover); box-shadow: none; }
+textarea.pk-sig-note:focus { background: var(--pk-surface); box-shadow: inset 0 0 0 var(--pk-stroke) var(--pk-line-strong); }
+textarea.pk-sig-note:focus-visible { box-shadow: inset 0 0 0 var(--pk-stroke-2) var(--pk-ink); }
 .pk-audio { display: flex; align-items: center; gap: var(--pk-space-4); height: var(--pk-audio-h); padding: 0 var(--pk-space-5) 0 var(--pk-space-2); border-radius: var(--pk-r-l); background: var(--pk-sunk); max-width: var(--pk-peek-w); }
 .pk-audio .pk-bars { flex: 1; display: flex; align-items: center; gap: var(--pk-space-1); height: var(--pk-lh); }
 .pk-audio .pk-bars i { flex: 1; border-radius: var(--pk-r-xs); background: var(--pk-bars); }
