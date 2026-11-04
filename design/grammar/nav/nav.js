@@ -165,7 +165,7 @@
   };
 
   /* ── Options (the open questions) ──────────────────── */
-  const OPT = { peek: "card", brief: "rail", order: "refined", tf: "yes", unseen: "no", switchAt: "rail" };
+  const OPT = { peek: "card", brief: "home", order: "refined", tf: "yes", unseen: "no", switchAt: "rail" };
   const orderOf = s => s.opt.order === "raw" ? ["dump", "signal", "theme", "theory", "prototype"] : RAIL;
 
   /* ── View switcher: Default (type-first + Briefing), then the three views that stay as they are ── */
@@ -241,7 +241,7 @@
   };
 
   /* ── Full: one object as the main area's page ──────── */
-  const backLabel = ([t, id]) => t === "home" ? "Since yesterday" : O[id].name;
+  const backLabel = ([t, id]) => t === "home" || !id ? "Since yesterday" : O[id].name;
   const doc = (o, s, where) => {
     const cur = where === "main" ? s.pane : null;
     const back = where === "main" && s.v === "A" && s.back.length ? `<div class="nv-top"><button type="button" class="nv-back" data-back><i class="ph ph-arrow-left" aria-hidden="true"></i><span>${backLabel(s.back.at(-1))}</span></button></div>` : "";
@@ -353,7 +353,8 @@
     if (s.view !== "default") return `<div class="stg-host nv-stagehost" data-stage='{"view":"${s.view}"}'></div>`;
     const [rw, lw, pw] = W[s.v], pane = s.v !== "A" && s.pane && O[s.pane], home = s.type === "home";
     const cols = [rw, home ? null : `${lw}px`, "minmax(0, 1fr)", pane ? `${pw}px` : null].filter(Boolean).join(" ");
-    const content = home ? digest() : s.v === "B" ? boxes(O[s.sel[s.type]], s) : doc(O[s.sel[s.type]], s, "main");
+    const none = !s.sel[s.type];
+    const content = home || none ? digest() : s.v === "B" ? boxes(O[s.sel[s.type]], s) : doc(O[s.sel[s.type]], s, "main");
     return `<div class="nv" data-v="${s.v}" data-switch="${s.opt.switchAt}" data-at-home="${home}" style="grid-template-columns:${cols}">${rail(s)}${home ? "" : list(s)}<main class="nv-main"><div class="nv-scroller">${content}</div>${s.opt.switchAt === "main" ? switcher() : ""}</main>${pane ? `<aside class="nv-pane" aria-label="Open object">${doc(pane, s, "pane")}</aside>` : ""}</div>`;
   };
 
@@ -396,7 +397,8 @@
     const o = JSON.parse(host.dataset.nav || "{}");
     const s = host._s = { v: o.v || "A", type: o.type || "theme", view: "default", q: "", tf: o.tf || "", back: [], open: {}, peek: null, opt: { ...OPT, ...(o.opt || {}) },
       sel: { briefing: "t4", theme: "coi", theory: "t1", prototype: "p1", signal: "s1", dump: "d1", ...(o.sel || {}) } };
-    s.pane = o.pane !== undefined ? o.pane : s.v === "A" ? null : defaultPane(O[s.sel[s.type]], s.v);
+    if (s.type === "home" && !o.sel) for (const k of Object.keys(s.sel)) s.sel[k] = null;   // Briefing home until you pick something
+    s.pane = o.pane !== undefined ? o.pane : s.v === "A" || !s.sel[s.type] ? null : defaultPane(O[s.sel[s.type]], s.v);
     render(host); ro.observe(host);
     if (o.peekOn) document.fonts.ready.then(() => { const a = host.querySelector(`.nv-scroller [data-open="${o.peekOn}"]`); if (a) showPeek(host, o.peekOn, a, true); });
 
@@ -434,7 +436,7 @@
         showPeek(host, d.open, el, true); return;
       }
       if (d.full) { navigate(s, O[d.full]); }
-      else if (d.go) { s.type = d.go; s.q = ""; s.tf = ""; s.back = []; if (s.v !== "A") s.pane = defaultPane(O[s.sel[s.type]], s.v); }
+      else if (d.go) { s.type = d.go; s.q = ""; s.tf = ""; s.back = []; if (s.v !== "A") s.pane = s.sel[s.type] ? defaultPane(O[s.sel[s.type]], s.v) : null; }
       else if ("home" in d) { s.type = "home"; s.back = []; }
       else if (d.sel) { s.sel[s.type] = d.sel; s.back = []; if (s.v !== "A") s.pane = defaultPane(O[d.sel], s.v); }
       else if (d.open) s.pane = d.open;

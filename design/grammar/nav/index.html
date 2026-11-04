@@ -34,14 +34,14 @@
 
 <div class="decide">
   <div class="decide-box">
-    <h2>Decide on this page</h2>
+    <h2>Decided 4 Nov (Maggie)</h2>
     <ol>
-      <li data-pick="peek"><a href="#peek">Peek: a tethered card or a peek panel</a> <span class="pick"></span><span class="why">Recommended: a. It grows from the row you pointed at and covers the least; the panel hides the right side of what you're reading.</span></li>
-      <li data-pick="briefing"><a href="#briefing">Briefing: a rail entry, or the home of the main area</a> <span class="pick"></span><span class="why">Recommended: a. Triage works like an inbox: the list stays beside the item you act on, with the same grammar as every other type.</span></li>
-      <li data-pick="order"><a href="#order">Rail order: refined to raw, or raw to refined</a> <span class="pick"></span><span class="why">Recommended: a. You go to themes and theories most; the long streams sit at the bottom, where they can grow.</span></li>
-      <li data-pick="themefilter"><a href="#themefilter">Theme filter on Theories and Signals</a> <span class="pick"></span><span class="why">Recommended: a. Themes stay a way in to theories and signals without being the default.</span></li>
-      <li data-pick="unseen"><a href="#unseen">An Unseen group at the top of Signals</a> <span class="pick"></span><span class="why">Recommended: b. Briefing already gathers new signals; the teal dot marks them in the stream.</span></li>
-      <li data-pick="switcher"><a href="#switcher">Where the view switcher sits in the default view</a> <span class="pick"></span><span class="why">Recommended: a. It's the same floating spot as in Columns, Atlas and Timeline, so the switcher never moves when you change views.</span></li>
+      <li data-pick="peek"><a href="#peek">Peek: a tethered card or a peek panel</a> <span class="pick"></span><span class="why">Decided: a. It grows from the row you pointed at and covers the least; the panel hides the right side of what you're reading.</span></li>
+      <li data-pick="briefing"><a href="#briefing">Briefing: a rail entry, or the home of the main area</a> <span class="pick"></span><span class="why">Decided: b. "Aber" at the top of the rail returns to it, and the main area shows it whenever no item is selected.</span></li>
+      <li data-pick="order"><a href="#order">Rail order: refined to raw, or raw to refined</a> <span class="pick"></span><span class="why">Decided: a. You go to themes and theories most; the long streams sit at the bottom, where they can grow.</span></li>
+      <li data-pick="themefilter"><a href="#themefilter">Theme filter on Theories and Signals</a> <span class="pick"></span><span class="why">Decided: a. Themes stay a way in to theories and signals without being the default.</span></li>
+      <li data-pick="unseen"><a href="#unseen">An Unseen group at the top of Signals</a> <span class="pick"></span><span class="why">Decided: b. Briefing already gathers new signals.</span></li>
+      <li data-pick="switcher"><a href="#switcher">Where the view switcher sits in the default view</a> <span class="pick"></span><span class="why">Decided: a. It's the same floating spot as in Columns, Atlas and Timeline, so the switcher never moves when you change views.</span></li>
     </ol>
   </div>
 </div>
@@ -49,9 +49,10 @@
 <section class="jig-section" id="model">
   <h2>The model</h2>
   <ol class="rules">
-    <li><b>Four views:</b> Default (type-first, with Briefing), then Columns, Atlas and Timeline, unchanged. The switcher moves between them; the last three are today's views with their own index and docked pane.</li>
+    <li><b>Briefing is the home of the main area:</b> "Aber" at the top of the rail returns to it, and it shows whenever no item is selected.</li>
+    <li><b>Four views:</b> Default (type-first, with Briefing home), then Columns, Atlas and Timeline, unchanged. The switcher moves between them; the last three are today's views with their own index and docked pane.</li>
     <li><b>The rail lists the types</b> with their glyph tiles and counts. A count always means quantity; a teal dot on a glyph's tile means new since you last looked.</li>
-    <li><b>The second sidebar lists one type's items</b>, ordered for its population: themes all visible; theories by Held, Drafts, Retired; prototypes by status; signals and dumps as day streams with search. Rows hold one status slot on the left (new or challenge) and quantity on the right.</li>
+    <li><b>The second sidebar lists one type's items</b>, ordered for its population: themes all visible; theories by Held, Drafts, Retired; prototypes by status; signals and dumps as day streams with search. Row designs are placeholders until 06 Objects.</li>
     <li><b>The selected item fills the main area</b> as its full view. The main area is the focus region, so it pads at pane level (20 / 24).</li>
     <li><b>Every related object has three rungs.</b> Preview: its row, card or chip where it's mentioned. Peek: hover for half a second, or click, to see its essentials with Open; clicking inside a peek peeks the next thing. Full: Open, and the rail and list move to it; the back link returns.</li>
   </ol>
@@ -71,11 +72,11 @@
 
 <section class="jig-section" id="try">
   <h2>Try it</h2>
-  <p>This window follows your picks below. Point at or click any signal, theory, chip or card inside the item to peek; Open goes there. The switcher at the rail foot moves to Columns, Atlas and Timeline as they are today.</p>
-  <div class="nv-host" id="hero" data-nav='{"v":"A","type":"theory"}'></div>
+  <p>This window follows the picks below and opens on Briefing home. Point at or click any signal, theory, chip or card inside the item to peek; Open goes there. The switcher at the rail foot moves to Columns, Atlas and Timeline as they are today.</p>
+  <div class="nv-host" id="hero" data-nav='{"v":"A","type":"home"}'></div>
   <p class="narrow-h">At 390</p>
   <ul class="narrow">
-    <li>The type rail becomes a bottom tab bar: Briefing and the five types.</li>
+    <li>The type rail becomes a bottom tab bar: Home (Briefing) and the five types.</li>
     <li>The item list is the screen for that tab; the item pushes in full screen from the right, with back.</li>
     <li>A peek becomes a bottom sheet with Open; dragging it up opens the item.</li>
     <li>Columns, Atlas and Timeline keep today's phone behaviour (not shown on a phone).</li>
@@ -97,7 +98,7 @@
   </div>
 </section>
 
-<section class="jig-section" id="briefing" data-decision="briefing" data-question="2. Where does Briefing live in the default view?" data-default="a Rail entry">
+<section class="jig-section" id="briefing" data-decision="briefing" data-question="2. Where does Briefing live in the default view?" data-default="b Home of the main area">
   <div class="jig-compare">
     <div class="jig-option" data-option="a Rail entry"><div class="jig-label"><b>a</b> A rail entry above the types</div><p class="jig-note">Its list groups what changed: Challenges, Drafts, Suggestions, New signals. Each item fills the main area, where you accept or dismiss.</p>
       <div class="nv-host" data-option-stage data-nav='{"v":"A","type":"briefing","opt":{"brief":"rail"}}'></div></div>
@@ -128,7 +129,7 @@
   <div class="jig-compare">
     <div class="jig-option" data-option="a Yes"><div class="jig-label"><b>a</b> Yes, Unseen first, with Mark all seen</div><p class="jig-note">New signals leave the day stream until you've looked.</p>
       <div class="nv-host" data-option-stage data-nav='{"v":"A","type":"signal","opt":{"unseen":"yes"}}'></div></div>
-    <div class="jig-option" data-option="b No"><div class="jig-label"><b>b</b> No, the teal dot marks them in the stream</div><p class="jig-note">Briefing is where new signals are gathered.</p>
+    <div class="jig-option" data-option="b No"><div class="jig-label"><b>b</b> No, new signals stay in the day stream</div><p class="jig-note">Briefing is where new signals are gathered.</p>
       <div class="nv-host" data-option-stage data-nav='{"v":"A","type":"signal","opt":{"unseen":"no"}}'></div></div>
   </div>
 </section>
@@ -145,8 +146,8 @@
 <details class="ref">
   <summary>Round 1 alternatives, for reference (not chosen)</summary>
   <p>B kept the docked pane and showed contents as boxes; C used an icon rail with the item and a pane. Their view switcher also goes to the unchanged views.</p>
-  <div class="jig-option"><div class="jig-label"><b>B</b> Contents as boxes, item opens in the pane</div><div class="nv-host" data-nav='{"v":"B"}'></div></div>
-  <div class="jig-option"><div class="jig-label"><b>C</b> Icon rail, the item in main, relations in the pane</div><div class="nv-host" data-nav='{"v":"C"}'></div></div>
+  <div class="jig-option"><div class="jig-label"><b>B</b> Contents as boxes, item opens in the pane</div><div class="nv-host" data-nav='{"v":"B","opt":{"brief":"rail"}}'></div></div>
+  <div class="jig-option"><div class="jig-label"><b>C</b> Icon rail, the item in main, relations in the pane</div><div class="nv-host" data-nav='{"v":"C","opt":{"brief":"rail"}}'></div></div>
 </details>
 
 </body>

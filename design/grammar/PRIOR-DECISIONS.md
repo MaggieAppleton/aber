@@ -379,3 +379,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 4 Nov 2026 (Maggie, 04-surfaces): cards A soft shadow (ring plus a 1px drop); peeks and menus B crisp (the 1 Nov pop token); floating controls (view switch, zoom, filter) A the smallest shadow. The tier table in RULES.md section 04 (fill, edge, shadow, radius 4 / 7 / 10 / 14, z-index 0–70 from tier tokens) is the default on every grammar page; controls move from radius 6 to 7.
 
 4 Nov 2026 (Maggie): the type-first navigation approach is approved; the second-sidebar row/list designs in the nav jig are NOT approved and need rework in 06 Objects. The type rail should be a little narrower.
+
+4 Nov 2026 (Maggie, nav): peeks are tethered cards; Briefing is the home of the default view's main area (shown when no item is selected), not a rail entry; rail order refined → raw (Themes, Theories, Prototypes, Signals, Dumps); Theories and Signals can be filtered by theme; no Unseen group in Signals; the view switcher sits at the rail foot.

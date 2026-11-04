@@ -302,6 +302,23 @@ Evidence: about 14 text-button recipes at seven heights (24 to 40) and 16 contro
 - Text fields: filled, a sunk well (today's search, proposed) or outlined, a surface with a hairline.
 - The one destructive confirmation (Delete dump): ink like every primary (proposed) or the challenge red.
 
+## Navigation — DECIDED (4 Nov 2026: type-first default view with Briefing home; tethered peeks)
+
+Jig: `nav/`. This supersedes the default-view part of the layout note at the top of this file; Columns, Atlas and Timeline are unchanged.
+
+1. **Four views.** Default (type-first), Columns, Atlas, Timeline. Columns, Atlas and Timeline stay as they are, each with its own index and the docked pane.
+2. **The default view has three columns, with no docked pane.**
+   - A type rail, refined to raw: Themes, Theories, Prototypes, Signals, Dumps, each with its glyph tile and a count. The rail is narrower than before: 160 by default (`--nv-rail-w`, on a dial).
+   - A second sidebar listing the chosen type's items. Theories and Signals can be filtered by theme. Signals have no Unseen group.
+   - The selected item fills the main area as its full view, padded at pane level, because it is the focus region.
+3. **Briefing is the home of the main area.** "Aber" at the top of the rail returns to it, and it shows whenever no item is selected. It is not a rail entry.
+4. **Related objects disclose in three steps.**
+   - Preview: the row, card or chip where the object is mentioned.
+   - Peek: a card tethered to that link, opened by a 500ms hover or a click. It shows the essentials and an Open button, and a click inside it peeks the next object. Esc or a click elsewhere closes it.
+   - Full: Open moves the rail and list to the object; Back returns.
+5. **The view switcher floats at the rail foot**, in the same spot as in the other three views.
+6. **Pending:** the second sidebar's row and list designs are placeholders, not approved. They will be designed in 06 Objects.
+
 ## Still to come
 
 06 objects, 07 rungs.
