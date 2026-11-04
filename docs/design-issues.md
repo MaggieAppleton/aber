@@ -288,7 +288,8 @@ The jig shows this as the preselected "A+C" option (`#opt-chosen`, screenshots `
 - Destructive consequences must be visible when an action is invoked.
 
 **Exploration:** [`design/explorations/di-004-expansion/`](../design/explorations/di-004-expansion/index.html), shared with DI-005.
-**Decision:** option C (provenance trail), Maggie. In her words: "For the first choice in expanding Signal and Dump design, I like the provenance trail (option C). But if you look at the actual layout of this, it's still kind of fucked up. … You need to look at all the details. Some things are too small; there are multiple type sizes in use. There are inconsistent icon buttons."
+**Decision:** B (docked pane), Maggie's latest choice on 4 Nov 2026. It supersedes C for structure; see "Decisions (Maggie, 4 Nov 2026, latest)" below. C's provenance content and order still inform what the pane shows.
+**Earlier decision (superseded for structure):** option C (provenance trail), Maggie. In her words: "For the first choice in expanding Signal and Dump design, I like the provenance trail (option C). But if you look at the actual layout of this, it's still kind of fucked up. … You need to look at all the details. Some things are too small; there are multiple type sizes in use. There are inconsistent icon buttons."
 
 ### Detail pass on C
 
@@ -324,6 +325,93 @@ Before and after screenshots are in `design/explorations/di-004-expansion/screen
       - `c-columns-menu` has 3 frames of about 100 nodes each and exceeds the limit even with no design model. Completing it needs narrower case selectors (a case change, which I didn't make) or a kit change, such as one request per frame.
     - *Open.*
 
+### Decisions (Maggie, 4 Nov 2026, latest)
+
+Verbatim from her Copy choices:
+
+- signal-structure — How should a Signal expand?: B docked pane
+- dump-structure — How should a Dump expand?: B pane document
+- shared-grammar — Share one summary-to-detail grammar (row → labelled sheet → source on demand) across Signal and Dump?: (no choice) — note: "I don't understand the question. Show me."
+- action-placement — Where do actions live?: (no choice) — note: "Similar to the question above, I can't answer this because you're asking me a question without showing me the context of where I'm answering the question. I can't answer questions divorced from the context of what you're asking about."
+
+What this means:
+
+- **Structure: B.** A Signal opens as a docked pane beside its row, and a Dump opens as a pane document. This supersedes the earlier choice of C for structure. C's provenance content and order (source, then the dump passage, then this signal, then where it is filed, then the theories it bears on) still inform what the pane shows. C is not the structure. The jig marks B as the default for `signal-structure` and `dump-structure`, and C no longer carries a Chosen badge.
+- **shared-grammar: open, now shown in context.** Section 4 of the jig shows a real Signal pane and Dump pane side by side in each frame. The question is asked against what's visible: "Looking at the Signal pane and the Dump pane side by side in each frame below: should they be built the same way?"
+  - *Yes*: one grammar. Both panes have the same header, labelled field sheet and source section.
+  - *Shared frame, own body*: the header and actions are shared, but each body is shaped by its object (fields for a Signal, a document for a Dump).
+  - *No*: two distinct grammars.
+- **action-placement: open, now shown in context.** Section 5 shows the same open Signal pane with its real actions (File in theme, Add theory, Merge, Discard, Open source) placed three ways. The question: "In the open Signal pane below, where should its actions sit?"
+  - *Pane header toolbar*
+  - *Verbs on fields + labelled foot*: each verb sits on the field it changes, with Discard left of the primary in a foot bar.
+  - *⋯ overflow menu*: a tethered menu.
+- Neither open decision has a default.
+
+### Add theory placeholder (Maggie, 4 Nov 2026)
+
+**Maggie (verbatim):** "Remove the "not evidence for a theory yet." If we have an option to "add theory," that indicates there's not evidence for a theory yet. I would change "use as evidence" to "add theory" and that should be a placeholder optional add element there."
+
+**Applied in the B Signal pane (`#pane-c-b`):**
+
+- The sentence is gone.
+- The Theories field now ends in a quiet 40px "Add theory" slot, in the same place a linked theory appears. It's a plus and a label, with no ellipsis.
+- Clicking the slot opens the theory picker, where the stance (Supports or Undermines) is chosen. The result is a populated theory row, and the slot stays below it.
+- The B pane menus and the action-placement alternatives use the same label, "Add theory".
+- Current is unchanged. A and C keep "Use as evidence", faithful to those options.
+- Themes follows the same pattern. The stray "+ File" next to the chip is replaced by a "File in theme" slot under the chips, with the same style, alignment, 40px height and icon as "Add theory". It opens the theme picker, now at 14px with 40px rows.
+- The B pane's "Illustrative" note now matches C's detail pass: plain secondary text, no box, with an underlined "Show today's data" toggle.
+
+Screenshots: `di004-b-addtheory-{empty,picker,populated}.png`, plus `-390` variants.
+
+While checking this, the B pane's meta was raised to the detail-pass floor: 14px labels and values, 40px chips and controls, each label on its value's first line, and colon-free accessible names on stance buttons and the From chip.
+
+### Exploration: provenance popover (Maggie, 4 Nov 2026)
+
+**Maggie (verbatim, on DI-002's dump-viewer question):** "Neither of these feels good. It shouldn't be a modal, but this inline is very noisy. I think I want to explore popovers for a lot of this inline stuff. Like, if I were to click on the signal to see where it came from, I'd want a popover to appear next to the signal or below it with more information — like where it came from and these sorts of things. Which is which is a good in-between between a modal and inline, because inline is too verbose."
+
+C's provenance content and order stand. What's under reconsideration is how it presents provenance detail inline. This doesn't supersede other DI-004 decisions, and it doesn't imply popovers for every inline surface.
+
+The jig section is `#provenance-popover`. Every option uses s7 in a 274px Columns column.
+
+- **C inline trail (baseline):** option C's trail as it stands, labelled as chosen before B and under reconsideration for provenance details.
+- **A: chain below.** One origin trigger on the calm, collapsed card opens a popover under the card holding the compact chain: source, then the voice-note quote, then "made 3 signals", then a link to open the full dump.
+- **B: passage beside.** The whole signal row is the trigger. The popover sits beside the column and overflows toward the next one. It leads with the dump passage, with the quote in its surrounding sentences, then the source and the full-dump link.
+- **C′: origin parts.** A one-line origin summary (for example "From a voice note, Today 07:40, via The Verge") where each part is its own trigger with a small focused popover: one for the dump excerpt and one for the source. Only one is open at a time.
+
+All popovers:
+
+- Use real buttons with `aria-expanded`, `aria-controls` and `aria-haspopup`.
+- Close on Escape (focus returns to the trigger), on an outside click and on the trigger.
+- Move focus in only when they contain controls.
+- Show one at a time, grow from their trigger, use the tier-4 `--ap-shadow-float`, have no X and respect reduced motion.
+- Are fixed-positioned, so the column can't clip them.
+
+At 390px, each popover becomes a full-width card with 12px gutters, tethered under its row. It flips above when there's no room below. It is not a bottom sheet.
+
+Section 7 shows popovers alongside the B pane:
+
+- A quick-peek popover from a row, next to opening the full pane.
+- A popover from the source mention inside the open pane.
+
+The pane is not transient, so a popover inside it is still one transient layer. Opening a picker closes the popover.
+
+**Status:** *Open.* `provenance-popover` has no default.
+
+### In-context choices (4 Nov 2026)
+
+The jig now uses the shared shell's in-context choice controls. `data-decision` sits on each section and `data-option` on each frame, and the old `.jig-decision` panels are gone.
+
+| Decision | Options | Default |
+| --- | --- | --- |
+| `signal-structure` | Current, A field sheet, B docked pane, C provenance trail | B docked pane |
+| `dump-structure` | Current, A made-first in place, B pane document, C interleaved passages | B pane document |
+| `shared-grammar` | Yes, Shared frame, own body, No | none |
+| `action-placement` | Pane header toolbar, Verbs on fields + labelled foot, ⋯ overflow menu | none |
+| `provenance-popover` | C inline trail, A chain below, B passage beside, C origin parts | none |
+
+- **Dropped** old abstract options: "A + C passage", "A in place + B for full read" and "Current bottom icon row". The current bottom icon row is still visible in section 1's Current frame.
+- **Added:** "Shared frame, own body".
+
 ## DI-005 · Expanded Dumps are long, hard to read and poorly designed
 
 **Status:** exploring
@@ -333,7 +421,8 @@ Before and after screenshots are in `design/explorations/di-004-expansion/screen
 **Maggie's observation (verbatim):** "I'd extend that to the dumps area: when those are expanded, they're extremely long and hard to read and generally poorly designed. … Both of these need significant rethinks from the ground up."
 
 **Exploration:** shared with DI-004. It looks for one summary-to-detail grammar that keeps the different roles of Dump and Signal and their source relationships.
-**Decision:** option C (passages interleaved with what they made), chosen alongside DI-004's provenance trail. The DI-004 detail pass covers both.
+**Decision:** B (pane document), Maggie's latest choice on 4 Nov 2026. It supersedes C for structure (see DI-004, "Decisions (Maggie, 4 Nov 2026, latest)"). Whether Signal and Dump share one grammar is still open, now shown in context.
+**Earlier decision (superseded for structure):** option C (passages interleaved with what they made), chosen alongside DI-004's provenance trail. The DI-004 detail pass covers both.
 
 ---
 

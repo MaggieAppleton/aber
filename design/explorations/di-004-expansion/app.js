@@ -36,11 +36,11 @@
   /* ── State ── */
   const STATES = new Map();
   function init(el) {
-    const surface = el.dataset.surface, opt = el.dataset.option;
+    const surface = el.dataset.surface, opt = el.dataset.variant, sig = el.dataset.signal || "s12";
     const st = { el, id: el.dataset.stage, surface, opt, open: new Set(), full: new Set(), runs: new Set(), peek: new Set(), show: new Set(),
       themes: {}, evidence: {}, notes: {}, gists: {}, discard: {}, flash: {}, unmerged: {}, picker: null, menu: null, editThemes: new Set(), real: false, pane: [], hl: null, modal: null, enter: null, scrollTo: null };
     if (surface === "feed") st.pane = [{ k: "theme", id: FEED.theme }];
-    if (surface === "columns") { if (opt === "B") st.pane = NARROW ? [] : [{ k: "signal", id: "s12" }]; else st.open.add("signal:s12"); if (opt === "A") st.peek.add("s12"); }
+    if (surface === "columns") { if (opt === "B") st.pane = NARROW ? [] : [{ k: "signal", id: sig }]; else st.open.add(`signal:${sig}`); if (opt === "A") st.peek.add(sig); }
     if (surface === "dumps") { if (opt === "B") st.pane = NARROW ? [] : [{ k: "dump", id: "D2" }]; else st.open.add("dump:D2"); }
     if (surface === "feed" && opt !== "B") st.open.add("signal:s12");
     STATES.set(el, st);
@@ -86,11 +86,12 @@
       // C: object verbs live in menus; each chip opens a small menu.
       return `<div class="xa-chips">${ts.map(t => { const id = `chip:${s.id}:${t}`, open = st.menu === id; return `<span class="xc-menu-wrap"><button class="pn-chip xc-chipbtn" aria-haspopup="menu" aria-expanded="${open}" data-act="menu" data-id="${id}" data-key="menu:${id}">${ic("binoculars")}<span>${themeName(t, ctx)}</span></button>${open ? `<div class="xc-menu xc-chipmenu" role="menu" aria-label="${esc(theme(t))}"><button role="menuitem" data-act="open-theme" data-t="${t}" data-key="menu-first">${ic("arrow-right")} Open theme</button><button role="menuitem" data-act="unfile" data-id="${s.id}" data-t="${t}">${ic("minus")} Unfile from ${esc(theme(t))}</button></div>` : ""}</span>`; }).join("")}${none}${add}</div>${tail}`;
     }
-    // B: the pane has room; a labelled Unfile sits beside the chip, revealed on hover or focus and always shown on touch.
-    return `<div class="xa-chips">${ts.map(t => `<span class="xb-chiprow"><button class="pn-chip" data-act="open-theme" data-t="${t}">${ic("binoculars")}<span>${themeName(t, ctx)}</span></button><button class="xa-text-btn xb-unfile" data-act="unfile" data-id="${s.id}" data-t="${t}" data-key="unfile:${s.id}:${t}" aria-label="Unfile from ${esc(theme(t))}">Unfile</button></span>`).join("")}${none}${add}</div>${tail}`;
+    // B: the pane has room; a labelled Unfile sits beside the chip (revealed on hover or focus, always shown on touch), and filing is a quiet add slot like Add theory.
+    return `${ts.length ? `<div class="xa-chips">${ts.map(t => `<span class="xb-chiprow"><button class="pn-chip" data-act="open-theme" data-t="${t}">${ic("binoculars")}<span>${themeName(t, ctx)}</span></button><button class="xa-text-btn xb-unfile" data-act="unfile" data-id="${s.id}" data-t="${t}" data-key="unfile:${s.id}:${t}" aria-label="Unfile from ${esc(theme(t))}">Unfile</button></span>`).join("")}</div>` : ""}<button class="xb-addslot" data-act="picker" data-pk="file" data-id="${s.id}" data-key="pick:file:${s.id}" aria-haspopup="dialog" aria-expanded="${pickOpen}">${ic("plus", 16)}<span>File in theme</span></button>${tail}`;
   }
   function evidenceRows(st, s) {
     const ev = evOf(st, s);
+    if (st.opt === "B") return bTheories(st, s, ev);
     return `${ev.length ? ev.map(e => evLink(e, "xa-ev")).join("") : `<span class="xa-none">Not evidence for a theory yet</span>`}
       <div><button class="xa-add" data-act="picker" data-pk="link" data-id="${s.id}" data-key="pick:link:${s.id}" aria-haspopup="dialog" aria-expanded="${st.picker?.id === s.id && st.picker.kind === "link"}">${ic("plus", 10)} Use as evidence</button></div>
       ${flash(st, s, "evidence")}${st.picker?.id === s.id && st.picker.kind === "link" ? linkPicker(st, s) : ""}`;
@@ -98,8 +99,20 @@
   const flash = (st, s, field) => { const f = st.flash[s.id]; return f && f.field === field ? `<div class="xa-flash" role="status">${esc(f.msg)} <button class="xa-link-btn" data-act="undo" data-id="${s.id}" data-key="undo:${s.id}">Undo</button></div>` : ""; };
   function filePicker(st, s) {
     const have = themesOf(st, s);
-    return `<div class="xa-picker" role="dialog" aria-label="File in a theme"><div class="xa-picker-head">File in a theme <button class="xa-x" data-act="picker-close" data-id="${s.id}" aria-label="Close">${ic("x", 10)}</button></div>
+    return `<div class="xa-picker${st.opt === "B" ? " xb-picker" : ""}" role="dialog" aria-label="File in a theme"><div class="xa-picker-head">File in a theme <button class="xa-x" data-act="picker-close" data-id="${s.id}" aria-label="Close">${ic("x", st.opt === "B" ? 16 : 10)}</button></div>
       ${Object.keys(W.THEMES).filter(t => !have.includes(t)).map((t, i) => `<button class="xa-pick" data-act="file" data-id="${s.id}" data-t="${t}"${i === 0 ? ` data-key="picker-first"` : ""}>${ic("binoculars")}${esc(theme(t))}</button>`).join("")}</div>`;
+  }
+  // B: Theories is a slot list. An empty slot is itself the quiet "Add theory" row (Maggie, 4 Nov 2026); the stance is chosen in the picker.
+  function bTheories(st, s, ev) {
+    const open = st.picker?.id === s.id && st.picker.kind === "link";
+    return `${ev.map(e => evLink(e, "xa-ev")).join("")}
+      <button class="xb-addslot" data-act="picker" data-pk="link" data-id="${s.id}" data-key="pick:link:${s.id}" aria-haspopup="dialog" aria-expanded="${open}">${ic("plus", 16)}<span>Add theory</span></button>
+      ${flash(st, s, "evidence")}${open ? bLinkPicker(st, s) : ""}`;
+  }
+  function bLinkPicker(st, s) {
+    const have = evOf(st, s).map(e => e.theory);
+    return `<div class="xa-picker xb-picker" role="dialog" aria-label="Add theory"><div class="xa-picker-head">Which theory does this bear on? <button class="xa-x" data-act="picker-close" data-id="${s.id}" aria-label="Close">${ic("x", 14)}</button></div>
+      ${Object.keys(W.THEORIES).filter(t => !W.THEORIES[t].draft && !have.includes(t)).map((t, i) => `<div class="xb-pick-row"><span>${esc(claim(t))}</span><span class="xb-pick-acts"><button class="xb-stance" data-act="link" data-stance="supports" data-id="${s.id}" data-t="${t}" aria-label="Supports the theory ${esc(claim(t))}"${i === 0 ? ` data-key="picker-first"` : ""}>${ic("arrow-up", 16)}Supports</button><button class="xb-stance" data-act="link" data-stance="undermines" data-id="${s.id}" data-t="${t}" aria-label="Undermines the theory ${esc(claim(t))}">${ic("arrow-down", 16)}Undermines</button></span></div>`).join("")}</div>`;
   }
   function linkPicker(st, s) {
     const have = evOf(st, s).map(e => e.theory);
@@ -261,7 +274,7 @@
       ${editable("pn-title", "gist", s.id, gistOf(st, s), "Signal gist")}
       <dl class="pn-meta">
         ${metaRow("Source", s.sources.length ? s.sources.map(x => `<a class="pn-chip" href="${x.url}" target="_blank" rel="noreferrer">${ic("link")}${esc(x.domain)}, ${esc(x.author)}</a>`).join("") : `<span class="ap-muted">Your own observation</span>`)}
-        ${metaRow("From", `<button class="pn-chip pn-origin" data-act="open-dump" data-d="${d.id}" data-para="${pi}">${ic(dumpIcon(d))}<span>${esc(d.first)}</span></button>`)}
+        ${metaRow("From", `<button class="pn-chip pn-origin" data-act="open-dump" data-d="${d.id}" data-para="${pi}" aria-label="Open ${esc(d.first.replace(/:\s*/g, ", "))}">${ic(dumpIcon(d))}<span>${esc(d.first)}</span></button>`)}
         ${metaRow("Themes", `<div style="display:grid;gap:4px;width:100%">${themeChips(st, s, ctx)}</div>`)}
         ${metaRow("Theories", `<div style="display:grid;gap:2px;width:100%">${evidenceRows(st, s)}</div>`)}
         ${metaRow("Seen", `<span class="ap-num">${esc(s.day)}</span>`)}
@@ -500,4 +513,5 @@
   });
 
   document.querySelectorAll("[data-stage]").forEach(init);
+  window.DI4 = { ic, esc, markQuote, when, kindName, dumpIcon, theme, claim, wordsOf };
 })();
