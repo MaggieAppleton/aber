@@ -1,90 +1,98 @@
 /* Aber grammar: foundations. The single source of literal values.
-   Everything in foundations.css reads these; nothing there holds a raw colour, size or shadow.
-   Five dials (set from foundations.js) drive the rest: --warmth, --r, --tint, --text-body, --soft. */
+   Conforms to design/grammar/PRIOR-DECISIONS.md: Crisp material, Radix Sage neutrals, Radix Jade accent,
+   Geist, 11/12/13/20 at 13/1.4, 4px grid, radii 4/7/10/14, neutral object glyphs, neutral raised selection.
+   Three dials (set from foundations.js): --r (the r-2 step), --text-body, --soft. At their defaults every value
+   equals the decided one. Open choices are scoped attributes: data-sel, data-primary, data-mark. */
 
 :root {
   /* ── Dials ───────────────────────────────────────────── */
-  --warmth: 0.5;        /* 0 neutral grey … 1 warm paper */
-  --r: 10px;            /* base radius; the family derives from it */
-  --tint: 1;            /* glyph tile tint strength */
-  --text-body: 14px;    /* body size; small and title derive from it */
-  --soft: 1;            /* shadow softness: higher = wider, fainter */
+  --r: 7px;             /* r-2; the family keeps its decided offsets from it (4/7/10/14 at 7) */
+  --text-body: 13px;    /* body; 11/12/20 keep their decided offsets from it */
+  --soft: 1;            /* shadow softness: 1 = the decided Crisp shadows */
 
-  /* ── Ground, surface, ink ────────────────────────────── */
-  --hue-neutral: 75;
-  --chroma-neutral: calc(0.002 + var(--warmth) * 0.012);
-  --ground:   oklch(0.962 var(--chroma-neutral) var(--hue-neutral));  /* the base plane */
-  --ground-2: oklch(0.935 var(--chroma-neutral) var(--hue-neutral));  /* fills inside surfaces: hover, chips, quiet buttons */
-  --surface:  oklch(1 0 0);                                           /* anything that sits on the ground */
-  --ink:      oklch(0.24 calc(var(--chroma-neutral) * 0.8) var(--hue-neutral));  /* names, values, primary */
-  --ink-2:    oklch(0.50 calc(var(--chroma-neutral) * 0.8) var(--hue-neutral));  /* context, labels, units; >=4.5:1 on ground-2 */
-  --ground-3: oklch(0.905 var(--chroma-neutral) var(--hue-neutral));  /* pressed or hovered fill on ground-2 */
-  --ink-hover: oklch(0.34 var(--chroma-neutral) var(--hue-neutral));
-  --on-ink:   oklch(0.99 0 0);
-  --on-ink-2: oklch(0.82 0 0);          /* secondary text on ink surfaces (toast, tooltip) */
-  --on-ink-fill: oklch(1 0 0 / 0.16);   /* kbd inside a tooltip */
-  --hairline:        oklch(0.24 0.01 var(--hue-neutral) / 0.09);      /* dividers and seams (ink-3: lines only, never text) */
-  --hairline-strong: oklch(0.24 0.01 var(--hue-neutral) / 0.16);      /* dashed "not yet mine" outlines */
+  /* ── Sage neutrals (Radix Sage) ──────────────────────── */
+  --shc: 26 33 30;                                         /* sage 12 channels: tints every line and shadow */
+  --ground:   color-mix(in oklab, #f7f9f8 55%, #eef1f0);   /* between sage 2 and 3: the base plane */
+  --ground-2: #eef1f0;                                     /* sage 3: sunk (rails, sunk lists, chips) */
+  --ground-3: color-mix(in oklab, #eef1f0, #1a211e 6%);    /* hovered fill on sunk */
+  --surface:  #ffffff;
+  --hover:    rgb(var(--shc) / 5%);                        /* hover is a state layer, so it works on any surface */
+  --tile-bg:  rgb(var(--shc) / 6%);                        /* neutral glyph tile, visible on white and on sunk */
+  --ink:   #1a211e;    /* sage 12: names, values */
+  --ink-2: #5f6563;    /* sage 11: context, labels, units (labels use ink-2, not ink-3: 4.5:1) */
+  --ink-3: #868e8b;    /* sage 9: lines and decorative marks only, never readable text */
+  --ink-hover: #2c3531;
+  --on-ink:   #ffffff;
+  --on-ink-2: #c4cac7;
+  --on-ink-fill: rgb(255 255 255 / 0.16);
+  --hairline:        rgb(var(--shc) / 9%);
+  --hairline-strong: rgb(var(--shc) / 12%);                /* dashed "not yet mine" outlines */
+  --draft-fill:      rgb(255 255 255 / 45%);
+  --scrim:           rgb(var(--shc) / 18%);
 
-  /* ── Semantic (status only; one meaning each) ────────── */
-  --pos:  oklch(0.50 0.11 155);   /* held, built, confidence rose */
-  --neg:  oklch(0.52 0.15 33);    /* challenge: tripped, failed */
-  --warn: oklch(0.51 0.11 70);    /* in motion: building */
-  --new:  oklch(0.55 0.19 262);   /* new since I last looked; also the focus ring */
+  /* ── Accent: Radix Jade ("you are acting here") ──────── */
+  --accent: #29a383; --accent-hover: #26997b; --accent-text: #208368; --accent-wash: #e6f7ed; --accent-line: #8bceb6;
+  --on-accent: #ffffff;
+  --new: var(--accent);          /* new-activity dots */
+  --focus: var(--accent);        /* 2px ring, 2px offset; the only accent ring */
 
-  /* ── Object hues (tints are the only per-type colour) ── */
-  --h-dump: 265;        /* periwinkle slate: raw capture */
-  --h-signal: 195;      /* teal: an observation on the wire */
-  --h-theme: 320;       /* orchid: an area of attention */
-  --h-theory: 85;       /* ochre: a claim */
-  --h-prototype: 145;   /* sage: something built */
-  --h-tripwire: 30;     /* coral: what would change my mind */
-  /* Suggestion has no hue: it isn't a thing of its own, it's a proposed change. Neutral tint + dashed edge. */
+  /* ── Status (one meaning each) ───────────────────────── */
+  --neg: #ce2c31;      /* red 11: challenge text, signpost */
+  --neg-dot: #e5484d;  /* red 9: challenge dots */
+  --pos: #2a7e3b;      /* grass 11: confidence rose */
+  --fell: #ab6400;     /* amber 11: confidence fell */
+  --building: var(--accent-text);   /* OPEN (DI-007): Maggie wants green for building; jade text shown provisionally */
 
-  --tile-l: 0.955;  --tile-c: calc(0.032 * var(--tint));
-  --tile-l-hover: 0.93;
-  --glyph-l: 0.50;  --glyph-c: 0.10;
-
-  /* ── Type: one family, three sizes ───────────────────── */
-  --font: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --text-sm: calc(var(--text-body) - 2px);           /* counts, tags, kbd */
-  --text-title: calc(var(--text-body) * 1.43);       /* object titles, hero numbers */
-  --text-display: calc(var(--text-body) * 2.3);      /* option B for hero numbers only */
-  --lh-sm: 1.34; --lh-body: 1.43; --lh-title: 1.25;
+  /* ── Type: Geist, 11/12/13/20 (15 for modal titles only) ── */
+  --font: "Geist", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist", ui-monospace, monospace;   /* keys and times */
+  --text-sm: calc(var(--text-body) - 2px);       /* 11: badges, keys */
+  --text-label: calc(var(--text-body) - 1px);    /* 12: labels, meta, buttons */
+  --text-title: calc(var(--text-body) + 7px);    /* 20: pane titles, hero numbers (option A) */
+  --text-modal: calc(var(--text-body) + 2px);    /* 15: modal titles only */
+  --text-display: calc(var(--text-body) + 18px); /* 31: hero numbers option B only */
+  --lh-sm: 1.4; --lh-body: 1.4; --lh-title: 1.25;
   --w-regular: 400; --w-medium: 500; --w-strong: 600;
-  --icon: calc(var(--text-body) + 2px);              /* icons follow their text */
+  --icon: 16px;                                   /* decided default glyph size */
 
-  /* ── Radius family (concentric: outer = inner + padding) ── */
-  --r-xs: calc(var(--r) * 0.6);    /* tiles, chips, tags, kbd */
-  --r-sm: var(--r);                /* controls, rows */
-  --r-md: calc(var(--r) + 4px);    /* cards: row radius + 4px inset */
-  --r-lg: calc(var(--r) + 8px);    /* sheets, modals */
+  /* ── Radius: concentric, 4/7/10/14 + pill ────────────── */
+  --r-xs: calc(var(--r) - 3px);    /* r-1 4: chips, tags, kbd, tiles */
+  --r-sm: var(--r);                /* r-2 7: buttons, rows */
+  --r-md: calc(var(--r) + 3px);    /* r-3 10: cards, lists */
+  --r-lg: calc(var(--r) + 7px);    /* r-4 14: floating chrome, sheets */
+  --r-icon: calc(var(--r) - 1px);  /* 6: icon buttons, rail rows */
   --r-pill: 999px;
 
-  /* ── Space ───────────────────────────────────────────── */
-  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px; --s-6: 32px;
-  --tile: 28px; --tile-sm: 18px; --control: 32px; --hit: 40px;
+  /* ── Space: 4px grid (2 4 6 8 12 16 20 24 32) ────────── */
+  --s-0: 2px; --s-1: 4px; --s-1h: 6px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-4h: 20px; --s-5: 24px; --s-6: 32px;
+  --row: 30px; --control: 28px; --control-sm: 26px; --card-pad: 12px; --hit: 40px;
+  --tile: 24px; --tile-sm: 18px;
 
-  /* ── Elevation: shadow means "above" and nothing else ── */
-  --shadow-ink: 0.24 0.02 var(--hue-neutral);
-  --elev-0: none;                                                         /* base plane */
-  --elev-1: inset -1px 0 0 var(--hairline);                               /* docked: a seam, no shadow */
-  --elev-2: 0 0 0 1px var(--hairline),
-            0 calc(1px * var(--soft)) calc(2px * var(--soft)) oklch(var(--shadow-ink) / calc(0.06 / var(--soft)));
-  --elev-3: 0 0 0 1px var(--hairline),
-            0 calc(8px * var(--soft)) calc(24px * var(--soft)) oklch(var(--shadow-ink) / calc(0.10 / var(--soft)));
-  --elev-4: 0 0 0 1px var(--hairline),
-            0 calc(2px * var(--soft)) calc(4px * var(--soft)) oklch(var(--shadow-ink) / calc(0.05 / var(--soft))),
-            0 calc(10px * var(--soft)) calc(28px * var(--soft)) oklch(var(--shadow-ink) / calc(0.12 / var(--soft)));
-  --elev-5: 0 0 0 1px var(--hairline),
-            0 calc(24px * var(--soft)) calc(64px * var(--soft)) oklch(var(--shadow-ink) / calc(0.18 / var(--soft)));
-  --elev-6: 0 calc(10px * var(--soft)) calc(32px * var(--soft)) oklch(var(--shadow-ink) / calc(0.22 / var(--soft)));
-  --elev-7: 0 calc(3px * var(--soft)) calc(10px * var(--soft)) oklch(var(--shadow-ink) / calc(0.18 / var(--soft)));
-  --scrim: oklch(0.24 0.01 var(--hue-neutral) / 0.18);
+  /* ── Elevation: shadow means height; Crisp = 0.5px ring + soft drops ── */
+  --elev-0: none;
+  --elev-1: inset -0.5px 0 0 var(--hairline);                                 /* docked: a seam */
+  --elev-2: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 calc(1px * var(--soft)) calc(2px * var(--soft)) rgb(var(--shc) / calc(5% / var(--soft)));   /* card */
+  --sel:    0 0 0 0.5px rgb(var(--shc) / 12%), 0 calc(1px * var(--soft)) calc(2px * var(--soft)) rgb(var(--shc) / calc(6% / var(--soft))),
+            0 calc(3px * var(--soft)) calc(8px * var(--soft)) -2px rgb(var(--shc) / calc(10% / var(--soft)));                             /* selected / open */
+  --elev-3: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 calc(8px * var(--soft)) calc(16px * var(--soft)) -4px rgb(var(--shc) / calc(8% / var(--soft))),
+            0 calc(20px * var(--soft)) calc(44px * var(--soft)) -10px rgb(var(--shc) / calc(18% / var(--soft)));                          /* sheet */
+  --elev-4: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 calc(6px * var(--soft)) calc(12px * var(--soft)) -2px rgb(var(--shc) / calc(8% / var(--soft))),
+            0 calc(16px * var(--soft)) calc(36px * var(--soft)) -8px rgb(var(--shc) / calc(20% / var(--soft)));                           /* pop: peek, menu */
+  --elev-float: 0 0 0 0.5px rgb(var(--shc) / 10%), 0 calc(4px * var(--soft)) calc(8px * var(--soft)) -2px rgb(var(--shc) / calc(6% / var(--soft))),
+            0 calc(12px * var(--soft)) calc(28px * var(--soft)) -6px rgb(var(--shc) / calc(14% / var(--soft)));                           /* floating chrome */
+  --elev-5: 0 0 0 0.5px rgb(var(--shc) / 12%), 0 calc(24px * var(--soft)) calc(56px * var(--soft)) -12px rgb(var(--shc) / calc(26% / var(--soft)));  /* modal */
+  --elev-6: 0 calc(4px * var(--soft)) calc(12px * var(--soft)) rgb(var(--shc) / calc(20% / var(--soft)));                                  /* toast */
+  --elev-7: 0 calc(2px * var(--soft)) calc(6px * var(--soft)) rgb(var(--shc) / calc(18% / var(--soft)));                                   /* tooltip */
+  --btn-shadow: 0 1px 2px rgb(var(--shc) / 12%);
   --z-0: 0; --z-1: 10; --z-2: 20; --z-3: 30; --z-4: 40; --z-5: 50; --z-6: 60; --z-7: 70;
 
   /* ── Motion ──────────────────────────────────────────── */
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --t-press: 140ms; --t-hover: 120ms; --t-float: 180ms;
-  --press-scale: 0.96;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-press: 90ms; --t-hover: 90ms; --t-float: 160ms; --t-surface: 260ms;
+  --press-scale: 0.98;
 }
+
+/* ── Open choice: primary button colour (DECIDED jade; black under review) ── */
+:root, [data-primary="accent"] { --primary: var(--accent); --primary-hover: var(--accent-hover); --on-primary: var(--on-accent); }
+[data-primary="ink"] { --primary: var(--ink); --primary-hover: var(--ink-hover); --on-primary: var(--on-ink); }

@@ -6,7 +6,7 @@
 <title>Grammar 1: Foundations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dialkit@2.1.0/dist/vanilla/styles.css">
@@ -16,67 +16,132 @@
 <script src="https://cdn.jsdelivr.net/npm/dialkit@2.1.0/dist/vanilla/browser.global.js" defer></script>
 <script src="../../explorations/_shell/jig.js" defer></script>
 <script src="foundations.js" defer></script>
+<script type="module" src="../_shared/agentation.js" data-app-name="Grammar 1: Foundations"></script>
 </head>
 <body class="jig" data-jig="grammar-01-foundations">
 
 <header class="jig-head">
   <h1>Grammar 1: Foundations</h1>
-  <p>The parts every Aber object will be built from: ground, ink, type, radius, elevation, glyph tiles, chips, tags, numbers and buttons. Jig 2 assembles them into the six objects; this page only proves the parts.</p>
+  <p>The parts every Aber object is built from, shown first where they live: a small Aber screen with the rail, a mixed list and a peek. Tokens follow the decided surface language (Sage, Jade, Geist, 4px grid). Jig 2 assembles the six objects in full.</p>
   <ul class="jig-rules">
-    <li>The dial panel (top right) tunes ground warmth, radius, tint strength, body size and shadow softness live across the whole page. Its Copy values action copies the token names.</li>
-    <li>Three choices are open, marked Choose. Everything else is a proposal to react to with the note fields or Agentation.</li>
+    <li>The dials (top right) and the switches above the screen restyle the whole page live. Pin keeps the screen in view while you dial (it covers the top of the page while on).</li>
+    <li>Every open choice below is shown inside the same screen, so only the thing in question changes. Annotate anything with Agentation (bottom right).</li>
   </ul>
 </header>
 
-<!-- 1. Tokens -->
+<details class="decided"><summary>Already decided, applied here</summary><ul>
+  <li>Radix Sage neutrals; lines and shadows tinted sage 12</li>
+  <li>Radix Jade accent: primary, focus ring (2px, offset 2), new dots with a halo</li>
+  <li>Object glyphs neutral in every state, no per-type colour</li>
+  <li>Glyphs from OBJECT_ICONS, Phosphor Regular 16, fill only when selected</li>
+  <li>Geist and Geist Mono; 11/12/13/20 at 13/1.4; 15 for modal titles; names 600</li>
+  <li>4px spacing grid; rows 30, controls 28, card padding 12</li>
+  <li>Radii 4/7/10/14 + pill, concentric</li>
+  <li>Buttons 28px, radius 7, 12/500; secondary is white with a hairline</li>
+  <li>Selection is neutral, light and raised; hover a 5% sage layer; press scales to 0.98</li>
+  <li>Challenge red 11 text, red 9 dots; rose grass 11; fell amber 11</li>
+  <li>Dashed means not yet mine: drafts and suggestions</li>
+  <li>Dismiss left of Accept; X only closes fleeting surfaces</li>
+</ul></details>
+
+<div class="preview-dock">
+  <div class="preview-bar">
+    <span class="seg" data-seg="primary" data-default="accent"><span>Primary</span><span class="seg-group"><button type="button" value="accent">Jade</button><button type="button" value="ink">Black</button></span></span>
+    <span class="seg" data-seg="sel" data-default="sunk"><span>Selected</span><span class="seg-group"><button type="button" value="white">a White list</button><button type="button" value="sunk">b Sunk list</button></span></span>
+    <span class="seg" data-seg="mark" data-default="tile"><span>Glyph</span><span class="seg-group"><button type="button" value="tile">Tile</button><button type="button" value="bare">Bare</button></span></span>
+    <span class="seg" data-seg="pin" data-default="off"><span>Pin</span><span class="seg-group"><button type="button" value="on">On</button><button type="button" value="off">Off</button></span></span>
+  </div>
+  <div data-ms='{"peek":"always"}'></div>
+</div>
+
+<section class="jig-section" data-decision="primary" data-question="What colour is the primary button?" data-default="A jade">
+  <h2>Open choices, in context</h2>
+  <p>Look at New theory in the theme header, Accept on the suggestion in the peek, and the quiet icon buttons beside them. Jade is decided; black is the alternative Maggie asked to see.</p>
+  <div class="jig-compare" style="--jig-min:900px">
+    <div class="jig-option" data-option="A jade"><div class="jig-label"><b>A</b> Jade (decided 1 Nov)</div><p class="jig-note">The accent means "you are acting here": primary, focus and new dots share one colour. White 12px text on jade 9 is 3.1:1, under the 4.5:1 text minimum.</p><div data-option-stage data-ms='{"primary":"accent","peek":"always"}'></div></div>
+    <div class="jig-option" data-option="B black"><div class="jig-label"><b>B</b> Black</div><p class="jig-note">Ink primary, as in DI-002 and DI-010. Calmer; jade stays for focus, new dots and the current view.</p><div data-option-stage data-ms='{"primary":"ink","peek":"always"}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" data-decision="selected" data-question="Which list does a selected row rise from?" data-default="b sunk">
+  <p>Both keep the decided selection: neutral, white and raised with --sel. The theory row is selected with its peek open; hover any row.</p>
+  <div class="jig-compare" style="--jig-min:900px">
+    <div class="jig-option" data-option="a white"><div class="jig-label"><b>a</b> White list</div><p class="jig-note">Rows sit in a white card; the selected one gains a hairline and a small lift. Quiet, but the lift is subtle on white.</p><div data-option-stage data-ms='{"sel":"white","peek":"always"}'></div></div>
+    <div class="jig-option" data-option="b sunk"><div class="jig-label"><b>b</b> Sunk list</div><p class="jig-note">Rows sit in sage 3, like the rail; the selected one rises to white. Clearer, and the same as the rail's active row.</p><div data-option-stage data-ms='{"sel":"sunk","peek":"always"}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" data-decision="glyph-mark" data-question="Does a row's glyph sit on a neutral tile?" data-default="B bare">
+  <p>Glyphs are neutral either way. The tile only adds a shape for the eye to line up on.</p>
+  <div class="jig-compare" style="--jig-min:440px">
+    <div class="jig-option" data-option="A tile"><div class="jig-label"><b>A</b> Neutral tile</div><p class="jig-note">A 6% sage square behind each glyph. A steadier left edge in mixed lists; one more shape per row.</p><div data-option-stage data-ms='{"mark":"tile"}'></div></div>
+    <div class="jig-option" data-option="B bare"><div class="jig-label"><b>B</b> Bare glyph</div><p class="jig-note">Just the glyph in ink 2. Lighter; the list is mostly text.</p><div data-option-stage data-ms='{"mark":"bare"}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" data-decision="hero-size" data-question="How big is a hero number?" data-default="A title size">
+  <p>Shown in a theme's overview strip, above its list.</p>
+  <div class="jig-compare" style="--jig-min:440px">
+    <div class="jig-option" data-option="A title size"><div class="jig-label"><b>A</b> Title size, 20</div><p class="jig-note">Stays within the decided 11/12/13/20 scale; told apart by weight and the grey unit.</p><div data-option-stage data-ms='{"mode":"theme"}'></div></div>
+    <div class="jig-option" data-option="B display size"><div class="jig-label"><b>B</b> Display size, 31</div><p class="jig-note">Health-card punch, but adds a size the scale doesn't have.</p><div data-option-stage data-ms='{"mode":"theme","hero":"display"}'></div></div>
+  </div>
+</section>
+
+<div class="specimens-head"><h2>Specimens</h2><p>The same parts in isolation, with their tokens.</p></div>
+
+<!-- Tokens -->
 <section class="jig-section">
-  <h2>1. Tokens</h2>
-  <p>A warm grey ground, white surfaces, two inks. Hairlines are the only third grey and never carry text.</p>
+  <h2>Tokens</h2>
+  <p>Radix Sage neutrals with a Jade accent, all decided on 1 Nov. Lines and shadows are tinted with sage 12.</p>
   <div class="fx">
     <div class="plate">
       <p class="cap">Neutrals</p>
       <div class="swatches">
-        <div class="swatch"><div class="swatch-chip" style="background:var(--ground)"></div><b>Ground</b><span>--ground, the base plane</span></div>
-        <div class="swatch"><div class="swatch-chip" style="background:var(--ground-2)"></div><b>Ground 2</b><span>--ground-2, fills and hover</span></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--ground)"></div><b>Ground</b><span>--ground, sage 2–3</span></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--ground-2)"></div><b>Sunk</b><span>--ground-2, sage 3</span></div>
         <div class="swatch"><div class="swatch-chip" style="background:var(--surface)"></div><b>Surface</b><span>--surface</span></div>
-        <div class="swatch"><div class="swatch-chip" style="background:var(--hairline)"></div><b>Hairline</b><span>--hairline, lines only</span></div>
-        <div class="swatch"><div class="swatch-chip" style="background:var(--ink-2)"></div><b>Ink 2</b><span>--ink-2, context and units</span></div>
-        <div class="swatch"><div class="swatch-chip" style="background:var(--ink)"></div><b>Ink</b><span>--ink, names and values</span></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--ink-3)"></div><b>Ink 3</b><span>--ink-3, lines only</span></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--ink-2)"></div><b>Ink 2</b><span>--ink-2, sage 11</span></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--ink)"></div><b>Ink</b><span>--ink, sage 12</span></div>
       </div>
-      <p class="cap" style="margin-top:var(--s-4)">Semantic, one meaning each</p>
+      <p class="cap" style="margin-top:var(--s-4)">Accent and status, one meaning each</p>
       <div class="swatches">
-        <div class="swatch"><div class="swatch-chip" style="background:var(--pos)"></div><b>Positive</b><span>--pos, held, built</span></div>
-        <div class="swatch"><div class="swatch-chip" style="background:var(--neg)"></div><b>Challenge</b><span>--neg, tripped, failed</span></div>
-        <div class="swatch"><div class="swatch-chip" style="background:var(--warn)"></div><b>In motion</b><span>--warn, building</span></div>
-        <div class="swatch"><div class="swatch-chip" style="background:var(--new)"></div><b>New</b><span>--new, unseen, focus ring</span></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--accent)"></div><b>Jade</b><span>--accent: acting here, focus, new</span></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--accent-wash)"></div><b>Jade wash</b><span>--accent-wash</span></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--neg)"></div><b>Challenge</b><span>--neg, red 11</span></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--pos)"></div><b>Rose</b><span>--pos, grass 11</span></div>
+        <div class="swatch"><div class="swatch-chip" style="background:var(--fell)"></div><b>Fell</b><span>--fell, amber 11</span></div>
       </div>
     </div>
-
     <div class="plate-grid" style="--min:340px; margin-top:var(--s-4)">
       <div class="plate">
-        <p class="cap">Type: Inter, three sizes. Peers differ by weight and ink, not size.</p>
-        <div class="ramp">
+        <p class="cap">Type: Geist, 11/12/13/20 at 1.4. Peers differ by weight and ink, not size.</p>
+        <div>
           <div class="ramp-row"><span>Title <code data-px="--text-title"></code></span><div class="t-title">Small teams will run their own eval suites</div></div>
-          <div class="ramp-row"><span>Body <code data-px="--text-body"></code></span><div class="t-body">Foglamp ships an agent HUD that shows every tool call as it happens.</div></div>
-          <div class="ramp-row"><span>Small <code data-px="--text-sm"></code></span><div class="t-sm t-2">12 signals&ensp;3 pending&ensp;4d</div></div>
+          <div class="ramp-row"><span>Modal <code data-px="--text-modal"></code></span><div class="t-modal">Delete this dump?</div></div>
+          <div class="ramp-row"><span>Body <code data-px="--text-body"></code></span><div>Foglamp ships an agent HUD that shows every tool call as it happens.</div></div>
+          <div class="ramp-row"><span>Label <code data-px="--text-label"></code></span><div class="t-label t-2">Confidence&ensp;Happens by&ensp;Supports</div></div>
+          <div class="ramp-row"><span>Small <code data-px="--text-sm"></code></span><div class="t-sm t-2">12 signals&ensp;<span class="mono">4d</span>&ensp;<span class="mono">⌘K</span></div></div>
           <div class="ramp-row"><span>Weight and ink</span><div class="weights"><span class="t-strong">Name 600</span><span style="font-weight:500">Control 500</span><span>Body 400</span><span class="t-2">Context ink 2</span></div></div>
         </div>
       </div>
       <div class="plate">
-        <p class="cap">Radius: one family from one dial. Outer = inner + padding.</p>
+        <p class="cap">Radius: 4/7/10/14 + pill, concentric. The dial moves r-2.</p>
         <div class="radii">
-          <div class="radius"><div style="border-radius:var(--r-xs)"></div><span>xs <code data-px="--r-xs"></code> tiles, chips</span></div>
-          <div class="radius"><div style="border-radius:var(--r-sm)"></div><span>sm <code data-px="--r-sm"></code> rows, controls</span></div>
-          <div class="radius"><div style="border-radius:var(--r-md)"></div><span>md <code data-px="--r-md"></code> cards</span></div>
-          <div class="radius"><div style="border-radius:var(--r-lg)"></div><span>lg <code data-px="--r-lg"></code> sheets</span></div>
-          <div class="radius"><div style="border-radius:var(--r-pill); width:72px; height:32px"></div><span>pill</span></div>
+          <div class="radius"><div style="border-radius:var(--r-xs)"></div><span>r-1 <code data-px="--r-xs"></code> chips</span></div>
+          <div class="radius"><div style="border-radius:var(--r-sm)"></div><span>r-2 <code data-px="--r-sm"></code> buttons</span></div>
+          <div class="radius"><div style="border-radius:var(--r-md)"></div><span>r-3 <code data-px="--r-md"></code> cards</span></div>
+          <div class="radius"><div style="border-radius:var(--r-lg)"></div><span>r-4 <code data-px="--r-lg"></code> chrome</span></div>
         </div>
-        <p class="cap" style="margin-top:var(--s-5)">Space: 4px steps, tight within a group, wide between groups</p>
+        <p class="cap" style="margin-top:var(--s-5)">Space: 4px grid. Rows 30, controls 28, card padding 12.</p>
         <div class="spaces">
+          <div class="space"><div style="width:2px"></div><span>2</span></div>
           <div class="space"><div style="width:4px"></div><span>4</span></div>
+          <div class="space"><div style="width:6px"></div><span>6</span></div>
           <div class="space"><div style="width:8px"></div><span>8</span></div>
           <div class="space"><div style="width:12px"></div><span>12</span></div>
           <div class="space"><div style="width:16px"></div><span>16</span></div>
+          <div class="space"><div style="width:20px"></div><span>20</span></div>
           <div class="space"><div style="width:24px"></div><span>24</span></div>
           <div class="space"><div style="width:32px"></div><span>32</span></div>
         </div>
@@ -85,28 +150,28 @@
   </div>
 </section>
 
-<!-- 2. Elevation -->
 <section class="jig-section">
-  <h2>2. Elevation</h2>
-  <p>Shadow means "above" and nothing else. The more temporary a surface, the higher it sits. Toast and tooltip turn to ink so they read above everything without a heavier shadow.</p>
+  <h2>Elevation</h2>
+  <p>Shadow means height and nothing else. Crisp shadows: a 0.5px sage ring plus soft drops. Toast and tooltip turn to ink.</p>
   <div class="fx">
     <div class="tiers">
-      <div class="tier" data-t="0"><div class="tier-surface"><span class="tier-n">0</span><b>Base plane</b><span>--elev-0, none</span></div></div>
+      <div class="tier" data-t="0"><div class="tier-surface"><span class="tier-n">0</span><b>Base plane</b><span>--elev-0</span></div></div>
       <div class="tier" data-t="1"><div class="tier-surface"><span class="tier-n">1</span><b>Docked</b><span>--elev-1, a seam</span></div></div>
-      <div class="tier" data-t="2"><div class="tier-surface"><span class="tier-n">2</span><b>Raised card</b><span>--elev-2</span></div></div>
-      <div class="tier" data-t="3"><div class="tier-surface"><span class="tier-n">3</span><b>Overlay sheet</b><span>--elev-3</span></div></div>
-      <div class="tier" data-t="4"><div class="tier-surface"><span class="tier-n">4</span><b>Tethered float</b><span>--elev-4, from its trigger</span></div></div>
+      <div class="tier" data-t="2"><div class="tier-surface"><span class="tier-n">2</span><b>Card</b><span>--elev-2</span></div></div>
+      <div class="tier" data-t="3"><div class="tier-surface"><span class="tier-n">3</span><b>Sheet</b><span>--elev-3</span></div></div>
+      <div class="tier" data-t="4"><div class="tier-surface"><span class="tier-n">4</span><b>Peek, menu</b><span>--elev-4, from its trigger</span></div></div>
       <div class="tier" data-t="5"><div class="tier-surface"><span class="tier-n">5</span><b>Modal</b><span>--elev-5, on a scrim</span></div></div>
-      <div class="tier" data-t="6"><div class="tier-surface"><b>Theory accepted</b><span>6 toast, --elev-6</span></div></div>
+      <div class="tier" data-t="6"><div class="tier-surface"><b>Theory accepted</b><span>6 toast</span></div></div>
       <div class="tier" data-t="7"><div class="tier-surface"><b>7 Tooltip</b></div></div>
     </div>
   </div>
 </section>
 
 <!-- 3. Glyph tiles -->
+<!-- 3. Glyph tiles -->
 <section class="jig-section">
-  <h2>3. Object glyphs</h2>
-  <p>One glyph per object, on a pale tint of its hue. The tint is the only per-type colour. Regular weight at rest, fill when selected, with the 1.5px ink ring. Suggestion takes Sparkle, no hue and a dashed edge: it is a proposed change, not a thing of its own, and dashed already means "not yet mine". Click a tile to select it.</p>
+  <h2>Object glyphs</h2>
+  <p>One Phosphor glyph per object, neutral in every state: the shape carries the type, so jade never competes with a type colour. Glyphs are the app's OBJECT_ICONS (Pulse, Binoculars, Target, PencilRuler, TrayArrowDown) plus Signpost for tripwires. Regular at rest, fill when selected. Suggestion has no app icon, so it takes Sparkle with a dashed edge: dashed already means "not yet mine". Click a tile to select it.</p>
   <div class="fx">
     <div class="plate">
       <div class="glyph-table" id="glyph-table">
@@ -116,25 +181,10 @@
   </div>
 </section>
 
-<section class="jig-section" data-decision="glyph-mark" data-question="How should an object's type show in a row?" data-default="A tile">
-  <div class="jig-compare" style="--jig-min:340px">
-    <div class="jig-option" data-option="A tile">
-      <div class="jig-label"><b>A</b> Tinted tile</div>
-      <p class="jig-note">Type reads at a glance in mixed lists and gives selection a shape to ring. Costs 28px of width and a little colour on every row.</p>
-      <div class="fx" data-option-stage><div class="plate"><div class="surface list" data-sample-rows></div></div></div>
-    </div>
-    <div class="jig-option" data-option="B bare glyph">
-      <div class="jig-label"><b>B</b> Bare glyph in the hue</div>
-      <p class="jig-note">Quieter; the list is mostly text. Types are told apart by glyph shape and its colour alone, so mixed lists scan slower.</p>
-      <div class="fx" data-option-stage><div class="plate bare"><div class="surface list" data-sample-rows></div></div></div>
-    </div>
-  </div>
-</section>
-
 <!-- 4. Chips, tags, badges, fields, numbers -->
 <section class="jig-section">
-  <h2>4. Chips, tags, counts, fields and numbers</h2>
-  <p>A linked object is a chip: small tile, name, ↗. A dashed chip is a link an agent proposed. Status is a glyph and a word in its semantic colour, never a filled lozenge.</p>
+  <h2>Chips, tags, counts, fields and numbers</h2>
+  <p>A linked object is a chip: glyph, name, ↗. A dashed chip is a link an agent proposed. Status is a glyph and a word, coloured only when the colour has a decided meaning.</p>
   <div class="fx">
     <div class="plate-grid" style="--min:320px">
       <div class="plate">
@@ -148,12 +198,12 @@
         </div>
         <p class="cap" style="margin-top:var(--s-5)">Status tags</p>
         <div class="tags">
-          <span class="tag pos"><i class="ph ph-check-circle"></i>Held</span>
+          <span class="tag ink"><i class="ph ph-check-circle"></i>Held</span>
           <span class="tag"><i class="ph ph-circle-dashed"></i>Draft</span>
           <span class="tag"><i class="ph ph-eye"></i>Watching</span>
-          <span class="tag neg"><i class="ph-fill ph-signpost"></i>Tripped</span>
-          <span class="tag warn"><i class="ph ph-hammer"></i>Building</span>
-          <span class="tag pos"><i class="ph ph-check-circle"></i>Built</span>
+          <span class="tag neg"><i class="ph ph-signpost"></i>Tripped</span>
+          <span class="tag building"><i class="ph ph-hammer"></i>Building</span><span class="tag fell"><i class="ph ph-trend-down"></i>Fell to 3</span><span class="tag pos"><i class="ph ph-trend-up"></i>Rose to 4</span>
+          <span class="tag ink"><i class="ph ph-check-circle"></i>Built</span>
           <span class="tag"><i class="ph ph-circle-notch spin"></i>Processing</span>
           <span class="tag neg"><i class="ph ph-x-circle"></i>Failed</span>
           <span class="tag"><i class="ph ph-archive"></i>Retired</span>
@@ -163,17 +213,18 @@
           <span><span class="badge">12</span>signals</span>
           <span><span class="badge pending">3</span>pending suggestions</span>
           <span><span class="dot-new" role="img" aria-label="New"></span>new</span>
-          <span><span class="badge ink">4</span>unread dumps</span>
+          <span><span class="dot-neg" role="img" aria-label="Challenge"></span>challenge</span>
+          <span><kbd class="mono t-2">⌘K</kbd>key</span>
         </div>
       </div>
 
       <div class="plate">
-        <p class="cap">Fields: label in ink 2, value in ink</p>
+        <p class="cap">Fields: label 12/500 in ink 2, value in ink</p>
         <div class="surface" style="padding:var(--s-1) var(--s-4)">
           <dl class="fields">
             <dt>Confidence</dt><dd><span>4<span class="unit">/5</span></span></dd>
             <dt>Happens by</dt><dd>2028</dd>
-            <dt>Status</dt><dd><span class="tag pos"><i class="ph ph-check-circle"></i>Held</span></dd>
+            <dt>Status</dt><dd><span class="tag ink"><i class="ph ph-check-circle"></i>Held</span></dd>
             <dt>Theme</dt><dd><a class="chip" href="#"><span class="tile sm" data-type="theme"></span><span>Agent observability</span><i class="ph ph-arrow-up-right go"></i></a></dd>
             <dt>Supports</dt><dd><span>6 <span class="unit">signals</span></span></dd>
             <dt>Tripwire</dt><dd><span class="tag"><i class="ph ph-eye"></i>Watching</span></dd>
@@ -184,47 +235,14 @@
   </div>
 </section>
 
-<section class="jig-section" data-decision="hero-size" data-question="How big is a hero number?" data-default="A title size">
-  <p>The number is the hero; its unit sits beside it in ink 2.</p>
-  <div class="jig-compare" style="--jig-min:400px">
-    <div class="jig-option" data-option="A title size">
-      <div class="jig-label"><b>A</b> Title size, three sizes total</div>
-      <p class="jig-note">Same size as an object title, told apart by weight and the grey unit. Calm, but numbers stop popping in a dashboard.</p>
-      <div class="fx" data-option-stage><div class="plate"><div class="heroes" data-heroes></div></div></div>
-    </div>
-    <div class="jig-option" data-option="B display size">
-      <div class="jig-label"><b>B</b> Display size, a fourth size for numbers only</div>
-      <p class="jig-note">Health-card punch. Adds one size, reserved for numbers that are the point of their card.</p>
-      <div class="fx" data-option-stage><div class="plate display"><div class="heroes" data-heroes></div></div></div>
-    </div>
-  </div>
-</section>
 
-<!-- 5. Buttons -->
-<section class="jig-section" data-decision="button-shape" data-question="What shape are buttons?" data-default="A pill">
-  <h2>5. Buttons</h2>
-  <p>One solid ink primary per surface. Secondary is a quiet fill. Icon buttons name themselves and their shortcut in a tooltip (hover or focus; one is pinned open here). Dismiss sits left of Accept; X only ever closes something fleeting.</p>
-  <div class="jig-compare" style="--jig-min:400px">
-    <div class="jig-option" data-option="A pill">
-      <div class="jig-label"><b>A</b> Pills</div>
-      <p class="jig-note">Reads as a button anywhere, distinct from rows and chips, which are rounded rectangles.</p>
-      <div class="fx" data-option-stage><div class="plate" data-buttons></div></div>
-    </div>
-    <div class="jig-option" data-option="B rounded rect">
-      <div class="jig-label"><b>B</b> Rounded rectangles</div>
-      <p class="jig-note">Shares the radius family with rows and chips. Tighter, more tool-like; buttons and chips look more alike.</p>
-      <div class="fx" data-option-stage><div class="plate rect" data-buttons></div></div>
-    </div>
-  </div>
-</section>
 
-<!-- 6. Composed -->
 <section class="jig-section">
-  <h2>6. Composed</h2>
-  <p>A generic object row from the parts above: tile, name, a grey context line, status or value on the right. Not the object anatomy; that's jig 2. Hover or click a row.</p>
+  <h2>Hero numbers and buttons</h2>
   <div class="fx">
-    <div class="plate" style="max-width:640px">
-      <div class="surface list" data-sample-rows="all"></div>
+    <div class="plate-grid" style="--min:340px">
+      <div class="plate"><div class="heroes" data-heroes></div></div>
+      <div class="plate" data-buttons></div>
     </div>
   </div>
 </section>
