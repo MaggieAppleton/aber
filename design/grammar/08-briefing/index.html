@@ -38,11 +38,12 @@
 
 <div class="decide">
   <div class="decide-box">
-    <h2>Decide here: 3 open choices</h2>
+    <h2>Decide here: 4 open choices</h2>
     <ol>
       <li><a href="#c-group">New signals grouped by theme, or by the theory they bear on</a><span class="why">I'd pick A, by theme: it matches the Themes list and the way you browse. B puts news beside your claims but scatters a theme across several groups and needs a "No theory yet" bucket.</span></li>
       <li><a href="#c-settle">After you decide, the item leaves with an Undo toast, or settles to one line in place</a><span class="why">I'd pick A, leaves: Briefing empties as you work, which is the point, and it follows 10 States (a toast when something leaves the screen). B is calmer for a long run of decisions and keeps a visible trail.</span></li>
       <li><a href="#c-seen">When a new signal counts as seen</a><span class="why">I'd pick A, once Briefing has shown it: the weight goes after one look, like an inbox. B only clears it when you peek or open the signal, or press Mark seen on its group.</span></li>
+      <li><a href="#c-labels">Decision buttons say Dismiss | Accept, or what they do</a><span class="why">I'd pick B, verbs: "Keep confidence | Lower to 3" can't be misread, and every pair still reads no on the left, yes on the right. It amends DI-009's labels, so it needs your call.</span></li>
     </ol>
     <h2 class="decided-h">Proposed here, following decided rules (not open)</h2>
     <ul class="decided">
@@ -51,6 +52,7 @@
       <li><b>Decisions wait; news expires.</b> Challenges, suggestions and drafts stay until handled. Signals and dumps are only what arrived since you last looked.</li>
       <li><b>Decisions show in full; news folds.</b> Dismiss | Accept are always visible, never on hover, never an X.</li>
       <li><b>Every decision has Undo.</b> Today none do.</li>
+      <li><b>A decision's buttons sit inside the one dashed block they decide.</b> A challenge's block holds only the signal that tripped it, the consequence and the buttons; the theory and its tripwire sit above it as the subject.</li>
     </ul>
   </div>
 </div>
@@ -90,8 +92,8 @@
     <li><b>Decisions wait; news expires.</b> Pending decisions stay until handled, however old. Signals and dumps show only what arrived since you last looked.</li>
     <li><b>Summary before detail.</b> One sentence counts what needs you and what arrived, names the busiest theme and any failure. Decisions show in full, because they're the work. News folds: a group of three or fewer shows its rows, and a bigger one folds to its label and count.</li>
     <li><b>Grouped by the object a change touches.</b> A theory's suggestions sit under its row, one block each, and a challenge sits under the theory it trips. One theory with three proposals is one group, not three cards.</li>
-    <li><b>Every item is a 06 component.</b> Rows peek and open. A challenge is the tripwire line plus its block. A suggestion is a dashed block whose label names the relation (Supports, Undermines, New wording, Merge with). A draft is a dashed block with where it came from. An automatic merge is one signal row naming both sources, with Unmerge on hover. No dots, badges, per-item cards or type words.</li>
-    <li><b>Act in place.</b> Dismiss | Accept (Discard for drafts) sit at the bottom right of every decision, always visible. Accept solidifies the item: the dash goes, then it leaves. Every decision can be undone with a toast and ⌘Z. Keys: J and K move, A accepts, O peeks, ⌘Z undoes. There's no key for Dismiss.</li>
+    <li><b>Every item is a 06 component.</b> Rows peek and open. A challenge is its theory and tripwire line, then a dashed block holding only what's decided: the signal that tripped it, the consequence in words, and the buttons. A suggestion is a dashed block whose label names the relation (Supports, Undermines, New wording, Merge with). A draft is a dashed block with where it came from. An automatic merge is one signal row naming both sources, with Unmerge on hover. No dots, badges, per-item cards or type words.</li>
+    <li><b>Act in place.</b> The buttons sit at the bottom right inside the dashed block they decide, always visible, and act on that block alone (labels: choice 4). Accept solidifies the item: the dash goes, then it leaves. Every decision can be undone with a toast and ⌘Z. Keys: J and K move, A accepts, O peeks, ⌘Z undoes. There's no key for Dismiss.</li>
     <li><b>Seen is unread weight and nothing else.</b> An unseen signal's name, and the label of a folded group holding one, are ink at 600. Peeking or opening a signal marks it seen.</li>
     <li><b>Failures in words, first.</b> A dump that couldn't be read leads the Dumps section, says why, and has Retry. The summary names it. Work in progress says Processing with the Working spinner.</li>
     <li><b>Handled is quiet.</b> A section with nothing left disappears. When no decisions remain, the sentence says "Nothing needs you." and the news stays. With nothing new at all, the page says "Nothing new since 18:40" and drops the key line. Nothing celebrates.</li>
@@ -109,7 +111,7 @@
       <button type="button" data-day="clear" aria-pressed="false">Caught up</button>
     </div>
     <button type="button" class="reset" data-reset>Reset</button>
-    <span class="hint">Choices follow the recommended options: by theme, leaves with Undo, seen once shown.</span>
+    <span class="hint">Choices follow the recommended options: by theme, leaves with Undo, seen once shown, verb labels.</span>
   </div>
   <div class="br8-host" id="hero" data-br='{"day":"busy","h":860}'></div>
 </section>
@@ -144,6 +146,16 @@
   </div>
 </section>
 
+<section class="jig-section wide" id="c-labels" data-decision="labels" data-question="4. What do a decision's buttons say?" data-default="B Verbs">
+  <p class="lede">The same busy morning, with the challenges first. Read down a few decisions in each window: a challenge, a support, the new wording, the merge, a draft.</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="A Dismiss | Accept"><div class="jig-label"><b>A</b> Dismiss | Accept everywhere (Discard | Accept on drafts)</div><p class="jig-note">One pair to learn; the block's last sentence says what Accept does ("Accepting lowers confidence from 4 to 3").</p>
+      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"labels":"generic"}}'></div></div>
+    <div class="jig-option" data-option="B Verbs"><div class="jig-label"><b>B</b> What each button does</div><p class="jig-note">Challenge: Keep confidence | Lower to 3. Evidence: Dismiss | Add evidence. Wording: Dismiss | Use wording. Merge: Keep apart | Merge. Draft: Discard | Keep. A still presses the right-hand button.</p>
+      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"labels":"verb"}}'></div></div>
+  </div>
+</section>
+
 <section class="jig-section" id="spec">
   <h2>For RULES.md</h2>
   <p class="lede">Added to RULES.md as "08 Briefing — PROPOSED".</p>
@@ -154,14 +166,14 @@
 3. Decisions wait; news expires. Pending decisions stay until handled; signals and dumps are only what arrived since you last looked.
 4. Summary before detail: one sentence counts what needs you and what arrived, names the busiest theme and any failure. Decisions show in full; a news group of three or fewer shows its rows, larger ones fold to label and count.
 5. Grouped by the object a change touches: a theory's row, then its suggestion blocks; a challenge under the theory it trips.
-6. Only 06 components: rows peek and open; challenge = tripwire line + block; suggestion = dashed block labelled by relation (Supports, Undermines, New wording, Merge with); draft = dashed block with provenance; automatic merge = one row naming both sources, Unmerge on hover.
-7. Act in place: Dismiss | Accept (Discard for drafts), bottom right, always visible. Accept solidifies, then the item leaves; every decision has Undo (toast, ⌘Z). Keys J / K, A, O, ⌘Z; no key for Dismiss.
+6. Only 06 components: rows peek and open; challenge = theory row and tripwire line (the subject), then a dashed block of only the signal, the consequence and the buttons; suggestion = dashed block labelled by relation (Supports, Undermines, New wording, Merge with); draft = dashed block with provenance; automatic merge = one row naming both sources, Unmerge on hover.
+7. Act in place: the buttons sit bottom right inside the dashed block they decide, always visible, acting on that block alone. Accept solidifies, then the item leaves; every decision has Undo (toast, ⌘Z). Keys J / K, A, O, ⌘Z; no key for Dismiss.
 8. Seen is unread weight only: an unseen signal, and a folded group holding one, are ink at 600. Peek or open marks a signal seen.
 9. Failures in words, first in Dumps, named in the summary, with Retry. Work in progress says Processing with the Working spinner.
 10. Handled is quiet: empty sections go; "Nothing needs you." while news remains; "Nothing new since 18:40" with no key line when nothing is new.
 11. Narrow: Briefing alone; the rail is a sheet from the left; the composer spans the window.
 
-Open: signals by theme (A) or by theory (B); a decided item leaves with Undo (A) or settles in place (B); a signal is seen once shown (A) or when read (B).</pre>
+Open: signals by theme (A) or by theory (B); a decided item leaves with Undo (A) or settles in place (B); a signal is seen once shown (A) or when read (B); buttons read Dismiss | Accept (A) or what they do (B, recommended).</pre>
 </section>
 
 </body>

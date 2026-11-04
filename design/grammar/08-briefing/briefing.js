@@ -62,7 +62,11 @@
   };
 
   /* ═══ Items. Every decision is 06's attached block; its object rows peek and open like rows anywhere ═══ */
-  const decide = (d, no = "Dismiss") => `<div class="ob-decide"><button type="button" class="nv-btn secondary" data-act="no">${no}</button><button type="button" class="nv-btn primary" data-act="yes" data-key="A">Accept</button></div>`;
+  // Button labels (choice 4): generic Dismiss | Accept, or verbs where a generic label leaves you guessing what happens
+  const verbs = d => d.kind === "challenge" ? ["Keep confidence", `Lower to ${Math.max(1, O[d.theory].c - 1)}`]
+    : d.kind === "draft" ? ["Discard", "Keep"] : d.as === "New wording" ? ["Dismiss", "Use wording"] : d.as === "Merge with" ? ["Keep apart", "Merge"] : ["Dismiss", "Add evidence"];
+  const decide = (st, d) => { const [no, yes] = st.opt.labels === "verb" ? verbs(d) : [d.kind === "draft" ? "Discard" : "Dismiss", "Accept"];
+    return `<div class="ob-decide"><button type="button" class="nv-btn secondary" data-act="no">${no}</button><button type="button" class="nv-btn primary" data-act="yes">${yes}</button></div>`; };
   const settled = (st, d, name) => { const v = st.decided.get(d.id).v;
     const word = v === "accept" ? "Accepted" : d.kind === "draft" ? "Discarded" : "Dismissed";
     return `<div class="br8-settled" data-item="${d.id}" role="status"><span class="w">${word}</span><span class="q">${esc(name)}</span><button type="button" class="nv-btn quiet" data-act="undo">Undo</button></div>`; };
@@ -71,14 +75,15 @@
   const challenge = (st, d) => {
     const t = O[d.theory], s = O[d.signal];
     if (st.decided.has(d.id)) return `<div class="ob-rows br8-g">${row(t, { omit: "when" })}${settled(st, d, s.name)}</div>`;
-    return `<div class="ob-rows br8-g">${row(t, { omit: "when" })}
-      <div class="ob-trip tripped br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-attach lg">${tile("tripwire", ICON.tripwire)}<p class="ob-prose">${t.trip}</p></div>
-        <div class="ob-block"><div class="ob-blabel">Tripped by a new signal</div>${row(s, { omit: "when" })}<p class="ob-why-t">Accepting lowers confidence from ${t.c} to ${Math.max(1, t.c - 1)}.</p>${decide(d)}</div></div></div>`;
+    // The subject (the theory and its tripwire) sits above; the dashed block holds only what's decided: the signal, the consequence, the buttons
+    const why = st.opt.labels === "verb" ? `Lowering takes confidence from ${t.c} to ${Math.max(1, t.c - 1)}.` : `Accepting lowers confidence from ${t.c} to ${Math.max(1, t.c - 1)}.`;
+    return `<div class="ob-rows br8-g br8-ch">${row(t, { omit: "when" })}<div class="ob-attach lg">${tile("tripwire", ICON.tripwire)}<p class="ob-prose">${t.trip}</p></div>
+      <div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-blabel">Tripped by</div>${row(s, { omit: "when" })}<p class="ob-why-t">${why}</p>${decide(st, d)}</div></div>`;
   };
   const sugBlock = (st, d) => {
     if (st.decided.has(d.id)) return settled(st, d, nameOf(d));
     const body = d.signal ? row(O[d.signal], { omit: "when" }) : d.other ? row(O[d.other], { omit: "when" }) : `<p class="br8-words">${d.text}</p>`;
-    return `<div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-blabel">${d.as}</div>${body}<p class="ob-why-t">${d.why}</p>${decide(d)}</div>`;
+    return `<div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-blabel">${d.as}</div>${body}<p class="ob-why-t">${d.why}</p>${decide(st, d)}</div>`;
   };
   // Suggestions are grouped by the object they would change: one row for the theory, its proposals under it
   const suggestions = (st, xs) => {
@@ -87,7 +92,7 @@
   };
   const draft = (st, d) => {
     if (st.decided.has(d.id)) return settled(st, d, nameOf(d));
-    return `<div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1">${row(O[d.obj], { omit: "key when" })}<p class="ob-why-t">${d.why}</p>${decide(d, "Discard")}</div>`;
+    return `<div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1">${row(O[d.obj], { omit: "key when" })}<p class="ob-why-t">${d.why}</p>${decide(st, d)}</div>`;
   };
 
   // New signals: folded groups (06's list fold), by theme or by the theory they bear on (choice 1). Three or fewer show; more fold to their count.
@@ -233,7 +238,7 @@
   /* ═══ Init ═══ */
   const init = host => {
     const o = JSON.parse(host.dataset.br || "{}");
-    const st = host._st = { _host: host, day: o.day || "quiet", h: o.h, opt: { group: "theme", settle: "leave", seen: "shown", ...(o.opt || {}) }, decided: new Map(), seen: new Set(), open: {}, unmerged: new Set(), dumps: {}, mode: "brief", narrow: false, railOpen: false, full: null, peek: null };
+    const st = host._st = { _host: host, day: o.day || "quiet", h: o.h, opt: { group: "theme", settle: "leave", seen: "shown", labels: "verb", ...(o.opt || {}) }, decided: new Map(), seen: new Set(), open: {}, unmerged: new Set(), dumps: {}, mode: "brief", narrow: false, railOpen: false, full: null, peek: null };
     const measure = () => { const n = host.clientWidth < NARROW; if (n !== st.narrow) { st.narrow = n; st.railOpen = false; if (st.mode === "brief") render(host); } fit(host); };
     st.narrow = host.clientWidth > 0 && host.clientWidth < NARROW; render(host); new ResizeObserver(measure).observe(host);
 

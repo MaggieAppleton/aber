@@ -16,7 +16,9 @@
 .br8-sec > .br8-g + .br8-g { margin-top: calc(var(--gap-group) - var(--gap-tight)); }
 .br8-g > .ob-row + :is(.br8-item, .br8-settled) { margin-top: var(--gap-tight); }
 .br8-g > :is(.br8-item, .br8-settled) + :is(.br8-item, .br8-settled) { margin-top: var(--gap-item); }
-.br8-g > .ob-trip { gap: var(--gap-item); }
+/* A challenge: the theory and its tripwire are the subject (4 apart, one unit); the dashed block holding the decision sits a sibling step (8) below */
+.br8-ch > .ob-attach { margin-top: var(--gap-tight); }
+.br8-ch > .ob-attach + .ob-block { margin-top: var(--gap-item); }
 
 /* A proposed wording sits where a row's name would: ink, body size, wraps */
 .br8-words { margin: 0 0 0 var(--inset-row); max-width: var(--measure); line-height: var(--lh-ui); color: var(--ink); text-wrap: pretty; }
@@ -25,12 +27,10 @@
 .br8-item { border-radius: var(--r-box); scroll-margin: 24px; }
 .br8-item:focus { outline: 0; }
 .br8-item:focus-visible, .br8-item:focus:not(:focus-visible):not(:has(:focus)) { outline: 2px solid var(--focus); outline-offset: 2px; }
-.ob-trip.br8-item { margin-left: calc((var(--hang) + var(--inset-row)) * -1); padding-left: calc(var(--hang) + var(--inset-row)); }
-.ob-trip.br8-item > .ob-block { max-width: calc(560px + var(--hang) + var(--inset-row)); }
 
 /* Accept solidifies in place (10 rule 8): the dash and the draft fill go, then the item leaves */
 .br8-item.ob-block.sug { transition: outline-color var(--t-float) var(--ease-out), background-color var(--t-float) var(--ease-out); }
-.br8-item.is-accepted, .br8-item.is-accepted .ob-block { outline-color: transparent; background: transparent; }
+.br8-item.is-accepted { outline-color: transparent; background: transparent; }
 .br8-item.is-accepted .g.draft { outline-color: transparent; background: var(--type-tile); }
 .br8-item.is-accepted .ob-row.draft > .nm { color: var(--ink); transition: color var(--t-float) var(--ease-out); }
 
