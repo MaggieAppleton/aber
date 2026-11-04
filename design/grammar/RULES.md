@@ -201,7 +201,7 @@ Evidence: 159 icons at six sizes (11, 12, 13, 14, 15, 16; 83 are 12, smaller tha
 
 **Decided (Maggie, 4 Nov):** icon size B (16 and 14); tiles B (everywhere).
 
-## 04 Surfaces and layers — PROPOSED (choose on `04-surfaces/`)
+## 04 Surfaces and layers — DECIDED (4 Nov 2026: cards soft shadow, peeks and menus crisp, floating controls smallest shadow)
 
 Already decided: colour system D surfaces; Crisp shadows (a 0.5px ring plus soft drops); radii 4 / 7 / 10 / 14 and pill, concentric; selected is the neutral raise `--sel`; hover a 5% layer; press 0.98; drafts dashed; the pane docks with a seam and no shadow; X only closes transient surfaces. Values live in `_shared/surfaces.css`.
 
@@ -239,11 +239,13 @@ Evidence: 176 distinct backgrounds; 158 distinct box shadows, with only 127 of 4
 | 6 Toast | Undo after retire or delete | Above all, never takes focus | Bottom edge, above the pill | Seconds | Ink | None | Toast | 10 | 60 |
 | 7 Tooltip | Icon names and keys | Tethered | Its trigger | While hovered | Ink | None | Tip | 7 | 70 |
 
-**Open:**
-- Cards: soft shadow (today, proposed), hairline only, or fill only.
-- Peeks and menus: quiet, crisp (the 1 Nov pop token, proposed) or deep shadow.
-- Floating controls (view switch, zoom, filter): the smallest shadow (proposed) or flat with a hairline.
+**Decided (Maggie, 4 Nov):**
+- Cards: **A soft shadow** (`--sh-raised` = the Crisp ring plus a 1px drop).
+- Peeks and menus: **B crisp** (`--sh-pop`, the 1 Nov pop token: ring plus 6px and 36px drops).
+- Floating controls (view switch, zoom, filter): **A the smallest shadow** (`--sh-float`, the card's).
+
+`_shared/surfaces.css` is loaded by every grammar page as the default. Controls' radius is 7 everywhere (`--r-icon` now equals `--r`).
 
 ## Still to come
 
-05 controls, 06 objects, 07 rungs.
+05 controls (proposed, below), 06 objects, 07 rungs.

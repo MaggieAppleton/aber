@@ -1,4 +1,4 @@
-/* Aber grammar: surfaces and layers (PROPOSED, see RULES.md). Every surface has one tier; tier sets its shadow, z-index and radius.
+/* Aber grammar: surfaces and layers (DECIDED 4 Nov 2026: cards A soft shadow, peeks and menus B crisp, floating controls A smallest shadow; see RULES.md). Loaded by every grammar page as the default. Every surface has one tier; tier sets its shadow, z-index and radius.
    Fill says which plane you're on; a hairline says "edge between peers"; a shadow says "above" and nothing else; dashed says "not yet mine".
    Choices: data-cards="shadow" | "hairline" | "fill"; data-pop="quiet" | "crisp" | "deep"; data-float="shadow" | "flat". */
 

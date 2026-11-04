@@ -153,7 +153,7 @@
   --icon: 16px;
 
   --r-xs: calc(var(--r) - 3px); --r-sm: var(--r); --r-md: calc(var(--r) + 3px); --r-lg: calc(var(--r) + 7px);
-  --r-icon: calc(var(--r) - 1px); --r-pill: 999px;
+  --r-icon: var(--r); --r-pill: 999px;   /* r-icon: controls are 7 (04 surfaces, decided 4 Nov; was 6) */
 
   --s-0: 2px; --s-1: 4px; --s-1h: 6px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-4h: 20px; --s-5: 24px; --s-6: 32px;
   --row: 30px; --control: 28px; --control-sm: 26px; --card-pad: 12px; --hit: 40px;
