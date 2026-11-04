@@ -1,0 +1,50 @@
+/* Aber grammar: spacing (PROPOSED, see RULES.md). One base unit, a short scale, and named roles.
+   A density scope (data-density="compact" | "regular" | "comfortable") sets every role at once.
+   Pages that don't load this file keep the stage's original values (stage.css fallbacks). */
+
+:root, [data-density="regular"] {
+  /* Gap ladder: each level at least 1.5x the one inside it (2x at regular) */
+  --gap-tight: 4px;     /* reads as one unit: icon+count, title over subtitle, label over value */
+  --gap-icon: 6px;      /* icon to its text (a touch more than letter spacing needs) */
+  --gap-item: 8px;      /* siblings in a group: cards in a list, chips, field rows, claim to meta */
+  --gap-group: 16px;    /* between groups: fields, note, tripwire, evidence in the pane */
+  --gap-section: 32px;  /* between sections: theme sections in the main column */
+  /* Insets (padding), smallest container to largest */
+  --inset-chip: 8px;    /* chip and tag x padding */
+  --inset-control: 10px;/* button and input x padding; inputs pad y so text centres in --control */
+  --inset-row: 8px;     /* list rows and rail rows */
+  --inset-card: 12px;   /* cards and contained boxes */
+  --inset-rail: 8px;    /* sidebar edge */
+  --inset-region: 24px; /* main column and pane edge */
+  /* Heights */
+  --row: 32px; --control: 28px; --control-sm: 24px; --chip-h: 24px; --hit: 40px;
+}
+[data-density="compact"] {
+  --gap-tight: 4px; --gap-icon: 4px; --gap-item: 6px; --gap-group: 12px; --gap-section: 24px;
+  --inset-chip: 6px; --inset-control: 8px; --inset-row: 6px; --inset-card: 10px; --inset-rail: 6px; --inset-region: 20px;
+  --row: 28px; --control: 26px; --control-sm: 22px; --chip-h: 22px;
+}
+[data-density="comfortable"] {
+  --gap-tight: 6px; --gap-icon: 8px; --gap-item: 12px; --gap-group: 24px; --gap-section: 40px;
+  --inset-chip: 10px; --inset-control: 12px; --inset-row: 10px; --inset-card: 16px; --inset-rail: 10px; --inset-region: 32px;
+  --row: 36px; --control: 32px; --control-sm: 28px; --chip-h: 28px;
+}
+
+/* Middle column as one container with dividers (choice) */
+[data-list="rows"] .stg-cards { gap: 0; background: var(--surface); border-radius: var(--r-sm); box-shadow: var(--elev-2); padding: var(--gap-tight); }
+[data-list="rows"] .stg-card { box-shadow: none; border-radius: calc(var(--r-sm) - 2px); }
+[data-list="rows"] .stg-card + .stg-card { box-shadow: inset 0 0.5px 0 var(--hairline-strong); }
+[data-list="rows"] .stg-card[data-open] { box-shadow: var(--sel); }
+[data-list="rows"] .stg-card[data-open] + .stg-card { box-shadow: none; }
+[data-list="rows"] .stg-card[data-draft] { outline-offset: -3px; background: transparent; }
+
+/* Spacing overlay: padding tinted, gaps shown through the parent, each box labelled with its role */
+[data-overlay] .stg [data-sp] { position: relative; outline: 1px dashed oklch(0.6 0.2 330 / 0.55); outline-offset: -1px;
+  background: linear-gradient(oklch(0.97 0.03 250 / 0.85), oklch(0.97 0.03 250 / 0.85)) content-box, linear-gradient(oklch(0.86 0.09 330 / 0.55), oklch(0.86 0.09 330 / 0.55)) padding-box !important; }
+[data-overlay] .stg [data-sp][data-gap] { background: linear-gradient(oklch(0.88 0.1 150 / 0.55), oklch(0.88 0.1 150 / 0.55)) content-box, linear-gradient(oklch(0.86 0.09 330 / 0.55), oklch(0.86 0.09 330 / 0.55)) padding-box !important; }
+[data-overlay] .stg [data-sp] > * { background-color: oklch(1 0 0 / 0.9); }
+[data-overlay] .stg [data-sp]::before { content: attr(data-sp); position: absolute; z-index: 5; top: 0; left: 0; padding: 1px 4px; border-radius: 0 0 4px 0;
+  background: oklch(0.45 0.18 330); color: #fff; font: 600 9px/1.3 var(--font); white-space: nowrap; pointer-events: none; }
+
+:root, [data-density] { --brand-pad-r: 0px; }
+[data-overlay] .stg [data-sp]:not([data-gap]) { color: var(--ink) !important; }
