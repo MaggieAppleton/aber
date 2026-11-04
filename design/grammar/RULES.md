@@ -53,7 +53,7 @@ All values are OKLCH. Jig: `00-colour/`.
 - **Dashed means not yet mine:** drafts and suggestions.
 - **Contrast.** Every text pair is at least 4.5:1; glyphs on their tiles are at least 3:1.
 
-## 01 Spacing — PROPOSED (choose on `01-spacing/`)
+## 01 Spacing — DECIDED (4 Nov 2026: Regular density; theories are separate cards with gaps)
 
 Evidence: today's CSS uses 36 distinct paddings, 18 gaps, 18 margins and 19 row or control heights, with odd one-offs (3, 5, 7, 9, 15, 35px).
 
@@ -98,16 +98,9 @@ Evidence: today's CSS uses 36 distinct paddings, 18 gaps, 18 margins and 19 row 
    - A hairline separates only uniform rows inside one container.
    - A container is for an object you act on, or a group that needs its own surface level.
 
-**Open:**
-- Density:
-
-| | Rows | Cards | Sections |
-| --- | --- | --- | --- |
-| Compact | 28 | 10 | 24 |
-| Regular | 32 | 12 | 32 |
-| Comfortable | 36 | 16 | 40 |
-
-- Middle-column theories: separate cards, or one container with dividers.
+**Decided (Maggie, 4 Nov):**
+- Density is **Regular**: the values above. Compact and Comfortable are not used.
+- The middle column's theories are **separate cards with gaps** (`--gap-item` between them), not one container with dividers.
 
 ## Still to come
 

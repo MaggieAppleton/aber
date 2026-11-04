@@ -365,3 +365,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 4 Nov 2026 (Maggie): per-type object colour is back (reverses 1 Nov). Neutrals should be warmer than Radix Sage; tone is a dial. The app's current layout and navigation are liked and stay; jigs restyle, they don't re-layout. The right pane aligns to the top of the main area.
 
 4 Nov 2026 (Maggie): colour system D 'Linen, bright types' leads. Status uses two meanings only: green = up/accent (rose = accent / accent text), red = down/challenge/bad (fell = challenge). No separate amber for fell.
+
+4 Nov 2026 (Maggie, 01-spacing): density is Regular (4px base; gaps 4/6/8/16/32; insets chip 8, control 10, row 8, card 12; region insets nav 12/8, list 12/16, pane 20/24; canvas 16, floating controls 12; rows 32, controls 28). Middle-column theories are separate cards with gaps. Padding grows with focus: navigation < list < pane.
