@@ -302,6 +302,22 @@ Evidence: about 14 text-button recipes at seven heights (24 to 40) and 16 contro
 - Text fields: **A filled**, a sunk well with no edge; on focus a surface with a hairline and the ring.
 - The one destructive confirmation (Delete dump): **A ink**, like every primary. Red stays for challenge and down.
 
+## Navigation — DECIDED (4 Nov 2026: type-first default view; Briefing is the first rail item; tethered peeks)
+
+Jig: `nav/`. Columns, Atlas and Timeline are unchanged (see the note at the top and 11).
+
+1. **Four views.** Default (type-first), Columns, Atlas, Timeline. Columns, Atlas and Timeline stay as they are, each with its own index and the docked pane.
+2. **The default view has three columns, with no docked pane.**
+   - A type rail. **Briefing comes first and is selected on open**, then the types refined to raw: Themes, Theories, Prototypes, Signals, Dumps, each with its glyph tile and a count. "Aber" at the top is plain text, not a link. The rail is 160 wide by default (`--nv-rail-w`, on a dial).
+   - A second sidebar listing the chosen type's items. Theories and Signals can be filtered by theme. Signals have no Unseen group. Briefing has no second sidebar.
+   - The main area holds the selected item as its full view, padded at pane level because it is the focus region. With Briefing selected, it holds one column of what changed since you last looked.
+3. **Related objects disclose in three steps.**
+   - Preview: the row, card or chip where the object is mentioned.
+   - Peek: a card tethered to that link, opened by a 500ms hover or a click. It shows the essentials and an Open button, and a click inside it peeks the next object. Esc or a click elsewhere closes it.
+   - Full: Open moves the rail and list to the object; Back returns.
+4. **The view switcher floats at the rail foot**, in the same spot as in the other three views.
+5. **Pending:** the second sidebar's row and list designs are placeholders, not approved. They're designed in 06 Objects.
+
 ## 06 Objects — PROPOSED (preview, peek, full)
 
 Every object follows one anatomy and appears at three rungs: a **preview** where it's mentioned (list row, card, chip), a **peek** (tier-4 tethered card, 340 wide, grows from the preview after 500ms or on click), and a **full** view that fills the main area. Row, card, peek and full are built from one set of components. Jig: `06-objects/`. Open choices there: list rows two lines or one; peek with relations or essentials only; full view prose-first or a fields table.

@@ -176,13 +176,14 @@
   /* ── Rail ──────────────────────────────────────────── */
   const countOf = t => t === "briefing" ? BRIEF.reduce((n, [, ids]) => n + ids.length, 0) : TOTAL[t] ?? all(t).filter(o => !o.retired).length;
   const rail = s => {
-    const home = s.opt.brief === "home", types = [...(home ? [] : ["briefing"]), ...orderOf(s)];
-    const brand = s.v === "C" ? "" : home ? `<button type="button" class="nv-home" data-home aria-current="${s.type === "home"}">Aber</button>` : "<span>Aber</span>";
+    // Briefing is the first rail item (decided 4 Nov). With brief "home" it shows the digest in the main area; with "rail" (round 1) it lists items.
+    const types = ["briefing", ...orderOf(s)], home = s.opt.brief === "home";
+    const brand = s.v === "C" ? "" : "<span>Aber</span>";
     return `
     <aside class="nv-rail">
       <div class="nv-brand">${brand}${ib("magnifying-glass", "Find", "", "⌘K")}</div>
       <nav class="nv-types" aria-label="Types">
-        ${types.map(t => `<button type="button" class="nv-type${t === "briefing" ? " brief" : ""}" data-go="${t}" aria-current="${s.type === t}" aria-label="${TYPES[t].name}"${s.v === "C" ? ` data-tip="${TYPES[t].name}"` : ""}><span class="gw">${g(t)}</span><span class="nm">${TYPES[t].name}</span><span class="nv-n">${countOf(t)}</span></button>`).join("")}
+        ${types.map(t => `<button type="button" class="nv-type${t === "briefing" ? " brief" : ""}" ${home && t === "briefing" ? "data-home" : `data-go="${t}"`} aria-current="${home && t === "briefing" ? s.type === "home" : s.type === t}" aria-label="${TYPES[t].name}"${s.v === "C" ? ` data-tip="${TYPES[t].name}"` : ""}><span class="gw">${g(t)}</span><span class="nm">${TYPES[t].name}</span><span class="nv-n">${countOf(t)}</span></button>`).join("")}
       </nav>
       ${s.opt.switchAt === "rail" ? switcher() : ""}
     </aside>`;
@@ -397,7 +398,6 @@
     const o = JSON.parse(host.dataset.nav || "{}");
     const s = host._s = { v: o.v || "A", type: o.type || "theme", view: "default", q: "", tf: o.tf || "", back: [], open: {}, peek: null, opt: { ...OPT, ...(o.opt || {}) },
       sel: { briefing: "t4", theme: "coi", theory: "t1", prototype: "p1", signal: "s1", dump: "d1", ...(o.sel || {}) } };
-    if (s.type === "home" && !o.sel) for (const k of Object.keys(s.sel)) s.sel[k] = null;   // Briefing home until you pick something
     s.pane = o.pane !== undefined ? o.pane : s.v === "A" || !s.sel[s.type] ? null : defaultPane(O[s.sel[s.type]], s.v);
     render(host); ro.observe(host);
     if (o.peekOn) document.fonts.ready.then(() => { const a = host.querySelector(`.nv-scroller [data-open="${o.peekOn}"]`); if (a) showPeek(host, o.peekOn, a, true); });
