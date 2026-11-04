@@ -94,12 +94,13 @@ None of this exists in the repo yet. Ask your coding agent to do it on a branch,
 | --- | --- | --- |
 | `OPENAI_API_KEY` | Yes | OpenAI console: a key made only for Aber |
 | `ANTHROPIC_API_KEY` | Yes | Anthropic console: a key made only for Aber |
+| `TYPESAFE_API_KEY` | Yes | TypeSafe console: a key made only for Aber. Live mode needs it for the Jev decision paths |
 | `ABER_SESSION_SECRET` | Yes | Generate: `openssl rand -base64 48` |
 | `ABER_CAPTURE_TOKEN` | Yes | Generate: `openssl rand -base64 32` |
 | `ABER_LOGIN_TOKEN` | Yes | Generate: `openssl rand -base64 32`. Used once per device at `/login#<token>` |
 | `LITESTREAM_ACCESS_KEY_ID`, `LITESTREAM_SECRET_ACCESS_KEY` | Yes | Backblaze application key for one bucket (Step 7) |
 | `RESTIC_PASSWORD` | Yes | Generate. Without it the media backup can't be restored |
-| `AGENT_MODE`, `DAILY_SPEND_CAP_USD`, `HOST`, `ABER_ALLOWED_HOSTS`, `ABER_DATA_DIR` | No | Settings |
+| `AGENT_MODE`, `DAILY_SPEND_CAP_USD`, `JEV_*`, `HOST`, `ABER_ALLOWED_HOSTS`, `ABER_DATA_DIR` | No | Settings (see `.env.example`) |
 
 ### Where they live
 
@@ -118,7 +119,7 @@ Be clear-eyed about this (moderate–high confidence):
 
 So the protection that actually matters is **limiting what a leaked key can do**:
 
-- Make a **separate key for Aber only**: a dedicated OpenAI project and Anthropic workspace, if your accounts allow it. Never reuse a key from elsewhere.
+- Make a **separate key for Aber only**: a dedicated OpenAI project, Anthropic workspace and TypeSafe key, if your accounts allow it. Never reuse a key from elsewhere.
 - Set a **monthly spending limit** on both, plus Aber's own `DAILY_SPEND_CAP_USD`.
 - Rotate the keys if someone with server access leaves, or if anything looks off in usage.
 - If work provides API access, use that instead of personal keys, so a work server holds work credentials.
