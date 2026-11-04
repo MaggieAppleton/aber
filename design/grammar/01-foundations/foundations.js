@@ -1,6 +1,8 @@
 // Grammar 1: foundations. Specimens, the decide box, and Dial Kit dials on top of ../_shared/tokens.css.
 // The stage itself comes from ../_shared/stage.js.
 (() => {
+  // The shell's Copy choices dock lives in the page header, so it never covers a stage
+  addEventListener("load", () => { const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d); });
   // Object glyphs: app/web/src/ui/atoms.tsx OBJECT_ICONS, plus Signpost (tripwire) and Sparkle (suggestion, no app icon).
   const TYPES = {
     dump:       { icon: "tray-arrow-down", name: "Dump",       purpose: "What I said" },
@@ -81,7 +83,7 @@
   // Dial Kit
   const root = document.documentElement;
   const DIALS = {
-    neutralTone:  { token: "--tone",      def: [0.25, -1, 1, 0.05], unit: "" },
+    neutralTone:  { token: "--tone",      def: [0, -1, 1, 0.05],    unit: "" },
     typeColour:   { token: "--type-k",    def: [1, 0, 1, 0.05],     unit: "" },
     radius:       { token: "--r",         def: [7, 4, 12, 1],       unit: "px" },
     bodySize:     { token: "--text-body", def: [13, 12, 16, 1],     unit: "px" },
@@ -94,7 +96,7 @@
     config.copyValues = { type: "action", label: "Copy values" };
     let current = {};
     const kit = window.DialKit.createDialKit("Foundations", config, {
-      persist: { key: "grammar-01-foundations-v4" },
+      persist: { key: "grammar-01-foundations-v5" },
       onAction: async path => {
         if (path !== "copyValues") return;
         const text = Object.entries(DIALS).map(([k, d]) => `${d.token}: ${current[k]}${d.unit};`).join("\n");

@@ -171,7 +171,7 @@ button.tile:active { scale: var(--press-scale); }
 .jig .jig-option.is-chosen > [data-option-stage] { outline: 0; }
 .jig .jig-option { border-radius: 20px; transition: background-color 160ms, box-shadow 160ms; }
 .jig .jig-option.is-chosen { background: rgb(255 255 255 / 0.55); box-shadow: 0 0 0 10px rgb(255 255 255 / 0.55); }
-.jig .jig-dock { right: auto; left: 20px; }
+.jig-head .jig-dock { position: static; display: inline-flex; margin-top: 12px; box-shadow: none; }
 .specimens-head { max-width: 1180px; margin: 0 auto; padding: 40px 32px 0; }
 .specimens-head h2 { margin: 0; font-size: 18px; }
 .specimens-head p { margin: 4px 0 0; color: #5d5850; }
@@ -191,3 +191,4 @@ button.tile:active { scale: var(--press-scale); }
 .decide-box .pick b { color: #2b2925; font-weight: 600; }
 .jig-section.decided-sec > details > summary { cursor: pointer; font-weight: 650; font-size: 16px; }
 .agent-picks { margin: 12px 0 0; padding-left: 18px; color: #3d3a34; }
+.jig-head .jig-dock output:empty { display: none; }

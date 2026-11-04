@@ -1,6 +1,6 @@
 /* Grammar 00: page chrome only. System colours live in ../_shared/tokens.css. */
 @media (min-width: 1100px) { body.jig { padding-right: 300px; } }
-.jig .jig-dock { right: auto; left: 20px; }
+.jig-head .jig-dock { position: static; display: inline-flex; margin-top: 12px; box-shadow: none; }
 .jig .jig-option.is-chosen > [data-option-stage] { outline: 0; }
 .jig .jig-option { border-radius: 20px; transition: background-color 160ms, box-shadow 160ms; }
 .jig .jig-option.is-chosen { background: rgb(255 255 255 / 0.55); box-shadow: 0 0 0 10px rgb(255 255 255 / 0.55); }
@@ -33,3 +33,4 @@
 .contrast { margin: 2px 0 0; }
 .contrast b { color: #2b2925; font-weight: 600; }
 .contrast .fail { color: #b4232a; }
+.jig-head .jig-dock output:empty { display: none; }

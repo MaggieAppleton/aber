@@ -24,7 +24,7 @@
 
 <header class="jig-head">
   <h1>Grammar 00: Colour</h1>
-  <p>Four complete colour systems on the app's real layout. Each sets the neutrals, inks, accent, selection, six type hues and status colours. The dials (top right) shift neutral tone and type-colour strength on top of whichever system you're looking at.</p>
+  <p>Three complete colour systems on the app's real layout. Each sets the neutrals, inks, accent, selection, six type hues and status colours. The dials (top right) shift neutral tone and type-colour strength on top of whichever system you're looking at.</p>
 </header>
 
 <div class="decide">
@@ -39,38 +39,31 @@
     <span class="viewer-label">Full size</span>
     <span class="seg-group" role="group" aria-label="System at full size">
       <button type="button" value="clean" aria-pressed="true">A Clean light</button>
-      <button type="button" value="paper" aria-pressed="false">B Warm paper</button>
-      <button type="button" value="linen" aria-pressed="false">C Ink on linen</button>
-      <button type="button" value="studio" aria-pressed="false">D Studio grey</button>
+      <button type="button" value="linen" aria-pressed="false">B Ink on linen</button>
+      <button type="button" value="studio" aria-pressed="false">C Studio grey</button>
     </span>
   </div>
   <p class="stage-label">Stage: the app's current layout, unchanged. Only colour changes here.</p>
   <div class="stg-host" id="viewer" data-stage='{"system":"clean"}'></div>
 </section>
 
-<section class="jig-section" id="systems" data-decision="system" data-question="Which colour system?">
+<section class="jig-section" id="systems" data-decision="system" data-question="Which colour system?" data-default="A clean light">
   <div class="jig-compare systems">
     <div class="jig-option" data-option="A clean light">
       <div class="jig-label"><b>A</b> Clean light</div>
-      <p class="jig-note">Near-white and barely warm, crisp ink, fresh light type tints and a jade primary. Closest to Foglamp.</p>
+      <p class="jig-note"><b>Leaning (Maggie, 4 Nov).</b> Near-white and barely warm, crisp ink, fresh light type tints and a jade primary. The neutrals almost disappear; colour comes from glyphs, jade and status. Closest to Foglamp.</p>
       <div class="stg-host" data-option-stage data-stage='{"system":"clean"}'></div>
       <div class="strip" data-strip="clean"></div>
     </div>
-    <div class="jig-option" data-option="B warm paper">
-      <div class="jig-label"><b>B</b> Warm paper</div>
-      <p class="jig-note">Stone and sand, earthy muted types (ochre, rust, moss, slate, heather, plum) and a deep teal primary. A notebook, not a dashboard.</p>
-      <div class="stg-host" data-option-stage data-stage='{"system":"paper"}'></div>
-      <div class="strip" data-strip="paper"></div>
-    </div>
-    <div class="jig-option" data-option="C ink on linen">
-      <div class="jig-label"><b>C</b> Ink on linen</div>
-      <p class="jig-note">Warm off-white with near-black ink and a black primary; dusty pastel tints. Teal only marks new and focus.</p>
+    <div class="jig-option" data-option="B ink on linen">
+      <div class="jig-label"><b>B</b> Ink on linen</div>
+      <p class="jig-note">Off-white just warm of neutral, near-black ink and a black primary; quiet dusty tints. Teal only marks new and focus.</p>
       <div class="stg-host" data-option-stage data-stage='{"system":"linen"}'></div>
       <div class="strip" data-strip="linen"></div>
     </div>
-    <div class="jig-option" data-option="D studio grey">
-      <div class="jig-label"><b>D</b> Studio grey (agent's pick)</div>
-      <p class="jig-note">True neutral grey with a clearly sunk rail and white cards. With no tint in the neutrals, the six type glyphs and jade are the only colour, so they read vividly: calm surface, vivid where it counts.</p>
+    <div class="jig-option" data-option="C studio grey">
+      <div class="jig-label"><b>C</b> Studio grey (agent's pick)</div>
+      <p class="jig-note">True neutral, lifted light, with the rail only just below the ground. With no tint in the neutrals, the six type glyphs and jade are the only colour, so they read vividly: calm surface, vivid where it counts.</p>
       <div class="stg-host" data-option-stage data-stage='{"system":"studio"}'></div>
       <div class="strip" data-strip="studio"></div>
     </div>

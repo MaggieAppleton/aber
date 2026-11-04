@@ -1,5 +1,7 @@
 // Grammar 00: full-size viewer, token strips with live contrast checks, the decide box and the colour dials.
 (() => {
+  // The shell's Copy choices dock lives in the page header, so it never covers a stage
+  addEventListener("load", () => { const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d); });
   const root = document.documentElement;
   const TYPES = { dump: "tray-arrow-down", signal: "pulse", theme: "binoculars", theory: "target", prototype: "pencil-ruler", tripwire: "signpost" };
 
@@ -65,7 +67,7 @@
     config.copyValues = { type: "action", label: "Copy values" };
     let current = {};
     const kit = window.DialKit.createDialKit("Colour", config, {
-      persist: { key: "grammar-00-colour" },
+      persist: { key: "grammar-00-colour-v2" },
       onAction: async p => { if (p !== "copyValues") return; const t = Object.entries(DIALS).map(([k, d]) => `${d.token}: ${current[k]};`).join("\n"); try { await navigator.clipboard.writeText(t); } catch { console.log(t); } },
     });
     kit.subscribe(v => { current = v; for (const [k, d] of Object.entries(DIALS)) root.style.setProperty(d.token, v[k]); requestAnimationFrame(check); });

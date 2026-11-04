@@ -8,7 +8,7 @@
    inside the page recomputes them with its own system. */
 
 :root {
-  --tone: 0.25;          /* default a touch warmer than designed: Maggie found Sage too cool */
+  --tone: 0;             /* 0 = the system as designed */
   --type-k: 1;
   --r: 7px;
   --text-body: 13px;
@@ -19,21 +19,12 @@
    Each sets: neutral hue/chroma and lightness steps, accent, type hues and their
    tile/glyph lightness+chroma (shared, so the six hues sit at one weight), status. */
 
-/* Default for 01-foundations until a system is chosen on 00-colour: Sage, warmed. */
-:root, [data-system="sage"] {
-  --n-h: 165; --n-c: 0.006;
-  --L-ground: 0.972; --L-sunk: 0.948; --L-surface: 1; --L-ink: 0.235; --L-ink2: 0.48; --L-ink3: 0.66;
-  --acc-h: 170; --acc-c: 0.115; --acc-L: 0.64; --acc-L-text: 0.52;
-  --primary-default: accent;
-  --t-dump: 285; --t-signal: 240; --t-theme: 335; --t-theory: 75; --t-prototype: 118; --t-tripwire: 28;
-  --tt-L: 0.952; --tt-C: 0.038; --tg-L: 0.53; --tg-C: 0.13;
-  --st-neg: oklch(0.55 0.19 25); --st-neg-dot: oklch(0.63 0.2 25); --st-pos: oklch(0.52 0.13 145); --st-fell: oklch(0.55 0.12 65);
-}
-
-/* 1. Clean light: near-neutral white and grey, crisp ink, fresh light type tints, jade accent (Foglamp). */
-[data-system="clean"] {
-  --n-h: 90; --n-c: 0.002;
-  --L-ground: 0.985; --L-sunk: 0.962; --L-surface: 1; --L-ink: 0.2; --L-ink2: 0.48; --L-ink3: 0.72;
+/* 1. Clean light (lead; Maggie leaning, 4 Nov): near-white, barely warm, crisp ink, fresh light type tints, jade primary.
+      Also the default for every page until a system is chosen. Neutrals almost disappear: sunk sits 0.017 below ground. */
+:root, [data-system="clean"] {
+  --n-h: 90; --n-c: 0.0015;
+  --L-ground: 0.986; --L-sunk: 0.969; --L-surface: 1; --L-ink: 0.2; --L-ink2: 0.5; --L-ink3: 0.76;
+  --hl-a: 7%; --hl2-a: 10%; --sh-k: 0.8;
   --acc-h: 172; --acc-c: 0.115; --acc-L: 0.54; --acc-L-text: 0.49;
   --primary-default: accent;
   --t-dump: 288; --t-signal: 245; --t-theme: 340; --t-theory: 70; --t-prototype: 122; --t-tripwire: 25;
@@ -41,33 +32,24 @@
   --st-neg: oklch(0.55 0.2 25); --st-neg-dot: oklch(0.63 0.21 25); --st-pos: oklch(0.52 0.14 148); --st-fell: oklch(0.56 0.13 65);
 }
 
-/* 2. Warm paper: stone and sand neutrals, earthy muted type hues, deep teal accent. */
-[data-system="paper"] {
-  --n-h: 70; --n-c: 0.02;
-  --L-ground: 0.94; --L-sunk: 0.905; --L-surface: 0.985; --L-ink: 0.27; --L-ink2: 0.46; --L-ink3: 0.63;
-  --acc-h: 200; --acc-c: 0.07; --acc-L: 0.45; --acc-L-text: 0.43;
-  --primary-default: accent;
-  --t-dump: 295; --t-signal: 242; --t-theme: 350; --t-theory: 82; --t-prototype: 128; --t-tripwire: 38;
-  --tt-L: 0.915; --tt-C: 0.035; --tg-L: 0.48; --tg-C: 0.085;
-  --st-neg: oklch(0.5 0.16 30); --st-neg-dot: oklch(0.6 0.17 30); --st-pos: oklch(0.48 0.1 140); --st-fell: oklch(0.5 0.11 65);
-}
-
-/* 3. Ink on linen: warm off-white, near-black ink and a black primary, dusty pastel tints; teal only for new and focus. */
+/* 3. Ink on linen: off-white just warm of neutral, near-black ink and a black primary, quiet dusty tints; teal only for new and focus. */
 [data-system="linen"] {
-  --n-h: 85; --n-c: 0.009;
-  --L-ground: 0.968; --L-sunk: 0.943; --L-surface: 0.996; --L-ink: 0.17; --L-ink2: 0.45; --L-ink3: 0.66;
+  --n-h: 85; --n-c: 0.004;
+  --L-ground: 0.975; --L-sunk: 0.955; --L-surface: 0.998; --L-ink: 0.17; --L-ink2: 0.47; --L-ink3: 0.74;
+  --hl-a: 8%; --hl2-a: 11%; --sh-k: 0.85;
   --acc-h: 182; --acc-c: 0.1; --acc-L: 0.6; --acc-L-text: 0.5;
   --primary-default: ink;
   --t-dump: 290; --t-signal: 238; --t-theme: 345; --t-theory: 78; --t-prototype: 125; --t-tripwire: 32;
-  --tt-L: 0.94; --tt-C: 0.026; --tg-L: 0.52; --tg-C: 0.075;
-  --st-neg: oklch(0.53 0.18 27); --st-neg-dot: oklch(0.61 0.19 27); --st-pos: oklch(0.5 0.11 145); --st-fell: oklch(0.54 0.12 65);
+  --tt-L: 0.948; --tt-C: 0.016; --tg-L: 0.53; --tg-C: 0.055;
+  --st-neg: oklch(0.53 0.17 27); --st-neg-dot: oklch(0.61 0.18 27); --st-pos: oklch(0.5 0.1 145); --st-fell: oklch(0.54 0.11 65);
 }
 
-/* 4. Studio grey (agent's proposal): true neutral grey with a clearly sunk rail, white cards, and the six type
-      glyphs as the only colour besides jade; vivid glyphs on near-white tiles. */
+/* 4. Studio grey (agent's proposal): true neutral, lifted so nothing reads as a grey block; rail only just below ground;
+      the type glyphs and jade are the only colour, vivid on near-white tiles. */
 [data-system="studio"] {
-  --n-h: 250; --n-c: 0.0;
-  --L-ground: 0.955; --L-sunk: 0.918; --L-surface: 1; --L-ink: 0.2; --L-ink2: 0.47; --L-ink3: 0.68;
+  --n-h: 250; --n-c: 0;
+  --L-ground: 0.972; --L-sunk: 0.952; --L-surface: 1; --L-ink: 0.21; --L-ink2: 0.49; --L-ink3: 0.76;
+  --hl-a: 7%; --hl2-a: 10%; --sh-k: 0.75;
   --acc-h: 168; --acc-c: 0.12; --acc-L: 0.54; --acc-L-text: 0.48;
   --primary-default: accent;
   --t-dump: 292; --t-signal: 250; --t-theme: 345; --t-theory: 62; --t-prototype: 125; --t-tripwire: 25;
@@ -92,8 +74,8 @@
   --ink-3:    oklch(var(--L-ink3) calc(var(--nc) * 1.4) var(--nh));                       /* lines and marks only */
   --ink-hover: oklch(calc(var(--L-ink) + 0.1) calc(var(--nc) * 1.2) var(--nh));
   --on-ink: oklch(0.99 0 0); --on-ink-2: oklch(0.82 0.005 var(--nh)); --on-ink-fill: oklch(1 0 0 / 0.16);
-  --hairline:        oklch(var(--shade) / 9%);
-  --hairline-strong: oklch(var(--shade) / 13%);
+  --hairline:        oklch(var(--shade) / var(--hl-a));
+  --hairline-strong: oklch(var(--shade) / var(--hl2-a));
   --draft-fill:      oklch(1 0 0 / 45%);
   --scrim:           oklch(var(--shade) / 18%);
 
@@ -111,16 +93,16 @@
   /* Elevation: shadow means height; a 0.5px tinted ring plus soft drops */
   --elev-0: none;
   --elev-1: inset -0.5px 0 0 var(--hairline);
-  --elev-2: 0 0 0 0.5px oklch(var(--shade) / 10%), 0 calc(1px * var(--soft)) calc(2px * var(--soft)) oklch(var(--shade) / calc(5% / var(--soft)));
-  --sel:    0 0 0 0.5px oklch(var(--shade) / 12%), 0 calc(1px * var(--soft)) calc(2px * var(--soft)) oklch(var(--shade) / calc(6% / var(--soft))),
-            0 calc(3px * var(--soft)) calc(8px * var(--soft)) -2px oklch(var(--shade) / calc(10% / var(--soft)));
-  --elev-3: 0 0 0 0.5px oklch(var(--shade) / 10%), 0 calc(8px * var(--soft)) calc(16px * var(--soft)) -4px oklch(var(--shade) / calc(8% / var(--soft))),
-            0 calc(20px * var(--soft)) calc(44px * var(--soft)) -10px oklch(var(--shade) / calc(18% / var(--soft)));
-  --elev-4: 0 0 0 0.5px oklch(var(--shade) / 12%), 0 calc(6px * var(--soft)) calc(12px * var(--soft)) -2px oklch(var(--shade) / calc(8% / var(--soft))),
-            0 calc(16px * var(--soft)) calc(36px * var(--soft)) -8px oklch(var(--shade) / calc(20% / var(--soft)));
-  --elev-5: 0 0 0 0.5px oklch(var(--shade) / 12%), 0 calc(24px * var(--soft)) calc(56px * var(--soft)) -12px oklch(var(--shade) / calc(26% / var(--soft)));
-  --elev-6: 0 calc(4px * var(--soft)) calc(12px * var(--soft)) oklch(var(--shade) / calc(20% / var(--soft)));
-  --elev-7: 0 calc(2px * var(--soft)) calc(6px * var(--soft)) oklch(var(--shade) / calc(18% / var(--soft)));
+  --elev-2: 0 0 0 0.5px oklch(var(--shade) / 10%), 0 calc(1px * var(--soft)) calc(2px * var(--soft)) oklch(var(--shade) / calc(5% * var(--sh-k) / var(--soft)));
+  --sel:    0 0 0 0.5px oklch(var(--shade) / 12%), 0 calc(1px * var(--soft)) calc(2px * var(--soft)) oklch(var(--shade) / calc(6% * var(--sh-k) / var(--soft))),
+            0 calc(3px * var(--soft)) calc(8px * var(--soft)) -2px oklch(var(--shade) / calc(10% * var(--sh-k) / var(--soft)));
+  --elev-3: 0 0 0 0.5px oklch(var(--shade) / 10%), 0 calc(8px * var(--soft)) calc(16px * var(--soft)) -4px oklch(var(--shade) / calc(8% * var(--sh-k) / var(--soft))),
+            0 calc(20px * var(--soft)) calc(44px * var(--soft)) -10px oklch(var(--shade) / calc(18% * var(--sh-k) / var(--soft)));
+  --elev-4: 0 0 0 0.5px oklch(var(--shade) / 12%), 0 calc(6px * var(--soft)) calc(12px * var(--soft)) -2px oklch(var(--shade) / calc(8% * var(--sh-k) / var(--soft))),
+            0 calc(16px * var(--soft)) calc(36px * var(--soft)) -8px oklch(var(--shade) / calc(20% * var(--sh-k) / var(--soft)));
+  --elev-5: 0 0 0 0.5px oklch(var(--shade) / 12%), 0 calc(24px * var(--soft)) calc(56px * var(--soft)) -12px oklch(var(--shade) / calc(26% * var(--sh-k) / var(--soft)));
+  --elev-6: 0 calc(4px * var(--soft)) calc(12px * var(--soft)) oklch(var(--shade) / calc(20% * var(--sh-k) / var(--soft)));
+  --elev-7: 0 calc(2px * var(--soft)) calc(6px * var(--soft)) oklch(var(--shade) / calc(18% * var(--sh-k) / var(--soft)));
   --btn-shadow: 0 1px 2px oklch(var(--shade) / 12%);
   --window-shadow: 0 0 0 0.5px oklch(var(--shade) / 12%), 0 8px 30px oklch(var(--shade) / 6%);
 
