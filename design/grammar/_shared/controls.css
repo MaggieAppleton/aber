@@ -119,6 +119,11 @@
 .ctl-composer { display: flex; align-items: flex-end; gap: 2px; min-height: var(--composer-h); padding: calc((var(--composer-h) - var(--control)) / 2); border-radius: var(--r-bar);
   background: var(--surface); box-shadow: var(--sh-float); color: var(--ink-2); transition: var(--ctl-t); }
 .ctl-composer .ctl-icon { border-radius: calc(var(--r-bar) - (var(--composer-h) - var(--control)) / 2); }
+/* One line of the composer (the board's single-line form) truncates with an ellipsis before the send slot */
+.ctl-composer input { all: unset; flex: 1; min-width: 0; align-self: center; height: var(--control); padding: 0 var(--gap-icon); font: var(--w-regular) var(--fs-body)/var(--control) var(--font); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ctl-composer input::placeholder { color: var(--ink-2); opacity: 1; }
+.ctl-composer input:focus-visible { outline: 0; }
+.ctl-composer > .ctl-icon { flex: none; }
 .ctl-composer textarea { all: unset; flex: 1; min-width: 0; align-self: center; padding: 0 var(--gap-icon); font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); white-space: pre-wrap; max-height: calc(var(--fs-body) * var(--lh-ui) * 6); overflow: auto; field-sizing: content; }
 .ctl-composer textarea::placeholder { color: var(--ink-2); opacity: 1; }
 .ctl-composer:is(:focus-within, .is-focus) { outline: 2px solid var(--focus); outline-offset: 2px; }

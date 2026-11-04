@@ -53,7 +53,7 @@ h3.sub { margin: 20px 0 8px; font-size: 14px; font-weight: 650; }
 .ctl-board .bc > .ctl-field, .ctl-board .bc > .ctl-composer { flex: 1; }
 .ctl-board .ctl-composer { min-width: 0; }
 .ctl-board .ctl-composer .ctl-icon:first-child { display: none; }
-.ctl-board .ctl-composer textarea { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ctl-board .tagrow { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-tight) var(--gap-item); min-width: 0; }
 .ctl-board .ctl-chip { max-width: 100%; }
 .ctl-board .pair { display: flex; flex-wrap: nowrap; gap: var(--gap-item); }
 .ctl-board .ctl-menu.mini { min-width: 0; width: 100%; }
