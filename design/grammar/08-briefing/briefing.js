@@ -95,25 +95,39 @@
     return `<div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1">${row(O[d.obj], { omit: "key when" })}<p class="ob-why-t">${d.why}</p>${decide(st, d)}</div>`;
   };
 
-  // New signals: folded groups (06's list fold), by theme or by the theory they bear on (choice 1). Three or fewer show; more fold to their count.
+  // New signals: what arrived since you last looked, grouped (choice 1). Each group is a real object row (theme or theory) with its new-signal count;
+  // its signals hang under it on the text edge. A group of more than three shows two rows and a fade, then "Show all N".
+  const stanceOf = (sid, t, decisions) => { const e = O[sid].ev?.find(([id]) => id === t); if (e) return e[1];
+    const d = decisions.find(x => x.signal === sid && (x.theory || x.target) === t); return d ? (d.kind === "challenge" || d.as === "Undermines" ? "-" : "+") : ""; };
+  const cnt = (icon, n, label) => `<span class="ob-cnt" role="img" aria-label="${n} ${label}"><i class="ph ph-${icon}" aria-hidden="true"></i>${n}</span>`;
   const signalGroups = (st, sigs) => {
-    const day = DAYS[st.day], by = new Map();
-    for (const id of sigs) { const k = st.opt.group === "theory" ? theoryOf(id === "s1b" ? "s1" : id, day.decisions) || "none" : O[id].themes[0]; by.set(k, [...(by.get(k) || []), id]); }
+    const day = DAYS[st.day], byTheory = st.opt.group === "theory", by = new Map();
+    for (const id of sigs) { const k = byTheory ? theoryOf(id === "s1b" ? "s1" : id, day.decisions) || "none" : O[id].themes[0]; by.set(k, [...(by.get(k) || []), id]); }
     return [...by].sort((a, b) => (a[0] === "none") - (b[0] === "none") || b[1].length - a[1].length).map(([k, ids]) => {
-      const open = st.open[k] ?? ids.length <= 3, unseen = ids.some(id => O[id].fresh);
-      const label = k === "none" ? "No theory yet" : O[k].name;
-      const mark = st.opt.seen === "read" && unseen ? `<span class="br8-gact">${ib("check", "Mark seen", `data-seen="${k}" class="nv-ib sm"`)}</span>` : "";
-      return `<div class="ob-rows br8-g br8-fold${unseen ? " unseen" : ""}" data-group="${k}" data-ids="${ids.join(" ")}">
-        <div class="br8-fhead"><button type="button" class="ob-glabel fold" data-fold="${k}" aria-expanded="${open}" title="${esc(label)}"><i class="ph ph-caret-down${open ? "" : " shut"}" aria-hidden="true"></i><span class="l">${label}</span><span class="ob-n" aria-label="${plural(ids.length, "new signal")}">${ids.length}</span></button>${mark}</div>
-        ${open ? ids.map(id => sigRow(st, id)).join("") : ""}</div>`;
+      const many = ids.length > 3, open = !many || st.open[k], shown = open ? ids : ids.slice(0, 2), unseen = ids.some(id => O[id].fresh);
+      const st0 = byTheory && k !== "none" ? ids.map(id => stanceOf(id === "s1b" ? "s1" : id, k, day.decisions)) : [];
+      let head;
+      if (k === "none") head = `<div class="br8-ghead-plain">No theory yet<span class="ob-n">${ids.length}</span></div>`;
+      else head = edit(row(O[k], { omit: "when" }), r => {
+        r.classList.add("br8-ghead"); r.classList.toggle("unseen", unseen);
+        const counts = byTheory ? `<span class="ob-cnts">${cnt("pulse", ids.length, "new signals")}${[["arrow-up", "+", "support"], ["arrow-down", "-", "undermine"]].map(([i, x, l]) => { const n = st0.filter(y => y === x).length; return n ? cnt(i, n, l) : ""; }).join("")}</span>` : cnt("pulse", ids.length, "new signals");
+        let kv = r.querySelector(".kv"); if (!kv) { kv = document.createElement("span"); kv.className = "kv"; r.append(kv); r.classList.remove("solo"); }
+        kv.innerHTML = counts;
+        if (st.opt.seen === "read" && unseen) rowAct(r, ib("check", "Mark seen", `data-seen="${k}" class="nv-ib sm"`));
+      });
+      const rows = shown.map((id, i) => sigRow(st, id, byTheory ? st0[ids.indexOf(id)] : "", !open && i === 1)).join("");
+      const more = many ? `<button type="button" class="nv-btn quiet br8-more" data-fold="${k}" aria-expanded="${!!open}">${open ? "Show fewer" : `Show all ${ids.length}`}</button>` : "";
+      return `<div class="ob-rows br8-g br8-sgroup" data-group="${k}" data-ids="${ids.join(" ")}">${head}<div class="br8-under${!open ? " faded" : ""}">${rows}${!open ? '<span class="br8-fade" aria-hidden="true"></span>' : ""}</div>${more}</div>`;
     }).join("");
   };
   // Rows are 06's; Briefing only edits their key line or adds one action, through the DOM rather than by string surgery
   const edit = (html, fn) => { const t = document.createElement("template"); t.innerHTML = html.trim(); fn(t.content.firstElementChild); return t.innerHTML; };
   const rowAct = (r, html, on = false) => r.insertAdjacentHTML("beforeend", `<span class="br8-rowact${on ? " on" : ""}">${html}</span>`);
-  const sigRow = (st, id) => {
-    const also = DAYS[st.day].merged?.[id]; if (!also || st.unmerged.has(id)) return row(O[id]);
-    return edit(row(O[id]), r => { r.classList.add("br8-merged"); r.querySelector(".ob-src").textContent = `${O[id].src} and ${also}`;
+  const sigRow = (st, id, stance = "", faded = false) => {
+    const also = !st.unmerged.has(id) && DAYS[st.day].merged?.[id];
+    return edit(row(O[id]), r => { r.classList.add("br8-sig"); if (faded) { r.setAttribute("aria-hidden", "true"); r.setAttribute("inert", ""); }
+      if (stance) r.querySelector(".kv").insertAdjacentHTML("afterbegin", `<span class="br8-stance" role="img" aria-label="${stance === "+" ? "Supports" : "Undermines"}"><i class="ph ph-arrow-${stance === "+" ? "up" : "down"}" aria-hidden="true"></i></span>`);
+      if (!also) return; r.classList.add("br8-merged"); r.querySelector(".ob-src").textContent = `${O[id].src} and ${also}`;
       rowAct(r, `<button type="button" class="nv-btn quiet" data-unmerge="${id}"><i class="ph ph-arrows-split" aria-hidden="true"></i>Unmerge</button>`); });
   };
   // Dumps: what you sent and what became of it. A failure says why in words, with Retry; work in progress says Processing (10 States)
@@ -137,7 +151,7 @@
           ${sec("Challenges", pendingOf(st, L.ch).length, L.ch.map(d => challenge(st, d)).join(""), "ch")}
           ${sec("Suggestions", pendingOf(st, L.sug).length, suggestions(st, L.sug), "sug")}
           ${sec("Drafts", pendingOf(st, L.dr).length, L.dr.length ? `<div class="ob-rows br8-g">${L.dr.map(d => draft(st, d)).join("")}</div>` : "", "dr")}
-          ${sec("New signals", L.sigs.length, signalGroups(st, L.sigs), "sig")}
+          ${sec(st.opt.group === "theory" ? "New signals, by theory" : "New signals, by theme", L.sigs.length, signalGroups(st, L.sigs), "sig")}
           ${sec("Dumps", L.dumps.length, L.dumps.length ? `<div class="ob-rows br8-g">${failedFirst.map(id => dumpRow(st, id)).join("")}</div>` : "", "dump")}
         </div>`;
     return `<article class="ob-full ob-digest br8-doc"><div class="ob-top">${st.narrow ? ib("sidebar-simple", "Show types", 'data-rail-open') : ""}</div>
@@ -171,7 +185,8 @@
   };
 
   /* ═══ Leaving Briefing: 06's window takes over (Open, a rail type, Columns). Back or Briefing returns here ═══ */
-  const leave = st => { if (st.opt.seen === "shown") live(st).sigs.forEach(id => { const k = st.opt.group === "theory" ? theoryOf(id === "s1b" ? "s1" : id, DAYS[st.day].decisions) || "none" : O[id].themes[0]; if (st.open[k] ?? true) st.seen.add(id); });
+  // Seen once shown (choice 3 A): every signal row Briefing showed in full counts as seen when you leave; faded and hidden rows don't
+  const leave = st => { if (st.opt.seen === "shown") st._host.querySelectorAll('.br8-sig[data-id]:not([aria-hidden="true"])').forEach(r => st.seen.add(r.dataset.id));
     for (const [id, x] of st.decided) if (x.stay) x.stay = false; host0(st)?.querySelector(".br8-toast")?.remove(); };
   const host0 = st => st._host;
   const away = (host, ob) => {
@@ -241,6 +256,9 @@
     const st = host._st = { _host: host, day: o.day || "quiet", h: o.h, opt: { group: "theme", settle: "leave", seen: "shown", labels: "verb", ...(o.opt || {}) }, decided: new Map(), seen: new Set(), open: {}, unmerged: new Set(), dumps: {}, mode: "brief", narrow: false, railOpen: false, full: null, peek: null };
     const measure = () => { const n = host.clientWidth < NARROW; if (n !== st.narrow) { st.narrow = n; st.railOpen = false; if (st.mode === "brief") render(host); } fit(host); };
     st.narrow = host.clientWidth > 0 && host.clientWidth < NARROW; render(host); new ResizeObserver(measure).observe(host);
+    // A choice window can open at the section it's about
+    if (host.dataset.scroll) document.fonts.ready.then(() => { const sc = host.querySelector(".nv-scroller"), sec = host.querySelector(`[data-sec="${host.dataset.scroll}"]`); if (!sc || !sec) return;
+      const k = sc.getBoundingClientRect().width / sc.offsetWidth || 1; sc.scrollTop += (sec.getBoundingClientRect().top - sc.getBoundingClientRect().top) / k - 24; });
 
     let hoverT, leaveT;
     const peekable = e => st.mode === "brief" && e.target.closest(".nv-scroller [data-open], .ob-peek [data-open]");

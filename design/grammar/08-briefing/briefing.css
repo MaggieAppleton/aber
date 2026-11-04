@@ -140,3 +140,16 @@
 .br8-host .nv:not(.narrow) .nv-main .ob-full { padding: var(--main-inset-block) var(--main-inset-inline) 96px; max-width: calc(720px + var(--main-inset-inline) * 2); }
 /* An empty top bar (Back, verbs, Discard | Accept) collapses: no reserved height. Briefing's is always empty on wide screens */
 .br8-host .ob-full > .ob-top:empty { display: none; }
+
+/* New signals (choice 1): the group header is the object's own row (theme or theory) on the tile edge, with the count of new signals in it;
+   its signals hang one step in, tiles on the text edge. Header to first signal 4; groups 16 apart. A long group shows two rows and a fade, then Show all. */
+.br8-sgroup > .br8-ghead { margin-bottom: var(--gap-tight); }
+.br8-ghead .kv .ob-cnts, .br8-ghead .kv .ob-cnt { flex: none; }
+.br8-ghead-plain { display: flex; align-items: center; gap: var(--gap-icon); height: var(--row); margin-bottom: var(--gap-tight); color: var(--ink-2); }
+.br8-ghead-plain .ob-n { font-weight: 500; }
+.br8-under { position: relative; padding-left: var(--hang); }
+.br8-under.faded { max-height: calc(var(--row) * 2 + 24px); overflow: hidden; }
+.br8-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 40px; pointer-events: none; background: linear-gradient(to bottom, color-mix(in oklab, var(--surface) 0%, transparent), var(--surface)); }
+.br8-more { align-self: start; justify-self: start; margin: var(--gap-tight) 0 0 calc(var(--hang) - var(--inset-control)); }
+.br8-stance { display: inline-flex !important; flex: none; }
+.br8-stance i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); color: var(--ink-2); }
