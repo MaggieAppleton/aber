@@ -336,6 +336,25 @@ Every object follows one anatomy and appears at three rungs: a **preview** where
 
 **Removed as unnecessary metadata:** evidence balance and prototype count from theory cards (to the peek); signal count from theme rows and section headers; dates at rest; theme chips on signal rows; "Tests N" and "Made N"; type words and type-label chips ("Signal", "Building" chip); "via" outside the full view; the label/value table (choice open); the separate pending badge and challenge dot side by side (one status slot).
 
+## 10 States — PROPOSED (jig `10-states/`)
+
+Evidence: six loading treatments and no skeleton ("Loading Aber…" hides the whole window); empty copy in nine phrasings; every error goes to one top-centre banner in a third red, away from its object; the pill's processing dot is computed but never drawn; `connected` is tracked but never shown; Undo exists for two of seven reversible actions; four modals where one was decided (merge, retire, unfile, delete).
+
+1. **Empty: one line naming what's absent (empty-state role, no full stop), plus the action that fills it.** No illustration, instructions or sample content.
+   - Made by me (themes, theories, prototypes, a group inside an object): an Add slot where the first item would sit, at its height.
+   - Made by the agent (signals, dumps): the line only; the composer is the action.
+   - Filtered to nothing: search and filter stay; the line names query and scope; Clear filters; Esc clears search.
+   - First run: no counts; the composer has the caret; Briefing says "Nothing yet". Caught up: "Nothing new since 18:40".
+2. **Loading: nothing under 300ms, then a skeleton in the content's own geometry; never a layout shift.** Chrome that needs no data renders at once and the composer works before data arrives. Canvases draw their frame and fade marks in. Media of known size keeps its box. Opening an object has no loading state. Spinners only inside the control you just pressed (05 Loading).
+3. **Background work: only work I started shows progress.** A dump appears at once at the top of Today, "Processing" in words with the Working spinner, and resolves in place (status goes, results appear with new dots). Paused is a hollow ring and the reason. Agent jobs I didn't start show nothing until they produce something, which arrives dashed with a new dot.
+4. **Errors sit beside their object, in words, with the way out.** Never only a tooltip, never a global banner. A red dot is the only colour; the message is ink. Recoverable: reason + Retry. Not recoverable: reason + what's still possible. A failed dump stays visible with everything I sent; a failed save keeps my text with "Not saved" + Retry; a list that didn't load says so in its place. No raw error messages.
+5. **Offline is shown once, for as long as it lasts, and changes nothing else.** Edits save locally and sync; an offline dump waits ("Waiting to send", hollow ring); reconnecting shows nothing.
+6. **Toasts (tier 6) carry Undo.** Ink, one line, 44 high, radius 10, only the name truncates; just above the composer, right edges aligned, in every view; 5s, held while hovered or focused; ⌘Z while shown; one at a time, a new one commits and replaces the last; never stacks, never takes focus, never carries an error.
+7. **Only Delete dump asks first:** a modal with the real counts, Cancel and an ink "Delete dump"; Esc and X close; no toast after. Discard, remove, unfile, retire, merge, move to the bin: at once, with Undo.
+8. **Success is mostly silent; the object appearing is the feedback.** Accept solidifies in place; saves show nothing; creating opens the object. A toast appears only when something leaves the screen.
+
+**Open (choices on the jig):** where in-progress work shows beyond the dump (A composer segment, B the Dumps type in the rail, C only the dump); whether a finished dump gets a toast (A toast with Undo, B silent new dots); where offline shows (A beside the view switcher, B in the composer).
+
 ## Still to come
 
 07 rungs.
