@@ -50,3 +50,57 @@
 .ab-btn.secondary:hover:not(:disabled) { background: var(--surface-hover); }
 .ab-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .ab-btn:active { scale: none; } }
+
+/* ── 05 Controls applied to the app's older classes ── */
+/* The app's text button is the secondary recipe; icon-only buttons are 28 squares (24 dense) in ink 2 with a 5% hover layer. */
+.ap .ap-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--gap-icon); height: var(--control); padding: 0 var(--inset-control); border: 0; border-radius: var(--r-control);
+  background: var(--surface); color: var(--ink); box-shadow: var(--edge), var(--btn-shadow); font: var(--w-medium) var(--fs-label)/1 var(--font); white-space: nowrap;
+  transition: background-color var(--t-hover) var(--ease-out), scale var(--t-press) var(--ease-out); }
+.ap .ap-btn:hover:not(:disabled) { background: var(--surface-hover); }
+.ap .ap-btn:active:not(:disabled) { transform: none; scale: var(--press-scale); }
+.ap .ap-iconbtn, .ap .ps-ib, .ap .pn-step, .ap .t2-tool { border-radius: var(--r-control); color: var(--ink-2);
+  transition: background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out), scale var(--t-press) var(--ease-out); }
+.ap .ap-iconbtn { width: var(--control); height: var(--control); }
+.ap .pn-step { width: var(--control-sm); height: var(--control-sm); }
+.ap :is(.ap-iconbtn, .ps-ib, .pn-step, .t2-tool):hover:not(:disabled) { background: var(--hover); color: var(--ink); }
+.ap :is(.ap-iconbtn, .ps-ib, .pn-step, .t2-tool, .ab-option, .pn-chip):active:not(:disabled) { transform: none; scale: var(--press-scale); }
+.ap :is(.ap-iconbtn, .pn-step, .t2-tool)[aria-pressed="true"] { background: var(--hover); color: var(--ink); }
+/* One focus ring: 2px accent, 2 out, on the control itself; inside (−2) in packed lists */
+.ap :is(.ap-iconbtn, .pn-step, .t2-tool, .ap-btn, .pn-chip, .ab-option):focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ap :is(.ab-option, .cd-list button, .cur-index a):focus-visible { outline-offset: -2px; }
+@media (prefers-reduced-motion: reduce) { .ap :is(.ap-btn, .ap-iconbtn, .ps-ib, .pn-step, .t2-tool, .ab-option, .pn-chip):active { scale: none; } }
+
+/* Text fields are filled: a sunk well, 28 high, 13/400 ink, placeholder ink 2. On focus: a surface with a hairline and the ring. */
+.ap .ab-input { height: var(--control); margin: var(--gap-item) 0; padding: 0 var(--inset-control); border: 0; border-radius: var(--r-control); background: var(--in-bg); box-shadow: none;
+  font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); transition: background-color var(--t-hover) var(--ease-out); }
+.ap textarea.ab-input { height: auto; padding: var(--gap-tight) var(--inset-control); line-height: var(--lh-prose); resize: none; }
+.ap .ab-input::placeholder { color: var(--ink-2); opacity: 1; }
+.ap .ab-input:hover:not(:focus) { background: var(--in-bg-hover); }
+.ap .ab-input:focus { background: var(--in-bg-focus); box-shadow: var(--edge); outline: 2px solid var(--focus); outline-offset: 2px; }
+@media (max-width: 639px) { .ap .ab-input { font-size: 16px; } }
+.ap .ab-option { min-height: var(--row); padding: 0 var(--inset-row); gap: var(--gap-icon); border-radius: calc(var(--r-box) - var(--gap-tight)); transition: background-color var(--t-hover) var(--ease-out); }
+.ap .ab-option:hover { background: var(--hover); }
+.ap .ab-option small { color: var(--ink-2); font-size: var(--fs-label); }
+.ap .ab-option > svg:last-child { display: none; }   /* no chevron on a row that doesn't expand (DI-002 finding) */
+
+/* The modal (tier 5): 400 wide, radius 14, padding 20, modal shadow, scrim; title 13/600; Cancel (secondary) left of the primary */
+.ab-dialog.ap { width: min(400px, calc(100vw - 32px)); padding: var(--inset-pane-block); border-radius: var(--r-bar); background: var(--surface); box-shadow: var(--sh-modal); z-index: calc(var(--z-modal) + 1); }
+.ab-dialog.ap .ap-h { font: var(--w-strong) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); }
+.ab-dialog.ap .ab-description { color: var(--ink-2); line-height: var(--lh-prose); margin-top: var(--gap-tight); }
+.ab-dialog.ap .ab-field { font: var(--w-medium) var(--fs-label)/var(--lh-ui) var(--font); color: var(--ink-2); margin-top: var(--gap-group); }
+.ab-dialog.ap .ab-dialog-actions { gap: var(--gap-item); margin-top: var(--gap-group); }
+.ab-backdrop { background: var(--scrim); z-index: var(--z-modal); }
+
+/* ── 09 rule 5, in-place editable text: no ring, no hairline, no field surface. Plain at rest; the 5% layer behind the text on hover and
+   while editing, where it and the caret are the focus indicator. Padding is matched by a negative margin, so the text never moves. ── */
+.ap .pn-edit, .ap .pn-edit:focus, .ap .pn-edit:focus-visible { outline: none; box-shadow: none; border-radius: var(--r-control); transition: background-color var(--t-hover) var(--ease-out); }
+.ap .pn-edit:hover, .ap .pn-edit:focus { background: var(--hover); }
+.ap .pn-title { margin: calc(var(--gap-tight) * -1) calc(var(--inset-row) * -1); padding: var(--gap-tight) var(--inset-row);
+  font: var(--w-strong) var(--fs-title)/var(--lh-head) var(--font); letter-spacing: -0.01em; color: var(--ink); }
+.ap .pn-title[data-draft] { color: var(--ink-2); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
+.ap .pn-title[data-draft]:is(:focus, :focus-visible) { outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
+.ap .pn-doc > .pn-body.pn-edit { margin: calc(var(--gap-icon) * -1) calc(var(--inset-row) * -1); padding: var(--gap-icon) var(--inset-row); max-width: calc(var(--measure) + var(--inset-row) * 2);
+  font-size: var(--fs-read); line-height: var(--lh-prose); color: var(--ink); background: transparent; }
+.ap .pn-doc > .pn-body.pn-edit:is(:hover, :focus) { background: var(--hover); box-shadow: none; }
+.ap .pn-note { margin: calc(var(--gap-tight) * -1) calc(var(--gap-icon) * -1); padding: var(--gap-tight) var(--gap-icon); background: transparent; box-shadow: none; line-height: var(--lh-prose); }
+.ap .pn-note:is(:hover, :focus, :focus-visible) { background: var(--hover); box-shadow: none; }

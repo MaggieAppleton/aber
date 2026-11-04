@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { Icon } from "../ui/atoms";
-import { IconTooltip } from "../ui/tooltip";
+
 import { THEMES, THEORIES, SIGNALS, PROTOTYPES } from "../ui/data";
 import { mutate, reportError, rowFor, json, field, type Row } from "../data/live";
 import { callTool } from "../data/api";
@@ -40,8 +40,8 @@ export function DialogHost() {
         {prompt?.field && <label className="ab-field">{prompt.field}<input autoFocus required className="ab-input" value={query} onChange={e=>setQuery(e.target.value)}/></label>}
         <div className="ab-dialog-actions">{prompt?.destructive
           /* A destructive confirmation: Cancel is a ghost button and the action is solid ink, never red (red means a tripped tripwire). */
-          ? <><Dialog.Close type="button" className="ap-btn ab-btn-ghost">Cancel</Dialog.Close><button className="ap-btn ab-btn-ink" data-destructive>{prompt.submit ?? "Save"}</button></>
-          : <>{!prompt?.readOnly&&<IconTooltip label="Cancel"><Dialog.Close type="button" className="ap-iconbtn" aria-label="Cancel"><Icon name="x"/></Dialog.Close></IconTooltip>}<button autoFocus={!prompt?.field} className="ap-btn">{prompt?.submit ?? "Save"}</button></>}</div>
+          ? <><Dialog.Close type="button" className="ab-btn secondary">Cancel</Dialog.Close><button className="ab-btn primary" data-destructive>{prompt.submit ?? "Save"}</button></>
+          : <>{!prompt?.readOnly&&<Dialog.Close type="button" className="ab-btn secondary">Cancel</Dialog.Close>}<button autoFocus={!prompt?.field} className="ab-btn primary">{prompt?.submit ?? "Save"}</button></>}</div>
       </form>}
     </Dialog.Popup></Dialog.Portal>
   </Dialog.Root>;

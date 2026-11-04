@@ -24,8 +24,8 @@
   right: min(0px, calc((100% - var(--size-px-40)) / 2));
 }
 
-/* App-only dialogs and errors have no compact jig counterpart. */
-.ab-dialog :is(button, .ab-input), .ab-error button {
+/* Errors have no compact jig counterpart. Dialog controls keep their 28 height (05) and take a 40 hit area from ::before. */
+.ab-error button {
   min-height: var(--size-px-40);
   min-width: var(--size-px-40);
 }
