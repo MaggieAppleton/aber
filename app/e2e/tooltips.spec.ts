@@ -12,7 +12,7 @@ test('File in a theme has a delayed, portaled tooltip without moving its button;
     writes.push(route.request().url());
     return route.fulfill({ json: {} });
   });
-  await page.goto('/?view=current&open=theory:t1');
+  await page.goto('/?view=columns&open=theory:t1');
   await page.locator('.pn-ev').first().click();
   const file = page.getByRole('button', { name: 'File in a theme', exact: true });
   await page.evaluate(() => document.fonts.ready);
@@ -93,7 +93,7 @@ test('view and capture icon controls share the tooltip, preserve shortcuts and d
   await expect(page.getByRole('tooltip', { name: 'Attach', exact: true })).toHaveCount(0);
   const close = page.getByRole('button', { name: 'Close (Esc)', exact: true });
   expect(await close.getAttribute('title')).toBeNull();
-  await page.goto('/?view=current&open=theory:d1');
+  await page.goto('/?view=columns&open=theory:d1');
   const accept = page.getByRole('button', { name: 'Accept (A)', exact: true });
   await expect(accept).toHaveAttribute('aria-keyshortcuts', 'a');
   expect(await accept.getAttribute('title')).toBeNull();

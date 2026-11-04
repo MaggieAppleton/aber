@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { mkdir } from 'node:fs/promises';
-const views = [['current', 'Theme sections'], ['columns', 'Columns'], ['atlas', 'Atlas'], ['timeline', 'Timeline'], ['briefing', 'Briefing']] as const;
+const views = [['default', 'Default'], ['columns', 'Columns'], ['atlas', 'Atlas'], ['timeline', 'Timeline']] as const;
 
 for (const [id, label] of views) {
   test(`${label} renders, passes accessibility checks and has a review screenshot`, async ({ page }) => {
@@ -21,11 +21,12 @@ for (const [id, label] of views) {
 
 test('each view remains usable with reduced motion and preserves the open object', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/?view=current&open=theory:t1');
+  await page.goto('/?view=columns&open=theory:t1');
   await expect(page.getByRole('textbox', { name: 'Claim', exact: true })).toHaveText('Tokens become nearly free for routine work');
   for (const [, label] of views) {
     await page.getByRole('navigation', { name: 'Views' }).getByRole('button', { name: label, exact: false }).click();
-    await expect(page.getByRole('textbox', { name: 'Claim', exact: true })).toBeVisible();
+    // The outgoing view fades while the next arrives, so both may hold the object for a moment.
+    await expect(page.getByRole('textbox', { name: 'Claim', exact: true }).last()).toBeVisible();
   }
   await page.screenshot({ path: 'test-results/parity/app-reduced-motion-pane.png', animations: 'disabled' });
 });

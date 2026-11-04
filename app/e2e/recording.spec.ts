@@ -19,7 +19,7 @@ test('a real browser recording can be cancelled, then stopped, transcribed and r
   const initial = (await (await request.get('/api/world')).json()).dumps.length;
   let captures = 0;
   page.on('request', value => { if (value.method() === 'POST' && new URL(value.url()).pathname === '/api/dumps') captures++; });
-  await page.goto('/?view=current');
+  await page.goto('/?view=columns');
   await page.getByRole('button', { name: 'Voice dump', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Stop and dump', exact: true })).toBeVisible();
   await page.keyboard.press('Escape');

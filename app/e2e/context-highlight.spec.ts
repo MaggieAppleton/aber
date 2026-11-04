@@ -78,26 +78,6 @@ test('a picked context follows scroll clipping and disappears when its source le
   await page.screenshot({ path: 'test-results/parity/context-glow-scroll-clipped.png', animations: 'disabled' });
 });
 
-test('a picked theory highlights its visible duplicate when the first card is scrolled away', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/?view=current');
-  await page.getByRole('button', { name: 'Dump or ask (⌘J)', exact: true }).click();
-  const cards = page.locator('.cur-card[data-pick="t7"]'); await expect(cards).toHaveCount(2);
-  const visible = cards.last(); await visible.scrollIntoViewIfNeeded();
-  await visible.evaluate(node => {
-    const scroller = node.closest('.cur-main')!;
-    scroller.scrollTop += node.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 40;
-  });
-  await expect(cards.first()).not.toBeInViewport(); await expect(visible).toBeInViewport();
-  const label = (await visible.getAttribute('data-label'))!;
-  await page.getByRole('button', { name: 'Add something on screen', exact: true }).click(); await visible.click();
-  await page.locator('.ps-ctx').filter({ hasText: label }).hover();
-  await expect.poll(async () => {
-    const rect = await visible.boundingBox(), highlight = await paints(page);
-    return !!rect && highlight.length > 0 && highlight.every(part => part.left >= rect.x - .5 && part.right <= rect.x + rect.width + .5 && part.top >= rect.y - .5 && part.bottom <= rect.y + rect.height + .5);
-  }).toBe(true);
-  await page.screenshot({ path: 'test-results/parity/context-glow-visible-duplicate.png', animations: 'disabled' });
-});
 
 test('context paint never overlaps chat during intermediate pane docking frames', async ({ page }, testInfo) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });

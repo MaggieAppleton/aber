@@ -13,10 +13,10 @@ const rect = (locator: Locator) => locator.evaluate(node => {
 async function closedPill(page: Page, width: number, height: number) {
   await expect.poll(async () => { const box = await rect(surface(page)); return { width: box.width, right: width - box.right, bottom: height - box.bottom }; }).toEqual({ width: 250, right: 12, bottom: 12 });
 }
-async function capture(page: Page, label: string) {
+async function capture(page: Page, label: string, paneSelector = '.as-pane') {
   await mkdir(artifacts, { recursive: true });
   await page.mouse.move(0, 0); await page.waitForTimeout(650);
-  const measurements = { surface: await rect(surface(page)), panel: await rect(page.locator('.ps-panel')), pane: await rect(page.locator('.as-pane')), main: await rect(page.locator('.as-content')), backing: await rect(page.locator('.as')) };
+  const measurements = { surface: await rect(surface(page)), panel: await rect(page.locator('.ps-panel')), pane: await rect(page.locator(paneSelector)), main: await rect(page.locator('.as-content')), backing: await rect(page.locator('.as')) };
   await page.screenshot({ path: resolve(artifacts, `${phase}-${label}.png`) });
   await writeFile(resolve(artifacts, `${phase}-${label}.json`), JSON.stringify(measurements, null, 2));
   return measurements;
@@ -35,7 +35,7 @@ test.beforeEach(async ({ page, request }) => {
 
 for (const width of [1360, 852]) test(`desktop chat floats inset over the same backing as its object pane at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 820 });
-  await page.goto('/?view=current&open=theory:t1');
+  await page.goto('/?view=columns&open=theory:t1');
   await expect(page.locator('.as-pane .pn-title')).toBeVisible();
   await closedPill(page, width, 820);
   const paneBefore = await rect(page.locator('.as-pane'));
@@ -63,7 +63,7 @@ for (const width of [1360, 852]) test(`desktop chat floats inset over the same b
   await page.locator('.ps-ctxrow .ps-chip-x').first().click();
   await expect(page.locator('.ps-ctxrow .ps-ctx')).toHaveCount(1);
   await page.getByRole('button', { name: 'Add something on screen', exact: true }).click();
-  await page.locator('.cur-theme-btn').first().click();
+  await page.locator('.cd-item[data-kind="theory"]:not([data-pick="t1"])').first().click();
   await expect(page.locator('.ps-ctxrow .ps-ctx')).toHaveCount(2);
   await page.keyboard.press('Escape');
   await closedPill(page, width, 820);
@@ -90,16 +90,16 @@ test('opening chat gives the main view space and closes with reduced motion', as
 
 test('phone retains its fitted sheet, scrolling and composer controls', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  // The phone shows the default view: the theory's full view fills the screen (no docked pane).
   await page.goto('/?open=theory:t1');
-  await expect(page.locator('.as-pane')).toBeVisible();
+  await expect(page.locator('.tf-main .pn-title')).toBeVisible();
   await closedPill(page, 390, 844);
   await page.getByRole('button', { name: 'Dump or ask (⌘J)', exact: true }).click();
   await expect(page.locator('.ps-panel')).toBeVisible();
-  const actual = await capture(page, 'phone');
+  const actual = await capture(page, 'phone', '.tf-main');
   expect(actual.surface).toMatchObject({ x: 18, width: 360, right: 378, bottom: 832, radius: '14px' });
   expect(actual.surface.height).toBe(820);
   expect(actual.surface.shadow).toContain('0.5px');
-  expect(actual.backing.background).toBe(actual.pane.background);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(await page.locator('.ps-thread').evaluate(node => node.scrollHeight > node.clientHeight)).toBe(true);
   await expect(page.getByRole('textbox', { name: 'Dump or ask', exact: true })).toBeVisible();

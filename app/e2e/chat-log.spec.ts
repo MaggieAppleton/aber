@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('a contextual question streams real display components and persists the reply', async ({ page, request }) => {
-  await page.goto('/?view=current&open=theory:t1');
+  await page.goto('/?view=columns&open=theory:t1');
   await page.getByRole('button', { name: /^Dump or ask/ }).click();
   const input = page.getByPlaceholder('Dump anything, or ask');
   const question = 'Show the theory Tokens become nearly free for routine work?';
@@ -29,7 +29,7 @@ test('the dump log previews deletion consequences and restores from its bin', as
   const capture = await request.post('/api/dumps', { data: { text, from: 'web' } });
   const { id } = await capture.json();
   await expect.poll(async () => (await (await request.get(`/api/dumps/${id}`)).json()).status).toBe('done');
-  await page.goto('/?view=briefing');
+  await page.goto('/?view=default');
   await expect(page.locator('.ps-logseg')).toHaveCount(0);
   const dumps = page.getByRole('button', { name: /Open the dump log/ });
   await dumps.click();

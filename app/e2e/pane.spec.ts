@@ -4,7 +4,7 @@ test('theory edits persist across reload, confidence appends and the pane resize
   const created = await request.post('/api/tools/writeTheory', { data: { claim: 'A theory created for the persistence test', body: 'Original body', confidence: 3, horizon: 2028 } });
   expect(created.ok()).toBeTruthy();
   const theory = await created.json();
-  await page.goto(`/?view=current&open=theory:${theory.id}`);
+  await page.goto(`/?view=columns&open=theory:${theory.id}`);
   const claim = page.getByRole('textbox', { name: 'Claim', exact: true });
   await claim.fill('A theory whose edited claim survives reload');
   await claim.press('Tab');
@@ -19,7 +19,7 @@ test('theory edits persist across reload, confidence appends and the pane resize
   const saved = await (await request.get(`/api/objects/theory/${theory.id}`)).json();
   expect(saved.stances.length).toBeGreaterThanOrEqual(2);
   expect(saved.versions.length).toBeGreaterThanOrEqual(2);
-  const edge = page.getByRole('separator');
+  const edge = page.getByRole('separator', { name: /^Resize pane/ });
   const before = Number(await edge.getAttribute('aria-valuenow'));
   await edge.focus(); await edge.press('ArrowLeft');
   await expect.poll(async () => Number(await edge.getAttribute('aria-valuenow'))).toBeGreaterThan(before);
@@ -27,7 +27,7 @@ test('theory edits persist across reload, confidence appends and the pane resize
 });
 
 test('view URL and back restore state; Escape closes the most recent dock first', async ({ page }) => {
-  await page.goto('/?view=current&open=theory:t1');
+  await page.goto('/?view=columns&open=theory:t1');
   await expect(page.getByRole('textbox', { name: 'Claim', exact: true })).toBeVisible();
   await page.getByRole('button', { name: /^Dump or ask/ }).click();
   await expect(page.getByPlaceholder('Dump anything, or ask')).toBeVisible();
@@ -37,6 +37,6 @@ test('view URL and back restore state; Escape closes the most recent dock first'
   await page.getByRole('navigation', { name: 'Views' }).getByRole('button', { name: /^Atlas/ }).click();
   await expect(page).toHaveURL(/view=atlas/);
   await page.goBack();
-  await expect(page).toHaveURL(/view=current/);
+  await expect(page).toHaveURL(/view=columns/);
   await expect(page.getByRole('textbox', { name: 'Claim', exact: true })).toBeVisible();
 });

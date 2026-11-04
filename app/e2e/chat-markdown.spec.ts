@@ -18,7 +18,7 @@ test('restored assistant replies render emphasis while user and structured parts
       { type: 'text', text: 'And __more bold__ with _italics_.' },
     ] }],
   }] } }));
-  await page.goto('/?view=current&open=theory:t1');
+  await page.goto('/?view=columns&open=theory:t1');
   await page.getByRole('button', { name: 'Dump or ask (⌘J)', exact: true }).click();
   await expect(page.locator('.ps-agent .ps-say')).toHaveCount(2);
   await mkdir(artifacts, { recursive: true });
@@ -58,7 +58,7 @@ test('streamed assistant emphasis completes across chunks without changing user 
       return new Response(stream, { headers: { 'Content-Type': 'text/event-stream', 'x-vercel-ai-ui-message-stream': 'v1' } });
     };
   });
-  await page.goto('/?view=current');
+  await page.goto('/?view=columns');
   await page.getByRole('button', { name: 'Dump or ask (⌘J)', exact: true }).click();
   await page.getByRole('textbox', { name: 'Dump or ask', exact: true }).fill('Can you render **user** text?');
   await page.getByRole('button', { name: 'Ask (Return)', exact: true }).click();

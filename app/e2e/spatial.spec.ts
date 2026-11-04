@@ -176,7 +176,7 @@ test('Columns fold to counted rails, restore from a full pane, and unfold relate
     await expect.poll(async () => Math.round((await bounds(rail.locator('..'))).width)).toBe(44);
   }
   await expect(page.locator('.cd-col[data-kind="theory"]')).toHaveAttribute('data-wide', '');
-  const edge = page.getByRole('separator');
+  const edge = page.getByRole('separator', { name: /^Resize pane/ });
   const previousWidth = await edge.getAttribute('aria-valuenow');
   await page.getByRole('button', { name: /^Full width/ }).click();
   await expect(page.locator('.cd-col[data-wide]')).toHaveCount(0);
@@ -199,8 +199,8 @@ test('Columns fold to counted rails, restore from a full pane, and unfold relate
 
 test('pointer resizing follows the edge and settles on the nearest pane snap', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/?view=current&open=theory:t1');
-  const edge = page.getByRole('separator');
+  await page.goto('/?view=columns&open=theory:t1');
+  const edge = page.getByRole('separator', { name: /^Resize pane/ });
   await expect(edge).toHaveAttribute('aria-valuetext', 'Wide width');
   const box = await bounds(edge);
   const wide = Number(await edge.getAttribute('aria-valuenow'));
