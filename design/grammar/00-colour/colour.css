@@ -1,0 +1,35 @@
+/* Grammar 00: page chrome only. System colours live in ../_shared/tokens.css. */
+@media (min-width: 1100px) { body.jig { padding-right: 300px; } }
+.jig .jig-dock { right: auto; left: 20px; }
+.jig .jig-option.is-chosen > [data-option-stage] { outline: 0; }
+.jig .jig-option { border-radius: 20px; transition: background-color 160ms, box-shadow 160ms; }
+.jig .jig-option.is-chosen { background: rgb(255 255 255 / 0.55); box-shadow: 0 0 0 10px rgb(255 255 255 / 0.55); }
+
+.decide { max-width: 1180px; margin: 0 auto 8px; padding: 16px 32px 0; }
+.decide-box { background: #fff; border-radius: 14px; padding: 14px 18px; box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.05); }
+.decide-box h2 { margin: 0 0 8px; font-size: 15px; }
+.decide-box ol { margin: 0; padding-left: 20px; }
+.decide-box a { color: #2b2925; font-weight: 600; }
+.decide-box .pick { color: #5d5850; }
+.decide-box .pick b { color: #2b2925; }
+
+.viewer-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-bottom: 10px; }
+.viewer-label { font-weight: 650; }
+.seg-group { display: inline-flex; flex-wrap: wrap; padding: 2px; border-radius: 18px; background: rgb(0 0 0 / 0.06); }
+.seg-group button { font: inherit; font-weight: 500; min-height: 30px; padding: 0 12px; border: 0; border-radius: 999px; background: transparent; color: #5d5850; cursor: pointer; }
+.seg-group button[aria-pressed="true"] { background: #fff; color: #2b2925; box-shadow: 0 1px 2px rgb(0 0 0 / 0.08); }
+.seg-group button:focus-visible { outline: 2px solid #29a383; outline-offset: 1px; }
+.stage-label { margin: 0 0 8px; color: #5d5850; font-size: 13px; }
+
+.systems { display: grid; gap: 28px 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+
+/* Swatch strip: secondary, labelled tokens, then contrast results */
+.strip { display: grid; gap: 6px; font: 12px/1.35 "Geist", system-ui, sans-serif; color: #5d5850; }
+.strip-row { display: flex; flex-wrap: wrap; gap: 4px; }
+.sw { display: grid; gap: 2px; width: 62px; }
+.sw span:first-child { height: 22px; border-radius: 5px; box-shadow: inset 0 0 0 0.5px rgb(0 0 0 / 0.1); display: grid; place-items: center; }
+.sw span:first-child i { font-size: 13px; }
+.sw span:last-child { font-size: 10.5px; line-height: 1.2; color: #5d5850; overflow-wrap: anywhere; }
+.contrast { margin: 2px 0 0; }
+.contrast b { color: #2b2925; font-weight: 600; }
+.contrast .fail { color: #b4232a; }
