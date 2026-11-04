@@ -183,21 +183,19 @@
     if (!o.trip) return "";
     const by = o.challenge && O[o.challenge];
     if (rung === "peek") return `<div class="ob-attach${by ? " tripped" : ""}">${tile("tripwire", ICON.tripwire)}<span>${by ? `Tripped by <b>${by.name}</b>` : o.trip}</span></div>`;
-    return `<div class="ob-trip${by ? " tripped" : ""}"><div class="ob-hang">${tile("tripwire", ICON.tripwire)}<div class="ob-col">
-        <p class="ob-prose">${o.trip}</p>
-        ${by ? `<div class="ob-decide-box"><div class="ob-why">${dot("neg", "Tripped")}<span>Tripped by a new signal. Accepting lowers confidence by one step.</span></div>${row(by, { omit: "when" })}
-          <div class="ob-decide"><button type="button" class="nv-btn secondary">Dismiss</button><button type="button" class="nv-btn primary">Accept</button></div></div>` : ""}
-      </div></div></div>`;
+    // One glyph column: the signpost hangs where the title's tile hangs; the sentence starts on the body's text edge
+    return `<div class="ob-trip${by ? " tripped" : ""}"><div class="ob-attach lg">${tile("tripwire", ICON.tripwire)}<p class="ob-prose">${o.trip}</p></div>
+        ${by ? `<div class="ob-block"><div class="ob-blabel neg">Tripped by a new signal</div>${row(by, { omit: "when" })}<p class="ob-why-t">Accepting lowers confidence by one step.</p>
+          <div class="ob-decide"><button type="button" class="nv-btn secondary">Dismiss</button><button type="button" class="nv-btn primary">Accept</button></div></div>` : ""}</div>`;
   };
   const sugBlock = (o, rung) => {
     const list = SUG[o.id] || []; if (!list.length) return "";
-    if (rung === "peek") return `<div class="ob-attach sug">${tile("suggestion", ICON.suggestion, "draft")}<span>${list.length === 1 ? `Suggested ${list[0].st === "+" ? "support" : "undermining"}: <b>${O[list[0].s].name}</b>` : `${list.length} suggestions`}</span></div>`;
-    return list.map(x => `<div class="ob-sug"><div class="ob-hang">${tile("suggestion", ICON.suggestion, "draft")}<div class="ob-col">
-        <div class="ob-sug-head"><span class="ob-stance"><i class="ph ph-arrow-${x.st === "+" ? "up" : "down"}" aria-hidden="true"></i>Suggested ${x.st === "+" ? "support" : "undermining"}</span></div>
-        ${row(O[x.s], { omit: "when" })}
-        <p class="ob-why-t">${x.why}</p>
-        <div class="ob-decide"><button type="button" class="nv-btn secondary">Dismiss</button><button type="button" class="nv-btn primary">Accept</button></div>
-      </div></div></div>`).join("");
+    // A dashed block (dashed = not yet mine): a label line, the proposed object as an ordinary row, then (full only) why and Dismiss | Accept.
+    // No Sparkle inside the block; Sparkle is only a suggestion's own tile where it is listed on its own.
+    const label = x => `<div class="ob-blabel">Suggested ${x.st === "+" ? "support" : "undermining"}</div>`;
+    if (rung === "peek") return `<div class="ob-block sug">${label(list[0])}${row(O[list[0].s], { omit: "when" })}${list.length > 1 ? `<span class="ob-more">${list.length - 1} more</span>` : ""}</div>`;
+    return list.map(x => `<div class="ob-block sug">${label(x)}${row(O[x.s], { omit: "when" })}<p class="ob-why-t">${x.why}</p>
+        <div class="ob-decide"><button type="button" class="nv-btn secondary">Dismiss</button><button type="button" class="nv-btn primary">Accept</button></div></div>`).join("");
   };
 
   /* ═══ 7. Relations, in order of importance per type ═══════════════════════════ */

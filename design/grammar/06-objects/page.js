@@ -35,7 +35,7 @@
         <div class="mx-c" data-rung="Preview: list row"><p class="mx-note">A dashed count in the host's status slot</p>${list(row(t1, { act: "none" }))}</div>
         <div class="mx-c" data-rung="Preview: card and chip"><p class="mx-note">The host's card carries the count</p><div class="ob-scope ctl mx-stack">${card(t1, { act: "none" })}</div></div>
         <div class="mx-c" data-rung="Peek"><p class="mx-note">One line inside the host's peek</p><div class="ob-scope ctl">${peek(t1).replace('class="ob-peek"', 'class="ob-peek static"')}</div></div>
-        <div class="mx-c" data-rung="Full"><p class="mx-note">A dashed block: stance, the signal, why, Dismiss | Accept</p><div class="ob-scope ctl">${A.sugBlock(t1, "full").replace('class="ob-sug"', 'class="ob-sug mx-sug"')}</div></div>`;
+        <div class="mx-c" data-rung="Full"><p class="mx-note">A dashed block: what it proposes, the signal as a row, why, Dismiss | Accept</p><div class="ob-scope ctl"><div class="mx-sugwrap ob-full"><div class="ob-body">${A.sugBlock(t1, "full")}</div></div></div></div>`;
     matrix.innerHTML = head + TYPES.map(typeRow).join("") + attached;
   }
 

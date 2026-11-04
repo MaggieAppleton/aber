@@ -13,6 +13,7 @@
 :is(.ob-scope, .ob-win) .g.sm { width: calc(var(--icon-label) + 4px); height: calc(var(--icon-label) + 4px); }
 :is(.ob-scope, .ob-win) .g.sm i { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
 :is(.ob-scope, .ob-win) .g[data-type="briefing"] { background: var(--tile-bg); color: var(--ink-2); }
+:root { --hang: calc(var(--tile) + var(--gap-icon)); }   /* the glyph column: tile + gap; text starts here */
 :is(.ob-scope, .ob-win) .g.draft { background: var(--draft-fill); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
 
 /* Marks: one status slot, at the end of the key line */
@@ -111,17 +112,28 @@
 .ob-peek .ob-meta { margin-top: calc(var(--gap-item) * -1 + 2px); }
 .ob-pk-rel { display: grid; gap: 2px; padding-top: var(--gap-tight); }
 .ob-pk-rel > .ob-label { height: var(--control-sm); }
-.ob-pk-rel .ob-row { margin-inline: calc(var(--inset-row) * -1); }
+.ob-pk-rel .ob-row { margin-left: calc((var(--hang) + var(--inset-row)) * -1); margin-right: calc(var(--inset-row) * -1); }
 .ob-more { padding-top: 2px; font-size: var(--fs-label); color: var(--ink-2); }
 .ob-pk-foot { display: flex; justify-content: flex-end; }
 /* Attached objects, one line in a peek */
-/* Same 24 tile as every other row in the peek; text at body size beside it */
-.ob-attach { display: grid; grid-template-columns: var(--tile) minmax(0, 1fr); align-items: start; gap: var(--gap-icon); font-size: var(--fs-body); line-height: var(--lh-ui); color: var(--ink-2); }
+/* Attached lines hang their tile in the glyph column, like every row; text on the text edge */
+.ob-attach { margin-left: calc(var(--hang) * -1); display: grid; grid-template-columns: var(--tile) minmax(0, 1fr); align-items: start; gap: var(--gap-icon); font-size: var(--fs-body); line-height: var(--lh-ui); color: var(--ink-2); }
 .ob-attach > .g { margin-top: calc((var(--line-ui) - var(--tile)) / 2); }
 .ob-attach > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .ob-attach b { font-weight: 500; color: var(--ink); }
 .ob-attach.tripped > span { color: var(--neg); }
 .ob-attach.tripped b { color: var(--neg); }
+.ob-attach.lg > .g { margin-top: calc((var(--line-prose) - var(--tile)) / 2); }
+.ob-attach.lg > .ob-prose { color: var(--ink-2); }
+/* The attached block: dashed (not yet mine); it bleeds into the glyph column so its row's tile sits in that column and every text starts on the text edge */
+.ob-block { display: grid; gap: var(--gap-tight); margin-left: calc((var(--hang) + var(--inset-row)) * -1); padding: var(--gap-item) var(--inset-row) var(--gap-item) 0; border-radius: var(--r-box); }
+.ob-block.sug { outline: 1px dashed var(--hairline-strong); outline-offset: -1px; background: var(--draft-fill); }
+.ob-block > :not(.ob-row) { margin-left: calc(var(--hang) + var(--inset-row)); }
+.ob-block > .ob-row { margin: 0; }
+.ob-blabel { display: flex; align-items: center; font: 500 var(--fs-label)/var(--lh-ui) var(--font); color: var(--ink-2); }
+.ob-blabel.neg { color: var(--neg); }
+.ob-block > .ob-decide { justify-content: flex-end; margin-top: var(--gap-tight); }
+.ob-peek .ob-block { padding-bottom: var(--gap-tight); }
 
 /* ═══ Rung 3: full (fills the main area; pane-level insets) ═══════════════════ */
 .ob-full { display: grid; align-content: start; gap: var(--gap-group); max-width: 760px; padding: var(--inset-pane-block) var(--inset-pane-inline) 48px; }
@@ -135,18 +147,20 @@
 .ob-full.draft .ob-title { color: var(--ink-2); }
 .ob-meta.lg { gap: var(--gap-tight) var(--gap-group); min-height: var(--control); }
 /* Rows in a full view keep a list's measure, so their status stays near their name */
-.ob-full .ob-rows, .ob-full .ob-sug, .ob-full .ob-decide-box { max-width: 560px; }
+.ob-full .ob-rows, .ob-full .ob-block { max-width: 560px; }
+.ob-full .ob-block { max-width: calc(560px + var(--hang) + var(--inset-row)); }
 .ob-body { display: grid; gap: var(--gap-group); min-width: 0; margin-left: calc(var(--tile) + var(--gap-icon)); }
 .ob-rels { display: grid; gap: var(--gap-group); margin-top: var(--gap-group); min-width: 0; }
 .ob-sec { display: grid; gap: var(--gap-tight); min-width: 0; }
 .ob-sh { display: flex; align-items: center; gap: var(--gap-icon); min-height: var(--control); font-weight: 600; color: var(--sechead-ink); }
 .ob-sh .ob-n { font-weight: 500; }
-.ob-sec .ob-rows .ob-row, .ob-reply .ob-row { margin-inline: calc(var(--inset-row) * -1); }
+/* Relation rows hang their tile in the full view's glyph column, so names share the body's text edge */
+.ob-sec .ob-rows .ob-row { margin-left: calc((var(--hang) + var(--inset-row)) * -1); margin-right: calc(var(--inset-row) * -1); }
 .ob-day { display: flex; align-items: center; height: var(--control-sm); margin-top: var(--gap-tight); font: 500 var(--fs-label)/1 var(--font); color: var(--ink-2); }
 .ob-day:first-child { margin-top: 0; }
 .ob-cards { display: grid; gap: var(--gap-item); grid-template-columns: repeat(auto-fill, minmax(208px, 1fr)); min-width: 0; }
-.ob-slot { display: flex; align-items: center; gap: var(--gap-icon); height: 40px; padding: 0 var(--inset-row); margin-inline: calc(var(--inset-row) * -1); border-radius: var(--r-control); color: var(--ink-2); font: 500 var(--fs-label)/1 var(--font); transition: background-color var(--t-hover) var(--ease-out); }
-.ob-slot i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
+.ob-slot { display: flex; align-items: center; gap: var(--gap-icon); height: 40px; padding: 0 var(--inset-row); margin-left: calc((var(--hang) + var(--inset-row)) * -1); margin-right: calc(var(--inset-row) * -1); border-radius: var(--r-control); color: var(--ink-2); font: 500 var(--fs-label)/1 var(--font); transition: background-color var(--t-hover) var(--ease-out); }
+.ob-slot i.ph { width: var(--tile); height: var(--icon-label); font-size: var(--icon-label); text-align: center; }
 .ob-slot:hover { background: var(--hover); color: var(--ink); }
 .ob-slot.sm { height: var(--chip-h); margin: 0; padding: 0 var(--inset-chip) 0 6px; }
 .ob-reply { display: grid; gap: var(--gap-tight); }
@@ -161,21 +175,9 @@
 .ob-step .v { min-width: 4ch; }
 
 /* Attached objects, a block in the full view */
-.ob-trip { padding-bottom: var(--gap-item); }
-.ob-trip .ob-prose { color: var(--ink-2); }
-.ob-trip > .ob-hang > .g { margin-top: calc((var(--line-prose) - var(--tile)) / 2); }
-.ob-trip { margin-left: calc((var(--tile) + var(--gap-icon)) * -1); }
-.ob-decide-box { display: grid; gap: var(--gap-item); }
-.ob-why { display: flex; align-items: center; gap: var(--gap-item); font-size: var(--fs-label); color: var(--neg); }
-.ob-decide-box .ob-row { margin-inline: calc(var(--inset-row) * -1); }
-.ob-decide { display: flex; gap: var(--gap-item); justify-content: flex-start; }
-.ob-sug { padding: var(--inset-card); border-radius: var(--r-box); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; background: var(--draft-fill); }
-.ob-sug .ob-col { gap: var(--gap-tight); }
-.ob-sug-head { display: flex; align-items: center; min-height: var(--line-ui); }
-.ob-stance { display: inline-flex; align-items: center; gap: var(--gap-icon); font: 500 var(--fs-label)/1 var(--font); color: var(--ink-2); }
-.ob-stance i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
-.ob-sug .ob-row { margin-inline: calc(var(--inset-row) * -1); }
-.ob-why-t { margin: 0 0 var(--gap-tight); font-size: var(--fs-label); color: var(--ink-2); line-height: var(--lh-ui); }
+.ob-trip { display: grid; gap: var(--gap-item); }
+.ob-decide { display: flex; gap: var(--gap-item); }
+.ob-why-t { margin: 0; font-size: var(--fs-body); color: var(--ink-2); line-height: var(--lh-prose); max-width: var(--measure); }
 
 /* ═══ Windows ═════════════════════════════════════════════════════════════════ */
 .ob-host { min-width: 0; }
