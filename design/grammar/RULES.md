@@ -448,6 +448,7 @@ Evidence: each view draws its floating controls differently. The view switcher i
    - Chain appears only while something is open.
    - Filter by theme is the funnel, opening a tethered menu; once set, it becomes a labelled button.
 10. **Vocabulary:** Fold a column uses `sidebar-simple`.
+11. **Marks on previews (Maggie, 4 Nov):** no new dot, open ring or pending-suggestion badge on cards, rows, rails, map labels, pins or timeline items; signals use the Pulse tile. The red challenge mark stays on theory cards, pins and timeline dots, pending 06.
 
 **Open (jig `11-views/`):**
 - With something open, unrelated objects: A fade to 40% (default), or B flatten (no surface, ink 2).
