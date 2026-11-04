@@ -1,7 +1,7 @@
 import { TooltipButton } from "./tooltip";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { Decide, Icon } from "./atoms";
+import { Decide, Icon, Tile } from "./atoms";
 import { Editable } from "./editable";
 import { SignalCard } from "./signal-card";
 import "./tripwire.css";
@@ -86,7 +86,7 @@ export function Tripwire(p: TripwireProps) {
   };
   const lead = (
     <span className="tw-tc-lead" onMouseDown={e => { e.preventDefault(); focusEnd(); }}>
-      <span className="tw-tc-icon" data-tripped={tripped ? "" : undefined}><Icon name="turn" size={16} /></span>
+      <span className="tw-tc-icon" data-tripped={tripped ? "" : undefined}><Tile kind="tripwire" /></span>
       {"I'd change my mind if "}
     </span>
   );

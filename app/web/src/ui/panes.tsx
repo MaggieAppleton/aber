@@ -10,7 +10,7 @@ import { mergeSignal } from "../app/signal-merge";
 import { useState, useRef, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { DUMPS, SIGNALS, THEORIES, PROTOTYPES, theoriesIn, theme, theory, signalsFor, prototypesFor, type Signal } from "./data";
-import { Icon, IconButton, Conf, DumpIcon, Mark, ProtoGlyph, Tile, Decide } from "./atoms";
+import { Icon, IconButton, Conf, DumpIcon, Mark, Meter, ProtoGlyph, Tile, Decide } from "./atoms";
 import { flushEdit, useEdit } from "./edits";
 import { Editable } from "./editable";
 import { Tripwire, tripState, type Decision } from "./tripwire";
@@ -21,6 +21,7 @@ import { RetirementNotice, retirementLabel } from "./object-status";
 /** Retire is rare and destructive, so it carries a label (03 rule 8) and the archive glyph. */
 const RetireButton = ({ label, onClick }: { label: string; onClick: () => void }) => <button type="button" className="ab-btn quiet" aria-label={label} onClick={onClick}><Icon name="archive" size={14} />Retire</button>;
 import { SuggestionPreview } from "./suggestion-preview";
+import { SuggestionReview } from "./suggestion-review";
 import { stancesFor, TODAY } from "./histories";
 import "./panes.css";
 
@@ -63,14 +64,14 @@ const Swap = () => <Icon name="swap" size={12} />;
 export const Claim = ({ id }: { id: string }) => <>{useEdit("theory", id)[0].claim}</>;
 export const ThemeName = ({ id }: { id: string }) => <>{useEdit("theme", id)[0].name}</>;
 export const ProtoName = ({ id }: { id: string }) => <>{useEdit("prototype", id)[0].name}</>;
-export const TheoryConf = ({ id }: { id: string }) => <Conf n={useEdit("theory", id)[0].confidence} />;
+export const TheoryConf = ({ id }: { id: string }) => <Meter n={useEdit("theory", id)[0].confidence} />;
 export const ProtoStatus = ({ id }: { id: string }) => <ProtoGlyph status={useEdit("prototype", id)[0].status} />;
 
 /* ── A signal: a row that unfolds in place ── */
 /** A signal row. `feed`: the theme pane's dated feed, with a source glyph and the theories it moves. */
 export function SignalRow({s,open,current,onToggle,onOpen,suggested,context,feed}:{s:Signal;open:boolean;current?:boolean;onToggle:()=>void;onOpen:OnOpen;suggested?:boolean;context?:string;feed?:boolean}) {
   return <Accordion.Root value={open?[s.id]:[]} onValueChange={()=>{onToggle();if(!open)markRead("signal",s.id);}}><Accordion.Item value={s.id} className="pn-sig" data-open={open?"":undefined} data-current={current?"":undefined} data-suggested={suggested?"":undefined}>
-    <Accordion.Header style={{display:"contents"}}><Accordion.Trigger className="pn-ev" data-pick={s.id} data-kind="signal" data-label={s.gist} data-region={s.id}>{feed?<FeedLine s={s} context={context}/>:<><span className="pn-line">{field(s,"seenAt")==null&&<Mark kind="fresh"/>}<span>{s.gist}</span></span><span className="ap-muted">{s.source}</span></>}</Accordion.Trigger></Accordion.Header>
+    <Accordion.Header style={{display:"contents"}}><Accordion.Trigger className="pn-ev" data-pick={s.id} data-kind="signal" data-label={s.gist} data-region={s.id}>{feed?<FeedLine s={s} context={context}/>:<span className="ab-obj"><Tile kind="signal"/><span className="ab-nm" data-unseen={field(s,"seenAt")==null?"":undefined}>{s.gist}</span><span className="ab-kv"><span>{s.source}</span><span className="ab-when ap-num">{s.day}</span></span></span>}</Accordion.Trigger></Accordion.Header>
     <Accordion.Panel className="pn-detail ab-accordion-panel"><SignalDetail s={s} onOpen={onOpen} context={context}/></Accordion.Panel>
   </Accordion.Item></Accordion.Root>;
 }
@@ -117,7 +118,55 @@ export function SignalDetail({ s, onOpen, onDump, context }: { s: Signal; onOpen
   );
 }
 
-/* ── Theory: claim, confidence, horizon, rival, body, tripwire, evidence, lineage ── */
+/* ── Full-view parts (06 rung 3): head with a 32 title tile, labelled sections, relations as rows, suggestions as dashed blocks ── */
+/** The head: an optional eyebrow, the 32 tile hanging so the title starts on the text edge, the title, then the key line. */
+function FullHead({ kind, draft, eyebrow, title, keyLine }: { kind: ObjKind; draft?: boolean; eyebrow?: ReactNode; title: ReactNode; keyLine?: ReactNode }) {
+  return <div className="ab-head">
+    {eyebrow && <div className="ab-eyebrow">{eyebrow}</div>}
+    <Tile kind={kind} size="title" draft={draft} />
+    <div className="ab-head-text">{title}{keyLine && <div className="ab-keyline">{keyLine}</div>}</div>
+  </div>;
+}
+/** A labelled relation section: the label on the tile column, a bare count, an optional add. */
+function Section({ label, n, add, children }: { label: string; n?: number; add?: ReactNode; children: ReactNode }) {
+  return <section className="ab-sec" aria-label={label}>
+    <h2 className="ab-sh"><span>{label}</span>{n != null && <span className="ab-count">{n}</span>}{add && <span className="ab-sh-add">{add}</span>}</h2>
+    {children}
+  </section>;
+}
+/** A relation row: tile, name, one short key value right of the first line. */
+function RelRow({ kind, name, rk, kv, draft, onClick }: { kind: ObjKind; name: ReactNode; rk?: ReactNode; kv?: ReactNode; draft?: boolean; onClick: () => void }) {
+  return <button type="button" className="ab-obj ab-rel" data-draft={draft ? "" : undefined} onClick={onClick}>
+    <Tile kind={kind} draft={draft} /><span className="ab-nm">{name}</span>{rk && <span className="ab-rk">{rk}</span>}{kv && <span className="ab-kv">{kv}</span>}
+  </button>;
+}
+const TheoryRel = ({ id, onOpen }: { id: string; onOpen: OnOpen }) => { const t = theory(id); return <RelRow kind="theory" draft={t.draft} name={<Claim id={id} />} rk={t.draft ? undefined : <TheoryConf id={id} />} onClick={() => onOpen("theory", id)} />; };
+const ProtoRel = ({ id, onOpen }: { id: string; onOpen: OnOpen }) => <RelRow kind="prototype" name={<ProtoName id={id} />} rk={<ProtoStatus id={id} />} onClick={() => onOpen("prototype", id)} />;
+/** A suggested piece of evidence, first in the group it would join: a dashed block with the row, why, and Dismiss | Accept. */
+function EvidenceBlock({ suggestion: sg, onOpen, context }: { suggestion: any; onOpen: OnOpen; context: string }) {
+  const payload = json<any>(sg.payload ?? sg.payload_json, {});
+  const sid = payload.signalId ?? payload.signal_id;
+  const sig = SIGNALS.find(x => x.id === sid);
+  const [busy, setBusy] = useState(false);
+  const decide = async (decision: "accepted" | "discarded") => { if (busy) return; setBusy(true); try { await mutate("decideSuggestion", { id: sg.id, decision }); } catch {} finally { setBusy(false); } };
+  return <div className="ab-block" data-suggestion-id={sg.id}>
+    <button type="button" className="ab-obj ab-rel" onClick={() => sid && window.dispatchEvent(new CustomEvent("aber:open", { detail: { kind: "theory", id: context, unfolded: sid } }))}>
+      <Tile kind="signal" /><span className="ab-nm">{sig?.gist ?? payload.gist ?? "Proposed evidence"}</span><span className="ab-kv"><span>{sig?.source ?? "Own observation"}</span></span>
+    </button>
+    {sg.reasoning && <p className="ab-why">{sg.reasoning}</p>}
+    <div className="ab-block-foot"><Decide busy={busy} onDismiss={() => void decide("discarded")} onAccept={() => void decide("accepted")} /></div>
+  </div>;
+}
+const pendingFor = (id: string) => world.suggestions.filter(s => s.status === "pending" && s.kind !== "challenge" && field(s, "targetId") === id);
+const stanceOf = (s: any) => { const p = json<any>(s.payload ?? s.payload_json, {}); return p.stance === "supports" ? "supports" : "undermines"; };
+const signalOf = (s: any) => { const p = json<any>(s.payload ?? s.payload_json, {}); return p.signalId ?? p.signal_id; };
+/** Where a draft came from: the dump that made it. */
+function DraftFrom({ id, onOpen: _onOpen }: { id: string; onOpen: OnOpen }) {
+  const dump = DUMPS.find(d => d.produced.includes(id));
+  return <><span className="ab-draft-tag">Draft</span>{dump && <><span>from</span><button type="button" className="pn-chip" title={dump.first} onClick={() => inspectDump(dump.id)}><Tile kind="dump" size="chip" /><span className="pn-chip-name">{dump.first}</span></button></>}</>;
+}
+
+/* ── Theory: claim, confidence, horizon, body, tripwire, then relations (06 rule 10) ── */
 export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
   const t = theory(id);
   const [edit, set] = useEdit("theory", id);
@@ -131,62 +180,54 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
   const accepted = (sid: string) => trip.hits.some(h => h.id === sid) && edit.decisions[sid] === "accepted";
   const leadsTo = THEORIES.filter(x => x.follows.includes(id));
   const protos = prototypesFor(id);
-  const tripped = tripState(edit.tripwire, trip.hits, edit.decisions) === "tripped";
+  const pending = pendingFor(id);
+  const evidenceSugs = pending.filter(s => s.kind === "evidence");
+  const otherSugs = pending.filter(s => s.kind !== "evidence");
+  const addRelation = async () => { const choice = await ask({ title: "Theory relationships", choices: [{ id: "theme", label: "Theme", kind: "theme" }, { id: "rival", label: "Rival", kind: "swap" }, { id: "follows", label: "Follows from", kind: "chevronLeft" }, { id: "prototype", label: "Prototype", kind: "prototype" }] }); if (choice) void linkObject(choice as any, id); };
+  const acceptDraft = () => void flushEdit("theory", id).catch(() => {}).then(() => act("acceptDraft", { kind: "theory", id }));
   return (
-    <div className="pn-doc pn-theory-doc">
-      <div className="pn-theory-head">
-        <div className="pn-theory-themes">{t.themes.map(th => <button key={th} className="pn-chip" title="Theme" onClick={() => onOpen("theme", th)}><Tile kind="theme" size="chip" /><span className="pn-chip-name"><ThemeName id={th} /></span></button>)}</div>
-        <div className="pn-theory-actions"><IconButton icon="plus" label="Add a relationship" onClick={async()=>{const choice=await ask({title:"Theory relationships",choices:[{id:"theme",label:"Theme",kind:"theme"},{id:"rival",label:"Rival",kind:"swap"},{id:"follows",label:"Follows from",kind:"chevronLeft"},{id:"prototype",label:"Prototype",kind:"prototype"}]});if(choice)void linkObject(choice as any,id);}}/><RetireButton label="Retire theory" onClick={()=>void retireObject("theory",id)}/></div>
+    <div className="pn-doc pn-theory-doc ab-full" data-draft={t.draft ? "" : undefined}>
+      <div className="ab-top">
+        {t.draft && <Decide dismiss="Discard" acceptKey="a" acceptTitle="Accept (A)" onDismiss={() => act("discardDraft", { kind: "theory", id })} onAccept={acceptDraft} />}
+        <span className="ab-tools"><IconButton icon="plus" label="Add a relationship" onClick={() => void addRelation()} /><RetireButton label="Retire theory" onClick={() => void retireObject("theory", id)} /></span>
       </div>
-      <Editable as="h1" className="pn-title" value={edit.claim} onChange={claim => set({ claim })} singleLine aria-label="Claim" data-draft={t.draft ? "" : undefined} />
+      <FullHead kind="theory" draft={t.draft} eyebrow={t.draft ? <DraftFrom id={id} onOpen={onOpen} /> : undefined}
+        title={<Editable as="h1" className="pn-title" value={edit.claim} onChange={claim => set({ claim })} singleLine aria-label="Claim" data-draft={t.draft ? "" : undefined} />}
+        keyLine={<>
+          {!t.draft && <span className="ab-key ab-conf"><ConfidenceControl value={conf} onChange={confidence => set({ confidence })} /><ConfidenceSpark stances={stancesFor(id, edit.log, edit.confidence)} variant={SPARK} /></span>}
+          <span className="ab-key pn-year" aria-label="Happens by">
+            <TooltipButton className="pn-step" aria-label="Earlier" tooltip="Earlier" onClick={() => set({ horizon: edit.horizon - 1 })}><Icon name="chevronLeft" size={16} /></TooltipButton>
+            <span className="ap-num pn-field-val">{edit.horizon}</span>
+            <TooltipButton className="pn-step" aria-label="Later" tooltip="Later" onClick={() => set({ horizon: edit.horizon + 1 })}><Icon name="chevron" size={16} /></TooltipButton>
+          </span>
+        </>} />
       <RetirementNotice row={rowFor("theory",id)}/>
-      <dl className="pn-meta">
-        {t.draft
-          ? <div className="pn-meta-row"><dt className="ap-label">Draft</dt><dd><Decide dismiss="Discard" acceptKey="a" acceptTitle="Accept (A)" onDismiss={()=>act("discardDraft",{kind:"theory",id})} onAccept={()=>void flushEdit("theory",id).catch(()=>{}).then(()=>act("acceptDraft",{kind:"theory",id}))} /></dd></div>
-          : <div className="pn-meta-row"><dt className="ap-label">Confidence</dt><dd>
-              <ConfidenceControl value={conf} onChange={confidence => set({ confidence })} />
-              <ConfidenceSpark stances={stancesFor(id, edit.log, edit.confidence)} variant={SPARK} />
-              {(trip.hits.length ? tripped : t.challenge) && <Mark kind="challenge" />}
-            </dd></div>}
-        <div className="pn-meta-row"><dt className="ap-label">Happens by</dt><dd className="pn-year">
-          <TooltipButton className="pn-step" aria-label="Earlier" tooltip="Earlier" onClick={() => set({ horizon: edit.horizon - 1 })}><Icon name="minus" size={12} /></TooltipButton>
-          <span className="ap-num pn-field-val">{edit.horizon}</span>
-          <TooltipButton className="pn-step" aria-label="Later" tooltip="Later" onClick={() => set({ horizon: edit.horizon + 1 })}><Icon name="plus" size={12} /></TooltipButton>
-        </dd></div>
-        {t.rivals.length > 0 && <div className="pn-meta-row"><dt className="ap-label">Rival</dt><dd className="pn-rivals">
-          {t.rivals.map(r => <button key={r} className="pn-chip pn-rival" onClick={() => onOpen("theory", r)}><Swap /><span><Claim id={r} /></span></button>)}
-        </dd></div>}
-      </dl>
-      <Editable className="pn-body" value={edit.body} onChange={body => set({ body })} aria-label="Body" />
+      <Editable className="pn-body" value={edit.body} onChange={body => set({ body })} placeholder="Why you hold it" aria-label="Body" />
       <TheoryTripwire id={id} />
-      <SuggestionActions id={id}/>
-      <div className="pn-grid">
-        {(["supports", "undermines"] as const).map(st => {
-          const items = ev.filter(s => s.evidence.find(e => e.theory === id)!.stance === st);
-          const name = st === "supports" ? "Supports" : "Undermines";
-          return (
-            <div key={st} className="pn-col">
-              <div className="pn-ev-head">
-                <Icon name={st === "supports" ? "arrowUp" : "arrowDown"} size={12} />
-                <span className="ap-label">{name}</span>
-                <span className="ap-num pn-field-val">{items.length}</span>
-                <TooltipButton className="pn-step" aria-label={st === "supports" ? "Add supporting evidence" : "Add undermining evidence"} tooltip={st === "supports" ? "Add supporting evidence" : "Add undermining evidence"} onClick={() => void linkObject("evidence",id,st)}><Icon name="plus" size={12} /></TooltipButton>
-              </div>
+      {otherSugs.map(s => <div key={s.id} className="ab-block ab-block-review"><SuggestionReview suggestion={s} /></div>)}
+      <hr className="ab-div" />
+      {t.themes.length > 0 && <Section label="Themes"><div className="pn-chips">{t.themes.map(th => <button key={th} className="pn-chip" onClick={() => onOpen("theme", th)}><Tile kind="theme" size="chip" /><span className="pn-chip-name"><ThemeName id={th} /></span></button>)}</div></Section>}
+      {(["supports", "undermines"] as const).map(st => {
+        const sugs = evidenceSugs.filter(s => stanceOf(s) === st);
+        const blocked = new Set(sugs.map(signalOf));
+        const items = ev.filter(s => s.evidence.find(e => e.theory === id)!.stance === st && !blocked.has(s.id));
+        const name = st === "supports" ? "Supports" : "Undermines";
+        return (
+          <Section key={st} label={name} n={items.length} add={<TooltipButton className="pn-step" aria-label={st === "supports" ? "Add supporting evidence" : "Add undermining evidence"} tooltip={st === "supports" ? "Add supporting evidence" : "Add undermining evidence"} onClick={() => void linkObject("evidence",id,st)}><Icon name="plus" size={16} /></TooltipButton>}>
+            <div className="ab-rows pn-col">
+              {sugs.map(s => <EvidenceBlock key={s.id} suggestion={s} onOpen={onOpen} context={id} />)}
               {items.map(s => (
                 <SignalRow key={s.id} s={s} context={id} open={inline && unfolded === s.id} current={!inline && unfolded === s.id}
                   onToggle={() => toggle(s.id)} onOpen={onOpen} suggested={!accepted(s.id) && s.evidence.find(x => x.theory === id)!.suggested} />
               ))}
             </div>
-          );
-        })}
-      </div>
-      {(t.follows.length > 0 || leadsTo.length > 0 || protos.length > 0) && (
-        <div className="pn-links">
-          {t.follows.map(f => <button key={f} className="pn-chip" title="Follows from" onClick={() => onOpen("theory", f)}><Icon name="chevronLeft" size={12} /><Claim id={f} /></button>)}
-          {leadsTo.map(f => <button key={f.id} className="pn-chip" title="Leads to" data-draft={f.draft ? "" : undefined} onClick={() => onOpen("theory", f.id)}><Claim id={f.id} /><Icon name="chevron" size={12} /></button>)}
-          {protos.map(p => <button key={p.id} className="pn-chip" title="Prototype" onClick={() => onOpen("prototype", p.id)}><ProtoStatus id={p.id} /><ProtoName id={p.id} /></button>)}
-        </div>
-      )}
+          </Section>
+        );
+      })}
+      {t.rivals.length > 0 && <Section label="Rival"><div className="ab-rows">{t.rivals.map(r => <TheoryRel key={r} id={r} onOpen={onOpen} />)}</div></Section>}
+      {t.follows.length > 0 && <Section label="Follows from"><div className="ab-rows">{t.follows.map(f => <TheoryRel key={f} id={f} onOpen={onOpen} />)}</div></Section>}
+      {leadsTo.length > 0 && <Section label="Leads to"><div className="ab-rows">{leadsTo.map(f => <TheoryRel key={f.id} id={f.id} onOpen={onOpen} />)}</div></Section>}
+      {protos.length > 0 && <Section label="Prototypes" n={protos.length}><div className="ab-rows">{protos.map(p => <ProtoRel key={p.id} id={p.id} onOpen={onOpen} />)}</div></Section>}
     </div>
   );
 }
@@ -196,16 +237,22 @@ export function ThemePane({ id, nav }: { id: string; nav: PaneNav }) {
   const { inline, unfolded, toggle } = useUnfold(nav);
   const ss = SIGNALS.filter(s => s.themes.includes(id));
   return (
-    <div className="pn-doc">
-      <div className="pn-theme-actions"><RetireButton label="Retire theme" onClick={()=>void retireObject("theme",id)}/></div>
+    <div className="pn-doc ab-full">
+      <div className="ab-top">
+        {rowFor("theme",id)?.status==="draft"&&<Decide dismiss="Discard" acceptKey="a" acceptTitle="Accept draft theme (A)" onDismiss={()=>act("discardDraft",{kind:"theme",id})} onAccept={()=>act("acceptDraft",{kind:"theme",id})} />}
+        <span className="ab-tools"><RetireButton label="Retire theme" onClick={()=>void retireObject("theme",id)}/></span>
+      </div>
       <ThemeHead id={id} />
       <RetirementNotice row={rowFor("theme",id)}/>
-      <SuggestionActions id={id}/>
-      {rowFor("theme",id)?.status==="draft"&&<div className="pn-chips"><Decide dismiss="Discard" acceptKey="a" acceptTitle="Accept draft theme (A)" onDismiss={()=>act("discardDraft",{kind:"theme",id})} onAccept={()=>act("acceptDraft",{kind:"theme",id})} /></div>}
+      {pendingFor(id).map(s => <div key={s.id} className="ab-block ab-block-review"><SuggestionReview suggestion={s} /></div>)}
+      <hr className="ab-div" />
+      <Section label="Theories" n={theoriesIn(id).length}>
       <div className="pn-cards pn-deck">
         {theoriesIn(id).map(t => <TheoryTile key={t.id} id={t.id} deck onClick={() => nav.onOpen("theory", t.id)} />)}
-        <TooltipButton className="pn-tile pn-add" aria-label="State a theory" tooltip="State a theory" onClick={()=>void createObject("theory",id)}><Icon name="plus" /></TooltipButton>
+        <button type="button" className="ab-slot" onClick={()=>void createObject("theory",id)}><Icon name="plus" size={14} />State a theory</button>
       </div>
+      </Section>
+      <Section label="Signals" n={ss.length}>
       <div className="pn-feed">
         {[...new Set(byNewest(ss).map(s => s.day))].map(day => (
           <div key={day} className="pn-feed-day">
@@ -216,6 +263,7 @@ export function ThemePane({ id, nav }: { id: string; nav: PaneNav }) {
           </div>
         ))}
       </div>
+      </Section>
     </div>
   );
 }
@@ -223,17 +271,13 @@ export function ThemePane({ id, nav }: { id: string; nav: PaneNav }) {
 /** A theme's editable name and its signal count: the head of any theme surface. */
 export function ThemeHead({ id }: { id: string }) {
   const [edit, set] = useEdit("theme", id);
-  return (
-    <>
-      <Editable as="h1" className="pn-title" value={edit.name} onChange={name => set({ name })} singleLine aria-label="Theme name" data-draft={rowFor("theme",id)?.status==="draft"?"":undefined} />
-      <dl className="pn-meta">
-        <div className="pn-meta-row"><dt className="ap-label">Signals</dt><dd>
-          <span className="ap-num pn-field-val">{theme(id).signals}</span>
-          {theoriesIn(id).length === 0 && <Mark kind="open" />}
-        </dd></div>
-      </dl>
-    </>
-  );
+  const draft = rowFor("theme",id)?.status==="draft";
+  return <FullHead kind="theme" draft={draft} eyebrow={draft ? <DraftFrom id={id} onOpen={() => {}} /> : undefined}
+    title={<Editable as="h1" className="pn-title" value={edit.name} onChange={name => set({ name })} singleLine aria-label="Theme name" data-draft={draft?"":undefined} />}
+    keyLine={<span className="ab-cnts">
+      <span className="ab-cnt" title="Theories"><Icon name="theory" size={14} /><span className="ap-num">{theoriesIn(id).length}</span></span>
+      <span className="ab-cnt" title="Signals"><Icon name="signal" size={14} /><span className="ap-num pn-field-val">{theme(id).signals}</span></span>
+    </span>} />;
 }
 
 /** A theory as a readable tile. Morphs into the theory document when given a layoutId. */
@@ -244,15 +288,11 @@ export function TheoryTile({ id, onClick, layoutId, hidden, large, deck }: { id:
   return (
     <motion.button draggable onDragStartCapture={event=>beginObjectDrag(event,{kind:"theory",id,label:edit.claim})} onDragEndCapture={endObjectDrag} layoutId={layoutId} className="pn-tile" data-pick={id} data-kind="theory" data-label={edit.claim} data-region={id} data-large={large ? "" : undefined} data-deck={deck ? "" : undefined} data-draft={t.draft ? "" : undefined}
       style={{ visibility: hidden ? "hidden" : undefined, borderRadius: SURFACE_RADII.card }} onClick={onClick} transition={{ duration: 0.45, ease: EASE }}>
-      <motion.span layout="position" className="pn-tile-inner">
-        <span className="pn-claim">{edit.claim}</span>
-        {large && <span className="pn-tile-body">{edit.body}</span>}
-        {deck ? <DeckFoot id={id} /> : <span className="pn-line">
-          {!t.draft && <Conf n={edit.confidence} />}
-          {large && <span className="ap-muted ap-num">+{t.supports} −{t.undermines}</span>}
-          {t.challenge && <Mark kind="challenge" />}
-          {t.pending > 0 && <Mark kind="pending" n={t.pending} />}
-        </span>}
+      <motion.span layout="position" className="pn-tile-inner ab-obj ab-card-body">
+        <Tile kind="theory" draft={t.draft} />
+        <span className="pn-claim ab-nm">{edit.claim}</span>
+        {!t.draft && <span className="ab-rk"><Meter n={edit.confidence} /></span>}
+        {large && <span className="pn-tile-body ab-kv">{edit.body}</span>}
       </motion.span>
     </motion.button>
   );
@@ -285,21 +325,19 @@ export function PrototypePane({ id, nav }: { id: string; nav: PaneNav }) {
   const [uploading,setUploading]=useState(false);
   const [edit, set] = useEdit("prototype", id);
   return (
-    <div className="pn-doc">
-      <Editable as="h1" className="pn-title" value={edit.name} onChange={name => set({ name })} singleLine aria-label="Prototype name" data-draft={raw?.draft?"":undefined} />
-      {raw?.draft&&<div className="pn-chips"><Decide dismiss="Discard" acceptKey="a" acceptTitle="Accept draft prototype (A)" onDismiss={()=>act("discardDraft",{kind:"prototype",id})} onAccept={()=>act("acceptDraft",{kind:"prototype",id})} /></div>}
-      <dl className="pn-meta">
-        <div className="pn-meta-row"><dt className="ap-label">Status</dt><dd>
-          <span className="pn-status" role="radiogroup" aria-label="Status">
-            {STATUSES.map(st => <StatusButton key={st} s={st} on={st === edit.status} onClick={() => set({ status: st })} />)}
-          </span>
-        </dd></div>
-        {p.theories.length > 0 && <div className="pn-meta-row"><dt className="ap-label">Tests</dt><dd className="pn-rivals">
-          {p.theories.map(t => <button key={t} className="pn-chip pn-rival" data-draft={theory(t).draft ? "" : undefined} data-retired={retirementLabel(rowFor("theory",t))?"":undefined} onClick={() => nav.onOpen("theory", t)}><Icon name="theory" size={12} /><span className="pn-tested-claim"><Claim id={t}/>{retirementLabel(rowFor("theory",t))&&<small>{retirementLabel(rowFor("theory",t))}</small>}</span></button>)}
-        </dd></div>}
-      </dl>
+    <div className="pn-doc ab-full" data-draft={raw?.draft?"":undefined}>
+      <div className="ab-top">
+        {raw?.draft&&<Decide dismiss="Discard" acceptKey="a" acceptTitle="Accept draft prototype (A)" onDismiss={()=>act("discardDraft",{kind:"prototype",id})} onAccept={()=>act("acceptDraft",{kind:"prototype",id})} />}
+      </div>
+      <FullHead kind="prototype" draft={!!raw?.draft} eyebrow={raw?.draft ? <DraftFrom id={id} onOpen={nav.onOpen} /> : undefined}
+        title={<Editable as="h1" className="pn-title" value={edit.name} onChange={name => set({ name })} singleLine aria-label="Prototype name" data-draft={raw?.draft?"":undefined} />}
+        keyLine={<span className="pn-status" role="radiogroup" aria-label="Status">
+          {STATUSES.map(st => <StatusButton key={st} s={st} on={st === edit.status} onClick={() => set({ status: st })} />)}
+        </span>} />
       {json<any[]>(raw?.media,[]).map((media,i)=>{const src=`/media/${media.mediaId??media.media_id??media.id}`;return media.mime?.startsWith("video/") ? <video key={i} className="pn-media" src={src} controls/> : <img key={i} className="pn-media" src={src} alt={media.title??edit.name}/>;})}
       <Editable className="pn-body" value={edit.body} onChange={body => set({ body })} placeholder="What it is and what you learned" aria-label="Notes" />
+      <hr className="ab-div" />
+      <Section label="Tests" n={p.theories.length}><div className="ab-rows">{p.theories.map(t => <RelRow key={t} kind="theory" draft={theory(t).draft} name={<Claim id={t}/>} kv={retirementLabel(rowFor("theory",t)) ? <span>{retirementLabel(rowFor("theory",t))}</span> : undefined} onClick={() => nav.onOpen("theory", t)} />)}</div></Section>
       <div className="pn-chips">{json<any[]>(raw?.links??raw?.links_json,[]).map((link,i)=><a key={i} className="pn-chip" href={typeof link==="string"?link:link.url} target="_blank" rel="noreferrer"><Icon name="link" size={12}/>{typeof link==="string"?link:link.title??link.url}</a>)}<IconButton icon="link" label="Add link" onClick={async()=>{const url=await ask({title:"Add link",field:"URL"});if(url)act("editPrototype",{id,links:[...json<any[]>(raw?.links??raw?.links_json,[]),{url}]});}}/><IconButton icon="theory" label="Add theory to test" onClick={async()=>{const theoryId=await ask({title:"Tests",choices:THEORIES.map(t=>({id:t.id,label:t.claim,kind:"theory"}))});if(theoryId)act("linkPrototypeTheory",{prototypeId:id,theoryId});}}/><IconButton icon="paperclip" label="Attach media" onClick={()=>mediaInput.current?.click()}/><input ref={mediaInput} aria-label="Attach prototype media" type="file" accept="image/*,video/*" hidden onChange={async e=>{const file=e.target.files?.[0];if(!file||uploading)return;setUploading(true);try{const media=await uploadMedia(file);await mutate("attachPrototypeMedia",{prototypeId:id,mediaId:media.id,position:json<any[]>(raw?.media,[]).length});}catch(error){reportError(error);}finally{setUploading(false);if(mediaInput.current)mediaInput.current.value="";}}}/>{uploading&&<span role="status" className="ap-muted">Uploading media…</span>}</div>
     </div>
   );

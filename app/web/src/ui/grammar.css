@@ -104,3 +104,156 @@
 .ap .pn-doc > .pn-body.pn-edit:is(:hover, :focus) { background: var(--hover); box-shadow: none; }
 .ap .pn-note { margin: calc(var(--gap-tight) * -1) calc(var(--gap-icon) * -1); padding: var(--gap-tight) var(--gap-icon); background: transparent; box-shadow: none; line-height: var(--lh-prose); }
 .ap .pn-note:is(:hover, :focus, :focus-visible) { background: var(--hover); box-shadow: none; }
+
+/* ═══ 06 Objects: previews (row, card) share one grid ═══════════════════════════════════════
+   [tile][name ............][rk]     rk: one short key value right of the name's first line (count, status, meter)
+   [    ][key line ...  when]        kv: the key line, 12 ink 2; a date at its right end on hover */
+.ap .ab-obj { display: grid; grid-template-columns: var(--tile) minmax(0, 1fr) auto; grid-template-areas: "g nm rk" ". kv kv"; column-gap: var(--gap-tile); row-gap: 2px;
+  align-items: start; text-align: left; min-width: 0; color: var(--ink); font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); }
+.ap .ab-obj > .ab-tile { grid-area: g; margin-top: calc((var(--line-ui) - var(--tile)) / 2); }
+.ap .ab-obj > .ab-nm { grid-area: nm; min-width: 0; line-height: var(--lh-ui); overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; white-space: normal; text-overflow: clip; }
+.ap .ab-obj > .ab-rk { grid-area: rk; display: flex; align-items: center; height: var(--line-ui); margin-left: var(--gap-item); color: var(--ink-2); }
+.ap .ab-obj > .ab-kv { grid-area: kv; display: flex; align-items: center; gap: var(--gap-key); min-width: 0; font-size: var(--fs-label); line-height: var(--lh-ui); color: var(--ink-2); white-space: nowrap; overflow: hidden; }
+.ap .ab-obj > .ab-kv > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ap .ab-obj .ab-when { margin-left: auto; flex: none; opacity: 0; transition: opacity var(--t-hover) var(--ease-out); }
+.ap :is(.ab-obj, .cd-item):hover .ab-when, .ap .cd-item[data-open] .ab-when { opacity: 1; }
+.ap .ab-obj .ap-num, .ap .ab-kv { font-variant-numeric: tabular-nums; }
+/* Short labels (themes, prototypes) are one line, 32 high: name in ink 2, ink and 500 when current, a bare count or status glyph at the right */
+.ap .ab-obj.ab-one { grid-template-areas: "g nm rk"; align-items: center; }
+.ap .ab-obj.ab-one > .ab-nm { display: block; white-space: nowrap; text-overflow: ellipsis; color: var(--ink-2); }
+.ap .cd-item[data-open] .ab-obj.ab-one > .ab-nm { color: var(--ink); font-weight: var(--w-medium); }
+/* Cards: the row, raised. Name at 600, up to three lines. */
+.ap :is(.ab-card, .ab-card-body) > .ab-nm { font-weight: var(--w-strong); -webkit-line-clamp: 3; text-wrap: pretty; }
+.ap :is(.ab-card, .ab-card-body)[data-draft] > .ab-nm, .ap [data-draft] > .ab-card-body > .ab-nm, .ap .cd-item[data-draft] .ab-nm { color: var(--ink-2); }
+.ap .ap-card.ab-card { padding: var(--card-block) var(--card-inline); border-radius: var(--r-control); background: var(--surface); box-shadow: var(--sh-raised); gap: 0 var(--gap-tile); row-gap: var(--gap-tight); }
+.ap .ap-card.ab-card:hover { background: var(--surface-hover); }
+.ap .ap-card.ab-card[data-hot] { box-shadow: var(--sel); }
+.ap .ap-card.ab-card[data-draft] { background: var(--draft-fill); box-shadow: none; outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
+/* Confidence meter: 20 × 4, ink fill in fifths */
+.ab-meter { position: relative; display: block; flex: none; width: 20px; height: 4px; border-radius: 2px; background: color-mix(in oklab, var(--ink) 15%, transparent); overflow: hidden; }
+.ab-meter > i { position: absolute; inset: 0 auto 0 0; border-radius: 2px; background: var(--ink); }
+
+/* Columns: items are rows and cards with the 06 inset (10 / 8); widths and arrangement unchanged. */
+.ap .cd-item { border-radius: var(--r-control); }
+.ap .cd-item-btn.ab-obj { padding: var(--card-block) var(--card-inline); border-radius: var(--r-control); }
+.ap .cd-item-btn.ab-obj.ab-one { padding-block: calc((var(--row) - var(--line-ui)) / 2); padding-inline: var(--inset-row); }
+.ap .cd-item[data-stock] { box-shadow: var(--sh-raised); }
+.ap .cd-col[data-kind="theme"] .cd-item[data-stock], .ap .cd-col[data-kind="prototype"] .cd-item[data-stock] { background: transparent; box-shadow: none; }
+.ap .cd-col[data-kind="prototype"] .cd-item-btn:hover { background: var(--hover); }
+.ap .cd-item[data-open] { background: var(--surface) !important; box-shadow: var(--sel) !important; }
+.ap .cd-item[data-draft] { background: var(--draft-fill) !important; outline-color: var(--hairline-strong); }
+.ap .cd-list { gap: var(--gap-item); }
+.ap .cd-col[data-kind="theme"] .cd-list, .ap .cd-col[data-kind="prototype"] .cd-list { gap: 0; }
+
+/* The theme pane's theory cards and Atlas tiles use the card anatomy too */
+.ap .pn-tile-inner.ab-obj { padding: var(--card-block) var(--card-inline); }
+.ap .pn-tile-inner.ab-obj > .pn-tile-body { -webkit-line-clamp: 3; display: -webkit-box; -webkit-box-orient: vertical; white-space: normal; font-size: var(--fs-body); color: var(--ink-2); }
+
+/* ═══ 06 rung 3: the full view in the docked pane ══════════════════════════════════════════════
+   Two left edges: the tile column (the content edge) and the text edge (tile + gap). Prose, labels, chip lists and cards start on
+   the tile column; rows hang their tile there. The 32 title tile hangs further out so the title starts on the text edge. */
+.ap .pn-doc.ab-full { gap: var(--gap-group); padding-top: 10px; }
+.ap .as-pane .pn-doc.ab-full { padding-inline: var(--inset-pane-inline); max-width: calc(760px + var(--inset-pane-inline) * 2); margin: 0; }
+.ap .pn-doc.ab-full > * { max-width: 720px; }
+.ap .ab-top { display: flex; align-items: center; gap: var(--gap-item); min-height: var(--control); padding-right: 76px; }   /* clear of the pane's Full width and Close */
+.ap .ab-top > .ab-tools { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+.ap .ab-head { display: grid; grid-template-columns: var(--tile-title) minmax(0, 1fr); column-gap: var(--gap-tile-title); align-items: start;
+  margin-left: calc(var(--hang) - var(--tile-title) - var(--gap-tile-title)); }
+.ap .ab-head > .ab-tile { margin-top: calc((var(--fs-title) * var(--lh-head) - var(--tile-title)) / 2); }
+.ap .ab-head > .ab-eyebrow { grid-column: 2; display: flex; align-items: center; flex-wrap: wrap; gap: var(--gap-key); min-height: var(--chip-h); margin-bottom: var(--gap-item);
+  font: var(--w-regular) var(--fs-label)/var(--lh-ui) var(--font); color: var(--ink-2); }
+.ap .ab-head-text { display: grid; gap: var(--gap-tight); min-width: 0; }
+.ap .ab-head .pn-title { overflow-wrap: anywhere; }
+.ap .ab-keyline { display: flex; align-items: center; flex-wrap: wrap; gap: var(--gap-tight) calc(var(--gap-key) * 2); min-height: var(--control); font-size: var(--fs-label); color: var(--ink-2); }
+.ap .ab-key { display: inline-flex; align-items: center; gap: var(--gap-key); }
+.ap .ab-keyline .pn-field-val { font-size: var(--fs-body); font-weight: var(--w-medium); color: var(--ink); min-width: 4ch; text-align: center; font-variant-numeric: tabular-nums; }
+.ap .ab-draft-tag { display: inline-flex; align-items: center; height: 18px; padding: 0 var(--gap-icon); border-radius: var(--r-pill); outline: 1px dashed var(--hairline-strong); outline-offset: -1px;
+  font: var(--w-medium) var(--fs-small)/1 var(--font); color: var(--ink-2); }
+.ap .ab-cnts { display: inline-flex; align-items: center; gap: var(--gap-item); }
+.ap .ab-cnt { display: inline-flex; align-items: center; gap: var(--gap-tight); font-size: var(--fs-body); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.ap .ab-cnt > svg { color: var(--ink-2); }
+.ap .ab-cnt .pn-field-val { font-size: inherit; font-weight: inherit; color: inherit; min-width: 0; }
+/* Prose first: the body sits on the tile column, 13 / 1.55, at most 68ch */
+.ap .pn-doc.ab-full > .pn-body.pn-edit:empty::before { content: attr(data-placeholder); color: var(--ink-2); }
+/* The one sanctioned hairline inside an object, between its own words and its relations */
+.ap .ab-div { height: 0; margin: 0; border: 0; border-top: 0.5px solid var(--hairline-strong); max-width: 560px; width: 100%; }
+/* Labelled sections, 16 apart; label on the tile column, then a bare count */
+.ap .ab-sec { display: grid; gap: var(--gap-tight); min-width: 0; }
+.ap .ab-sh { display: flex; align-items: center; gap: var(--gap-icon); min-height: var(--control); margin: 0; font: var(--w-strong) var(--fs-body)/var(--lh-ui) var(--font); color: var(--sechead-ink); }
+.ap .ab-sh .ab-count { font-size: var(--fs-small); }
+.ap .ab-sh-add { margin-left: auto; display: inline-flex; }
+/* Relation rows: at most 560, their tile on the tile column (the hover layer bleeds 8 into the padding) */
+.ap .ab-rows { display: grid; gap: 0; min-width: 0; max-width: 560px; }
+.ap .ab-rows > .ab-block + :not(.ab-block), .ap .ab-rows > .ab-block + .ab-block { margin-top: var(--gap-tight); }
+.ap .ab-rel { width: calc(100% + var(--inset-row) * 2); margin: 0 calc(var(--inset-row) * -1); padding: calc((var(--row) - var(--line-ui)) / 2) var(--inset-row); border: 0; border-radius: var(--r-control); background: transparent; cursor: pointer;
+  transition: background-color var(--t-hover) var(--ease-out); }
+.ap .ab-rel:hover { background: var(--hover); }
+.ap .ab-rel[data-draft] > .ab-nm { color: var(--ink-2); }
+.ap .ab-rel:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+/* Evidence rows (accordion) take the same row anatomy */
+.ap .ab-full .pn-sig { margin: 0 calc(var(--inset-row) * -1); border-radius: var(--r-control); background: transparent; box-shadow: none; }
+.ap .ab-full .pn-sig .pn-ev:has(> .ab-obj) { display: block; width: 100%; padding: calc((var(--row) - var(--line-ui)) / 2) var(--inset-row); border-radius: var(--r-control); text-align: left; }
+.ap .ab-full .pn-sig .pn-ev:has(> .ab-obj):hover { background: var(--hover); }
+.ap .ab-full .pn-sig[data-suggested] { outline: 1px dashed var(--hairline-strong); outline-offset: -1px; background: var(--draft-fill); }
+.ap .ab-full .pn-sig .pn-detail-inner { padding: 0 var(--inset-row) var(--inset-row) calc(var(--hang) + var(--inset-row)); }
+/* Suggestions: a dashed block inside the group it would join; row, why on the text edge, Dismiss | Accept at the bottom right.
+   Padding 12 inline / 10 block inside the dash (Maggie, 4 Nov). */
+.ap .ab-block { display: grid; gap: var(--gap-tight); max-width: calc(560px + var(--inset-row) * 2); margin: 0 calc(var(--inset-row) * -1); padding: 10px 12px; border-radius: var(--r-box);
+  outline: 1px dashed var(--hairline-strong); outline-offset: -1px; background: var(--draft-fill); }
+.ap .ab-block > .ab-rel { width: calc(100% + 8px); margin: 0 -4px; padding-inline: 4px; }
+.ap .ab-why { margin: 0 0 0 var(--hang); font-size: var(--fs-body); line-height: var(--lh-prose); color: var(--ink-2); max-width: var(--measure); }
+.ap .ab-block-foot { display: flex; justify-content: flex-end; margin-top: var(--gap-tight); }
+.ap .ab-block-review .ab-proposal { display: grid; gap: var(--gap-item); padding: 0; background: none; box-shadow: none; outline: 0; }
+.ap .ab-block-review .ab-decide-row { display: flex; justify-content: flex-end; align-items: center; gap: var(--gap-item); }
+/* Adding in place: a quiet slot, never dashed */
+.ap .ab-slot { display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--control); padding: 0 var(--inset-control) 0 calc(var(--inset-control) - 2px); border: 0; border-radius: var(--r-control);
+  background: transparent; color: var(--ink-2); font: var(--w-medium) var(--fs-label)/1 var(--font); cursor: pointer; transition: background-color var(--t-hover) var(--ease-out); }
+.ap .ab-slot:hover { background: var(--hover); color: var(--ink); }
+/* Theme: theories as cards in a wrapping grid (no horizontal deck) */
+.ap .ab-full .pn-deck { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(208px, 1fr)); grid-auto-columns: auto; margin: 0; padding: 0; overflow: visible; gap: var(--gap-item); align-items: start; }
+.ap .ab-full .pn-deck > .pn-tile { min-height: 0; height: auto; border-radius: var(--r-control) !important; box-shadow: var(--sh-raised); }
+.ap .ab-full .pn-deck > .pn-tile:hover { box-shadow: var(--sh-raised); background: var(--surface-hover); }
+.ap .ab-full .pn-deck > .pn-tile[data-draft], .ap .ab-full .pn-deck > .pn-tile:has(.ab-tile[data-draft]) { box-shadow: none; background: var(--draft-fill); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
+.ap .ab-full .pn-deck > .ab-slot { align-self: center; justify-self: start; }
+.ap .ab-full .pn-feed-date { font: var(--w-medium) var(--fs-label)/var(--lh-ui) var(--font); color: var(--ink-2); }
+/* Prototype status sits in the key line */
+.ap .ab-keyline .pn-status { margin-left: calc(var(--gap-tight) * -1); }
+/* Tripwire: the sentence in ink; only its Signpost glyph is red. The tile hangs on the tile column. */
+.ap .ab-full .tw-tc-line { font-size: var(--fs-read); line-height: var(--lh-prose); color: var(--ink); }
+.ap .ab-full .tw-tc-lead { color: var(--ink-2); }
+.ap .tw-tc-icon { margin-right: var(--gap-tile); vertical-align: calc((var(--line-prose) - var(--tile)) / -2 + 1px); }
+.ap .tw-tc-icon .ab-tile { vertical-align: top; }
+.ap .tw-tc-icon:not([data-tripped]) .ab-tile { background: var(--tile-bg); color: var(--ink-2); }
+.ap .tw-tc-icon[data-tripped] .ab-tile { background: var(--type-tile); color: var(--neg-dot); }
+.ap .tw-tc-phrase[data-tripped] { text-decoration: underline dotted var(--ink-3); text-underline-offset: 4px; }
+/* Times use Geist with tabular figures in the surrounding role; Geist Mono is for keys only */
+.ap .ps-rec-time { font-family: var(--font); font-variant-numeric: tabular-nums; }
+.ap .ab-full .ab-head .pn-title[data-draft] { outline: 0; }
+.ap .pn-doc.ab-full > .pn-body.pn-edit { min-height: 0; }
+/* Theme full view: signals by day; the day is a label on the tile column, rows hang their tile there */
+.ap .ab-full .pn-feed { gap: var(--gap-item); margin: 0; max-width: 560px; }
+.ap .ab-full .pn-feed-day { grid-template-columns: minmax(0, 1fr); row-gap: 0; }
+.ap .ab-full .pn-feed-date { display: flex; align-items: center; height: var(--control-sm); }
+.ap .ab-full .pn-feed-glyph { width: auto; height: auto; background: none; border-radius: 0; margin-top: calc((var(--line-ui) - var(--tile)) / 2); }
+.ap .ab-full .pn-feed-day > .pn-col { gap: 0; }
+.ap .ab-full .pn-sig .pn-ev:not(:has(> .ab-obj)) { column-gap: var(--gap-tile); padding: calc((var(--row) - var(--line-ui)) / 2) var(--inset-row); border-radius: var(--r-control); align-items: start; }
+.ap .ab-full .pn-feed-text { font-size: var(--fs-body); line-height: var(--lh-ui); }
+.ap .ab-full .pn-feed-text > .ap-muted { font-size: var(--fs-label); color: var(--ink-2); }
+.ap .ab-full .pn-feed .pn-ev { grid-template-columns: var(--tile) minmax(0, 1fr); row-gap: var(--gap-tight); }
+.ap .ab-full .pn-feed .pn-detail-inner { padding: 0 var(--inset-row) var(--inset-row) calc(var(--hang) + var(--inset-row)); }
+.ap .ab-full .pn-feed-to { grid-column: 2; }
+/* A draft card keeps room under its name for Discard | Accept */
+.ap .ab-edge-host[data-draft] > .ap-card.ab-card { padding-bottom: calc(var(--control-sm) + var(--card-block) * 2); }
+.ap .ab-edge-host[data-draft] > .ap-card.ab-card > .ab-nm { -webkit-line-clamp: 3; }
+@media (max-width: 639px) { .ap .ab-head { margin-left: calc(var(--hang) - var(--tile-title) - var(--gap-tile-title) + 12px); } }
+
+/* View switcher (05): a floating bar, padding 2, radius 14, 28 segments (radius 12); ink 2 at rest; the current view is the one
+   accent control: accent wash, accent glyph, Fill. */
+.ap .as-switch { padding: 2px; gap: 2px; border-radius: var(--r-bar); box-shadow: var(--sh-float); background: var(--surface); }
+.ap .as-switch-btn { width: var(--control); height: var(--control); border-radius: calc(var(--r-bar) - 2px); color: var(--ink-2);
+  transition: color var(--t-hover) var(--ease-out), scale var(--t-press) var(--ease-out); }
+.ap .as-switch-btn:hover { color: var(--ink); }
+.ap .as-switch-btn:active { transform: none; scale: var(--press-scale); }
+.ap .as-switch-btn[aria-pressed="true"] { color: var(--accent-text); }
+.ap .as-switch-on { border-radius: calc(var(--r-bar) - 2px); background: var(--accent-wash); box-shadow: none; }
+.ap .as-switch-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }

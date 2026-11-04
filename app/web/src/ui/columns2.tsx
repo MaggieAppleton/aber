@@ -141,12 +141,14 @@ function ColumnList({ kind, icon, name, related, open, unfolded, fold, scrollOff
   scrollOffsets: RefObject<ScrollOffsets>;
   onOpen: (k: Kind, id: string) => void; onUnfold: (k: Kind, id: string) => void; onFold: () => void;
 }) {
+  // 06 previews: tile, name, one short key value right of the first line (or a key line under it); dates on hover.
+  const KIND_WORD: Record<string, string> = { voice: "Voice", link: "Link", text: "Text" };
   const items: { id: string; draft?: boolean; body: ReactNode; detail?: ReactNode }[] =
-    kind === "dump" ? DUMPS.map(d => ({ id: d.id, body: <><span className="cd-line"><DumpIcon d={d} /><span className="cd-clip">{d.first}</span></span><span className="ap-muted ap-num cd-sub">{d.day === "Today" ? d.time : d.day}</span></>, detail: <DumpDetail id={d.id} onOpen={onOpen} onUnfold={onUnfold} /> }))
-    : kind === "signal" ? SIGNALS.map(s => ({ id: s.id, body: <><span className="cd-line"><span data-unseen={field(s,"seenAt")==null ? "" : undefined}>{s.gist}</span></span><span className="ap-muted cd-sub">{s.source}</span></>, detail: <SignalDetail s={s} onOpen={onOpen} onDump={id => onUnfold("dump", id)} /> }))
-    : kind === "theme" ? THEMES.map(t => ({ id: t.id, body: <span className="cd-line cd-spread"><span data-unseen={t.fresh > 0 ? "" : undefined}><ThemeName id={t.id} /></span><span className="ab-count">{theoriesIn(t.id).length || null}</span></span> }))
-    : kind === "theory" ? THEORIES.map(t => ({ id: t.id, draft: t.draft, body: <><span className="cd-claim"><Claim id={t.id} /></span><span className="cd-line">{!t.draft && <TheoryConf id={t.id} />}</span></> }))
-    : PROTOTYPES.map(p => ({ id: p.id, body: <span className="cd-line"><ProtoStatus id={p.id} /><span><ProtoName id={p.id} /></span></span> }));
+    kind === "dump" ? DUMPS.map(d => ({ id: d.id, body: <><Tile kind="dump" /><span className="ab-nm cd-clip">{d.first}</span><span className="ab-kv"><span>{KIND_WORD[d.kind] ?? "Text"}</span><span className="ap-num">{d.day === "Today" ? d.time : d.day}</span></span></>, detail: <DumpDetail id={d.id} onOpen={onOpen} onUnfold={onUnfold} /> }))
+    : kind === "signal" ? SIGNALS.map(s => ({ id: s.id, body: <><Tile kind="signal" /><span className="ab-nm" data-unseen={field(s,"seenAt")==null ? "" : undefined}>{s.gist}</span><span className="ab-kv"><span>{s.source}</span><span className="ab-when ap-num">{s.day}</span></span></>, detail: <SignalDetail s={s} onOpen={onOpen} onDump={id => onUnfold("dump", id)} /> }))
+    : kind === "theme" ? THEMES.map(t => ({ id: t.id, body: <><Tile kind="theme" /><span className="ab-nm" data-unseen={t.fresh > 0 ? "" : undefined}><ThemeName id={t.id} /></span><span className="ab-rk ab-count">{theoriesIn(t.id).length || null}</span></> }))
+    : kind === "theory" ? THEORIES.map(t => ({ id: t.id, draft: t.draft, body: <><Tile kind="theory" draft={t.draft} /><span className="ab-nm"><Claim id={t.id} /></span>{!t.draft && <span className="ab-rk"><TheoryConf id={t.id} /></span>}</> }))
+    : PROTOTYPES.map(p => ({ id: p.id, body: <><Tile kind="prototype" /><span className="ab-nm"><ProtoName id={p.id} /></span><span className="ab-rk"><ProtoStatus id={p.id} /></span></> }));
 
   // Selection changes emphasis, never order or the reader's place in a column.
   const listRef = useRef<HTMLDivElement>(null);
@@ -220,7 +222,7 @@ function ColumnList({ kind, icon, name, related, open, unfolded, fold, scrollOff
             <motion.div layout="position" transition={SPRING} data-id={i.id} data-pick={kind==="dump"?undefined:i.id} data-kind={kind} data-label={labelFor(kind,i.id)} data-region={i.id}
               className="cd-item" data-stock={stock ? "" : undefined} data-open={isOpen || isUnfolded ? "" : undefined} data-dim={dim ? "" : undefined} data-draft={draft ? "" : undefined}
               data-settling={edge?.settling ? "" : undefined} data-leaving={edge?.leaving ? "" : undefined} onKeyDown={edge?.onKeyDown}>
-              <button className="cd-item-btn" data-edge-card={kind === "theory" ? "" : undefined} aria-keyshortcuts={edge?.shortcuts} draggable={kind!=="dump"} onDragStart={event=>{if(kind!=="dump")beginObjectDrag(event,{kind,id:i.id,label:labelFor(kind,i.id)});}} onDragEnd={endObjectDrag} onClick={() => stock ? onOpen(kind, i.id) : onUnfold(kind, i.id)}>{i.body}</button>
+              <button className={`cd-item-btn ab-obj${kind === "theme" || kind === "prototype" ? " ab-one" : ""}${kind === "theory" ? " ab-card-body" : ""}`} data-edge-card={kind === "theory" ? "" : undefined} aria-keyshortcuts={edge?.shortcuts} draggable={kind!=="dump"} onDragStart={event=>{if(kind!=="dump")beginObjectDrag(event,{kind,id:i.id,label:labelFor(kind,i.id)});}} onDragEnd={endObjectDrag} onClick={() => stock ? onOpen(kind, i.id) : onUnfold(kind, i.id)}>{i.body}</button>
               {edge?.actions}
               <AnimatePresence initial={false}>
                 {isUnfolded && i.detail && (

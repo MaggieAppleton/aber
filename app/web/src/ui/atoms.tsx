@@ -2,7 +2,7 @@ import { TooltipButton } from "./tooltip";
 import { beginObjectDrag, endObjectDrag } from "../data/object-drag";
 import type { KeyboardEvent, ReactNode } from "react";
 import type { Theory, Dump } from "./data";
-import { prototypesFor } from "./data";
+
 
 import {
   MagnifyingGlass, Plus, Minus, Microphone, PencilRuler, TrayArrowDown, Check, X, CaretRight, CaretLeft, CaretDown, Pulse, Link,
@@ -111,6 +111,11 @@ export const Conf = ({ n }: { n: number | null }) => (
   </span>
 );
 
+/** Confidence on previews (06 rule 6): one 20 × 4 track with a proportional fill; unset is an empty track. */
+export const Meter = ({ n }: { n: number | null | undefined }) => (
+  <span className="ab-meter" role="img" aria-label={n ? `Confidence ${n} of 5` : "Confidence not set"}><i style={{ width: `${(n ?? 0) * 20}%` }} /></span>
+);
+
 /** Evidence balance: supports above the line, undermines below. */
 export const Balance = ({ s, u }: { s: number; u: number }) => (
   <span className="ap-balance" role="img" aria-label={`${s} support, ${u} undermine`}>
@@ -128,19 +133,14 @@ export type CardEdge = { actions: ReactNode; onKeyDown: (e: KeyboardEvent<HTMLEl
 export function TheoryCard({ t, onEnter, onLeave, dim, hot, onClick, compact, edge }: {
   t: Theory; onEnter?: () => void; onLeave?: () => void; dim?: boolean; hot?: boolean; onClick?: () => void; compact?: boolean; edge?: CardEdge;
 }) {
-  const protos = prototypesFor(t.id);
+  // 06 card anatomy: tile, name (600, up to three lines), the confidence meter right of the first line. No balance, prototype count or marks.
   const card = (
-    <div className="ap-card" draggable onDragStart={event=>beginObjectDrag(event,{kind:"theory",id:t.id,label:t.claim})} onDragEnd={endObjectDrag} data-draft={t.draft ? "" : undefined} data-dim={dim ? "" : undefined} data-hot={hot ? "" : undefined}
+    <div className="ap-card ab-obj ab-card" draggable onDragStart={event=>beginObjectDrag(event,{kind:"theory",id:t.id,label:t.claim})} onDragEnd={endObjectDrag} data-draft={t.draft ? "" : undefined} data-dim={dim ? "" : undefined} data-hot={hot ? "" : undefined}
       data-edge-card={edge ? "" : undefined} aria-keyshortcuts={edge?.shortcuts}
       onPointerEnter={onEnter} onPointerLeave={onLeave} onClick={onClick} onKeyDown={e=>{if(onClick&&(e.key==="Enter"||e.key===" ")){e.preventDefault();onClick();}}} role={onClick ? "button" : undefined} tabIndex={onClick ? 0 : undefined}>
-      <div className="ap-card-claim">{t.claim}</div>
-      {!compact && (
-        <div className="ap-card-meta">
-          {!t.draft && <Conf n={t.confidence} />}
-          <Balance s={t.supports} u={t.undermines} />
-          {protos.length > 0 && <span className="ap-muted ap-inline"><Icon name="prototype" size={12} />{protos.length}</span>}
-        </div>
-      )}
+      <Tile kind="theory" draft={t.draft} />
+      <div className="ap-card-claim ab-nm">{t.claim}</div>
+      {!t.draft && !compact && <span className="ab-rk"><Meter n={t.confidence} /></span>}
     </div>
   );
   // A draft's edge actions sit over the card as its siblings, never inside it, so no button nests in another.
