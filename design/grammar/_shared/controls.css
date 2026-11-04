@@ -1,0 +1,229 @@
+/* Aber grammar: controls (PROPOSED, see RULES.md section 05). Every interactive control, assembled only from 00–04.
+   One recipe per control, written once for the grammar's own classes (.ctl-*) and the stage's (.stg-*, .nv-*), so the
+   states board and every stage show the same thing.
+   Choices: data-secondary="hairline" | "fill"; data-input="filled" | "outlined"; data-danger="ink" | "red" on any ancestor. */
+
+:root {
+  /* Two heights: 28 (--control), 24 inside a dense row (--control-sm). The composer is a floating bar, 40. */
+  --composer-h: 40px;
+  /* Fills for things you press: hover is a 5% layer; a filled control rests at 6% and hovers at 10% */
+  --fill-rest: oklch(var(--shade) / 6%);
+  --fill-hover: oklch(var(--shade) / 10%);
+  --surface-hover: color-mix(in oklab, var(--surface), oklch(var(--shade)) 5%);
+  --edge: 0 0 0 0.5px var(--hairline-strong);
+  --edge-strong: 0 0 0 0.5px var(--ink-3);
+  /* Motion: hover and press 90ms, selection and growth 160ms; one ease-out. Focus never animates. */
+  --ctl-t: background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out), box-shadow var(--t-hover) var(--ease-out), scale var(--t-press) var(--ease-out), opacity var(--t-hover) var(--ease-out);
+  --disabled-o: 0.4;
+  /* Choice 1, secondary button: A white with a hairline (default) */
+  --sec-bg: var(--surface); --sec-bg-hover: var(--surface-hover); --sec-edge: var(--edge), var(--btn-shadow);
+  /* Choice 2, text inputs: A filled (default) */
+  --in-bg: var(--ground-2); --in-bg-hover: var(--ground-3); --in-edge: none; --in-edge-hover: none; --in-bg-focus: var(--surface); --in-edge-focus: var(--edge);
+  /* Choice 3, destructive confirm: A ink (default) */
+  --danger: var(--primary); --danger-hover: var(--primary-hover); --on-danger: var(--on-primary); --danger-text: var(--ink);
+}
+[data-secondary="fill"] { --sec-bg: var(--fill-rest); --sec-bg-hover: var(--fill-hover); --sec-edge: none; }
+[data-input="outlined"] { --in-bg: var(--surface); --in-bg-hover: var(--surface); --in-edge: var(--edge); --in-edge-hover: var(--edge-strong); --in-bg-focus: var(--surface); --in-edge-focus: var(--edge-strong); }
+[data-danger="red"] { --danger: var(--neg); --danger-hover: oklch(0.5 0.2 26); --on-danger: var(--on-ink); --danger-text: var(--neg); }
+
+/* ═══ Shared behaviour ════════════════════════════════════════════════════════
+   Focus: a 2px accent ring 2px out, on :focus-visible only, instantly. Inside a packed container (menu, segmented, list rows)
+   the ring sits inside (offset −2) so it isn't clipped and doesn't touch a neighbour. */
+:is(.ctl, .stg, .nv) :is(button, a, input, textarea, select, [tabindex]):focus-visible, .ctl .is-focus { outline: 2px solid var(--focus); outline-offset: 2px; }
+:is(.ctl, .stg, .nv) :is(.ctl-item, .stg-menu-item, .ctl-seg > button, .nv-row, .nv-item, .stg-index a, .nv-type):is(:focus-visible, .is-focus) { outline-offset: -2px; }
+/* Text fields show the ring on the field, whenever the caret is in it */
+:is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search, .nv-filter):is(:focus-within, .is-focus) { outline: 2px solid var(--focus); outline-offset: 2px; }
+:is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search, .nv-filter) :is(input, textarea, select):focus-visible { outline: 0; }
+/* Press: keep the hover tint and shrink to 0.98; never darken */
+:is(.ctl, .stg, .nv) :is(.ctl-btn, .ctl-icon, .ctl-chip, .stg-btn, .nv-btn, .nv-back, .stg-iconbtn, .nv-ib, .stg-chip, button.nv-chip, .ctl-seg > button, .stg-switch button, .nv-switch button):is(:active, .is-press):not([aria-disabled="true"], :disabled) { scale: var(--press-scale); }
+/* Disabled: 40% of itself, no hover, no press. Prefer aria-disabled, so it stays focusable and its tooltip can say why. */
+:is(.ctl, .stg, .nv) :is([aria-disabled="true"], :disabled) { opacity: var(--disabled-o); cursor: not-allowed; }
+/* Loading: same width, label hidden, a 14 spinner in its place; never blocks the rest of the surface */
+.ctl-spin { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.ctl-spin i { width: var(--icon-label) !important; height: var(--icon-label) !important; font-size: var(--icon-label) !important; animation: ctl-spin 700ms linear infinite; }
+[aria-busy="true"] { position: relative; cursor: progress; }
+[aria-busy="true"] > :not(.ctl-spin) { opacity: 0; }
+@keyframes ctl-spin { to { rotate: 360deg; } }
+@media (prefers-reduced-motion: reduce) {
+  .ctl-spin i { animation: ctl-pulse 1.2s ease-in-out infinite; }
+  :is(.ctl, .stg, .nv) :is(:active, .is-press) { scale: none !important; }
+}
+@keyframes ctl-pulse { 50% { opacity: 0.3; } }
+
+/* ═══ Buttons ═════════════════════════════════════════════════════════════════
+   28 high (24 in a dense row), 10 inset (8 on an icon's side), radius 7, label 12/500, icon 14 at 6 from the label. */
+:is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn, .nv-btn) {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--gap-icon); flex: none;
+  height: var(--control); min-width: var(--control); padding: 0 var(--inset-control); border: 0; border-radius: var(--r-control);
+  font: var(--w-medium) var(--fs-label)/1 var(--font); white-space: nowrap; cursor: pointer; transition: var(--ctl-t);
+  background: transparent; color: var(--ink-2); box-shadow: none; }
+:is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn, .nv-btn) > i[class*="ph"] { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
+:is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn, .nv-btn):has(> i[class*="ph"]:first-child) { padding-left: calc(var(--inset-control) - 2px); }
+:is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn, .nv-btn):has(> i[class*="ph"]:last-child) { padding-right: calc(var(--inset-control) - 2px); }
+/* Dense rows: an evidence row, a field row, a list group label */
+:is(.ctl, .stg, .nv) :is(.ctl-btn.sm, .stg-ev-item .stg-btn, .nv-fields .nv-btn) { height: var(--control-sm); min-width: var(--control-sm); }
+.stg .stg-modal .stg-btn { height: var(--control); }
+
+/* Quiet: no fill at rest, ink 2; the hover layer and ink on hover */
+:is(.ctl, .stg, .nv) :is(.ctl-btn.quiet, .nv-back):is(:hover, .is-hover):not([aria-disabled="true"]),
+:is(.ctl, .stg, .nv) :is(.ctl-btn.quiet, .nv-back):is([aria-pressed="true"], [aria-expanded="true"]) { background: var(--hover); color: var(--ink); }
+/* Primary: ink fill. One per surface. */
+:is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn, .nv-btn).primary { background: var(--primary); color: var(--on-primary); box-shadow: var(--btn-shadow); }
+:is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn, .nv-btn).primary:is(:hover, .is-hover):not([aria-disabled="true"]) { background: var(--primary-hover); }
+/* Secondary: choice 1 */
+:is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn, .nv-btn).secondary { background: var(--sec-bg); color: var(--ink); box-shadow: var(--sec-edge); }
+:is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn, .nv-btn).secondary:is(:hover, .is-hover):not([aria-disabled="true"]) { background: var(--sec-bg-hover); }
+/* Destructive confirm: only inside the one confirmation (Delete dump). Choice 3. */
+:is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn).danger { background: var(--danger); color: var(--on-danger); box-shadow: var(--btn-shadow); }
+:is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn).danger:is(:hover, .is-hover):not([aria-disabled="true"]) { background: var(--danger-hover); }
+/* The back link is a quiet button with a leading arrow */
+.nv .nv-back { height: var(--control); padding: 0 var(--inset-control) 0 calc(var(--inset-control) - 2px); margin-left: calc((var(--inset-control) - 2px) * -1); border-radius: var(--r-control); transition: var(--ctl-t); }
+
+/* ═══ Icon-only buttons ═══════════════════════════════════════════════════════
+   A 28 square (24 dense), the 16 glyph centred, a 40 hit area, radius 7. Transparent in ink 2; the tile appears on hover
+   or while its menu or peek is open; Fill when it is the current or selected thing. */
+:is(.ctl, .stg, .nv) :is(.ctl-icon, .stg-iconbtn, .nv-ib) { position: relative; display: inline-grid; place-items: center; flex: none; width: var(--control); height: var(--control); padding: 0; border: 0;
+  border-radius: var(--r-control); background: transparent; color: var(--ink-2); cursor: pointer; transition: var(--ctl-t); }
+:is(.ctl, .stg, .nv) :is(.ctl-icon, .stg-iconbtn, .nv-ib)::before { content: ""; position: absolute; left: 50%; top: 50%; width: var(--hit); height: var(--hit); translate: -50% -50%; }
+:is(.ctl, .stg, .nv) :is(.ctl-icon.sm, .nv-ib.sm) { width: var(--control-sm); height: var(--control-sm); }
+:is(.ctl, .stg, .nv) :is(.ctl-icon, .stg-iconbtn, .nv-ib):is(:hover, .is-hover):not([aria-disabled="true"]),
+:is(.ctl, .stg, .nv) :is(.ctl-icon, .stg-iconbtn, .nv-ib):is([aria-pressed="true"], [aria-expanded="true"]) { background: var(--hover); color: var(--ink); }
+/* A primary icon button (send) is the composer's one primary */
+:is(.ctl, .stg, .nv) .ctl-icon.primary { background: var(--primary); color: var(--on-primary); box-shadow: var(--btn-shadow); }
+:is(.ctl, .stg, .nv) .ctl-icon.primary:is(:hover, .is-hover):not([aria-disabled="true"]) { background: var(--primary-hover); color: var(--on-primary); }
+
+/* Peek and pane header controls: the glyph, not the box, lines up with the content edge */
+.stg .stg-pane-close { right: calc(var(--inset-pane-inline) - (var(--control) - var(--icon)) / 2); gap: 2px; }
+.ctl-head { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-icon); min-height: var(--control); }
+.ctl-head .ctl-tools { display: flex; gap: 2px; margin-right: calc((var(--control) - var(--icon)) / -2); }
+
+/* ═══ Text fields ═════════════════════════════════════════════════════════════
+   28 high, 10 inset (8 on an icon's side), radius 7, text 13/400 ink, placeholder ink 2, icon 14. Choice 2 sets the fill. */
+:is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search, .nv-filter) { display: flex; align-items: center; gap: var(--gap-icon); height: var(--control); min-width: 0; padding: 0 var(--inset-control);
+  border-radius: var(--r-control); background: var(--in-bg); box-shadow: var(--in-edge); color: var(--ink-2); cursor: text; transition: var(--ctl-t); }
+:is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search, .nv-filter):has(> i[class*="ph"]:first-child) { padding-left: calc(var(--inset-control) - 2px); }
+:is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search, .nv-filter):is(:hover, .is-hover):not(:focus-within, [aria-disabled="true"]) { background: var(--in-bg-hover); box-shadow: var(--in-edge-hover); }
+:is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search, .nv-filter):is(:focus-within, .is-focus) { background: var(--in-bg-focus); box-shadow: var(--in-edge-focus); }
+:is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search, .nv-filter) > i[class*="ph"] { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); flex: none; }
+:is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search) :is(input, textarea) { all: unset; flex: 1; min-width: 0; font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); }
+:is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search) :is(input, textarea)::placeholder { color: var(--ink-2); opacity: 1; }
+.nv .nv-filter { cursor: pointer; }
+/* A textarea: the first line sits where a one-line field's text sits; prose leading; grows to 8 lines, then scrolls */
+:is(.ctl, .stg, .nv) .ctl-field.area { height: auto; min-height: var(--control); align-items: flex-start; padding-block: calc((var(--control) - var(--fs-body) * var(--lh-prose)) / 2); }
+:is(.ctl, .stg, .nv) .ctl-field.area textarea { line-height: var(--lh-prose); min-height: calc(var(--fs-body) * var(--lh-prose) * 3); max-height: calc(var(--fs-body) * var(--lh-prose) * 8); overflow: auto; resize: none; white-space: pre-wrap; }
+/* Phones: 16px text so iOS doesn't zoom the page */
+@media (max-width: 639px) { :is(.ctl-field, .nv-search) :is(input, textarea) { font-size: 16px !important; } }
+
+/* The composer: the dump-or-ask pill. A floating bar (tier 1 floating, radius 14, the smallest shadow), 40 high.
+   Mic on the left, the field, send on the right: send is the bar's one primary, disabled until there's something to send. */
+.ctl-composer { display: flex; align-items: flex-end; gap: 2px; min-height: var(--composer-h); padding: calc((var(--composer-h) - var(--control)) / 2); border-radius: var(--r-bar);
+  background: var(--surface); box-shadow: var(--sh-float); color: var(--ink-2); transition: var(--ctl-t); }
+.ctl-composer .ctl-icon { border-radius: calc(var(--r-bar) - (var(--composer-h) - var(--control)) / 2); }
+.ctl-composer textarea { all: unset; flex: 1; min-width: 0; align-self: center; padding: 0 var(--gap-icon); font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); white-space: pre-wrap; max-height: calc(var(--fs-body) * var(--lh-ui) * 6); overflow: auto; field-sizing: content; }
+.ctl-composer textarea::placeholder { color: var(--ink-2); opacity: 1; }
+.ctl-composer:is(:focus-within, .is-focus) { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ctl-composer textarea:focus-visible { outline: 0; }
+.ctl-composer:is(:hover, .is-hover):not(:focus-within) { box-shadow: var(--sh-float), 0 0 0 0.5px var(--ink-3); }
+.stg .ctl-composer, .nv .ctl-composer { position: absolute; z-index: var(--z-chrome); right: var(--inset-float); bottom: var(--inset-float); width: 300px; }
+
+/* ═══ Chips ═══════════════════════════════════════════════════════════════════
+   24 high, radius 7, surface with a hairline; the object's 24 tile flush in the left corner; label 12/500 ink 2, 8 inset on the right.
+   Hover: the 5% layer and ink. While its peek is open: the same. Drafts dashed. */
+:is(.ctl, .stg, .nv) :is(.ctl-chip, .stg-chip, button.nv-chip) { position: relative; display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--chip-h); max-width: 100%; min-width: 0;
+  padding: 0 var(--inset-chip) 0 0; border: 0; border-radius: var(--r-control); background: var(--surface); box-shadow: inset 0 0 0 0.5px var(--hairline-strong);
+  font: var(--w-medium) var(--fs-label)/1 var(--font); color: var(--ink-2); white-space: nowrap; cursor: pointer; transition: var(--ctl-t); }
+:is(.ctl, .stg, .nv) :is(.ctl-chip, .stg-chip, button.nv-chip):is(:hover, .is-hover, [aria-expanded="true"]):not([aria-disabled="true"]) { background: var(--surface-hover); color: var(--ink); }
+:is(.ctl, .stg, .nv) .ctl-chip > .g { flex: none; display: inline-grid; place-items: center; width: var(--tile); height: var(--tile); border-radius: var(--r-control) 0 0 var(--r-control); background: var(--type-tile); color: var(--type-glyph); }
+:is(.ctl, .stg, .nv) .ctl-chip > .g i { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
+.ctl-chip .t { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ctl-chip[data-draft] { box-shadow: none; outline: 1px dashed var(--hairline-strong); outline-offset: -1px; background: var(--draft-fill); }
+/* Removable: a trailing Remove (minus, never X), 20 square, shown on hover or focus; always shown on touch. Removal is immediate, with Undo. */
+.ctl-chip.removable { padding-right: 2px; }
+.ctl-chip .rm { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-left: -2px; border: 0; padding: 0; border-radius: calc(var(--r-control) - 2px); background: transparent; color: var(--ink-2); cursor: pointer; opacity: 0; transition: var(--ctl-t); }
+.ctl-chip .rm i { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
+.ctl-chip:is(:hover, .is-hover, :focus-within, .is-focus) .rm { opacity: 1; }
+.ctl-chip .rm:hover { background: var(--hover); color: var(--ink); }
+@media (hover: none) { .ctl-chip .rm { opacity: 1; } }
+/* Filter: no tile; funnel, then the facet. On: the neutral raise, ink, Fill funnel and the value */
+:is(.ctl, .stg, .nv) .ctl-chip.filter { padding-left: calc(var(--inset-chip) - 2px); background: transparent; }
+:is(.ctl, .stg, .nv) .ctl-chip.filter > i { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
+:is(.ctl, .stg, .nv) .ctl-chip.filter:is(:hover, .is-hover):not([aria-pressed="true"], [aria-disabled="true"]) { background: var(--hover); }
+:is(.ctl, .stg, .nv) .ctl-chip.filter[aria-pressed="true"] { background: var(--surface); box-shadow: var(--sel); color: var(--ink); }
+
+/* Tags and badges are not controls: no box, no hover. A 14 icon or a 7 dot, then 12/500 ink 2. A pending count is an 18 dashed pill. */
+.ctl-tag { display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--chip-h); font: var(--w-medium) var(--fs-label)/1 var(--font); color: var(--ink-2); white-space: nowrap; }
+.ctl-tag > i { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
+.ctl-tag .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--new); }
+.ctl-tag .dot.neg { background: var(--neg-dot); }
+.ctl-badge { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--r-pill); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; font: var(--w-medium) var(--fs-small)/1 var(--font); color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* ═══ Segmented control ═══════════════════════════════════════════════════════
+   Text segments (tabs inside a surface): a 6% track, 28 high, 2 inset, radius 10 outside and 8 inside; segments 24, label 12/500.
+   The selected segment is a raised surface in ink; the rest are ink 2. The view switcher is the floating form: radius 14 / 12, icon
+   segments 28, and the current view is accent with a Fill glyph (the only accent control). */
+.ctl-seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: var(--r-box); background: var(--fill-rest); }
+.ctl-seg > button { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--gap-icon); height: var(--control-sm); padding: 0 var(--inset-control); border: 0;
+  border-radius: calc(var(--r-box) - 2px); background: transparent; color: var(--ink-2); font: var(--w-medium) var(--fs-label)/1 var(--font); white-space: nowrap; cursor: pointer;
+  transition: background-color var(--t-float) var(--ease-out), color var(--t-hover) var(--ease-out), box-shadow var(--t-float) var(--ease-out), scale var(--t-press) var(--ease-out), opacity var(--t-hover); }
+.ctl-seg > button:is(:hover, .is-hover):not([aria-selected="true"], [aria-pressed="true"], [aria-disabled="true"]) { color: var(--ink); background: var(--hover); }
+.ctl-seg > button:is([aria-selected="true"], [aria-pressed="true"]) { background: var(--surface); color: var(--ink); box-shadow: var(--sh-raised); }
+.ctl-seg.views { border-radius: var(--r-bar); background: var(--surface); box-shadow: var(--sh-float); }
+.ctl-seg.views > button { width: var(--control); height: var(--control); padding: 0; border-radius: calc(var(--r-bar) - 2px); }
+.ctl-seg.views > button i { width: var(--icon); height: var(--icon); font-size: var(--icon); }
+.ctl-seg.views > button:is([aria-pressed="true"]), :is(.stg-switch, .nv-switch) button[aria-pressed="true"] { background: var(--accent-wash); color: var(--accent-text); box-shadow: none; }
+:is(.stg, .nv) :is(.stg-switch, .nv-switch) button { transition: background-color var(--t-float) var(--ease-out), color var(--t-hover) var(--ease-out), scale var(--t-press) var(--ease-out); }
+:is(.stg, .nv) :is(.stg-switch, .nv-switch) button:hover:not([aria-pressed="true"]) { background: var(--hover); color: var(--ink); }
+
+/* ═══ Menus ═══════════════════════════════════════════════════════════════════
+   Tier 4: surface, radius 10, the pop shadow, 4 inset. Items are rows: 32 high, radius 6 (10 − 4), 8 inset (4 before a tile),
+   icon 16 or a 24 tile, label 13/400 ink, key 12 mono ink 2 at the right. Pointer and keyboard share one highlight: the hover fill. */
+.ctl-menu { display: grid; min-width: 200px; padding: var(--gap-tight); border-radius: var(--r-box); background: var(--surface); box-shadow: var(--sh-pop); }
+:is(.ctl, .stg, .nv) :is(.ctl-item, .stg-menu-item) { display: flex; align-items: center; gap: var(--gap-icon); height: var(--row); padding: 0 var(--inset-row); border: 0; border-radius: calc(var(--r-box) - var(--gap-tight));
+  background: transparent; color: var(--ink); font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); text-align: left; cursor: pointer; transition: background-color var(--t-hover) var(--ease-out), opacity var(--t-hover); }
+:is(.ctl, .stg, .nv) :is(.ctl-item, .stg-menu-item):has(> .g:first-child) { padding-left: var(--gap-tight); }
+.ctl-item > i { width: var(--icon); height: var(--icon); font-size: var(--icon); color: var(--ink-2); }
+:is(.ctl, .stg, .nv) :is(.ctl-item, .stg-menu-item):is(:hover, .is-hover, :focus-visible, .is-focus):not([aria-disabled="true"]) { background: var(--hover); }
+.stg .stg-menu-item:first-child:not(:hover, :focus-visible) { background: transparent; }
+:is(.ctl-item, .stg-menu-item) kbd { margin-left: auto; font: var(--w-medium) var(--fs-label)/1 var(--font-mono); color: var(--ink-2); }
+.ctl-item .on { margin-left: auto; width: var(--icon); height: var(--icon); font-size: var(--icon); color: var(--ink); }
+.ctl-item.danger { color: var(--danger-text); }
+.ctl-item.danger > i { color: var(--danger-text); }
+.ctl-sep { height: 0.5px; margin: var(--gap-tight) var(--inset-row); background: var(--hairline-strong); }
+.ctl-menu-label { padding: var(--gap-tight) var(--inset-row) 2px; font: var(--w-medium) var(--fs-label)/var(--lh-ui) var(--font); color: var(--ink-2); }
+
+/* ═══ Stepper: Happens by  ‹ 2028 › ═══════════════════════════════════════════
+   One spinbutton: arrows change it by a year (Page keys by five). The carets are 24 icon buttons for the pointer, out of the tab order.
+   The value is 13/500 ink, tabular, centred in 4ch. At a bound, that caret is disabled. */
+.ctl-step { display: inline-flex; align-items: center; gap: 2px; border-radius: var(--r-control); }
+.ctl-step .v { min-width: 4ch; text-align: center; font: var(--w-medium) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); font-variant-numeric: tabular-nums; }
+.ctl-step:is(:focus-visible, .is-focus) { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ═══ Confidence: five bars you can set ═══════════════════════════════════════
+   A slider of 0–5. Bars 18 × 5, radius 3, 2 apart; each bar's hit area is 20 × 28. Set bars ink, the rest a strong hairline.
+   Hover previews the level in ink 2; click or arrows set it. */
+.ctl-conf { display: inline-flex; align-items: center; height: var(--control); border-radius: var(--r-xs); cursor: pointer; }
+.ctl-conf > i { position: relative; display: block; width: 18px; height: 5px; margin-right: 2px; border-radius: 3px; background: var(--hairline-strong); transition: background-color var(--t-hover) var(--ease-out); }
+.ctl-conf > i:last-child { margin-right: 0; }
+.ctl-conf > i::before { content: ""; position: absolute; inset: -12px -1px; }
+.ctl-conf > i[data-on] { background: var(--ink); }
+.ctl-conf:is(:hover, .is-hover) > i:is(.pv, [data-pv]) { background: var(--ink-2); }
+.ctl-conf:is(:hover, .is-hover) > i[data-on]:not(.pv, [data-pv]) { background: var(--ink-3); }
+.ctl-conf:is(:focus-visible, .is-focus) { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ctl-conf[aria-disabled="true"] > i { background: var(--hairline-strong); }
+
+/* ═══ Tooltip (tier 7): 12/500 on ink, radius 7, 4 / 8 inset, the key in mono; after 500ms, then instantly for 300ms after one closes ═══ */
+.ctl-tip { display: inline-flex; align-items: center; gap: var(--gap-item); padding: var(--gap-tight) var(--gap-item); border-radius: var(--r-control); background: var(--ink); color: var(--on-ink);
+  font: var(--w-medium) var(--fs-label)/var(--lh-ui) var(--font); white-space: nowrap; box-shadow: var(--sh-tip); pointer-events: none; }
+.ctl-tip kbd { font: var(--w-medium) var(--fs-label)/var(--lh-ui) var(--font-mono); color: var(--on-ink-2); }
+.stg[data-icons] .stg-tip { animation: ctl-fade var(--t-hover) var(--ease-out); }
+@keyframes ctl-fade { from { opacity: 0; } }
+
+/* Tethered surfaces grow from their trigger in 160ms on the spring, and leave in 90ms */
+.stg :is(.stg-menu, .stg-peek) { animation: ctl-grow var(--t-float) var(--spring); }
+@keyframes ctl-grow { from { opacity: 0; scale: 0.96; } }
+@media (prefers-reduced-motion: reduce) { .stg :is(.stg-menu, .stg-peek), .stg[data-icons] .stg-tip { animation: ctl-fade var(--t-hover) linear; } }
+
+/* Drafts and suggestions stay dashed on every chip */
+:is(.ctl, .stg, .nv) :is(.stg-chip[data-draft], button.nv-chip.draft) { box-shadow: none; outline: 1px dashed var(--hairline-strong); outline-offset: -1px; background: var(--draft-fill); }
+/* Toasts sit just above the composer */
+.stg:has(.ctl-composer) .stg-toast { bottom: calc(var(--inset-float) + var(--composer-h) + var(--gap-item)); }

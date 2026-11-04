@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grammar 05: Controls</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="../../explorations/_shell/jig.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dialkit@2.1.0/dist/vanilla/styles.css">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/stage.css">
+<link rel="stylesheet" href="../_shared/spacing.css">
+<link rel="stylesheet" href="../_shared/type.css">
+<link rel="stylesheet" href="../_shared/icons.css">
+<link rel="stylesheet" href="../_shared/surfaces.css">
+<link rel="stylesheet" href="../nav/nav.css">
+<link rel="stylesheet" href="../_shared/controls.css">
+<link rel="stylesheet" href="controls-page.css">
+<script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/stage.js" defer></script>
+<script src="../nav/nav.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/dialkit@2.1.0/dist/vanilla/browser.global.js" defer></script>
+<script src="../_shared/list-dial.js" defer></script>
+<script src="controls-page.js" defer></script>
+<script type="module" src="../_shared/agentation.js" data-app-name="Grammar 05: Controls"></script>
+</head>
+<body class="jig" data-jig="grammar-05-controls">
+
+<header class="jig-head">
+  <h1>Grammar 05: Controls</h1>
+  <p>Every control in Aber, assembled only from what's decided: colour system D with a black primary, Regular spacing (controls 28, dense 24, rows 32), type scale B (labels 12 / 500, body 13), icons 16 and 14 with tiles everywhere, and surfaces (radius 7 for controls, hover a 5% layer, press 0.98, the jade focus ring). X only closes transient surfaces; rejecting a suggestion is a labelled Dismiss left of Accept.</p>
+</header>
+
+<div class="decide">
+  <div class="decide-box">
+    <h2>Decide on this page</h2>
+    <ol>
+      <li data-pick="secondary"><a href="#secondary">Secondary button: white with a hairline, or a soft fill</a> <span class="pick"></span></li>
+      <li data-pick="input"><a href="#input">Text fields: filled, or outlined</a> <span class="pick"></span></li>
+      <li data-pick="danger"><a href="#danger">Delete confirmation: ink, or red</a> <span class="pick"></span></li>
+    </ol>
+  </div>
+</div>
+
+<section class="jig-section" id="today">
+  <h2>Today, measured</h2>
+  <p>Every pointer control in the canonical code (<code>app/web/src/ui/</code> and <code>jig/src/homes/</code>, near-copies; 77 pointer controls).</p>
+  <div class="table-wrap">
+  <table class="audit">
+    <thead><tr><th>Control</th><th>Recipes</th><th>What's there</th></tr></thead>
+    <tbody>
+      <tr><td>Text buttons</td><td class="n">~14</td><td>Heights <em>24</em>(6) <em>26</em>(6) 28(4) <em>30</em>(3) <em>32</em> <em>36</em> <em>40</em>(2); x padding 6, 7, 8, 9, 10, 12, 14; labels inherit 13 / 400 or set 12, 11. <em>The main button <code>.ap-btn</code> has no hover</em> (homes.css:56).</td></tr>
+      <tr><td>Icon-only buttons</td><td class="n">11</td><td>18, 20, 22×24, 24, 26, 28, 32, 40, 44, 56; radius 6, 8, 5 or round. Only <code>ap-iconbtn</code> has every state.</td></tr>
+      <tr><td>Radius, all controls</td><td class="n">16</td><td>6(17) 8(9) 5(9) 13(4) 9(3) 7(3) 3(3) 50%(2) 20(2) 14(2) 12(2), plus 999, 4, 22, 16, 10</td></tr>
+      <tr><td>Accept and Dismiss</td><td class="n">3</td><td>Accept is always a 26 text button. Dismiss is a 20 stepper button (tripwire.tsx:46), a 28 icon button (panes.tsx:143) or a 24 round mini (surface-patterns.css:38).</td></tr>
+      <tr><td>Fields</td><td class="n">4</td><td>Composer, <code>.ab-input</code> 14px sunk (overridden to 13 / 40 in suggestion-review.css:6), contentEditable with a tint, search at 32. <em>Search and composer remove the focus outline with no replacement</em>.</td></tr>
+      <tr><td>Chips and tags</td><td class="n">10</td><td>Heights 16, 18, 20, 24, 26, 28; radius 4, 5, 6, 8, 9, 13, 14, 999. No filter chip exists.</td></tr>
+      <tr><td>Segmented</td><td class="n">6</td><td>24, 26, 32 high; <em>three selected styles</em>: raised white (panes.css:133), sunk sliding plate (app-shell.css:37), inverted ink (timeline2.css:86). Three of six have no focus style.</td></tr>
+      <tr><td>Confidence setter</td><td class="n">3</td><td>20×6 with a jade preview (panes.css:51); 18×6 with hover scaleY 1.4 and no focus (homes.css:193); 1.5 in the jig</td></tr>
+      <tr><td>Tooltips</td><td class="n">4 + title</td><td>Black, white and two greys; radius 6 or 8; <code>title=</code> still used 144 times</td></tr>
+      <tr><td>Focus</td><td class="n">~12</td><td>2px jade at offsets +4 … −2; a 1.5px grey ring (panes.css:44, :91, :106, :114); inset shadows; halos; none at all</td></tr>
+      <tr><td>Press scale</td><td class="n">4</td><td>0.98 in the jig; the app hard-codes <em>0.96</em>(9) <em>0.94</em>(4) <em>0.92</em> (panes.css:43)</td></tr>
+      <tr><td>Durations</td><td class="n">9</td><td>100(31) 120(18) 150(13) 200(6) 180 160 300 90 400; 35 of 77 controls have no transition; 48 fall back to <code>ease</code></td></tr>
+      <tr><td>Disabled, loading</td><td class="n">3, 0</td><td>Opacity 0.4, 0.35, 0.5; the send button dims by colour only. No loading style anywhere.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <ul class="offenders">
+    <li><b>No toggles, checkboxes or tabs exist.</b> On and off use <code>aria-pressed</code> on icon buttons, so the rules below add none.</li>
+    <li><b>Copy is already clean:</b> sentence case, no trailing ellipsis, every icon-only button labelled. Keys are mixed: "Accept (A)" in label text, mono keys in tooltips, and three key sizes (11, 12, 11 mono).</li>
+  </ul>
+</section>
+
+<section class="jig-section" id="rules">
+  <h2>The rules (proposed)</h2>
+  <ol class="rules">
+    <li><b>One anatomy per control</b> (the table below). A control is built from the height, inset, radius, label role and icon slot named there and nothing else.</li>
+    <li><b>Two heights.</b> 28 everywhere (<code>--control</code>); 24 only inside a dense row: an evidence row, a field row, a list group label (<code>--control-sm</code>). Chips are 24. Menu items are rows, 32. The composer is a floating bar, 40. Every target has a 40 hit area.</li>
+    <li><b>Every control has the same seven states</b>, with the same treatment everywhere (the state matrix). Hover is a 5% layer and ink; press keeps it and shrinks to 0.98; focus is the 2px jade ring 2 out (inside, at −2, in menus, segments and list rows); disabled is 40%; loading keeps the width and swaps the label for a spinner.</li>
+    <li><b>Motion:</b> hover and press 90ms; selection, segments and tethered surfaces 160ms; all on <code>cubic-bezier(0.2, 0.8, 0.2, 1)</code>, menus and peeks on the spring. The focus ring never animates. Never <code>transition: all</code>. Reduced motion drops the scale and keeps the fades.</li>
+    <li><b>One primary per surface</b> (pane, peek, modal, composer, row). Secondary for an alternative on the same surface (Open, Cancel, Dismiss). Quiet for navigation (Back) and toolbars. Icon-only for frequent verbs in the icon vocabulary.</li>
+    <li><b>Dismiss sits left of Accept</b>; Discard left of Accept for drafts. This pair is the one place two text buttons sit together.</li>
+    <li><b>Reversible means do it, then offer Undo.</b> Remove, retire (a menu of reasons), discard, merge and move to the bin happen at once with an Undo toast. Only what can't be undone asks first: deleting a dump is the one confirmation, a modal whose button names the verb and object ("Delete dump"), never "OK".</li>
+    <li><b>Labels:</b> verb first, sentence case, one or two words, no trailing ellipsis, concept names exact (Theory, Signal). An icon-only button's name is its vocabulary name; its tooltip adds the key in mono. A removal says what it removes in its accessible name ("Remove Agent memory from this theory").</li>
+    <li><b>Don't disable when you can explain.</b> Disabled controls use <code>aria-disabled</code>, stay focusable and say why in their tooltip. Send is the exception: it waits for text.</li>
+    <li><b>No toggles, checkboxes or tabs bars.</b> On/off is an icon button with <code>aria-pressed</code> (Fill when on); a choice of two to four is a segmented control.</li>
+  </ol>
+
+  <h3 class="sub">Anatomy</h3>
+  <div class="table-wrap">
+  <table class="audit spec">
+    <thead><tr><th>Control</th><th>Height</th><th>Inset</th><th>Radius</th><th>Label</th><th>Icon, slot</th><th>Gap</th><th>Fill at rest</th></tr></thead>
+    <tbody>
+      <tr><td>Primary button</td><td>28 (24 dense)</td><td>10; 8 on an icon's side</td><td>7</td><td>12 / 500 on ink</td><td>14</td><td>6</td><td>Ink, button shadow</td></tr>
+      <tr><td>Secondary button</td><td>28 (24 dense)</td><td>10; 8</td><td>7</td><td>12 / 500 ink</td><td>14</td><td>6</td><td>Choice 1</td></tr>
+      <tr><td>Quiet button</td><td>28</td><td>10; 8</td><td>7</td><td>12 / 500 ink 2</td><td>14</td><td>6</td><td>None</td></tr>
+      <tr><td>Icon-only</td><td>28 square (24 dense)</td><td>Centred</td><td>7</td><td>Tooltip</td><td>16</td><td>2 between</td><td>None</td></tr>
+      <tr><td>Destructive confirm</td><td>28</td><td>10</td><td>7</td><td>12 / 500, verb + object</td><td>None</td><td>–</td><td>Choice 3</td></tr>
+      <tr><td>Text field, search</td><td>28</td><td>10; 8 on an icon's side</td><td>7</td><td>13 / 400 ink, placeholder ink 2</td><td>14, ink 2</td><td>6</td><td>Choice 2</td></tr>
+      <tr><td>Textarea</td><td>3 lines, grows to 8</td><td>4 / 10</td><td>7</td><td>13 / 400, 1.55</td><td>None</td><td>–</td><td>Choice 2</td></tr>
+      <tr><td>Composer</td><td>40, grows to 6 lines</td><td>6</td><td>14 (buttons 8)</td><td>13 / 400</td><td>Mic, send: 28</td><td>2</td><td>Surface, float shadow</td></tr>
+      <tr><td>Linked chip</td><td>24</td><td>0 / 8</td><td>7</td><td>12 / 500 ink 2</td><td>24 tile, flush</td><td>6</td><td>Surface, hairline</td></tr>
+      <tr><td>Removable chip</td><td>24</td><td>0 / 2</td><td>7 (remove 5)</td><td>12 / 500 ink 2</td><td>Tile; minus 14 in 20</td><td>6</td><td>Surface, hairline</td></tr>
+      <tr><td>Filter chip</td><td>24</td><td>6 / 8</td><td>7</td><td>12 / 500 ink 2</td><td>Funnel 14</td><td>6</td><td>None, hairline</td></tr>
+      <tr><td>Tag, badge</td><td>24 line; badge 18</td><td>–; 5</td><td>–; pill</td><td>12 / 500 ink 2; 11 / 500</td><td>14 or a 7 dot</td><td>6</td><td>None; dashed if pending</td></tr>
+      <tr><td>Segmented (in a surface)</td><td>28 track, 24 segments</td><td>2; 10</td><td>10 / 8</td><td>12 / 500</td><td>Optional 14</td><td>2</td><td>6% track</td></tr>
+      <tr><td>View switcher</td><td>32 bar, 28 segments</td><td>2</td><td>14 / 12</td><td>Tooltip</td><td>16</td><td>2</td><td>Surface, float shadow</td></tr>
+      <tr><td>Menu item</td><td>32</td><td>8; 4 before a tile</td><td>6 (10 − 4)</td><td>13 / 400 ink; key 12 mono</td><td>16 or 24 tile</td><td>6</td><td>None</td></tr>
+      <tr><td>Peek and pane header</td><td>28</td><td>Glyph on the content edge (−6)</td><td>7</td><td>Tooltip</td><td>16</td><td>2</td><td>None</td></tr>
+      <tr><td>Stepper</td><td>24 carets</td><td>–</td><td>7</td><td>13 / 500 ink, 4ch</td><td>Carets 16</td><td>2</td><td>None</td></tr>
+      <tr><td>Confidence</td><td>28 hit, bars 5</td><td>–</td><td>3</td><td>–</td><td>Bars 18 × 5</td><td>2</td><td>Hairline; set bars ink</td></tr>
+      <tr><td>Tooltip</td><td>26</td><td>4 / 8</td><td>7</td><td>12 / 500 on ink; key mono</td><td>None</td><td>8</td><td>Ink, tip shadow</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3 class="sub">State matrix</h3>
+  <div class="table-wrap">
+  <table class="audit spec">
+    <thead><tr><th>State</th><th>Trigger</th><th>Treatment</th><th>Motion</th></tr></thead>
+    <tbody>
+      <tr><td>Rest</td><td>–</td><td>Buttons and chips as in the anatomy; icon-only and quiet are transparent in ink 2</td><td>–</td></tr>
+      <tr><td>Hover</td><td><code>:hover</code> (pointer only)</td><td>A 5% layer over the fill and ink text. Primary lightens to ink hover. Fields darken their well (filled) or their edge (outlined). Nothing lifts.</td><td>90ms ease-out, in and out</td></tr>
+      <tr><td>Focus</td><td><code>:focus-visible</code>; a field whenever it has the caret</td><td>2px jade ring, 2 out. Inside a menu, segmented control or list: 2 in. Only jade ring in the app.</td><td>None, instant</td></tr>
+      <tr><td>Pressed</td><td><code>:active</code></td><td>Keep the hover; scale 0.98. Never darken.</td><td>90ms ease-out; none under reduced motion</td></tr>
+      <tr><td>Selected, current, open</td><td><code>aria-pressed</code>, <code>aria-selected</code>, <code>aria-expanded</code>, <code>aria-current</code></td><td>Icon-only, quiet and chips: the hover fill stays, ink, Fill glyph. Segment and filter chip: raised surface and ink. Current view: accent wash and accent text, the only accent control.</td><td>160ms ease-out</td></tr>
+      <tr><td>Disabled</td><td><code>aria-disabled="true"</code></td><td>40% of itself; no hover or press; still focusable, tooltip says why</td><td>–</td></tr>
+      <tr><td>Loading</td><td><code>aria-busy="true"</code></td><td>Same width; label hidden; a 14 <code>circle-notch</code> spins in its place (new vocabulary row: Working)</td><td>700ms a turn, linear; a slow pulse under reduced motion</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section class="jig-section" id="stage">
+  <h2>The stage, built only from these rules</h2>
+  <div class="viewer-bar">
+    <span class="seg" data-seg="view"><span>View</span><span class="seg-group"><button type="button" value="default" aria-pressed="true">Default</button><button type="button" value="sections">Sections</button><button type="button" value="columns">Columns</button><button type="button" value="atlas">Atlas</button><button type="button" value="timeline">Timeline</button></span></span>
+    <span class="seg" data-seg="layer"><span>Layer</span><span class="seg-group"><button type="button" value="" aria-pressed="true">None</button><button type="button" value="menu">Menu</button><button type="button" value="modal">Delete</button><button type="button" value="toast">Undo</button></span></span>
+  </div>
+  <div class="viewer-bar">
+    <span class="seg" data-seg="secondary"><span>Secondary</span><span class="seg-group"><button type="button" value="hairline" aria-pressed="true">Hairline</button><button type="button" value="fill">Soft fill</button></span></span>
+    <span class="seg" data-seg="input"><span>Fields</span><span class="seg-group"><button type="button" value="filled" aria-pressed="true">Filled</button><button type="button" value="outlined">Outlined</button></span></span>
+    <span class="seg" data-seg="danger"><span>Delete</span><span class="seg-group"><button type="button" value="ink" aria-pressed="true">Ink</button><button type="button" value="red">Red</button></span></span>
+  </div>
+  <p class="stage-label">The default view is the type-first window from <code>nav/</code>; the layer applies to the other four. Everything is live: set confidence, step the year, type in the composer, point at a chip to peek it, Tab through.</p>
+  <div class="ctl-viewer" id="viewer"></div>
+</section>
+
+<section class="jig-section" id="views">
+  <h2>Same controls, five views</h2>
+  <div class="views-grid">
+    <div><p class="view-name">Default (type-first), a draft theory</p><div class="nv-host" data-nav='{"v":"A","type":"theory","sel":{"theory":"t11"}}'></div></div>
+    <div><p class="view-name">Theme sections, a menu open</p><div class="stg-host" data-stage='{"view":"sections","layer":"menu"}'></div></div>
+    <div><p class="view-name">Columns</p><div class="stg-host" data-stage='{"view":"columns"}'></div></div>
+    <div><p class="view-name">Atlas, with Undo</p><div class="stg-host" data-stage='{"view":"atlas","layer":"toast"}'></div></div>
+    <div><p class="view-name">Timeline, the delete confirmation</p><div class="stg-host" data-stage='{"view":"timeline","layer":"modal"}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" id="board">
+  <h2>States board</h2>
+  <p>Every control in every state. Each cell is a real control: hover and Tab work everywhere, and the forced columns show what the live one does. Tab runs row by row.</p>
+  <div class="board-wrap"><div class="ctl ctl-board" id="board-grid" role="table" aria-label="Controls by state"></div></div>
+</section>
+
+<section class="jig-section" id="secondary" data-decision="secondary" data-question="1. What does a secondary button look like?" data-default="A hairline">
+  <p>Secondary is the alternative beside a primary: Dismiss, Cancel, Open. Look at Discard beside Accept on the draft theory.</p>
+  <div class="jig-compare">
+    <div class="jig-option" data-option="A hairline"><div class="jig-label"><b>A</b> White with a hairline</div><p class="jig-note">Today's ghost button: a surface with the chip's hairline and the button shadow. Reads as a button on any plane.</p><div class="nv-host" data-option-stage data-secondary="hairline" data-nav='{"v":"A","type":"theory","sel":{"theory":"t11"}}'></div></div>
+    <div class="jig-option" data-option="B soft fill"><div class="jig-label"><b>B</b> Soft fill</div><p class="jig-note">A 6% ink tint, no edge. Quieter beside the black primary; hairlines are left to chips and rows.</p><div class="nv-host" data-option-stage data-secondary="fill" data-nav='{"v":"A","type":"theory","sel":{"theory":"t11"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" id="input" data-decision="input" data-question="2. How does a text field sit?" data-default="A filled">
+  <p>Search and the theme filter in the theories list. Both put the field on a surface with the ring when it has the caret.</p>
+  <div class="jig-compare">
+    <div class="jig-option" data-option="A filled"><div class="jig-label"><b>A</b> Filled</div><p class="jig-note">A sunk well with no edge, like today's search. Needs a plane above sunk: on the rail it would vanish.</p><div class="nv-host" data-option-stage data-input="filled" data-nav='{"v":"A","type":"theory","opt":{"tf":"yes"}}'></div></div>
+    <div class="jig-option" data-option="B outlined"><div class="jig-label"><b>B</b> Outlined</div><p class="jig-note">A surface with a hairline, like a chip. Works on any plane; one more line on screen.</p><div class="nv-host" data-option-stage data-input="outlined" data-nav='{"v":"A","type":"theory","opt":{"tf":"yes"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section" id="danger" data-decision="danger" data-question="3. What colour is the one destructive confirmation?" data-default="A ink">
+  <p>Deleting a dump is the only action that asks first. Everything else that removes happens at once, with Undo.</p>
+  <div class="jig-compare">
+    <div class="jig-option" data-option="A ink"><div class="jig-label"><b>A</b> Ink, like every primary</div><p class="jig-note">The label carries the danger ("Delete dump"). Red stays for challenge and down.</p><div class="stg-host" data-option-stage data-danger="ink" data-stage='{"view":"sections","layer":"modal"}'></div></div>
+    <div class="jig-option" data-option="B red"><div class="jig-label"><b>B</b> Red</div><p class="jig-note">The challenge red as a fill, here only. Louder, and red gains a third meaning.</p><div class="stg-host" data-option-stage data-danger="red" data-stage='{"view":"sections","layer":"modal"}'></div></div>
+  </div>
+</section>
+
+</body>
+</html>

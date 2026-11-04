@@ -246,6 +246,62 @@ Evidence: 176 distinct backgrounds; 158 distinct box shadows, with only 127 of 4
 
 `_shared/surfaces.css` is loaded by every grammar page as the default. Controls' radius is 7 everywhere (`--r-icon` now equals `--r`).
 
+## 05 Controls — PROPOSED (choose on `05-controls/`)
+
+Every control, built only from 00–04. Values live in `_shared/controls.css` (loaded by 05 only until decided). Jig: `05-controls/`, with a states board of every control in every state.
+
+Evidence: about 14 text-button recipes at seven heights (24 to 40) and 16 control radii; the main button `.ap-btn` has no hover (homes.css:56); three different Dismiss controls beside one Accept; three "selected" styles for segmented controls; three confidence setters; four tooltip recipes plus 144 `title=`; about 12 focus treatments, including none on search and the composer; press scales 0.98, 0.96, 0.94, 0.92; nine durations, 35 of 77 controls with no transition; no loading style anywhere. No toggles, checkboxes or tabs exist.
+
+1. **One anatomy per control** (table below), built only from these heights, insets, radii, label roles and icon slots.
+2. **Two heights.** 28 (`--control`) everywhere; 24 (`--control-sm`) only inside a dense row (evidence row, field row, list group label). Chips 24, menu items 32 (`--row`), the composer 40. Every target has a 40 hit area.
+3. **Seven states, one treatment each, everywhere:**
+
+| State | Trigger | Treatment | Motion |
+| --- | --- | --- | --- |
+| Rest | – | As the anatomy; icon-only and quiet are transparent in ink 2 | – |
+| Hover | `:hover` | A 5% layer and ink text; primary lightens to ink hover; fields deepen their well or edge; nothing lifts | 90ms ease-out |
+| Focus | `:focus-visible`; a field whenever it has the caret | 2px jade ring, 2 out; inside (−2) in menus, segmented controls and list rows | Instant |
+| Pressed | `:active` | Keep the hover, scale 0.98, never darken | 90ms; none under reduced motion |
+| Selected, open | `aria-pressed`, `-selected`, `-expanded`, `-current` | Icon-only, quiet, chips: the hover fill stays, ink, Fill glyph. Segment, filter chip: raised surface, ink. Current view: accent wash and accent text (the only accent control) | 160ms ease-out |
+| Disabled | `aria-disabled="true"` | 40% of itself; no hover or press; stays focusable; tooltip says why | – |
+| Loading | `aria-busy="true"` | Same width; label hidden; a 14 `circle-notch` spins in its place (new vocabulary row: Working) | 700ms a turn; a slow pulse under reduced motion |
+
+4. **Motion:** hover and press 90ms (`--t-hover`, `--t-press`); selection, segments and tethered surfaces 160ms (`--t-float`); ease `cubic-bezier(0.2, 0.8, 0.2, 1)`, menus and peeks on the spring. The ring never animates. Never `transition: all`.
+5. **One primary per surface** (pane, peek, modal, composer, row). Secondary for the alternative on that surface (Open, Cancel, Dismiss, Discard). Quiet for navigation (Back) and toolbars. Icon-only for frequent verbs in the icon vocabulary.
+6. **Dismiss left of Accept** (Discard for drafts): the one place two text buttons sit together.
+7. **Reversible: act, then Undo.** Remove, retire (a menu of reasons), discard, merge and move to the bin happen at once with an Undo toast just above the composer. Only the irreversible asks first: deleting a dump is the one confirmation, a modal whose button names verb and object ("Delete dump").
+8. **Labels:** verb first, sentence case, one or two words, no trailing ellipsis, concept names exact. Icon-only names are vocabulary names; the tooltip adds the key in mono. Removal says what it removes in its accessible name ("Remove Agent memory from this theory").
+9. **Prefer explaining to disabling.** `aria-disabled`, focusable, with a tooltip saying why. Send is the exception: it waits for text.
+10. **No toggles, checkboxes or tab bars.** On/off is an icon button with `aria-pressed` (Fill when on); a choice of two to four is a segmented control.
+11. **Fields:** 13/400 text (16 at ≤639px so iOS doesn't zoom), placeholder ink 2, search clears with Esc and has no X. Textareas start their first line where a one-line field's text sits, use prose leading and grow to 8 lines.
+
+| Control | Height | Inset | Radius | Label | Icon, slot | Gap | Fill at rest |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Primary button | 28 (24 dense) | 10; 8 on an icon's side | 7 | 12 / 500 on ink | 14 | 6 | Ink, button shadow |
+| Secondary button | 28 (24 dense) | 10; 8 | 7 | 12 / 500 ink | 14 | 6 | Open choice 1 |
+| Quiet button | 28 | 10; 8 | 7 | 12 / 500 ink 2 | 14 | 6 | None |
+| Icon-only | 28 square (24 dense) | Centred | 7 | Tooltip | 16 | 2 between | None |
+| Destructive confirm | 28 | 10 | 7 | 12 / 500, verb + object | – | – | Open choice 3 |
+| Text field, search | 28 | 10; 8 on an icon's side | 7 | 13 / 400, placeholder ink 2 | 14 ink 2 | 6 | Open choice 2 |
+| Textarea | 3 lines, grows to 8 | 4 / 10 | 7 | 13 / 400 / 1.55 | – | – | Open choice 2 |
+| Composer | 40, grows to 6 lines | 6 | 14 (buttons 8) | 13 / 400 | Mic, send 28 | 2 | Surface, float shadow |
+| Linked chip | 24 | 0 / 8 | 7 | 12 / 500 ink 2 | 24 tile, flush | 6 | Surface, hairline |
+| Removable chip | 24 | 0 / 2 | 7 (remove 5) | 12 / 500 ink 2 | Tile; minus 14 in 20 | 6 | Surface, hairline |
+| Filter chip | 24 | 6 / 8 | 7 | 12 / 500 ink 2 | Funnel 14 | 6 | None |
+| Tag, badge (not controls) | 24 line; badge 18 | –; 5 | –; pill | 12 / 500 ink 2; 11 / 500 | 14 or a 7 dot | 6 | None; dashed if pending |
+| Segmented (in a surface) | 28 track, 24 segments | 2; 10 | 10 / 8 | 12 / 500 | Optional 14 | 2 | 6% track |
+| View switcher | 32 bar, 28 segments | 2 | 14 / 12 | Tooltip | 16 | 2 | Surface, float shadow |
+| Menu item | 32 | 8; 4 before a tile | 6 (10 − 4) | 13 / 400 ink; key 12 mono ink 2 | 16 or 24 tile | 6 | None |
+| Peek and pane header | 28 | Glyph on the content edge (−6) | 7 | Tooltip | 16 | 2 | None |
+| Stepper (Happens by) | 24 carets | – | 7 | 13 / 500 ink, 4ch, tabular | Carets 16 | 2 | None; one spinbutton, arrows ±1, Page ±5 |
+| Confidence | 28 hit; bars 5 | – | 3 | – | Bars 18 × 5 | 2 | Hairline; set bars ink; a slider 0–5 |
+| Tooltip | 26 | 4 / 8 | 7 | 12 / 500 on ink; key mono | – | 8 | Ink; after 500ms, then instant for 300ms |
+
+**Open:**
+- Secondary button: white with a hairline (today, proposed) or a soft 6% fill.
+- Text fields: filled, a sunk well (today's search, proposed) or outlined, a surface with a hairline.
+- The one destructive confirmation (Delete dump): ink like every primary (proposed) or the challenge red.
+
 ## Still to come
 
-05 controls (proposed, below), 06 objects, 07 rungs.
+06 objects, 07 rungs.
