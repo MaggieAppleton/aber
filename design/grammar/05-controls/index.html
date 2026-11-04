@@ -32,7 +32,7 @@
 
 <header class="jig-head">
   <h1>Grammar 05: Controls</h1>
-  <p>Every control in Aber, assembled only from what's decided: colour system D with a black primary, Regular spacing (controls 28, dense 24, rows 32), type scale B (labels 12 / 500, body 13), icons 16 and 14 with tiles everywhere, and surfaces (radius 7 for controls, hover a 5% layer, press 0.98, the jade focus ring). X only closes transient surfaces; rejecting a suggestion is a labelled Dismiss left of Accept.</p>
+  <p><b>Decided 4 Nov 2026:</b> secondary button A white with a hairline; text fields A filled; the delete confirmation A ink. These controls are now the default on every grammar page. Every control in Aber, assembled only from what's decided: colour system D with a black primary, Regular spacing (controls 28, dense 24, rows 32), type scale B (labels 12 / 500, body 13), icons 16 and 14 with tiles everywhere, and surfaces (radius 7 for controls, hover a 5% layer, press 0.98, the jade focus ring). X only closes transient surfaces; rejecting a suggestion is a labelled Dismiss left of Accept.</p>
 </header>
 
 <div class="decide">
@@ -76,7 +76,7 @@
 </section>
 
 <section class="jig-section" id="rules">
-  <h2>The rules (proposed)</h2>
+  <h2>The rules (decided 4 Nov 2026)</h2>
   <ol class="rules">
     <li><b>One anatomy per control</b> (the table below). A control is built from the height, inset, radius, label role and icon slot named there and nothing else.</li>
     <li><b>Two heights.</b> 28 everywhere (<code>--control</code>); 24 only inside a dense row: an evidence row, a field row, a list group label (<code>--control-sm</code>). Chips are 24. Menu items are rows, 32. The composer is a floating bar, 40. Every target has a 40 hit area.</li>
@@ -96,12 +96,12 @@
     <thead><tr><th>Control</th><th>Height</th><th>Inset</th><th>Radius</th><th>Label</th><th>Icon, slot</th><th>Gap</th><th>Fill at rest</th></tr></thead>
     <tbody>
       <tr><td>Primary button</td><td>28 (24 dense)</td><td>10; 8 on an icon's side</td><td>7</td><td>12 / 500 on ink</td><td>14</td><td>6</td><td>Ink, button shadow</td></tr>
-      <tr><td>Secondary button</td><td>28 (24 dense)</td><td>10; 8</td><td>7</td><td>12 / 500 ink</td><td>14</td><td>6</td><td>Choice 1</td></tr>
+      <tr><td>Secondary button</td><td>28 (24 dense)</td><td>10; 8</td><td>7</td><td>12 / 500 ink</td><td>14</td><td>6</td><td>White, hairline</td></tr>
       <tr><td>Quiet button</td><td>28</td><td>10; 8</td><td>7</td><td>12 / 500 ink 2</td><td>14</td><td>6</td><td>None</td></tr>
       <tr><td>Icon-only</td><td>28 square (24 dense)</td><td>Centred</td><td>7</td><td>Tooltip</td><td>16</td><td>2 between</td><td>None</td></tr>
-      <tr><td>Destructive confirm</td><td>28</td><td>10</td><td>7</td><td>12 / 500, verb + object</td><td>None</td><td>–</td><td>Choice 3</td></tr>
-      <tr><td>Text field, search</td><td>28</td><td>10; 8 on an icon's side</td><td>7</td><td>13 / 400 ink, placeholder ink 2</td><td>14, ink 2</td><td>6</td><td>Choice 2</td></tr>
-      <tr><td>Textarea</td><td>3 lines, grows to 8</td><td>4 / 10</td><td>7</td><td>13 / 400, 1.55</td><td>None</td><td>–</td><td>Choice 2</td></tr>
+      <tr><td>Destructive confirm</td><td>28</td><td>10</td><td>7</td><td>12 / 500, verb + object</td><td>None</td><td>–</td><td>Ink</td></tr>
+      <tr><td>Text field, search</td><td>28</td><td>10; 8 on an icon's side</td><td>7</td><td>13 / 400 ink, placeholder ink 2</td><td>14, ink 2</td><td>6</td><td>Filled well</td></tr>
+      <tr><td>Textarea</td><td>3 lines, grows to 8</td><td>4 / 10</td><td>7</td><td>13 / 400, 1.55</td><td>None</td><td>–</td><td>Filled well</td></tr>
       <tr><td>Composer</td><td>40, grows to 6 lines</td><td>6</td><td>14 (buttons 8)</td><td>13 / 400</td><td>Mic, send: 28</td><td>2</td><td>Surface, float shadow</td></tr>
       <tr><td>Linked chip</td><td>24</td><td>0 / 8</td><td>7</td><td>12 / 500 ink 2</td><td>24 tile, flush</td><td>6</td><td>Surface, hairline</td></tr>
       <tr><td>Removable chip</td><td>24</td><td>0 / 2</td><td>7 (remove 5)</td><td>12 / 500 ink 2</td><td>Tile; minus 14 in 20</td><td>6</td><td>Surface, hairline</td></tr>

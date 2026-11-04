@@ -246,9 +246,9 @@ Evidence: 176 distinct backgrounds; 158 distinct box shadows, with only 127 of 4
 
 `_shared/surfaces.css` is loaded by every grammar page as the default. Controls' radius is 7 everywhere (`--r-icon` now equals `--r`).
 
-## 05 Controls — PROPOSED (choose on `05-controls/`)
+## 05 Controls — DECIDED (4 Nov 2026: secondary white with a hairline; fields filled; delete confirmation ink)
 
-Every control, built only from 00–04. Values live in `_shared/controls.css` (loaded by 05 only until decided). Jig: `05-controls/`, with a states board of every control in every state.
+Every control, built only from 00–04. Values live in `_shared/controls.css`, which every grammar page 00–05 loads as the default. Jig: `05-controls/`, with a states board of every control in every state.
 
 Evidence: about 14 text-button recipes at seven heights (24 to 40) and 16 control radii; the main button `.ap-btn` has no hover (homes.css:56); three different Dismiss controls beside one Accept; three "selected" styles for segmented controls; three confidence setters; four tooltip recipes plus 144 `title=`; about 12 focus treatments, including none on search and the composer; press scales 0.98, 0.96, 0.94, 0.92; nine durations, 35 of 77 controls with no transition; no loading style anywhere. No toggles, checkboxes or tabs exist.
 
@@ -278,12 +278,12 @@ Evidence: about 14 text-button recipes at seven heights (24 to 40) and 16 contro
 | Control | Height | Inset | Radius | Label | Icon, slot | Gap | Fill at rest |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Primary button | 28 (24 dense) | 10; 8 on an icon's side | 7 | 12 / 500 on ink | 14 | 6 | Ink, button shadow |
-| Secondary button | 28 (24 dense) | 10; 8 | 7 | 12 / 500 ink | 14 | 6 | Open choice 1 |
+| Secondary button | 28 (24 dense) | 10; 8 | 7 | 12 / 500 ink | 14 | 6 | Surface + hairline, button shadow |
 | Quiet button | 28 | 10; 8 | 7 | 12 / 500 ink 2 | 14 | 6 | None |
 | Icon-only | 28 square (24 dense) | Centred | 7 | Tooltip | 16 | 2 between | None |
-| Destructive confirm | 28 | 10 | 7 | 12 / 500, verb + object | – | – | Open choice 3 |
-| Text field, search | 28 | 10; 8 on an icon's side | 7 | 13 / 400, placeholder ink 2 | 14 ink 2 | 6 | Open choice 2 |
-| Textarea | 3 lines, grows to 8 | 4 / 10 | 7 | 13 / 400 / 1.55 | – | – | Open choice 2 |
+| Destructive confirm | 28 | 10 | 7 | 12 / 500, verb + object | – | – | Ink, like every primary |
+| Text field, search | 28 | 10; 8 on an icon's side | 7 | 13 / 400, placeholder ink 2 | 14 ink 2 | 6 | Filled: sunk well; surface + hairline on focus |
+| Textarea | 3 lines, grows to 8 | 4 / 10 | 7 | 13 / 400 / 1.55 | – | – | Filled |
 | Composer | 40, grows to 6 lines | 6 | 14 (buttons 8) | 13 / 400 | Mic, send 28 | 2 | Surface, float shadow |
 | Linked chip | 24 | 0 / 8 | 7 | 12 / 500 ink 2 | 24 tile, flush | 6 | Surface, hairline |
 | Removable chip | 24 | 0 / 2 | 7 (remove 5) | 12 / 500 ink 2 | Tile; minus 14 in 20 | 6 | Surface, hairline |
@@ -297,27 +297,10 @@ Evidence: about 14 text-button recipes at seven heights (24 to 40) and 16 contro
 | Confidence | 28 hit; bars 5 | – | 3 | – | Bars 18 × 5 | 2 | Hairline; set bars ink; a slider 0–5 |
 | Tooltip | 26 | 4 / 8 | 7 | 12 / 500 on ink; key mono | – | 8 | Ink; after 500ms, then instant for 300ms |
 
-**Open:**
-- Secondary button: white with a hairline (today, proposed) or a soft 6% fill.
-- Text fields: filled, a sunk well (today's search, proposed) or outlined, a surface with a hairline.
-- The one destructive confirmation (Delete dump): ink like every primary (proposed) or the challenge red.
-
-## Navigation — DECIDED (4 Nov 2026: type-first default view with Briefing home; tethered peeks)
-
-Jig: `nav/`. This supersedes the default-view part of the layout note at the top of this file; Columns, Atlas and Timeline are unchanged.
-
-1. **Four views.** Default (type-first), Columns, Atlas, Timeline. Columns, Atlas and Timeline stay as they are, each with its own index and the docked pane.
-2. **The default view has three columns, with no docked pane.**
-   - A type rail, refined to raw: Themes, Theories, Prototypes, Signals, Dumps, each with its glyph tile and a count. The rail is narrower than before: 160 by default (`--nv-rail-w`, on a dial).
-   - A second sidebar listing the chosen type's items. Theories and Signals can be filtered by theme. Signals have no Unseen group.
-   - The selected item fills the main area as its full view, padded at pane level, because it is the focus region.
-3. **Briefing is the home of the main area.** "Aber" at the top of the rail returns to it, and it shows whenever no item is selected. It is not a rail entry.
-4. **Related objects disclose in three steps.**
-   - Preview: the row, card or chip where the object is mentioned.
-   - Peek: a card tethered to that link, opened by a 500ms hover or a click. It shows the essentials and an Open button, and a click inside it peeks the next object. Esc or a click elsewhere closes it.
-   - Full: Open moves the rail and list to the object; Back returns.
-5. **The view switcher floats at the rail foot**, in the same spot as in the other three views.
-6. **Pending:** the second sidebar's row and list designs are placeholders, not approved. They will be designed in 06 Objects.
+**Decided (Maggie, 4 Nov):**
+- Secondary button: **A white with a hairline**, the surface with the chip's hairline and the button shadow.
+- Text fields: **A filled**, a sunk well with no edge; on focus a surface with a hairline and the ring.
+- The one destructive confirmation (Delete dump): **A ink**, like every primary. Red stays for challenge and down.
 
 ## Still to come
 

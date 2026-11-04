@@ -1,4 +1,4 @@
-/* Aber grammar: controls (PROPOSED, see RULES.md section 05). Every interactive control, assembled only from 00–04.
+/* Aber grammar: controls (DECIDED 4 Nov 2026: secondary white with a hairline, fields filled, delete confirmation ink; see RULES.md section 05). Loaded by every grammar page 00–05. Every interactive control, assembled only from 00–04.
    One recipe per control, written once for the grammar's own classes (.ctl-*) and the stage's (.stg-*, .nv-*), so the
    states board and every stage show the same thing.
    Choices: data-secondary="hairline" | "fill"; data-input="filled" | "outlined"; data-danger="ink" | "red" on any ancestor. */
@@ -15,11 +15,11 @@
   /* Motion: hover and press 90ms, selection and growth 160ms; one ease-out. Focus never animates. */
   --ctl-t: background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out), box-shadow var(--t-hover) var(--ease-out), scale var(--t-press) var(--ease-out), opacity var(--t-hover) var(--ease-out);
   --disabled-o: 0.4;
-  /* Choice 1, secondary button: A white with a hairline (default) */
+  /* Secondary button: white with a hairline (decided; data-secondary="fill" kept for the page comparison) */
   --sec-bg: var(--surface); --sec-bg-hover: var(--surface-hover); --sec-edge: var(--edge), var(--btn-shadow);
-  /* Choice 2, text inputs: A filled (default) */
+  /* Text fields: filled (decided) */
   --in-bg: var(--ground-2); --in-bg-hover: var(--ground-3); --in-edge: none; --in-edge-hover: none; --in-bg-focus: var(--surface); --in-edge-focus: var(--edge);
-  /* Choice 3, destructive confirm: A ink (default) */
+  /* Destructive confirm: ink (decided) */
   --danger: var(--primary); --danger-hover: var(--primary-hover); --on-danger: var(--on-primary); --danger-text: var(--ink);
 }
 [data-secondary="fill"] { --sec-bg: var(--fill-rest); --sec-bg-hover: var(--fill-hover); --sec-edge: none; }
@@ -73,7 +73,7 @@
 /* Secondary: choice 1 */
 :is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn, .nv-btn).secondary { background: var(--sec-bg); color: var(--ink); box-shadow: var(--sec-edge); }
 :is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn, .nv-btn).secondary:is(:hover, .is-hover):not([aria-disabled="true"]) { background: var(--sec-bg-hover); }
-/* Destructive confirm: only inside the one confirmation (Delete dump). Choice 3. */
+/* Destructive confirm: only inside the one confirmation (Delete dump). Ink. */
 :is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn).danger { background: var(--danger); color: var(--on-danger); box-shadow: var(--btn-shadow); }
 :is(.ctl, .stg, .nv) :is(.ctl-btn, .stg-btn).danger:is(:hover, .is-hover):not([aria-disabled="true"]) { background: var(--danger-hover); }
 /* The back link is a quiet button with a leading arrow */
@@ -98,7 +98,7 @@
 .ctl-head .ctl-tools { display: flex; gap: 2px; margin-right: calc((var(--control) - var(--icon)) / -2); }
 
 /* ═══ Text fields ═════════════════════════════════════════════════════════════
-   28 high, 10 inset (8 on an icon's side), radius 7, text 13/400 ink, placeholder ink 2, icon 14. Choice 2 sets the fill. */
+   28 high, 10 inset (8 on an icon's side), radius 7, text 13/400 ink, placeholder ink 2, icon 14. Filled: a sunk well. */
 :is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search, .nv-filter) { display: flex; align-items: center; gap: var(--gap-icon); height: var(--control); min-width: 0; padding: 0 var(--inset-control);
   border-radius: var(--r-control); background: var(--in-bg); box-shadow: var(--in-edge); color: var(--ink-2); cursor: text; transition: var(--ctl-t); }
 :is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search, .nv-filter):has(> i[class*="ph"]:first-child) { padding-left: calc(var(--inset-control) - 2px); }
@@ -227,3 +227,7 @@
 :is(.ctl, .stg, .nv) :is(.stg-chip[data-draft], button.nv-chip.draft) { box-shadow: none; outline: 1px dashed var(--hairline-strong); outline-offset: -1px; background: var(--draft-fill); }
 /* Toasts sit just above the composer */
 .stg:has(.ctl-composer) .stg-toast { bottom: calc(var(--inset-float) + var(--composer-h) + var(--gap-item)); }
+/* Scrolling regions under the composer keep its height plus the float inset free at the bottom, so nothing ends up beneath it */
+.stg .stg-pane { overflow-y: auto; scrollbar-width: none; padding-bottom: calc(var(--composer-h) + var(--inset-float) * 2); }
+.nv .nv-scroller { scroll-padding-bottom: calc(var(--composer-h) + var(--inset-float) * 2); }
+.nv .nv-scroller > .nv-doc { padding-bottom: calc(var(--composer-h) + var(--inset-float) * 2); }

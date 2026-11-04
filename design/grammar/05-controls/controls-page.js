@@ -133,8 +133,9 @@
   ];
   const board = document.getElementById("board-grid");
   if (board) {
-    board.innerHTML = `<div class="bh" role="columnheader">Control</div>${STATES.map(([, l]) => `<div class="bh" role="columnheader">${l}</div>`).join("")}`
-      + ROWS.map(([name, f, surf]) => `<div class="bn" role="rowheader">${name}</div>${STATES.map(([s]) => { const h = f(s); return `<div class="bc${surf ? " on-surface" : ""}" role="cell">${h ?? '<span class="na">–</span>'}</div>`; }).join("")}`).join("");
+    board.innerHTML = STATES.map(([, l]) => `<div class="bh" role="columnheader">${l}</div>`).join("")
+      + ROWS.map(([name, f, surf]) => `<div class="bn" role="rowheader">${name}</div>${STATES.map(([s, l]) => { const h = f(s);
+        return `<div class="bc${surf ? " on-surface" : ""}${h == null ? " is-na" : ""}" role="cell" data-s="${l}">${h ?? '<span class="na">–</span>'}</div>`; }).join("")}`).join("");
   }
 
   /* ── Board tooltips: after 500ms, then instantly for 300ms after one closes ── */

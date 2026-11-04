@@ -381,3 +381,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 4 Nov 2026 (Maggie): the type-first navigation approach is approved; the second-sidebar row/list designs in the nav jig are NOT approved and need rework in 06 Objects. The type rail should be a little narrower.
 
 4 Nov 2026 (Maggie, nav): peeks are tethered cards; Briefing is the home of the default view's main area (shown when no item is selected), not a rail entry; rail order refined → raw (Themes, Theories, Prototypes, Signals, Dumps); Theories and Signals can be filtered by theme; no Unseen group in Signals; the view switcher sits at the rail foot.
+
+4 Nov 2026 (Maggie, 05-controls): the secondary button is white with a hairline (surface, the chip's hairline, the button shadow); text fields are filled (a sunk well, no edge; surface + hairline and the ring on focus); the one destructive confirmation (Delete dump) is ink like every primary, red stays for challenge and down. The anatomy, seven-state matrix, motion and label rules in RULES.md section 05 are the default on every grammar page.
