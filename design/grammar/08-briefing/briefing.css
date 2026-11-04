@@ -1,0 +1,107 @@
+/* Grammar 08: Briefing. Only what 06's components don't already give: section rhythm, folded news groups, settled lines, row actions,
+   the toast (copied from 10 States), and the narrow window. Every value is a token from 00–06. */
+
+.br8-host { min-width: 0; }
+.br8-host > .nv, .br8-host > .ob-host > .nv { margin: 0; }
+.br8-win { grid-template-columns: var(--nv-rail-w) minmax(0, 1fr); padding: 0; box-sizing: border-box; }
+.br8-win .nv-main { background: var(--surface); }
+
+/* The document: 06's full view with Briefing's head. Room at the foot so the composer never covers the last row */
+.br8-doc { max-width: 720px; padding-bottom: 96px; }
+.br8-sum { color: var(--ink); }
+.br8-empty { margin-left: calc(var(--hang) * -1); padding: 0; }
+
+/* Rhythm (01 ladder): sections 32 apart, groups inside a section 16, a group's items 8, a row and its own block 4 */
+.br8-secs { gap: var(--gap-section); }
+.br8-sec > .br8-g + .br8-g { margin-top: calc(var(--gap-group) - var(--gap-tight)); }
+.br8-g > .ob-row + :is(.br8-item, .br8-settled) { margin-top: var(--gap-tight); }
+.br8-g > :is(.br8-item, .br8-settled) + :is(.br8-item, .br8-settled) { margin-top: var(--gap-item); }
+.br8-g > .ob-trip { gap: var(--gap-item); }
+
+/* A proposed wording sits where a row's name would: ink, body size, wraps */
+.br8-words { margin: 0 0 0 var(--inset-row); max-width: var(--measure); line-height: var(--lh-ui); color: var(--ink); text-wrap: pretty; }
+
+/* The cursor for J / K: the focus ring on the decision */
+.br8-item { border-radius: var(--r-box); scroll-margin: 24px; }
+.br8-item:focus { outline: 0; }
+.br8-item:focus-visible, .br8-item:focus:not(:focus-visible):not(:has(:focus)) { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ob-trip.br8-item { margin-left: calc((var(--hang) + var(--inset-row)) * -1); padding-left: calc(var(--hang) + var(--inset-row)); }
+.ob-trip.br8-item > .ob-block { max-width: calc(560px + var(--hang) + var(--inset-row)); }
+
+/* Accept solidifies in place (10 rule 8): the dash and the draft fill go, then the item leaves */
+.br8-item.ob-block.sug { transition: outline-color var(--t-float) var(--ease-out), background-color var(--t-float) var(--ease-out); }
+.br8-item.is-accepted, .br8-item.is-accepted .ob-block { outline-color: transparent; background: transparent; }
+.br8-item.is-accepted .g.draft { outline-color: transparent; background: var(--type-tile); }
+.br8-item.is-accepted .ob-row.draft > .nm { color: var(--ink); transition: color var(--t-float) var(--ease-out); }
+
+/* Choice 2 B: a settled decision keeps one line in its place, with Undo, until you leave Briefing */
+.br8-settled { display: flex; align-items: center; gap: var(--gap-key); max-width: calc(560px + var(--hang) + var(--inset-row) * 2); height: var(--row); margin-left: calc((var(--hang) + var(--inset-row)) * -1);
+  padding: 0 var(--gap-tight) 0 calc(var(--hang) + var(--inset-row)); border-radius: var(--r-control); color: var(--ink-2); white-space: nowrap; animation: ob-fade var(--t-float) var(--ease-out); }
+.br8-settled .w { flex: none; font-weight: 500; color: var(--ink); }
+.br8-settled .q { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.br8-settled .nv-btn { margin-left: auto; }
+
+/* Quiet text button (05): no fill at rest, ink 2; the 5% layer and ink on hover */
+.br8-win .nv-btn.quiet { color: var(--ink-2); }
+.br8-win .nv-btn.quiet:hover { background: var(--hover); color: var(--ink); }
+.br8-win .nv-btn:active { scale: 0.98; }
+.br8-win .nv-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* New signals: a group is 06's fold label. The caret sits in the tile column so the label starts on the text edge; the count follows it, as in a section header */
+.br8-fhead { display: flex; align-items: center; gap: var(--gap-tight); max-width: calc(560px + var(--hang) + var(--inset-row) * 2); margin-left: calc((var(--hang) + var(--inset-row)) * -1); }
+.br8-fhead .ob-glabel { flex: 0 1 auto; width: auto; min-width: 0; height: var(--row); gap: var(--gap-tile); padding: 0 var(--inset-row); font-size: var(--fs-label); }
+.br8-fhead .ob-glabel i.ph { width: var(--tile); text-align: center; }
+.br8-fhead .ob-glabel .l { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.br8-fhead .ob-glabel .ob-n { margin-left: var(--gap-tight); }
+.br8-fhead .ob-glabel:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+/* Unread weight carries to a folded group: its label is ink at 600 while it holds an unseen signal */
+.br8-fold.unseen .br8-fhead .l { font-weight: 600; color: var(--ink); }
+.br8-gact { display: inline-flex; }
+.br8-fold > .ob-row:first-of-type { margin-top: 0; }
+
+/* One action on a reading row (Unmerge, Retry): right of the name's first line. Hover reveals it (DI-010); a failure's Retry shows at rest */
+.br8-rowact { position: absolute; z-index: 1; right: var(--gap-tight); top: calc((var(--row) - var(--control-sm)) / 2); opacity: 0; transition: opacity var(--t-hover) var(--ease-out); }
+.ob-row:is(:hover, :focus-within) > .br8-rowact, .br8-rowact.on { opacity: 1; }
+.ob-row:has(> .br8-rowact) { padding-right: 96px; }
+.ob-row:has(> .br8-rowact):is(:hover, :focus-within) .when { visibility: hidden; }
+@media (hover: none) { .br8-rowact { opacity: 1; } }
+.br8-rowact .nv-btn { height: var(--control-sm); }
+
+/* Processing (10 rule 3): the word and the Working spinner on the key line */
+.br8-work { display: inline-flex !important; align-items: center; gap: var(--gap-icon); }
+.br8-work i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); animation: br8-spin 700ms linear infinite; }
+@keyframes br8-spin { to { rotate: 1turn; } }
+@media (prefers-reduced-motion: reduce) { .br8-work i.ph { animation: br8-pulse 1.4s ease-in-out infinite; } }
+@keyframes br8-pulse { 50% { opacity: 0.4; } }
+.br8-failed .kv .st span { color: var(--ink); }
+
+/* The composer (05) floats at the bottom right; the toast sits just above it, right edges aligned */
+.br8-win .br8-composer { z-index: var(--z-chrome); }
+.br8-toast { position: absolute; z-index: var(--z-toast); right: var(--inset-float); bottom: calc(var(--inset-float) + var(--composer-h) + var(--gap-item));
+  display: flex; align-items: center; gap: var(--inset-card); height: 44px; max-width: min(420px, calc(100% - var(--inset-float) * 2)); padding: 0 var(--gap-item) 0 var(--inset-card);
+  border-radius: var(--r-box); background: var(--ink); color: var(--on-ink); box-shadow: var(--sh-toast); font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); white-space: nowrap;
+  animation: br8-toast-in 260ms var(--spring) both; }
+.br8-toast .t { display: flex; min-width: 0; }
+.br8-toast .q { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.br8-undo { position: relative; flex: none; display: inline-flex; align-items: center; gap: var(--gap-item); height: var(--control); padding: 0 var(--inset-control); border: 0; border-radius: var(--r-xs);
+  background: var(--on-ink-fill); color: var(--on-ink); font: var(--w-medium) var(--fs-label)/1 var(--font); cursor: pointer; transition: background-color var(--t-hover) var(--ease-out); }
+.br8-undo::before { content: ""; position: absolute; inset: -6px -4px; }
+.br8-undo:hover { background: oklch(1 0 0 / 0.24); }
+.br8-undo:active { scale: 0.98; }
+.br8-undo:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.br8-undo kbd { font: var(--w-medium) var(--fs-label)/1 var(--font-mono); color: var(--on-ink-2); }
+.br8-toast.out { animation: br8-toast-out 160ms var(--ease-out) both; }
+@keyframes br8-toast-in { from { opacity: 0; translate: 0 8px; scale: 0.96; } }
+@keyframes br8-toast-out { to { opacity: 0; translate: 0 4px; } }
+@media (prefers-reduced-motion: reduce) { .br8-toast, .br8-toast.out { animation-name: ob-fade; } }
+
+/* Narrow (under 720): Briefing alone, at its own size. The rail is a sheet from the left edge (04 rule 10); the composer spans the window */
+.br8-win.narrow { width: 100%; grid-template-columns: minmax(0, 1fr); }
+.br8-win.narrow .br8-rail { position: absolute; z-index: var(--z-sheet); left: 0; top: 0; bottom: 0; width: min(240px, 80%); box-shadow: var(--elev-3); translate: -102% 0; visibility: hidden;
+  transition: translate 280ms var(--spring), visibility 0s 280ms; }
+.br8-win.narrow .br8-rail.open { translate: 0 0; visibility: visible; transition: translate 280ms var(--spring); }
+.br8-scrim { position: absolute; inset: 0; z-index: calc(var(--z-sheet) - 1); background: oklch(0.17 0.004 85 / 0.12); }
+.br8-win.narrow .br8-composer { left: var(--inset-float); width: auto; }
+.br8-win.narrow .ob-top > .nv-ib { margin-left: calc((var(--control) - var(--icon)) / -2); }
+.br8-win.narrow .ob-full { padding-inline: var(--inset-pane-inline) var(--inset-list-inline); }
+@media (prefers-reduced-motion: reduce) { .br8-win.narrow .br8-rail { transition: none; } }

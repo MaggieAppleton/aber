@@ -438,6 +438,24 @@ Evidence: 9 of the 13 ways to make or link something open the same centred modal
 - Editing a draft's wording: A (recommended, and it matches design-model §1) it accepts the draft, or B it stays a draft until Accept.
 - Adding evidence: A (recommended) a + on Supports and on Undermines, or B one Add evidence with a stance segment in the picker.
 
+## 08 Briefing — PROPOSED (jig `08-briefing/`)
+
+Evidence (`app/web/src/ui/briefing-app.tsx`, `.css`): every item is a raised card whose Accept and X sit at opacity 0 until hovered (css:50); reject is an X right of Accept labelled "Discard (X)" even on suggestions (tsx:90); on New signals the X discards a whole theme's signals (tsx:39); nothing can be undone and failures are swallowed (tsx:36–43); red challenge and jade new dots (tsx:93, :107); bare ink 3 glyphs with no tile (css:25); failed dumps aren't listed and processing is only a tooltip (tsx:28, :70–79); "New signals" is every unseen signal ever (tsx:20).
+
+1. **Briefing is a full view of "since you last looked."** 06's anatomy: the 32 newspaper tile, "Since yesterday", the key line "Last looked 18:40", one summary sentence, the hairline, then sections, at pane insets. No second sidebar (Navigation rule 2).
+2. **Ordered by need, not time.** Decisions first: Challenges, Suggestions, Drafts. Then news: New signals, Dumps. Sections 32 apart, groups 16, items 8, a row and its own block 4.
+3. **Decisions wait; news expires.** Pending decisions stay until handled, however old; signals and dumps are only what arrived since you last looked.
+4. **Summary before detail.** One sentence counts what needs you and what arrived, and names the busiest theme and any failure. Decisions show in full. A news group of three or fewer shows its rows; a larger one folds to its label and count (06's fold label, caret in the tile column).
+5. **Grouped by the object a change touches.** A theory's row, then its suggestion blocks; a challenge under the theory it trips.
+6. **Only 06 components.** Rows peek and open. Challenge: the tripwire line, then a block "Tripped by a new signal" with the signal, the confidence change and Dismiss | Accept. Suggestion: a dashed block labelled by relation (Supports, Undermines, New wording, Merge with), the proposal, why, Dismiss | Accept. Draft: a dashed block with the draft row and where it came from, Discard | Accept. Automatic merge: one signal row naming both sources, Unmerge on hover. No dots, badges, per-item cards or type words.
+7. **Act in place.** Dismiss | Accept sit bottom right, always visible, never on hover, never an X. Accept solidifies (the dash goes), then the item leaves; every decision has Undo (toast, ⌘Z). Keys: J / K move, A accepts, O peeks, ⌘Z undoes; no key for Dismiss.
+8. **Seen is unread weight only.** An unseen signal's name, and the label of a folded group holding one, are ink at 600. Peeking or opening a signal marks it seen.
+9. **Failures in words, first.** A dump that couldn't be read leads Dumps, says why, has Retry, and is named in the summary. Work in progress says Processing with the Working spinner.
+10. **Handled is quiet.** An empty section goes. With no decisions left the sentence reads "Nothing needs you." and the news stays; with nothing new, "Nothing new since 18:40" and no key line. No celebration.
+11. **Narrow:** Briefing alone; the rail is a sheet from the left; the composer spans the window.
+
+**Open (choices on the jig):** new signals grouped A by theme (recommended) or B by the theory they bear on; a decided item A leaves with an Undo toast (recommended) or B settles to one line in place until you leave; a signal counts as seen A once Briefing has shown it (recommended) or B only when peeked, opened or marked seen.
+
 ## Still to come
 
 07 rungs.
