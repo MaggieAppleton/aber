@@ -37,10 +37,17 @@
   <div class="decide-box">
     <h2>Decide on this page</h2>
     <ol>
-      <li data-pick="rows"><a href="#rows">List rows: two lines, or one</a> <span class="pick"></span><span class="why">Recommended a: theory claims and signal gists are sentences; one line cuts most of them off at 296 wide.</span></li>
+      <li data-pick="fresh"><a href="#fresh">Unseen activity: nothing on objects, unread weight, or text</a> <span class="pick"></span><span class="why">Recommended a: Briefing home already lists what arrived since you last looked; repeating it on every object adds a mark you don't act on.</span></li>
       <li data-pick="peek"><a href="#peek">Peek: essentials and relations, or essentials only</a> <span class="pick"></span><span class="why">Recommended a: a peek should answer "what is this tied to" without costing your place.</span></li>
       <li data-pick="full"><a href="#full">Full view: prose first, or a fields table</a> <span class="pick"></span><span class="why">Recommended a: the key line under the title carries the same values with no labels; you called the label table noisy (DI-010).</span></li>
     </ol>
+    <h2 class="decided-h">Decided 4 Nov (Maggie)</h2>
+    <ul class="decided">
+      <li><b>Pending suggestions are not shown on previews.</b> No count or mark on rows, cards or chips; suggestions appear in the peek, the full view and Briefing home. "If we can't find a beautiful way to show it, we should not show it."</li>
+      <li><b>No jade "new" dot on objects.</b> How unseen activity shows, if at all, is choice 1.</li>
+      <li><b>Short labels are one compact line:</b> themes and prototypes show the tile, the name in ink 2 and a bare count or status glyph at the right. Sentences (theories, signals, dumps) keep two lines.</li>
+      <li><b>Signals always show Pulse</b> on their tile; kind, if shown, is text.</li>
+    </ul>
   </div>
 </div>
 
@@ -51,10 +58,12 @@
     <li><b>1 Tile:</b> the type's glyph on its tile, the same 24 tile at every level. A signal is always Pulse; its kind, if shown, is text in the key value. No type word is ever written.</li>
     <li><b>2 Name:</b> wraps (two lines in rows, three in cards, in full in a peek or full view).</li>
     <li><b>3 One key value:</b> the attribute that tells this object apart from its neighbours. A draft shows "Draft" here until accepted.</li>
-    <li><b>4 Status:</b> one mark, always directly after the key value: challenge (red) beats a pending suggestion (dashed count) beats new (jade). The peek and full view say what the mark means.</li>
+    <li><b>4 Status:</b> one quiet red mark directly after the key value, only when something needs you: a challenge, or a dump that couldn't be read. Suggestions and unseen activity are not marks.</li>
     <li><b>5 On-demand attributes:</b> the date appears at the right end of the key line on hover; the peek and full view add the rest to the key line.</li>
     <li><b>6 Attached objects:</b> tripwires and suggestions never stand alone. A mark on the host's preview, one line in its peek, a block with Dismiss | Accept in its full view.</li>
     <li><b>7 Relations:</b> the peek shows the most important one, up to three rows; the full view shows all of them, as the same rows (chips for themes). Rows remove with a minus on hover.</li>
+    <li><b>If a mark can't be shown beautifully, don't show it on the preview;</b> push it to the peek or full view.</li>
+    <li><b>Short labels are one line; sentences are two.</b> Themes and prototypes: tile, name in ink 2, a bare count or status glyph at the right. Theories, signals and dumps: name, then the key value under it.</li>
     <li><b>A row never repeats its group.</b> Prototypes grouped by status drop the status; signals and dumps grouped by day show the day only on hover.</li>
   </ol>
   <div class="anatomy" id="anatomy"></div>
@@ -64,13 +73,13 @@
   <table class="audit rank">
     <thead><tr><th>Type</th><th>Key value</th><th>Preview</th><th>On hover</th><th>Peek adds</th><th>Full adds</th><th>Removed</th></tr></thead>
     <tbody>
-      <tr><td>Theme</td><td>Theory count, or "No theories yet"</td><td>Tile, name, theory count, new</td><td>–</td><td>Signal count, new count, top 3 theories</td><td>Theories as cards, signals by day</td><td>Signal count from rows and section headers</td></tr>
-      <tr><td>Theory</td><td>Confidence</td><td>Tile, claim, confidence, one status mark</td><td>Horizon (By 2028)</td><td>Evidence balance, horizon, note (3 lines), tripwire or suggestion line, top 3 supporting signals</td><td>Confidence setter, year stepper, note, tripwire, suggestions, themes, supports, undermines, rival, follows from, leads to, prototypes</td><td>Evidence balance and prototype count from cards; pending badge and challenge dot side by side (now one slot)</td></tr>
-      <tr><td>Prototype</td><td>Status (glyph and word)</td><td>Tile, name, status</td><td>–</td><td>Body (3 lines), theories it tests</td><td>Body, tests</td><td>"Tests N"; the type-word chip; status inside status groups</td></tr>
-      <tr><td>Signal</td><td>Source</td><td>Tile, gist, source, new</td><td>Captured day</td><td>Day, note, theories it bears on</td><td>Note (or Add a note), supports, undermines, Add theory, themes, File in theme, came from</td><td>Day at rest, theme chips on rows, the word "Signal", the Source/Came from table</td></tr>
+      <tr><td>Theme</td><td>Theory count (a bare number; a ring for none)</td><td>One line: tile, name, count</td><td>–</td><td>Signal count, new count, top 3 theories</td><td>Theories as cards, signals by day</td><td>"Theories" word, signal count, the new dot, the second line</td></tr>
+      <tr><td>Theory</td><td>Confidence</td><td>Tile, claim, confidence, challenge mark</td><td>Horizon (By 2028)</td><td>Evidence balance, horizon, note (3 lines), tripwire or suggestion line, top 3 supporting signals</td><td>Confidence setter, year stepper, note, tripwire, suggestions, themes, supports, undermines, rival, follows from, leads to, prototypes</td><td>Evidence balance and prototype count from cards; the pending-suggestion badge</td></tr>
+      <tr><td>Prototype</td><td>Status (glyph; the word in peek and full)</td><td>One line: tile, name, status glyph</td><td>–</td><td>Body (3 lines), theories it tests</td><td>Body, tests</td><td>"Tests N"; the type-word chip; status inside status groups</td></tr>
+      <tr><td>Signal</td><td>Source</td><td>Tile, gist, source</td><td>Captured day</td><td>Day, note, theories it bears on</td><td>Note (or Add a note), supports, undermines, Add theory, themes, File in theme, came from</td><td>Day at rest, theme chips on rows, kind glyphs, the new dot, the word "Signal", the Source/Came from table</td></tr>
       <tr><td>Dump</td><td>Kind and time</td><td>Tile, first line, kind and time, failed</td><td>Day</td><td>Day, length, text (3 lines), signals made</td><td>Via, full text, reply, signals, drafts</td><td>"Made N"; via from everything but full; the date inside day groups</td></tr>
       <tr><td>Tripwire</td><td>Its sentence</td><td>Red dot on the host when tripped</td><td>–</td><td>One line: the sentence, or "Tripped by" the signal</td><td>The sentence, the tripping signal, Dismiss | Accept</td><td>–</td></tr>
-      <tr><td>Suggestion</td><td>What it proposes</td><td>Dashed count on the host</td><td>–</td><td>One line: the proposal</td><td>Dashed block: stance, the signal as a row, why, Dismiss | Accept</td><td>Agent and model (rare, history only)</td></tr>
+      <tr><td>Suggestion</td><td>What it proposes</td><td>Nothing (decided)</td><td>–</td><td>Dashed block: label and the signal as a row</td><td>Dashed block: label, the signal as a row, why, Dismiss | Accept</td><td>Agent and model (rare, history only)</td></tr>
     </tbody>
   </table>
   </div>
@@ -99,16 +108,19 @@
 
 <section class="jig-section wide" id="states">
   <h2>States</h2>
-  <p>One treatment per state, the same at every rung. Hover reveals dates and the Remove action; selected is the neutral raise; drafts are dashed; one status mark.</p>
+  <p>One treatment per state, the same at every rung. Hover reveals dates and the Remove action; selected is the neutral raise; drafts are dashed; the only mark is red, for a challenge. Unseen activity is choice 1.</p>
   <div class="board-wrap"><div class="st-grid" id="states-grid"></div></div>
 </section>
 
-<section class="jig-section" id="rows" data-decision="rows" data-question="1. How dense are list rows?" data-default="a Two lines">
+<section class="jig-section" id="fresh" data-decision="fresh" data-question="1. How does unseen activity show on objects, if at all?" data-default="a Nothing on objects">
+  <p class="lede">The dot meant "arrived since you last looked": a signal you haven't seen, or a theme with signals you haven't seen (design model: a signal's seen state; a theme's new count). Each window shows the Themes list and Cost of intelligence, which has 3 unseen signals.</p>
   <div class="jig-compare" style="--jig-min:100%">
-    <div class="jig-option" data-option="a Two lines"><div class="jig-label"><b>a</b> Two lines: the name wraps, the key value sits under it</div><p class="jig-note">Names up to two lines; the key value and status on the second line. Rows are 50 high.</p>
-      <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theory","opt":{"rows":"two"}}'></div></div>
-    <div class="jig-option" data-option="b One line"><div class="jig-label"><b>b</b> One line: the name truncates, the key value at the right</div><p class="jig-note">32 high, nearly twice as many per screen; the full name is in the peek.</p>
-      <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theory","opt":{"rows":"one"}}'></div></div>
+    <div class="jig-option" data-option="a Nothing on objects"><div class="jig-label"><b>a</b> Nothing on objects: Briefing home is where new things are shown</div><p class="jig-note">Objects look the same seen or unseen. "Aber" in the rail opens Briefing, which lists new signals by theme.</p>
+      <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theme","opt":{"fresh":"none"}}'></div></div>
+    <div class="jig-option" data-option="b Unread weight"><div class="jig-label"><b>b</b> Unread weight, like an inbox</div><p class="jig-note">The name of an object with unseen activity is ink at 600; seen ones stay at their usual weight. No extra mark.</p>
+      <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theme","opt":{"fresh":"weight"}}'></div></div>
+    <div class="jig-option" data-option="c Text in the key value"><div class="jig-label"><b>c</b> Text in the key value</div><p class="jig-note">"3 new" beside a theme's count, "New" after a signal's source, in ink 2.</p>
+      <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theme","opt":{"fresh":"text"}}'></div></div>
   </div>
 </section>
 

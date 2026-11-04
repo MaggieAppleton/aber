@@ -313,7 +313,7 @@ Every object follows one anatomy and appears at three rungs: a **preview** where
 | 1 Tile | Type glyph on its 24 tile, the same size for every row, line and header within one peek or full view; a signal is always Pulse (kind, if shown, is text in the key value). No type word. | ● | ● | ● (flush) | ● | ● |
 | 2 Name | List name 13/400; card and peek 13/600; title 24/600 | 2 lines | 3 lines | 1 line | In full | In full |
 | 3 Key value | The one attribute that tells it from its neighbours; "Draft" for drafts | ● | ● | – | ● | ● (editable) |
-| 4 Status | One mark, directly after the key value: challenge (red dot) > pending suggestion (dashed count) > new (jade dot) | ● | ● | – | ● | ● |
+| 4 Status | One quiet red mark directly after the key value, only when something needs you: a challenge, or a dump that couldn't be read. Pending suggestions and "new" are not marks (decided 4 Nov) | ● | ● | – | ● | ● |
 | 5 On demand | The date, at the right end of the key line on hover; the rest of the key line in peek and full | Hover | Hover | – | ● | ● |
 | 6 Attached | Tripwire, suggestions: a mark on the host's preview, one line in its peek, a block with Dismiss \| Accept in full | Mark | Mark | – | Line | Block |
 | 7 Relations | The most important relation, as preview rows; all relations in full | – | – | – | Up to 3 | All |
@@ -326,15 +326,20 @@ Every object follows one anatomy and appears at three rungs: a **preview** where
 
 | Type | Key value | Preview | On hover | Peek adds | Full adds |
 | --- | --- | --- | --- | --- | --- |
-| Theme | Theory count ("No theories yet") | Tile, name, theory count, new | – | Signal count, new count, top 3 theories | Theories as cards, signals by day |
+| Theme | Theory count (bare number) | One line: tile, name in ink 2, count at the right | – | Signal count, new count, top 3 theories | Theories as cards, signals by day |
 | Theory | Confidence | Tile, claim, confidence, one status mark | By year | Evidence balance, horizon, note (3 lines), tripwire or suggestion line, top 3 supports | Confidence setter, year stepper, note, tripwire, suggestions, themes, supports, undermines, rival, follows from, leads to, prototypes |
-| Prototype | Status (glyph and word) | Tile, name, status | – | Body (3 lines), theories it tests | Body, tests |
-| Signal | Source | Tile, gist, source, new | Captured day | Day, note, theories it bears on | Note, supports, undermines, themes, came from |
+| Prototype | Status (glyph; the word in peek and full) | One line: tile, name in ink 2, status glyph at the right | – | Body (3 lines), theories it tests | Body, tests |
+| Signal | Source | Tile (Pulse), gist, source | Captured day | Day, note, theories it bears on | Note, supports, undermines, themes, came from |
 | Dump | Kind and time | Tile, first line, kind and time, failed | Day | Day, length, text (3 lines), signals made | Via, text, reply, signals, drafts |
 | Tripwire | Its sentence | Red dot on the host when tripped | – | One line (red when tripped) | Sentence, tripping signal, Dismiss \| Accept |
-| Suggestion | What it proposes | Dashed count on the host | – | One line | Dashed block: stance, signal row, why, Dismiss \| Accept |
+| Suggestion | What it proposes | Nothing (decided: not on previews) | – | Dashed block: label, the signal as a row | Dashed block: label, the signal as a row, why, Dismiss \| Accept; no Sparkle inside it |
 
-**Removed as unnecessary metadata:** evidence balance and prototype count from theory cards (to the peek); signal count from theme rows and section headers; dates at rest; theme chips on signal rows; "Tests N" and "Made N"; type words and type-label chips ("Signal", "Building" chip); "via" outside the full view; the label/value table (choice open); the separate pending badge and challenge dot side by side (one status slot).
+7. **If a mark can't be shown beautifully, don't show it on the preview;** push it to the peek or full view (Maggie, 4 Nov).
+8. **Short labels are one line; sentences are two.** Themes and prototypes: tile, name in ink 2 (ink and 500 when current), a bare count or status glyph at the right, row 32. Theories, signals and dumps: the name, then the key value under it.
+9. **One glyph column.** Within a peek or full view every leading tile (title, relation rows, attached lines and blocks) is 24 and sits in one column; every text starts on one edge. Chips and cards keep their own tile inside them.
+10. **Unseen activity** (the old jade dot): open in the 06 jig. Recommended: nothing on objects; Briefing home shows what's new. Alternatives: unread weight (ink 600 name), or "3 new" / "New" as ink 2 text in the key value.
+
+**Removed as unnecessary metadata:** evidence balance and prototype count from theory cards (to the peek); signal count from theme rows and section headers; dates at rest; theme chips on signal rows; "Tests N" and "Made N"; type words and type-label chips ("Signal", "Building" chip); "via" outside the full view; the label/value table (choice open); the pending-suggestion badge and the jade new dot (decided 4 Nov); kind glyphs on signal tiles; "theories" after a theme's count.
 
 ## 10 States — PROPOSED (jig `10-states/`)
 

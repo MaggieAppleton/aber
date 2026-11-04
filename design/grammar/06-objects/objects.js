@@ -108,7 +108,6 @@
   const protosOf = t => all("prototype").filter(p => p.tests.includes(t.id));
   const followers = t => all("theory").filter(x => (x.follows || []).includes(t.id));
   const dumpsOf = s => all("dump").filter(d => d.made.includes(s.id));
-  const pendingOf = o => (SUG[o.id] || []).length;
 
   /* ═══ Atoms ═══════════════════════════════════════════════════════════════════ */
   const esc = s => String(s).replace(/"/g, "&quot;");
@@ -131,7 +130,7 @@
   const keyOf = (o, compact = false) => {
     if (o.draft) return `<span>Draft</span>`;
     return ({
-      theme: () => { const n = theoriesOf(o).length; return compact ? (n ? `<span class="ob-n" aria-label="${plural(n, "theory", "theories")}">${n}</span>` : `<span class="ob-ring" role="img" aria-label="No theories yet"></span>`) : `<span>${n ? plural(n, "theory", "theories") : "No theories yet"}</span>`; },
+      theme: () => { const n = theoriesOf(o).length; return compact ? (n ? `<span class="ob-n" aria-label="${plural(n, "theory", "theories")}">${n}</span>` : "") : `<span>${n ? plural(n, "theory", "theories") : "No theories yet"}</span>`; },
       theory: () => o.retired ? `<span>${compact ? "Retired" : `Retired, ${o.retired.toLowerCase()}`}</span>` : conf(o.c),
       prototype: () => compact ? `<span class="ob-st" role="img" aria-label="${STATUS[o.status][0]}" title="${STATUS[o.status][0]}"><i class="ph ph-${STATUS[o.status][1]}" aria-hidden="true"></i></span>` : `<span class="ob-st"><i class="ph ph-${STATUS[o.status][1]}" aria-hidden="true"></i>${STATUS[o.status][0]}</span>`,
       signal: () => `<span class="ob-src">${o.src}</span>`,
@@ -141,18 +140,21 @@
   // Revealed on hover: the object's date
   const whenOf = o => o.kind === "signal" || o.kind === "dump" ? DAYS[o.day] : o.kind === "theory" && !o.retired ? `By ${o.by}` : "";
   // 4. Status: the single most urgent mark. Challenge > pending suggestion > new. A failed dump is "bad", so red.
-  const statusOf = o => o.challenge ? dot("neg", "Challenged") : pendingOf(o) ? `<span class="ob-pend" role="img" aria-label="${plural(pendingOf(o), "pending suggestion", "pending suggestions")}">${pendingOf(o)}</span>`
-    : o.failed ? dot("neg", "Couldn't read") : o.fresh ? dot("new", "New") : "";
+  // Status: one quiet red mark, only for what needs you: a challenge, or a dump that couldn't be read.
+  // Not marks (Maggie, 4 Nov): pending suggestions (peek, full view and Briefing only) and "new" (see the unseen-activity choice).
+  const statusOf = o => o.challenge ? dot("neg", "Challenged") : o.failed ? dot("neg", "Couldn't read") : "";
+  // Unseen activity, rendered for every object and shown only by the page's choice (data-fresh on a window): weight, text or nothing
+  const freshOf = o => o.kind === "theme" && o.fresh ? `${o.fresh} new` : o.kind === "signal" && o.fresh ? "New" : "";
   // 5. On-demand attributes: label + value, so the meta line (prose-first) and the fields table come from one list
   const attrsOf = (o, rung) => {
     const full = rung === "full";
     const A = ({
-      theme: () => [["Theories", keyOf(o)], ["Signals", `<span>${plural(o.signals, "signal", "signals")}</span>`], o.fresh && ["New", `<span>${o.fresh} new</span>`]],
+      theme: () => [["Theories", keyOf(o)], ["Signals", `<span>${plural(o.signals, "signal", "signals")}</span>`], o.fresh && ["New", `<span class="ob-fresh">${o.fresh} new</span>`]],
       theory: () => o.draft ? [["Status", keyOf(o)], ["Evidence", `<span class="ob-bal">+${ups(o)} −${downs(o)}</span>`], ["Happens by", full ? stepper(o.by) : `<span>By ${o.by}</span>`]]
         : o.retired ? [["Status", keyOf(o)], ["Evidence", `<span class="ob-bal">+${ups(o)} −${downs(o)}</span>`]]
         : [["Confidence", full ? setter(o.c) : conf(o.c)], ["Evidence", `<span class="ob-bal">+${ups(o)} −${downs(o)}</span>`], ["Happens by", full ? stepper(o.by) : `<span>By ${o.by}</span>`]],
       prototype: () => [["Status", keyOf(o)]],
-      signal: () => [["Source", keyOf(o)], ["Captured", `<span>${DAYS[o.day]}</span>`]],
+      signal: () => [["Source", keyOf(o)], ["Captured", `<span>${DAYS[o.day]}</span>`], o.fresh && ["New", `<span class="ob-fresh">New</span>`]],
       dump: () => [["Kind", `<span>${o.kw}${o.len ? `, ${o.len}` : ""}</span>`], ["Captured", `<span>${DAYS[o.day]}</span>${mono(o.time)}`], full && ["Via", `<span>${o.via}</span>`]],
     })[o.kind]().filter(Boolean);
     return A;
@@ -166,9 +168,14 @@
      The row and the card are the same grid: [tile][name][status-free] / [ ][key value … when][status]. The card is the row on a raised surface,
      with the name at card weight. A row inside a group drops whatever its group header already says (omit: "key" | "when"). */
   const preview = (o, { as = "row", act = "open", cur = null, omit = "", rm = "", cls = "", host = "" } = {}) => {
-    const one = /\bone\b/.test(cls);
+    const label = o.kind === "theme" || o.kind === "prototype";   // short labels: one line, compact key at the right
+    const one = label || /\bone\b/.test(cls);
+    if (one && !/\bone\b/.test(cls)) cls = `${cls} one`.trim();
+    if (label) cls = `${cls} label`;
+    if (o.fresh) cls = `${cls} unseen`;
     const k = omit.includes("key") ? "" : keyOf(o, one), w = omit.includes("when") || one ? "" : whenOf(o), st = statusOf(o);
-    const line = k || w || st ? `<span class="kv">${k}${st ? `<span class="st">${st}</span>` : ""}${w ? `<span class="when">${w}</span>` : ""}</span>` : "";
+    const f = freshOf(o) ? `<span class="ob-fresh">${freshOf(o)}</span>` : "";
+    const line = k || w || st || f ? `<span class="kv">${one ? f + k : k + f}${st ? `<span class="st">${st}</span>` : ""}${w ? `<span class="when">${w}</span>` : ""}</span>` : "";
     const attr = act === "sel" ? `data-sel="${o.id}"` : act === "pane" ? `data-pane="${o.id}"` : act === "none" ? "" : `data-open="${o.id}"`;
     return `<div class="ob-${as}${o.draft ? " draft" : ""}${o.retired ? " retired" : ""}${line ? "" : " solo"}${cls ? ` ${cls}` : ""}"${cur === o.id ? ' aria-current="true"' : ""} data-id="${o.id}"${host ? ` data-host="${host}"` : ""}>
       ${tileOf(o)}<button type="button" class="nm" ${attr}>${o.name}</button>${line}${rm ? `<span class="rm">${ib("minus", rm, 'class="nv-ib sm"')}</span>` : ""}</div>`;

@@ -18,10 +18,7 @@
 
 /* Marks: one status slot, at the end of the key line */
 .ob-dot { display: block; width: 7px; height: 7px; border-radius: 50%; flex: none; }
-.ob-dot.new { background: var(--new); box-shadow: 0 0 0 3px color-mix(in oklab, var(--new) 18%, transparent); }
 .ob-dot.neg { background: var(--neg-dot); box-shadow: 0 0 0 3px color-mix(in oklab, var(--neg-dot) 18%, transparent); }
-.ob-pend { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--r-pill); outline: 1px dashed var(--ink-3); outline-offset: -1px;
-  font: 500 var(--fs-small)/1 var(--font); color: var(--ink); font-variant-numeric: tabular-nums; }
 .ob-conf { display: inline-flex; gap: 2px; align-items: center; }
 .ob-conf i { display: block; width: 10px; height: 3px; border-radius: 2px; background: var(--hairline-strong); }
 .ob-conf i[data-on] { background: var(--ink); }
@@ -68,8 +65,20 @@
 .ob-row:has(> .rm):is(:hover, .is-hover, :focus-within) .when { visibility: hidden; }
 @media (hover: none) { .ob-row > .rm { opacity: 1; } }
 
+/* Short labels (themes, prototypes): one line, the name in ink 2 like a nav item; ink and 500 when current. Inside a peek or full view they read as names. */
+.ob-row.label > .nm { color: var(--ink-2); }
+.ob-row.label[aria-current="true"] > .nm, :is(.ob-peek, .ob-full) .ob-row.label > .nm { color: var(--ink); }
+.ob-row.label > .kv { color: var(--ink-2); }
+.ob-row.label > .kv .ob-n { font-size: var(--fs-small); }
+/* Unseen activity: hidden unless the window's choice shows it (data-fresh) */
+.ob-fresh { display: none !important; }
+[data-fresh="text"] .ob-fresh { display: inline !important; }
+[data-fresh="weight"] .unseen > .nm { font-weight: 600; color: var(--ink); }
+
 /* The card: the row, raised, with the name at card weight and up to three lines */
 .ob-card { padding: var(--inset-card); border-radius: var(--r-control); background: var(--surface); box-shadow: var(--sh-raised); row-gap: var(--gap-tight); }
+.ob-card.one { grid-template-columns: var(--tile) minmax(0, 1fr) auto; grid-template-areas: "g nm kv"; align-items: center; }
+.ob-card.one > .g { margin-top: 0; }
 .ob-card > .nm { font-weight: 600; -webkit-line-clamp: 3; text-wrap: pretty; }
 .ob-card:is(:hover, .is-hover, [aria-expanded="true"]) { background: var(--surface-hover); }
 .ob-card[aria-current="true"] { box-shadow: var(--sel); }

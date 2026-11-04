@@ -9,7 +9,7 @@
   const TOTAL = { signal: 412, dump: 286 };
   const OLDER = { signal: [["October", 288], ["September", 109]], dump: [["October", 201], ["September", 78]] };
   const STATUS = [["building", "Building"], ["idea", "Idea"], ["built", "Built"], ["shelved", "Shelved"]];
-  const OPT = { rows: "two", peek: "rel", full: "prose" };
+  const OPT = { fresh: "none", peek: "rel", full: "prose" };
   const ib = (icon, label, attr = "", key = "") => `<button type="button" class="nv-ib" aria-label="${label}" data-tip="${label}"${key ? ` data-key="${key}"` : ""} ${attr}><i class="ph ph-${icon}" aria-hidden="true"></i></button>`;
   const dot = (kind, label) => `<span class="nv-dot ${kind}" role="img" aria-label="${label}"></span>`;
 
@@ -19,13 +19,13 @@
     `<button type="button" data-view="${v}" aria-pressed="${v === cur}" aria-label="${l}" data-tip="${l}" data-key="${k}"${v === "atlas" || v === "timeline" ? ' aria-disabled="true"' : ""}><i class="ph${v === cur ? "-fill" : ""} ph-${i}" aria-hidden="true"></i></button>`).join("")}</div>`;
   const countOf = t => TOTAL[t] ?? all(t).filter(o => !o.retired).length;
   const rail = s => `<aside class="nv-rail">
-      <div class="nv-brand"><button type="button" class="nv-home" data-home aria-current="${s.type === "home"}">Aber${dot("new", "New since yesterday")}</button>${ib("magnifying-glass", "Find", "", "⌘K")}</div>
-      <nav class="nv-types" aria-label="Types">${RAIL.map(t => `<button type="button" class="nv-type" data-go="${t}" aria-current="${s.type === t}"><span class="gw">${tile(t, ICON[t])}${t === "signal" ? dot("new", "New since yesterday") : ""}</span><span class="nm">${NAMES[t][0]}</span><span class="nv-n">${countOf(t)}</span></button>`).join("")}</nav>
+      <div class="nv-brand"><button type="button" class="nv-home" data-home aria-current="${s.type === "home"}">Aber</button>${ib("magnifying-glass", "Find", "", "⌘K")}</div>
+      <nav class="nv-types" aria-label="Types">${RAIL.map(t => `<button type="button" class="nv-type" data-go="${t}" aria-current="${s.type === t}"><span class="gw">${tile(t, ICON[t])}</span><span class="nm">${NAMES[t][0]}</span><span class="nv-n">${countOf(t)}</span></button>`).join("")}</nav>
       ${switcher("default")}</aside>`;
 
   /* ── Item list (second sidebar): the new rows. A row never repeats its group header. ── */
   const list = s => {
-    const t = s.type, cur = s.sel[t], q = s.q.toLowerCase(), one = s.opt.rows === "one";
+    const t = s.type, cur = s.sel[t], q = s.q.toLowerCase(), one = false;
     const hit = o => (!q || o.name.toLowerCase().includes(q)) && (!s.tf || (o.themes || []).includes(s.tf));
     const r = (o, omit = "") => row(o, { act: "sel", cur, omit, cls: one ? "one" : "" });
     const group = (label, rows, n) => rows.length ? `<div class="ob-group">${label ? `<div class="ob-glabel"><span>${label}</span>${n != null ? `<span class="ob-n">${n}</span>` : ""}</div>` : ""}${rows.join("")}</div>` : "";
@@ -34,7 +34,7 @@
     const filter = () => `<label class="nv-filter"><i class="ph ph-funnel" aria-hidden="true"></i><select data-tf aria-label="Filter by theme"><option value="">All themes</option>${all("theme").filter(o => !o.draft).map(o => `<option value="${o.id}"${s.tf === o.id ? " selected" : ""}>${o.name}</option>`).join("")}</select></label>`;
     let tools = "", body = "", addBtn = true;
     if (t === "theme") {
-      body = group("", all("theme").filter(o => !o.draft).sort((a, b) => (b.fresh ? 1 : 0) - (a.fresh ? 1 : 0)).map(o => r(o))) + group("Drafts", all("theme").filter(o => o.draft).map(o => r(o)));
+      body = group("", all("theme").filter(o => !o.draft).sort((a, b) => (b.fresh ? 1 : 0) - (a.fresh ? 1 : 0)).map(o => r(o))) + group("Drafts", all("theme").filter(o => o.draft).map(o => r(o, "key")));
     } else if (t === "theory") {
       tools = search("Find a theory") + filter();
       const ts = all("theory").filter(hit);
@@ -63,16 +63,16 @@
     const home = s.type === "home", o = !home && s.sel[s.type] && O[s.sel[s.type]];
     const cols = home ? "var(--nv-rail-w) minmax(0, 1fr)" : "var(--nv-rail-w) var(--list-w) minmax(0, 1fr)";
     const main = o ? full(o, { layout: s.opt.full, back: backBtn(s) }) : digest();
-    return `<div class="nv ctl ob-win" data-v="A" data-rows="${s.opt.rows}" style="grid-template-columns:${cols}">${rail(s)}${home ? "" : list(s)}<main class="nv-main"><div class="nv-scroller">${main}</div></main></div>`;
+    return `<div class="nv ctl ob-win" data-v="A" data-fresh="${s.opt.fresh}" style="grid-template-columns:${cols}">${rail(s)}${home ? "" : list(s)}<main class="nv-main"><div class="nv-scroller">${main}</div></main></div>`;
   };
   // Columns, as it stays: dump and signal strips, Themes (navigation), Theories (cards), the docked pane. Its objects are the new previews.
   const colFrame = s => {
     const th = O[s.colTheme], ts = A.all("theory").filter(t => t.themes.includes(th.id) && !t.retired);
     const pane = s.pane && O[s.pane];
-    return `<div class="nv ctl ob-win ob-columns" data-rows="${s.opt.rows}" style="grid-template-columns:36px 36px var(--colnav-w, 230px) var(--list-w) minmax(0, 1fr)">
+    return `<div class="nv ctl ob-win ob-columns" data-fresh="${s.opt.fresh}" style="grid-template-columns:36px 36px var(--colnav-w, 230px) var(--list-w) minmax(0, 1fr)">
       <div class="ob-strip">${tile("dump", ICON.dump)}</div><div class="ob-strip">${tile("signal", ICON.signal)}</div>
       <section class="ob-colnav"><div class="ob-colhead">${tile("theme", ICON.theme)}<span>Themes</span></div>
-        <div class="ob-rows">${A.all("theme").filter(o => !o.draft).map(o => row(o, { act: "sel", cur: s.colTheme, cls: "one" })).join("")}</div></section>
+        <div class="ob-rows">${A.all("theme").filter(o => !o.draft).map(o => row(o, { act: "sel", cur: s.colTheme })).join("")}</div></section>
       <section class="ob-colist"><div class="ob-colhead">${tile("theory", ICON.theory)}<span>Theories</span><span class="ob-n">${ts.length}</span></div>
         <div class="ob-cards col">${ts.map(t => card(t, { act: "pane", cur: s.pane })).join("")}</div></section>
       <aside class="ob-pane">${pane ? full(pane, { layout: s.opt.full, where: "pane" }) : ""}</aside>

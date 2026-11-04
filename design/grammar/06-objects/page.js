@@ -43,7 +43,7 @@
   const states = $("#states-grid");
   if (states) {
     const S = [
-      ["Rest", "t6", ""], ["Hover", "t6", "hover"], ["Selected, current", "t6", "cur"], ["Draft", "t11", ""], ["New", "s1", ""], ["Challenged", "t4", ""], ["Pending suggestion", "t1", ""],
+      ["Rest", "t6", ""], ["Hover", "t6", "hover"], ["Selected, current", "t6", "cur"], ["Draft", "t11", ""], ["Challenged", "t4", ""], ["Pending suggestion: peek and full only", "t1", ""],
     ];
     const head = ["", "List row", "Card", "Chip", "Peek", "Full"].map(h => `<div class="st-h">${h}</div>`).join("");
     const headOnly = o => { const el = document.createElement("div"); el.innerHTML = full(o, {}); const art = el.firstElementChild; art.querySelector(".ob-top")?.remove();
@@ -114,7 +114,7 @@
   dlg?.addEventListener("click", e => { if (e.target === dlg || e.target.closest("[data-big-close]")) dlg.close(); });
 
   /* ── Hero follows the picks; the decide box shows them ── */
-  const MAP = { rows: ["rows", { "a Two lines": "two", "b One line": "one" }], peek: ["peek", { "a Essentials and relations": "rel", "b Essentials only": "own" }], full: ["full", { "a Prose first": "prose", "b Fields table": "fields" }] };
+  const MAP = { fresh: ["fresh", { "a Nothing on objects": "none", "b Unread weight": "weight", "c Text in the key value": "text" }], peek: ["peek", { "a Essentials and relations": "rel", "b Essentials only": "own" }], full: ["full", { "a Prose first": "prose", "b Fields table": "fields" }] };
   addEventListener("load", () => {
     const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d);
     const page = document.body.dataset.jig;

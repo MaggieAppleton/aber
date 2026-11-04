@@ -385,3 +385,9 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 4 Nov 2026 (Maggie, 05-controls): the secondary button is white with a hairline (surface, the chip's hairline, the button shadow); text fields are filled (a sunk well, no edge; surface + hairline and the ring on focus); the one destructive confirmation (Delete dump) is ink like every primary, red stays for challenge and down. The anatomy, seven-state matrix, motion and label rules in RULES.md section 05 are the default on every grammar page.
 
 4 Nov 2026 (Maggie): signals always show the signal glyph (Pulse) on their tile, never a kind glyph; kind, if shown, is text in the key value. Supersedes the DI-010 "kind glyph in the header" rule. Within one peek or full view every tile is the same size (24).
+
+4 Nov 2026 (Maggie): no jade 'new' dot on objects anywhere; it reads as ugly and its meaning is unclear. Unseen activity is shown another way (see 06 choice) or not on objects at all.
+
+4 Nov 2026 (Maggie): no dashed-circle count badge for pending suggestions; its meaning was unclear and it looks ugly. Shown another way (see 06 choice); decided: not shown on previews at all; only in peek, full view and Briefing. Her principle: "If we can't find a beautiful way to show it, we should not show it."
+
+4 Nov 2026 (Maggie, 06 before/after): theme list rows go back to the compact one-line design: the theme's glyph on its tile, the name in ink 2 (ink and 500 when current), the theory count as a bare number at the right. No "theories" word, no dot, no second line. Short-label rows (prototypes) follow the same form; two-line rows only where the name is a sentence (theories, signals, dumps).
