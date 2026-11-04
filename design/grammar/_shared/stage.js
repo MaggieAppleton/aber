@@ -5,7 +5,11 @@
   const ICON = { dump: "tray-arrow-down", signal: "pulse", theme: "binoculars", theory: "target", prototype: "pencil-ruler", tripwire: "signpost", suggestion: "sparkle" };
   const g = (t, lg) => `<span class="g${lg ? " lg" : ""}" data-type="${t}"><i class="ph ph-${ICON[t]}" aria-hidden="true"></i></span>`;
   const conf = (n, lg) => `<span class="stg-conf${lg ? " lg" : ""}" role="img" aria-label="Confidence ${n} of 5">${[1, 2, 3, 4, 5].map(i => `<i${i <= n ? " data-on" : ""}></i>`).join("")}</span>`;
-  const iconBtn = (icon, label) => `<button type="button" class="stg-iconbtn" aria-label="${label}" title="${label}"><i class="ph ph-${icon}" aria-hidden="true"></i></button>`;
+  // Icon rules (03-icons): with "icons" set, the stage uses the one-icon-per-meaning vocabulary, fill only for the current
+  // view, and data-tip tooltips (name + key) instead of native titles. Other pages keep the original glyphs.
+  let V = false;
+  const I = (today, rule) => V ? rule : today;
+  const iconBtn = (icon, label, key) => `<button type="button" class="stg-iconbtn" aria-label="${label}${key ? ` (${key})` : ""}" ${V ? `data-tip="${label}"${key ? ` data-key="${key}"` : ""}` : `title="${label}"`}><i class="ph ph-${icon}" aria-hidden="true"></i></button>`;
 
   const THEMES = [["Cost of intelligence", 5, true], ["Agent memory", 2], ["Code review after agents", 2], ["Personal software", 2], ["AI funding cycle", 2], ["Novel agent interfaces"], ["Agent observability"]];
   const card = (claim, { c, up, down, proto, pending, neg, open, draft, sp } = {}) => `
@@ -17,12 +21,12 @@
   const switcher = view => `
       <div class="stg-switch" role="group" aria-label="Views" data-sp="float offset">
         ${[["sections", "rows", "Theme sections"], ["columns", "columns", "Columns"], ["atlas", "map-trifold", "Atlas"], ["timeline", "chart-scatter", "Timeline"]].map(([v, i, l]) =>
-          `<button type="button" data-view="${v}" aria-pressed="${v === view}" aria-label="${l}"><i class="ph ph-${i}"></i></button>`).join("")}
+          `<button type="button" data-view="${v}" aria-pressed="${v === view}" aria-label="${l}"${V ? ` data-tip="${l}"` : ""}><i class="ph${V && v === view ? "-fill" : ""} ph-${i}" aria-hidden="true"></i></button>`).join("")}
       </div>`;
 
   const sections = () => `
     <aside class="stg-rail" data-sp="nav inset, group gap" data-gap>
-      <div class="stg-brand"><span data-tr="app name">Aber</span>${iconBtn("magnifying-glass", "Find")}</div>
+      <div class="stg-brand"><span data-tr="app name">Aber</span>${iconBtn("magnifying-glass", "Find", "⌘K")}</div>
       <nav class="stg-index">${THEMES.map(([n, c, a], i) => `<a href="#"${a ? " data-active" : ""}${i === 1 ? ' data-sp="row inset, row height"' : ""}><span${i < 2 ? ` data-tr="${a ? "nav item, current" : "nav item"}"` : ""}>${n}</span><span${i === 1 ? ' data-tr="count"' : ""}>${c ?? ""}</span></a>`).join("")}</nav>
       <a href="#" class="stg-protos">${g("prototype")}<span>Prototypes</span><span>4</span></a>
     </aside>
@@ -59,7 +63,7 @@
 
   const AREAS = [["Cost of intelligence", 5, 40, 42, 22, true], ["Agent memory", 2, 72, 30, 20], ["Personal software", 2, 24, 18, 16], ["AI funding cycle", 3, 36, 78, 16], ["Code review after agents", 2, 74, 74, 18], ["Novel agent interfaces", 1, 16, 58, 13]];
   const atlas = () => `
-    <div class="stg-zoom" data-sp="float offset">${iconBtn("plus", "Zoom in")}${iconBtn("minus", "Zoom out")}${iconBtn("corners-in", "Fit")}</div>
+    <div class="stg-zoom" data-sp="float offset">${iconBtn(I("plus", "magnifying-glass-plus"), "Zoom in", "+")}${iconBtn(I("minus", "magnifying-glass-minus"), "Zoom out", "−")}${iconBtn("corners-in", "Fit")}</div>
     <div class="stg-canvas" data-sp="canvas inset">
       ${AREAS.map(([n, c, x, y, r, sel]) => `<div class="stg-area${sel ? " is-sel" : ""}" style="left:${x}%;top:${y}%;width:${r * 2}%;"><span class="stg-area-label" ${sel ? 'data-sp="label inset" data-tr="section header"' : ""}>${g("theme")}${n}<span class="n">${c}</span></span><i class="stg-pt" style="left:40%;top:55%"></i>${c > 2 ? '<i class="stg-pt" style="left:62%;top:38%"></i>' : ""}</div>`).join("")}
     </div>`;
@@ -67,7 +71,7 @@
   const YEARS = ["2027", "2028", "2029"];
   const LANES = [[4, [["Agents keep context across months, not sessions"], [], []]], [3, [[], ["Tokens become nearly free for routine work", true], ["Agents run continuously in the background by default"]]], [2, [["Labs face a funding correction before agents pay their way"], [], ["Frontier intelligence stays scarce and expensive"]]], [0, [[], ["Local models absorb most everyday agent work", false, true], []]]];
   const timeline = () => `
-    <div class="stg-zoom" data-sp="float offset">${iconBtn("binoculars", "Filter by theme")}</div>
+    <div class="stg-zoom" data-sp="float offset">${iconBtn(I("binoculars", "funnel"), "Filter by theme")}</div>
     <div class="stg-tl" data-sp="canvas inset">
       <div class="stg-tl-gutter"></div>${YEARS.map(y => `<div class="stg-tl-year"${y === "2027" ? ' data-tr="meta"' : ""}>${y}</div>`).join("")}
       ${LANES.map(([c, cells], li) => `<div class="stg-tl-gutter">${c ? conf(c) : '<span class="stg-ring" aria-label="Draft"></span>'}</div>${cells.map(([t, sel, draft], ci) => `<div class="stg-tl-cell"${li === 1 && ci === 1 ? ' data-sp="row inset, item gap" data-gap' : ""}>${t ? `<a href="#" class="stg-tl-item${sel ? " is-sel" : ""}${draft ? " is-draft" : ""}">${draft ? '<span class="stg-ring"></span>' : '<i class="stg-pt"></i>'}<span${sel ? ' data-tr="list name"' : ""}>${t}</span></a>` : ""}</div>`).join("")}`).join("")}
@@ -77,12 +81,12 @@
   const html = (view = "sections") => `
     <div class="stg-view" data-view="${view}">${VIEWS[view]()}${switcher(view)}</div>
     <aside class="stg-pane" aria-label="Open object" data-sp="pane inset, group gap" data-gap>
-      <div class="stg-pane-close">${iconBtn("arrows-out-simple", "Full width")}${iconBtn("x", "Close")}</div>
+      <div class="stg-pane-close">${iconBtn("arrows-out-simple", "Full width")}${iconBtn("x", "Close", "Esc")}</div>
       <div class="stg-chips"><a href="#" class="stg-chip" data-sp="chip inset" data-tr="chip label">${g("theme")}Cost of intelligence</a></div>
       <h3 class="stg-title" data-tr="pane title">Tokens become nearly free for routine work</h3>
       <dl class="stg-fields" data-sp="item gap, group gap" data-gap>
         <dt data-tr="field label">Confidence</dt><dd>${conf(3, true)}<svg class="stg-spark" viewBox="0 0 64 16" aria-hidden="true"><path d="M1 13h10v-3h8v3h8V7h7v4h8V3h6v6h8" fill="none" stroke="var(--pos-mark)" stroke-width="1.5"/><path d="M50 3v6h6" fill="none" stroke="var(--neg-dot)" stroke-width="1.5"/></svg></dd>
-        <dt>Happens by</dt><dd>${iconBtn("minus", "Earlier")}<span data-tr="field value">2028</span>${iconBtn("plus", "Later")}</dd>
+        <dt>Happens by</dt><dd>${iconBtn(I("minus", "caret-left"), "Earlier")}<span data-tr="field value">2028</span>${iconBtn(I("plus", "caret-right"), "Later")}</dd>
         <dt>Rival</dt><dd><a href="#" class="stg-chip">${g("theory")}Frontier intelligence stays scarce and expensive</a></dd>
       </dl>
       <p class="stg-note" data-tr="prose">Small models keep getting cheaper faster than demand grows. Routine agent work stops being metered in any way I notice.</p>
@@ -111,7 +115,8 @@
   const ro = new ResizeObserver(entries => entries.forEach(e => fit(e.target)));
   const render = host => {
     const o = JSON.parse(host.dataset.stage || "{}");
-    const attrs = [o.scale && `data-scale="${o.scale}"`, o.title && `data-title="${o.title}"`, o.sechead && `data-sechead="${o.sechead}"`, o.system && `data-system="${o.system}"`, o.primary && `data-primary="${o.primary}"`, o.mark && `data-mark="${o.mark}"`, o.density && `data-density="${o.density}"`, o.list && `data-list="${o.list}"`].filter(Boolean).join(" ");
+    const attrs = [o.scale && `data-scale="${o.scale}"`, o.title && `data-title="${o.title}"`, o.sechead && `data-sechead="${o.sechead}"`, o.system && `data-system="${o.system}"`, o.primary && `data-primary="${o.primary}"`, o.mark && `data-mark="${o.mark}"`, o.density && `data-density="${o.density}"`, o.list && `data-list="${o.list}"`, o.iconsize && `data-iconsize="${o.iconsize}"`, o.tile && `data-tile="${o.tile}"`, o.icons && "data-icons"].filter(Boolean).join(" ");
+    V = !!o.icons;
     host.innerHTML = `<div class="stg" ${attrs}>${html(o.view)}</div>`;
     fit(host); ro.observe(host);
   };

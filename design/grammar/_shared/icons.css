@@ -1,0 +1,72 @@
+/* Aber grammar: icons (PROPOSED, see RULES.md). Phosphor, Regular at rest, Fill only for the current or selected thing.
+   Scoped to stages carrying data-icons (03-icons sets it), so decided pages keep their glyphs until this is chosen.
+   Choices: data-iconsize="one" (16 everywhere) | "two" (14 beside 12px text); data-tile="lists" | "always" | "never". */
+
+:root {
+  --icon: 16px;          /* the icon size, beside 13 body */
+  --icon-label: 16px;    /* beside 12px labels, chips, buttons and meta (choice 1) */
+  --tile: 24px;          /* object glyph tile: icon + 4 each side */
+  --line-ui: calc(var(--fs-body) * var(--lh-ui));      /* 18.2: one line of interface text */
+  --line-prose: calc(var(--fs-read) * var(--lh-prose)); /* 20.15: one line of prose */
+}
+[data-iconsize="two"] { --icon-label: 14px; }
+
+/* Every glyph is a square of its size, so boxes never depend on the font's line box */
+.stg[data-icons] i[class^="ph"] { width: var(--isz, var(--icon)); height: var(--isz, var(--icon)); font-size: var(--isz, var(--icon)); }
+
+/* ── Icon slot: object glyphs ─────────────────────────────
+   Bare: a 16 slot (14 beside 12px text). Tiled: a 24 tile holding the glyph. Rows of slots keep text on one left edge. */
+.stg[data-icons] .g { --slot: var(--isz, var(--icon)); width: var(--slot); height: var(--slot); background: transparent; outline: 0; border-radius: var(--r-xs); }
+/* Beside 12px text (chips, card meta) the glyph takes the label size */
+.stg[data-icons] :is(.stg-chip, .stg-inline, .stg-ev-head, .stg-btn) { --isz: var(--icon-label); }
+
+/* Tile contexts. "lists": headers and list rows (section and column heads, rail rows, the column strips, evidence rows, the tripwire row, map labels).
+   "always": also chips and inline meta. "never": colour alone carries the type. */
+.stg[data-icons]:is([data-tile="lists"], [data-tile="always"], :not([data-tile])) :is(.stg-sec-head, .stg-col-head, .stg-protos, .stg-strip, .stg-ev-item, .stg-trip, .stg-area-label) > .g,
+.stg[data-icons][data-tile="always"] :is(.stg-chip, .stg-inline) > .g { --slot: var(--tile); background: var(--type-tile); }
+.stg[data-icons]:is([data-tile="lists"], [data-tile="always"], :not([data-tile])) .g[data-type="suggestion"]:is(.stg-ev-item > *),
+.stg[data-icons][data-tile="always"] .stg-chip > .g[data-type="suggestion"] { outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
+.stg[data-icons] .g i { width: var(--isz, var(--icon)); height: var(--isz, var(--icon)); }
+
+/* ── Optical alignment: centre the slot on the FIRST line of its text ──
+   Geist's cap-height centre sits within 0.3px of the line-box centre, so the line box is the reference.
+   Single-line rows centre with align-items; rows that can wrap align to the top and drop by (line − slot) / 2. */
+.stg[data-icons] .stg-ev-item { align-items: start; }
+.stg[data-icons] .stg-ev-item > .g { margin-top: calc((var(--line-ui) - var(--slot)) / 2); }
+.stg[data-icons] .stg-trip { align-items: start; }
+.stg[data-icons] .stg-trip > .g { margin-top: calc((var(--line-prose) - var(--slot)) / 2); }
+
+/* ── Icon to text: always --gap-icon (6) ── */
+.stg[data-icons] :is(.stg-chip, .stg-inline, .stg-sec-head, .stg-col-head, .stg-protos, .stg-ev-head, .stg-trip, .stg-area-label) { gap: var(--gap-icon); }
+.stg[data-icons] .stg-ev-item { column-gap: var(--gap-icon); }
+.stg[data-icons] .stg-protos { justify-content: flex-start; }
+/* A chip with a leading bare glyph pads 2 less on the glyph side; a tiled glyph sits flush in the chip's corner */
+.stg[data-icons] .stg-chip { padding-left: calc(var(--inset-chip) - 2px); }
+.stg[data-icons][data-tile="always"] .stg-chip { padding-left: 0; }
+.stg[data-icons][data-tile="always"] .stg-chip > .g { border-radius: var(--r-icon) 0 0 var(--r-icon); }
+.stg[data-icons][data-tile="always"] .stg-inline > .g { --slot: calc(var(--icon-label) + 4px); }
+
+/* ── Icon-only buttons: a control-sized square (28), 24 inside dense rows; every one has a 40 hit area ── */
+.stg[data-icons] :is(.stg-iconbtn, .stg-switch button) { position: relative; width: var(--control); height: var(--control); color: var(--ink-2); }
+.stg[data-icons] :is(.stg-ev-head, .stg-fields dd) .stg-iconbtn { width: var(--control-sm); height: var(--control-sm); }
+.stg[data-icons] :is(.stg-iconbtn, .stg-switch button)::before { content: ""; position: absolute; left: 50%; top: 50%; width: var(--hit); height: var(--hit); translate: -50% -50%; }
+.stg[data-icons] :is(.stg-iconbtn, .stg-switch button):hover { color: var(--ink); }
+/* The current view: accent and Fill, the only Fill on screen */
+.stg[data-icons] .stg-switch button[aria-pressed="true"] { color: var(--accent-text); }
+.stg[data-icons] .stg-switch { padding: 2px; gap: 2px; }
+.stg[data-icons] .stg-switch button { border-radius: calc(var(--r-lg) - 2px); }
+/* Plain icons (evidence direction) are ink 2: they describe, they don't act */
+.stg[data-icons] .stg-ev-head > i { color: var(--ink-2); }
+
+/* ── Tooltip: name, then the key in Geist Mono; 12 / 500 on ink; after a 500ms rest. Built by the page as a real element (.stg-tip). ── */
+.stg[data-icons] .stg-tip { position: absolute; z-index: 10; display: flex; align-items: center; gap: 8px; padding: 4px 8px; border-radius: var(--r-sm);
+  background: var(--ink); color: var(--on-primary); font: var(--w-medium) var(--fs-label)/1.4 var(--font); white-space: nowrap; pointer-events: none; box-shadow: var(--elev-2); }
+.stg[data-icons] .stg-tip kbd { font: var(--w-medium) var(--fs-label)/1.4 var(--font-mono); color: color-mix(in oklab, var(--on-primary) 65%, var(--ink)); }
+
+/* ── Icon specs overlay: each slot outlined, labelled with role, size, weight and slot; hit areas dashed ── */
+[data-iconoverlay] .stg[data-icons] [data-is] { outline: 1px solid oklch(0.6 0.2 30 / 0.7); outline-offset: 0; }
+[data-iconoverlay] .stg[data-icons] :is(.stg-iconbtn, .stg-switch button)::before { outline: 1px dashed oklch(0.6 0.2 30 / 0.45); border-radius: 4px; }
+[data-iconoverlay] .stg[data-icons] .is-tag { position: absolute; z-index: 9; padding: 1px 4px; border-radius: 3px; background: oklch(0.45 0.16 30); color: #fff;
+  font: 600 9px/1.3 var(--font); white-space: nowrap; pointer-events: none; }
+.is-tag { display: none; }
+[data-iconoverlay] .is-tag { display: block; }

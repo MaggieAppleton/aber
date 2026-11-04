@@ -150,6 +150,58 @@ Evidence: today's CSS uses 11 px font sizes (including 9, 10 and 14.5) plus 10 s
 | Key, exact time | 12 / 500 / Geist Mono / ink 2 |
 | Empty state | 13 / 400 / ink 2 |
 
+## 03 Icons — PROPOSED (choose on `03-icons/`)
+
+Already decided: Phosphor; Regular at rest, Fill only for the current or selected thing; the object glyphs (`atoms.tsx` OBJECT_ICONS plus Tripwire Signpost and Suggestion Sparkle); per-type glyph colour on a pale tile; icon to text 6; X only closes transient surfaces. Values live in `_shared/icons.css`.
+
+Evidence: 159 icons at six sizes (11, 12, 13, 14, 15, 16; 83 are 12, smaller than the text beside them); the Prototype glyph alone at 12, 13 and 14. Icon-only buttons in nine box sizes (16 to 44); icon-to-text gaps in nine values (2 to 12); 11 hand-set alignment nudges; ink 3 on 16 icon rules. X means close, remove, discard and dismiss; Trash means delete and retire; arrow up means supports, rose and send.
+
+1. **Phosphor only, Regular at rest.** Fill marks the current or selected thing and nothing else. No Light, Bold or Duotone.
+2. **Icons are 16, beside 13 body.** Nothing smaller than 14. No icon beside an 11 count or the 24 title.
+3. **Every icon is a square of its size, in a fixed slot.** A bare glyph's slot is 16; a tiled object glyph's slot is the 24 tile (16 plus 4 each side). Slots in a list share a left edge.
+4. **Centre the slot on the first line of its text.** Geist's cap-height centre is within 0.3px of the line-box centre (measured), so the line box is the reference. Single-line rows centre; rows that wrap align top and drop the slot by (line − slot) ÷ 2: 1 for 16 beside 13/1.4, −3 for a 24 tile. No hand nudges.
+5. **Icon to text is always 6** (`--gap-icon`). A chip pads 2 less on its glyph side.
+6. **Icon-only buttons are 28 squares** (`--control`), 24 in dense rows (`--control-sm`), with a 40 hit area.
+7. **Every icon-only button has a tooltip:** vocabulary name, then the key in Geist Mono; 12 / 500 on ink; below the button (above in bottom bars); after 500ms.
+8. **Give it a text label** when the verb is destructive or rare (Retire, Delete), when it is the main decision on a surface (Accept, Dismiss), or when it isn't in the vocabulary.
+9. **Colour has four roles.** Ink 2 at rest; ink on hover and pressed; type colour only for object glyphs; accent only for the current view. Status is a dot, never a coloured icon. Ink 3 is never an icon.
+10. **One icon per meaning.** The table is the whole vocabulary; a new meaning gets a new row.
+
+| Meaning | Phosphor |
+| --- | --- |
+| Dump, Signal, Theme, Theory, Prototype, Tripwire, Suggestion | tray-arrow-down, pulse, binoculars, target, pencil-ruler, signpost, sparkle (type colour) |
+| Voice, text, link dump | waveform, text-align-left, link |
+| Find | magnifying-glass (⌘K) |
+| Add, new, file in | plus |
+| Unfile (link goes, thing stays) | minus |
+| Close a transient surface | x (Esc) |
+| Delete, discard, dismiss | trash |
+| Retire | archive |
+| Accept, mark seen | check (A) |
+| Rephrase | pencil-simple |
+| Merge, split | arrows-merge, arrows-split |
+| Send | paper-plane-right |
+| Attach media | paperclip |
+| Voice dump | microphone |
+| Undo, history | arrow-counter-clockwise, clock-counter-clockwise |
+| Earlier, later (stepper) | caret-left, caret-right |
+| Show or hide children | caret-down (turned −90° when closed) |
+| Go to, back | arrow-right, arrow-left |
+| Zoom in, out, fit | magnifying-glass-plus, magnifying-glass-minus, corners-in |
+| Filter | funnel |
+| Pane full width, docked | arrows-out-simple, arrows-in-simple |
+| Collapse sidebar | sidebar-simple |
+| Play, pause, stop | play, pause, stop |
+| Pin, chain, help | push-pin, tree-structure, question |
+| Supports, undermines | arrow-up, arrow-down |
+| Confidence rose, fell | trend-up, trend-down |
+| Rival | arrows-left-right |
+| Views: sections, columns, atlas, timeline, briefing | rows, columns, map-trifold, chart-scatter, newspaper (accent and Fill when current) |
+
+**Open:**
+- Icon size beside 12px text (chips, card meta, evidence headers, buttons): 16 everywhere, or 14.
+- Object glyph tiles: in lists and headers only (proposed), everywhere (chips and meta too), or never.
+
 ## Still to come
 
-03 icons, 04 surfaces and layers, 05 controls, 06 objects, 07 rungs.
+04 surfaces and layers, 05 controls, 06 objects, 07 rungs.
