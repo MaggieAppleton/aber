@@ -111,7 +111,7 @@ From the jig's "Copy choices":
 - **Retire theory or theme: B, "Tethered menu + Undo".** The trash button opens a small menu of reasons; one click retires, and a toast offers Undo. There's no modal.
 - **Modal anatomy: A, "shadcn anatomy".** Every modal that stays has a header (title and description), an X in the top-right corner, a compact body, and a footer with Cancel and the primary action. This includes the 15 px title, so 15 needs adding to the app's type scale.
 
-The jig marks each chosen option "Chosen" and preselects it in its decision row. The other options stay for reference, dimmed.
+The jig marks each chosen option "Chosen" and preselects it. The other options stay for reference, dimmed. (Since 4 Nov the choice controls sit in context, under each option; see below.)
 
 **Per-type policy was not approved.** Maggie: "The interface you've made me for this is all text and it isn't clear what's being asked or suggested". The policy section is rebuilt as before/after mini stages using real markup, grouped by the surface proposed. Each open row asks one question.
 
@@ -128,6 +128,100 @@ The jig marks each chosen option "Chosen" and preselects it in its decision row.
 **Finding: ellipses in action labels.** Rule (Maggie): no trailing ellipses on menu items or action labels; she calls them "an enormous violation". None of today's dialog action or menu labels end in an ellipsis. The only ellipses in the app are on status and loading text: "Searching…" (`dialogs.tsx:39`), "Uploading media…" (`panes.tsx:301`), and the "…Aber…" loading text (`app-shell.tsx:286`, `main.tsx:14`). Those are outside this rule, but worth a look. The jig checks that no proposal control's label ends in an ellipsis.
 
 **Finding: chevrons.** Rule (Maggie): "a chevron is a button that shows a collapsed item and indicates the expanded state, and you should never have them appear out of nowhere without an initial one." Chevrons also must not appear on things that don't expand. Today the theory page's "Leads to" chips (links to other theories) carry a trailing chevron, and so do the Find and picker option rows; all of these navigate or select. In the proposals they're removed. The remaining chevrons (the Prototypes section header and proposal toggles) are visible at rest and point to their state, and the jig checks this. The proposals also use no "·" or "•" separators.
+
+### Refinements (Maggie, 4 Nov 2026)
+
+Four comments on the policy minis:
+
+1. Edit-in-place textbox (`#policy-text`, `text-new`): "the text in the textbox needs more padding. usually I do 2px+ on hoz padding, e.g. 6px vert, 8px hoz"
+   - **Before:** padding 2px 4px, 13px type.
+   - **Now:** 6px 8px, 14px/20px; 16px/22px at ≤639px.
+   - The same treatment applies to every proposed input in the jig: the picker Find field, the ⌘K palette input, and the pane fields at 6px 10px with a 40px height. Current minis stay faithful.
+2. Multiline popover rows (`#policy-picker`, `picker-new`): "In cases like this, we always want the icon to be horizontally aligned with the very first line of text in an element. I've seen this issue occur across different points in the app where we're center-aligning the icon, but on a two- or three-line item, which looks bad, we should always align the icon with only the first line of text."
+   - **Before:** the icon centre sat 9.09px below the first line's centre, at 1440 and at 390.
+   - **Now:** rows use `align-items: flex-start`, and the 14px icon is offset by (20px line − 14px)/2 = 3px. The offset is 0.5px at both widths.
+   - The same rule now covers every multiline proposal row: ⌘K items, field help, menu items with descriptions, proposal toggles that open with a signal card, signal cards, and rival chips.
+   - An audit of 41 multiline rows found a worst offset of 0.5px.
+3. Retire icon (`#policy-retire`, `retire-new`): "The icon for retiring is a trash can, which doesn't seem right. I feel like "retirement" should use a different kind of icon. Can you go look at Faster Icons and suggest alternative icons here?" ("faster icons = phosphor icons").
+   - The jig now shows the tethered menu open in four minis side by side: the current trash icon, then three real Phosphor Regular icons. Regular matches the app's own Phosphor `Trash`.
+   - The paths come from `@phosphor-icons/core` 2.1.1. Phosphor 2 has no `ArchiveBox`; the icon is `Archive`.
+4. Toasts (`#policy-merge`, `merge-new`): "Don't wrap the text in these toasts onto two lines; just make it one line."
+   - **Before:** "Merged into “Agent recalls a codebase”" + Undo wrapped to 2 lines, 52.4px tall, at 1440. At 390 it wrapped to 4 lines, 88.75px tall.
+   - **Now:** every toast is one line and 44px tall. That covers Merge, Retire ("Retired as Disproven" + Undo), and "Saved as Untitled" + Undo.
+   - At 390 the toast takes the available width (302px). Only the quoted object name truncates with an ellipsis, and the full text is in `title`/`aria-label`.
+   - Undo never truncates. It keeps a 40px hit area.
+
+**Open: retire icon.** The jig asks "Open: which icon should the retire button use?" with no default. The Phosphor options:
+
+- **Archive** (`archive`, React `Archive`), *recommended*. The theory leaves the active set but is kept and can be got back, which is what retiring means. It also covers all three reasons.
+- **Sun horizon** (`sun-horizon`, `SunHorizon`). The literal "sunset" of retirement. It's gentle, but busy at 16px and could read as sunrise.
+- **Flag checkered** (`flag-checkered`, `FlagCheckered`). Reads as "finished", which fits Superseded and Abandoned but not Disproven.
+- **Trash** (today). Reads as delete, which retiring isn't.
+
+Rejected:
+
+- `Moon` reads as sleep or dark mode.
+- `HourglassSimple` reads as pending.
+- `Prohibit` reads as forbidden.
+- `ClockCounterClockwise` reads as history or undo.
+- `BoxArrowDown` duplicates Archive.
+
+**Cross-app note: icons on multiline rows.** Production rows centre their icon on the whole text block. When the text runs to two or three lines, the icon floats between lines. The later production pass must align icons to the first line: `align-items: flex-start`, with the icon nudged by (line-height − icon size)/2. The proposals here already do this. `.pn-origin` (flex-start with a 2px icon nudge) is the production precedent.
+
+Candidates found in `app/`, not changed here:
+
+- `.ab-option` (`app/app/production.css`). Its icon + label + `<small>` detail is always two lines and is always centred.
+- `.ab-disclosure` and `.br-overnight` (`production.css`).
+- `.pn-proposal-toggle` (`ui/suggestion-preview.css:3–11`). The chevron sits at the card's top edge when the copy opens with a signal card.
+- `.ab-sigcard-text` (`ui/surface-patterns.css:143`). Its first line sits 0.9px high in its 24px well.
+- `.dl-row` (`ui/dump-log.css:17`). The icon column is centred against a title that can wrap.
+- `.cur-prototype-row` (`ui/current-sidebar.css:19`), which has a min-height and no nowrap.
+- `.br-link` (`ui/briefing-app.css:42`).
+- `.pn-line` (`ui/panes.css:95`), plus `.col-row`, `.brf-row` and `.cd-line` (`ui/homes.css:129`, `:182`, `:302`). These are flex-centre; confirm whether their text can wrap.
+
+Fixed-height single-line rows such as `.pn-chip`, `.pn-feed-chip`, `.t2-pop-row` and `.ps-toast` are not affected. The same pass should also check text padding (Maggie's rule of horizontal ≥ vertical + 2px). `.pn-title` (4px 8px) is fine; `.tw-tc-phrase` (2px 4px) is tight.
+
+### Policy decisions (Maggie, 4 Nov 2026)
+
+From the jig's "Copy choices", verbatim:
+
+```
+- policy-text — Rephrase a draft (and add a link) by editing the text where it sits, with no modal?: Yes
+- policy-pickers — Should every picker open as a popover from its own button, instead of a centred modal?: Yes
+- policy-merge — Should a merge apply straight away with Undo, with no confirmation step?: Yes
+- policy-viewer — Should a dump unfold in place under its signal instead of opening in a modal?: Other (note) — note: Neither of these feels good. It shouldn't be a modal, but this inline is very noisy. I think I want to explore popovers for a lot of this inline stuff. Like, if I were to click on the signal to see where it came from, I'd want a popover to appear next to the signal or below it with more information — like where it came from and these sorts of things. Which is which is a good in-between between a modal and inline, because inline is too verbose.
+- policy-delete-modal — Should Delete dump stay a modal, as the one destructive action?: Other (note) — note: It should be the proposed shad cn modal
+- policy-find-modal — Should Find stay a centred modal (a command palette), since it has no object to anchor to?: Yes
+- new-prototype B, name-error (no choice), state-theory B, new-theme B, retire B, modal-anatomy A
+```
+
+**Confirmed:**
+
+- Creation in the docked pane: new prototype, theory and theme (B).
+- Rephrase draft and Add link: edit in place.
+- Every picker opens as a popover from its own button.
+- Merge applies straight away, with Undo.
+- Delete dump stays a modal, in the proposed shadcn anatomy. Her "Other" note picks the proposed modal, so this is decided.
+- Find stays a centred command palette.
+- Retire uses the tethered menu with Undo (B).
+- Modal anatomy is A, shadcn.
+
+The jig marks each of these Decided and preselects it.
+
+**Still open:**
+
+- The missing-name error (A, B or C).
+- The retire icon (recommendation: Archive).
+- The dump viewer. Maggie rejected both the modal and the inline unfold ("too verbose"). It's marked Reconsidering with no preselect, and it now continues under DI-004/005 as a popover anchored to the signal ([Provenance popover](../design/explorations/di-004-expansion/index.html#provenance-popover)).
+
+**In-context choices.** The jig now uses the shared shell's in-context controls. Each "Choose" button sits on its own option: Today = "No, keep the modal", Proposed = "Yes". The old decision panels are gone.
+
+Some options were dropped because the note field now carries them:
+
+- the combination options "B from sidebar + C from a theory", "A for theories, B for prototypes" and "A with a 13px title";
+- every "Other (note)".
+
+The retire-icon question is new; it chooses between the four icon minis.
 
 ---
 

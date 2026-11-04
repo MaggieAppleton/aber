@@ -13,6 +13,8 @@
   const el = (html) => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstElementChild; };
   const clone = (name) => el(F[name]);
   const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  /* One-line toast: only the quoted object name may truncate; Undo never does. The full text stays in the DOM and the title. */
+  const toastEl = ({ lead, name = "", tail = "" }) => el(`<div class="ap jx-toast" role="status"><span class="jx-toast-msg" title="${esc(lead + name + tail)}"><span>${esc(lead)}</span>${name ? `<span class="jx-toast-name">${esc(name)}</span><span>${esc(tail)}</span>` : ""}</span><button type="button" class="ap-btn">Undo</button></div>`);
   const text = (n) => (n.textContent || "").trim();
   const wait = (ms) => new Promise((r) => setTimeout(r, reduce.matches ? 0 : ms));
   const raf2 = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
@@ -664,7 +666,7 @@
     };
     c.showToast = function () {
       this.hideToast(true);
-      const t = el(`<div class="ap jx-toast">Saved as Untitled<button type="button" class="ap-btn">Undo</button></div>`);
+      const t = toastEl({ lead: "Saved as Untitled" });
       this.app.append(t); void t.offsetWidth; t.setAttribute("data-open", "");
       $("button", t).addEventListener("click", () => this.undo());
       this.toast = t;
@@ -886,6 +888,13 @@
     esc() { if (this.edit) { this.revert(); return true; } },
   };
 
+  /* Retire icon candidates: Phosphor Regular (@phosphor-icons/core 2.1.1), the weight and size of the app's trash icon. */
+  const phosphor = (d) => `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true"><path d="${d}"></path></svg>`;
+  const RETIRE_ICONS = {
+    archive: phosphor("M224,48H32A16,16,0,0,0,16,64V88a16,16,0,0,0,16,16v88a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V104a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48ZM208,192H48V104H208ZM224,88H32V64H224V88ZM96,136a8,8,0,0,1,8-8h48a8,8,0,0,1,0,16H104A8,8,0,0,1,96,136Z"),
+    "sun-horizon": phosphor("M240,152H199.55a73.54,73.54,0,0,0,.45-8,72,72,0,0,0-144,0,73.54,73.54,0,0,0,.45,8H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM72,144a56,56,0,1,1,111.41,8H72.59A56.13,56.13,0,0,1,72,144Zm144,56a8,8,0,0,1-8,8H48a8,8,0,0,1,0-16H208A8,8,0,0,1,216,200ZM72.84,43.58a8,8,0,0,1,14.32-7.16l8,16a8,8,0,0,1-14.32,7.16Zm-56,48.84a8,8,0,0,1,10.74-3.57l16,8a8,8,0,0,1-7.16,14.31l-16-8A8,8,0,0,1,16.84,92.42Zm192,15.16a8,8,0,0,1,3.58-10.73l16-8a8,8,0,1,1,7.16,14.31l-16,8a8,8,0,0,1-10.74-3.58Zm-48-55.16,8-16a8,8,0,0,1,14.32,7.16l-8,16a8,8,0,1,1-14.32-7.16Z"),
+    "flag-checkered": phosphor("M227.32,48.75A8,8,0,0,0,218.76,50c-28,24.22-51.72,12.48-79.21-1.13C111.07,34.76,78.78,18.79,42.76,50A8,8,0,0,0,40,56V224a8,8,0,0,0,16,0V179.77c26.79-21.16,49.87-9.75,76.45,3.41,28.49,14.09,60.77,30.06,96.79-1.13a8,8,0,0,0,2.76-6V56A8,8,0,0,0,227.32,48.75ZM216,71.6v40.65c-14,11.06-27,13.22-40,10.88V79.34A60.05,60.05,0,0,0,216,71.6Zm-56,3.76v43c-6.66-2.67-13.43-6-20.45-9.48-8.82-4.37-18-8.91-27.55-12.18v-43c6.66,2.66,13.43,6,20.45,9.48C141.27,67.55,150.46,72.09,160,75.36ZM96,48.91V92.69a60.06,60.06,0,0,0-40,7.75V59.78C70,48.72,83,46.57,96,48.91ZM86.58,152A60.06,60.06,0,0,0,56,160.43V119.78c14-11.06,27-13.22,40-10.88v43.8A65.61,65.61,0,0,0,86.58,152ZM112,156.67v-43c6.66,2.66,13.43,6,20.45,9.48,8.82,4.37,18,8.9,27.55,12.17v43c-6.66-2.67-13.43-6-20.45-9.48C130.73,164.47,121.54,159.94,112,156.67Zm64,26.45v-43.8a65.61,65.61,0,0,0,9.42.72A60.11,60.11,0,0,0,216,131.57v40.68C202,183.31,189,185.46,176,183.12Z"),
+  };
   /* ════ Retire theory ═══════════════════════════════════════════════ */
   const REASONS = [["disproven", "Disproven", "The evidence went against it."], ["superseded", "Superseded", "A better theory replaces it."], ["abandoned", "Abandoned", "No longer worth tracking."]];
   function retireContext() {
@@ -992,7 +1001,7 @@
       const doc = currentDoc(this.app);
       doc.setAttribute("data-retired", "");
       $(".jx-toast", this.app)?.remove();
-      const toast = el(`<div class="ap jx-toast" role="status">Retired as ${id}<button type="button" class="ap-btn">Undo</button></div>`);
+      const toast = toastEl({ lead: `Retired as ${REASONS.find((r) => r[0] === id)?.[1] ?? id}` });
       this.app.append(toast);
       void toast.offsetWidth;
       toast.setAttribute("data-open", "");
@@ -1049,9 +1058,11 @@
     const v = app.parentElement.getBoundingClientRect(), w = menu.offsetWidth;
     const lo = Math.max(a.left, v.left) + 8, hi = Math.min(a.right, v.right) - 8 - w;
     menu.style.left = Math.min(Math.max(r.right - w, lo), Math.max(lo, hi)) - a.left + "px";
-    if (r.bottom + 6 + menu.offsetHeight > a.bottom - 8) menu.style.top = Math.max(8, r.top - a.top - 6 - menu.offsetHeight) + "px";
+    /* Flip above only when it fits there; never cover the trigger. */
+    const above = r.top - a.top - 6 - menu.offsetHeight;
+    if (r.bottom + 6 + menu.offsetHeight > a.bottom - 8 && above >= 8) menu.style.top = above + "px";
   };
-  const toastIn = (app, html) => { const t = el(`<div class="ap jx-toast" role="status" data-open>${html}</div>`); app.append(t); };
+  const toastIn = (app, parts) => { const t = toastEl(parts); t.setAttribute("data-open", ""); app.append(t); };
   const scrollPaneTo = (app, node) => { const sc = $(".as-pane-scroll", app); sc.scrollTop = Math.max(0, node.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop - 24); };
   const TESTS = [["Agents keep context across months, not sessions"], ["Most software is made for an audience of one"], ["Agents run continuously in the background by default"]];
   const DUMP_TEXT = "Claude remembered the whole repo layout from last month. I didn't have to re-explain the build.";
@@ -1093,7 +1104,7 @@
     "merge-today"(app) {
       askDialog(app, `<h2 class="ap-h">Merge these signals?</h2><p class="ab-description">Sources, origins and evidence are kept on the first signal. You can undo this merge.</p><form><label class="ab-field">Reason<input class="ab-input" value="Same observation"></label><div class="ab-dialog-actions"><button type="button" class="ap-iconbtn" aria-label="Cancel">${SVG.x}</button><button class="ap-btn">Merge signals</button></div></form>`);
     },
-    "merge-new"(app) { toastIn(app, `Merged into “Agent recalls a codebase”<button type="button" class="ap-btn">Undo</button>`); },
+    "merge-new"(app) { toastIn(app, { lead: "Merged into “", name: "Agent recalls a codebase", tail: "”" }); },
     "viewer-today"(app) {
       askDialog(app, `<h2 class="ap-h">Voice note</h2><p class="ab-description">03/03/2026, 09:12:40</p><div class="ab-dump-content"><p>${DUMP_TEXT}</p></div><form><div class="ab-dialog-actions"><button class="ap-btn">Close</button></div></form>`);
     },
@@ -1128,6 +1139,10 @@
       const made = fn.length === 0 ? fn() : null;
       const app = mount(slot, made || MINI_CONTEXT[kind]());
       if (!made) fn(app);
+      const icon = RETIRE_ICONS[slot.dataset.retireIcon];
+      if (icon) retireTrigger(app).innerHTML = icon;
+      const glyph = $(`.jx-icon-glyph[data-glyph="${slot.dataset.retireIcon}"]`);
+      if (glyph) glyph.innerHTML = retireTrigger(app).innerHTML;
       $$(".ab-dialog.ap, .jx-dialog", app).forEach((d) => d.setAttribute("data-open", ""));
       slot.inert = true;
     }
