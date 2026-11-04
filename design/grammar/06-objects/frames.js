@@ -19,8 +19,9 @@
     `<button type="button" data-view="${v}" aria-pressed="${v === cur}" aria-label="${l}" data-tip="${l}" data-key="${k}"${v === "atlas" || v === "timeline" ? ' aria-disabled="true"' : ""}><i class="ph${v === cur ? "-fill" : ""} ph-${i}" aria-hidden="true"></i></button>`).join("")}</div>`;
   const countOf = t => TOTAL[t] ?? all(t).filter(o => !o.retired).length;
   const rail = s => `<aside class="nv-rail">
-      <div class="nv-brand"><button type="button" class="nv-home" data-home aria-current="${s.type === "home"}">Aber</button>${ib("magnifying-glass", "Find", "", "⌘K")}</div>
-      <nav class="nv-types" aria-label="Types">${RAIL.map(t => `<button type="button" class="nv-type" data-go="${t}" aria-current="${s.type === t}"><span class="gw">${tile(t, ICON[t])}</span><span class="nm">${NAMES[t][0]}</span><span class="nv-n">${countOf(t)}</span></button>`).join("")}</nav>
+      <div class="nv-brand"><span>Aber</span>${ib("magnifying-glass", "Find", "", "⌘K")}</div>
+      <nav class="nv-types" aria-label="Types">
+        <button type="button" class="nv-type ob-brief" data-home aria-current="${s.type === "home"}"><span class="gw">${tile("briefing", ICON.briefing)}</span><span class="nm">Briefing</span></button>${RAIL.map(t => `<button type="button" class="nv-type" data-go="${t}" aria-current="${s.type === t}"><span class="gw">${tile(t, ICON[t])}</span><span class="nm">${NAMES[t][0]}</span><span class="nv-n">${countOf(t)}</span></button>`).join("")}</nav>
       ${switcher("default")}</aside>`;
 
   /* ── Item list (second sidebar): the new rows. A row never repeats its group header. ── */
@@ -100,6 +101,7 @@
     const at = local(scroller, anchor);
     scroller.insertAdjacentHTML("beforeend", peek(O[id], { rel: s.opt.peek === "rel", cls: "live" }));
     const el = scroller.lastElementChild, W = scroller.clientWidth, top = at.y + scroller.scrollTop;
+    A.markFades(el);
     const left = Math.max(8, Math.min(W - el.offsetWidth - 8, at.x - (anchor.matches(".ob-row") ? 16 - 8 : anchor.matches(".ob-card") ? 16 - 10 : 0)));   // the peek's tile lands on the row's tile
     let y = top + at.h + 4;
     if (y + el.offsetHeight > scroller.scrollTop + scroller.clientHeight - 8 && top - el.offsetHeight - 4 > scroller.scrollTop + 8) { y = top - el.offsetHeight - 4; el.classList.add("up"); }

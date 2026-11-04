@@ -99,6 +99,7 @@
     document.fonts.ready.then(mark); addEventListener("resize", mark);
   }
 
+  A.markFades();
   /* Scaled full views fit their cell */
   const fitScaled = () => document.querySelectorAll(".ob-scaled").forEach(b => { const w = b.clientWidth; if (w) b.firstElementChild.style.zoom = Math.min(1, w / 760); });
   new ResizeObserver(fitScaled).observe(document.body); fitScaled();

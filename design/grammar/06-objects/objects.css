@@ -149,9 +149,9 @@
 .ob-pk-list { position: relative; display: grid; min-width: 0; }
 /* Relations: as many as fit, then a surface-colour fade rising from the bottom edge (decided 4 Nov). No scroll, no "show more"; Open sits below the fade. */
 :root { --pk-max: 156px; }
-.ob-pk-rel.has-more .ob-pk-list { max-height: var(--pk-max); overflow: hidden; margin-inline: calc(var(--inset-peek) * -1); padding-inline: var(--inset-peek); }
+.ob-pk-list { max-height: var(--pk-max); overflow: hidden; margin-inline: calc(var(--inset-peek) * -1); padding-inline: var(--inset-peek); }
 .ob-fade { display: none; }
-.ob-pk-rel.has-more .ob-fade { display: block; position: absolute; left: 0; right: 0; bottom: 0; height: 40px; pointer-events: none;
+.ob-pk-rel.overflows .ob-fade { display: block; position: absolute; left: 0; right: 0; bottom: 0; height: 40px; pointer-events: none;
   background: linear-gradient(to bottom, color-mix(in oklab, var(--surface) 0%, transparent), var(--surface)); }
 
 .ob-pk-rel .ob-row { margin-inline: calc(var(--inset-row) * -1); }
@@ -279,3 +279,5 @@
 .ob-peek > .ob-div { margin-top: var(--gap-tight); }
 .ob-peek.has-meta > .ob-div { margin-top: 0; }
 [data-align="b"] .ob-peek { padding-top: calc(12px - 2.37px); }   /* b drops the tile 2.37; keep the visual top at 12 */
+/* Briefing is the first rail item (Maggie, 4 Nov); a little space sets it apart from the types */
+.ob-win .nv-type.ob-brief { margin-bottom: var(--gap-item); }

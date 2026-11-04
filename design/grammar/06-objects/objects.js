@@ -224,8 +224,8 @@
     const r = relsOf(o).find(([label, items, how]) => how !== "chips" && (items.length || (o.kind === "theory" && stanceOf(label) && sugsFor(o, stanceOf(label)).length))); if (!r) return "";
     const [label, held] = r, sugs = o.kind === "theory" && stanceOf(label) ? sugsFor(o, stanceOf(label)) : [];
     const items = [...sugs.map(x => ({ ...O[x.s], _sug: true })), ...held], extra = items.length - 3;
-    return `<div class="ob-pk-rel${extra > 0 ? " has-more" : ""}"><div class="ob-label">${label}<span class="ob-n">${held.length}</span></div>
-      <div class="ob-pk-list">${items.map((x, i) => row(x._sug ? O[x.id] : x, { omit: "when", cls: `${i >= 3 ? "extra" : ""}${x._sug ? " suggested" : ""}`.trim() })).join("")}${extra > 0 ? '<span class="ob-fade" aria-hidden="true"></span>' : ""}</div>
+    return `<div class="ob-pk-rel"><div class="ob-label">${label}<span class="ob-n">${held.length}</span></div>
+      <div class="ob-pk-list">${items.map((x, i) => row(x._sug ? O[x.id] : x, { omit: "when", cls: `${i >= 3 ? "extra" : ""}${x._sug ? " suggested" : ""}`.trim() })).join("")}<span class="ob-fade" aria-hidden="true"></span></div>
 </div>`;
   };
 
@@ -285,5 +285,8 @@
       <header class="ob-hang ob-head">${tile("briefing", ICON.briefing)}<div class="ob-col"><h3 class="ob-title">Since yesterday</h3><div class="ob-meta lg"><span>${BRIEF.reduce((n, [, ids]) => n + ids.length, 0)} changes</span><span>Last looked 18:40</span></div></div></header>
       <div class="ob-body"><div class="ob-rels">${BRIEF.map(([label, ids]) => `<section class="ob-sec"><div class="ob-sh"><span>${label}</span><span class="ob-n">${ids.length}</span></div><div class="ob-rows">${ids.map(id => row(O[id])).join("")}</div></section>`).join("")}</div></div></article>`;
 
-  window.AberObjects = { O, SUG, ICON, all, tile, tileOf, row, card, chip, peek, full, keyOf, statusOf, attrsOf, tripLine, sugBlock, sugsFor, digest, relsOf, DAYS };
+  // One fade rule for every peek: the relations list has one max height; when its rows overflow it, a surface fade rises from its bottom edge
+  const markFades = (root = document) => root.querySelectorAll(".ob-pk-list").forEach(l => l.closest(".ob-pk-rel").classList.toggle("overflows", l.scrollHeight > l.clientHeight + 1));
+  document.fonts?.ready.then(() => markFades()); addEventListener("resize", () => markFades());
+  window.AberObjects = { markFades, O, SUG, ICON, all, tile, tileOf, row, card, chip, peek, full, keyOf, statusOf, attrsOf, tripLine, sugBlock, sugsFor, digest, relsOf, DAYS };
 })();
