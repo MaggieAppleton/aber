@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DI-010: Row, peek, pane (progressive disclosure)</title>
+<link rel="stylesheet" href="../../../app/web/src/design-tokens.css">
+<link rel="stylesheet" href="../../../app/web/src/app/base.css">
+<link rel="stylesheet" href="../_shell/jig.css">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="peek.css">
+<script src="../_shell/jig.js" defer></script>
+<script src="icons.js" defer></script>
+<script src="../di-004-expansion/data.js" defer></script>
+<script src="peek.js" defer></script>
+</head>
+<body class="jig" data-jig="di-010">
+
+<header class="jig-head">
+  <h1>Row, peek, pane: how every object reveals more of itself (DI-010)</h1>
+  <p><span class="pkj-tag" data-k="proposed">Proposal</span> Maggie hasn't approved this yet. It builds on the coordinator's review of 4 Nov. It keeps the docked Signal and Dump panes she chose in DI-004/005 (B). It replaces every inline unfold with a middle rung: a small floating <b>peek</b> that grows from the row.</p>
+  <p>Every object has three rungs. The <b>row</b> is what you scan in a list. The <b>peek</b> is a 360px layer tethered to the row: it shows the essentials, pushes nothing and dims nothing, and closes on Esc or an outside click. The <b>pane</b> is the whole object, docked, where editing and every action live. The peek's top-right expand icon, next to its X, opens the pane.</p>
+  <ul class="jig-rules">
+    <li>Everything below the screenshots is built from one set of renderers, so a peek or a pane looks the same wherever it opens.</li>
+    <li>Choices sit on the option they choose. Click any row in a stage to try it; Esc closes the peek and puts focus back on the row.</li>
+  </ul>
+</header>
+
+<section class="jig-section">
+  <h2>What's wrong now</h2>
+  <p>Measured on a fresh demo seed of the real app at 1440 and 390, and on the DI-004 jig. Every one of these traces back to <code>docs/design-model.md</code>. §3 calls signal and dump detail tier 0, "unfolds from its row". §4 says a signal row "unfolds in place", a filed token "unfolds the gists" and a tripped count "toggles the matched signals". §5 sets a type scale of 11/12/13/20, with ink-3 for tertiary text.</p>
+  <div class="pkj-shots">
+    <figure><img src="evidence/app-feed-signal2-1440.png" alt="Live app at 1440: the second signal in the Robotics theme pane, unfolded inline" loading="lazy"><figcaption><span class="pkj-tag" data-k="current">Current app</span> Clicking the second signal in a theme's feed unfolds it in place. The pane grows from 901px to 1020px. The gist appears twice, the demo note twice, and two origins are centred under icons that sit high.</figcaption></figure>
+    <figure><img src="evidence/app-feed-signal2-390.png" alt="Live app at 390: the same unfold fills the screen" loading="lazy"><figcaption><span class="pkj-tag" data-k="current">Current app, 390</span> The same click at phone width grows the pane from 845px to 1451px. The rows below are pushed a full screen away.</figcaption></figure>
+    <figure><img src="evidence/di004-s2-feed.png" alt="DI-004 section 2: four options for a signal in the theme pane feed" loading="lazy"><figcaption><span class="pkj-tag" data-k="superseded">DI-004 §2</span> Current, A and C all unfold the signal inside a narrow feed. B swaps the whole theme out for the signal. None of them shows a little more first.</figcaption></figure>
+    <figure><img src="evidence/di004-s7-open.png" alt="DI-004 section 7: the voice-note popover open over the docked Signal pane, overhanging the bottom edge of its stage" loading="lazy"><figcaption><span class="pkj-tag" data-k="superseded">DI-004 §7</span> The open popover overhangs the bottom of its stage, toward the Tradeoffs heading. It ends in a full-width "Open in the pane" row with an icon on the far right: a second text button style, where this proposal uses one expand icon beside X.</figcaption></figure>
+  </div>
+</section>
+
+<section class="jig-section">
+  <h2>One signal, three rungs</h2>
+  <p><i>Team reports agents opening 40 PRs a day</i>, from this morning's voice note. Each rung keeps what the last one showed and adds a little. The pane adds editing, the source's words, the passage it came from, its merge history and every action.</p>
+  <div class="pkj-rungs">
+    <div><h3><span class="pkj-tag" data-k="proposed">1</span>Row</h3><div class="pkj-surface pk" data-static-rung="row-signal"></div><p class="pkj-hint">Gist, source domain, new dot.</p></div>
+    <div><h3><span class="pkj-tag" data-k="proposed">2</span>Peek</h3><div data-static-rung="peek-signal"></div></div>
+    <div><h3><span class="pkj-tag" data-k="proposed">3</span>Pane</h3><div class="pkj-st-720 jig-stage pk-stage" id="signal-pane" data-build="signalPane"></div></div>
+  </div>
+  <div class="pkj-ledger">
+    <div><h4>Kept from the row</h4><ul><li>The gist, now as the peek's name</li><li>The source domain, now with its date</li></ul></div>
+    <div><h4>Revealed in the peek</h4><ul><li>Every source with its date</li><li>Maggie's note, at most 2 lines</li><li>Themes and theories, with Supports or Undermines</li><li>"From voice note, Today 07:40"</li><li>Pending suggestions, with Dismiss and Accept</li></ul></div>
+    <div><h4>Only in the pane</h4><ul><li>Editing the gist and note</li><li>The source's words (fetched content)</li><li>The passage, highlighted</li><li>Other origins and merge history</li><li>File, Unfile, Add theory, Merge, Retire</li></ul></div>
+  </div>
+</section>
+
+<section class="jig-section">
+  <h2>One dump, three rungs</h2>
+  <p><i>Voice note, 4 min: review is the new bottleneck</i>. The peek answers "what did this become?" without the 541-word transcript. A failed dump keeps its failure in the peek, because you need to know about it before you open anything.</p>
+  <div class="pkj-rungs">
+    <div><h3><span class="pkj-tag" data-k="proposed">1</span>Row</h3><div class="pkj-surface pk" data-static-rung="row-dump"></div><p class="pkj-hint">Kind icon, time, first line, "made 3".</p></div>
+    <div><h3><span class="pkj-tag" data-k="proposed">2</span>Peek</h3><div data-static-rung="peek-dump"></div></div>
+    <div><h3><span class="pkj-tag" data-k="proposed">3</span>Pane</h3><div class="pkj-st-720 jig-stage pk-stage" id="dump-pane" data-build="dumpPane"></div></div>
+  </div>
+  <div class="pkj-mt-m pkj-rungs">
+    <div><p class="pkj-hint">When processing fails, the failure stays in the peek, so you see it before opening anything. There's no transcript to preview, so nothing is made yet. Retry lives in the pane, next to the processing run.</p></div>
+    <div><h3><span class="pkj-tag" data-k="proposed">2</span>Peek, failed</h3><div data-static-rung="peek-dump-failed"></div></div>
+  </div>
+  <div class="pkj-ledger">
+    <div><h4>Kept from the row</h4><ul><li>Kind and time</li><li>First line, now the peek's name</li><li>"Made 3", now the actual signals</li></ul></div>
+    <div><h4>Revealed in the peek</h4><ul><li>Status, including a failure</li><li>The first 3 lines</li><li>What it made, as rows that open their own peek</li></ul></div>
+    <div><h4>Only in the pane</h4><ul><li>The full transcript or text</li><li>Audio, links and attachments</li><li>Replies and processing runs</li><li>Delete dump (a confirmation modal, as decided in DI-002)</li></ul></div>
+  </div>
+</section>
+
+<section class="jig-section">
+  <h2>Theme, theory and prototype</h2>
+  <p>The same ladder for the other nouns. A suggestion is never a destination in its own right: it shows inside the peek of the object it changes, with Dismiss to the left of Accept.</p>
+  <div class="pkj-compact">
+    <div><h3 class="pkj-h3">Theme</h3><div class="pkj-surface pk" data-static-rung="row-theme"></div><div data-static-rung="peek-theme"></div><p class="pkj-paneonly"><b>Peek:</b> what it holds, up to 3 theories with confidence, and the 3 newest signals. <b>Only in the pane:</b> the full feed, the theory deck, prototypes, editing the name and Retire.</p></div>
+    <div><h3 class="pkj-h3">Theory</h3><div class="pkj-surface pk" data-static-rung="row-theory"></div><div data-static-rung="peek-theory"></div><p class="pkj-paneonly"><b>Peek:</b> claim, confidence, Happens by, tripwire, the top 2 supporting and top 2 undermining signals, and how many suggestions are waiting. A tripped count stays red here. <b>Only in the pane:</b> body, history, rivals, what it follows from, versions and every action.</p></div>
+    <div><h3 class="pkj-h3">Prototype</h3><div class="pkj-surface pk" data-static-rung="row-proto"></div><div data-static-rung="peek-proto"></div><p class="pkj-paneonly"><b>Peek:</b> status, the theories it tests, the first screenshot (schematic here) and links. <b>Only in the pane:</b> body, all media and editing.</p></div>
+  </div>
+</section>
+
+<section class="pkj-min-m jig-section" data-decision="trigger" data-question="What does clicking a row do?">
+  <h2>Signal 2 in the theme pane's feed</h2>
+  <p><i>Novel agent interfaces</i> in the docked pane. The second signal has a suggested link to a theory, so its peek carries the only actions a peek allows: Dismiss and Accept. Try both stages: open a peek, follow the theme or theory inside it (the peek is replaced, never stacked), then expand.</p>
+  <div class="jig-compare">
+    <div class="jig-option" data-option="Row opens the peek">
+      <div class="jig-label"><b>A</b> Row opens the peek; expand icon opens the pane</div>
+      <p class="jig-note">The coordinator's proposal. One click always shows a little more. Two clicks reach the pane.</p>
+      <div class="pkj-st-600 jig-stage pk-stage" id="feed-a" data-build="feed"></div>
+    </div>
+    <div class="jig-option" data-option="Row opens the pane, eye opens the peek">
+      <div class="jig-label"><b>B</b> Row opens the pane; an eye on the row opens the peek</div>
+      <p class="jig-note">Closer to Maggie's first description: "an expansion icon or similar that opens an expanded popover first". The eye shows on hover or focus, and always on touch.</p>
+      <div class="pkj-st-600 jig-stage pk-stage" id="feed-b" data-build="feed" data-trigger="pane"></div>
+    </div>
+  </div>
+</section>
+
+<section class="pkj-min-s jig-section" data-decision="peek-verbs" data-question="Can a peek do anything besides Accept and Dismiss?">
+  <h2>What a peek can do</h2>
+  <p>The same peek both ways. Nothing in a peek edits the object, so it can close on any outside click without losing work.</p>
+  <div class="jig-compare">
+    <div class="jig-option" data-option="Read-only, plus Accept and Dismiss"><div class="jig-label"><b>A</b> Read-only, plus Accept and Dismiss</div><p class="jig-note">Every other change happens in the pane, one click away.</p><div class="pkj-peek-col" data-static-rung="peek-x1-read"></div></div>
+    <div class="jig-option" data-option="One quick verb: File in theme"><div class="jig-label"><b>B</b> One quick verb: File in theme</div><p class="jig-note">Filing is the most common triage step for a fresh signal. The picker would replace the peek, anchored to the same row.</p><div class="pkj-peek-col" data-static-rung="peek-x1-verb"></div></div>
+  </div>
+</section>
+
+<section class="jig-section">
+  <h2>Where peeks replace an unfold today</h2>
+  <p>Each stage is live: click a row, card, token or count. Only one peek is open across the whole page.</p>
+
+  <h3 class="pkj-h3-gap pkj-h3">Columns <span class="pkj-tag" data-k="proposed">Proposed</span></h3>
+  <p class="pkj-mb-s pkj-hint">All five types at their real column width. A 360px peek is wider than a column, so it floats over the next column instead of pushing anything down.</p>
+  <div class="pkj-st-560 jig-stage pk-stage" id="columns" data-build="columns"></div>
+
+  <div class="pkj-min-m pkj-mt-l jig-compare">
+    <div class="jig-option"><h3 class="pkj-h3">Briefing items <span class="pkj-tag" data-k="proposed">Proposed</span></h3><p class="jig-note">The challenged theory, new signals and the dump each open their own peek.</p><div class="pkj-st-480 jig-stage pk-stage" id="briefing" data-build="briefing"></div></div>
+    <div class="jig-option"><h3 class="pkj-h3">Filed token in a reply <span class="pkj-tag" data-k="proposed">Proposed</span></h3><p class="jig-note">Replaces §4's "unfolds the gists". The token peeks the set it filed; each gist opens its own peek in place.</p><div class="pkj-st-440 jig-stage pk-stage" id="chat" data-build="chat"></div></div>
+    <div class="jig-option"><h3 class="pkj-h3">Tripped tripwire <span class="pkj-tag" data-k="proposed">Proposed</span></h3><p class="jig-note">Replaces §4's "count toggles the matched signals". The red count opens the matches, each with Dismiss and Accept. Deciding the last one turns the count off.</p><div class="pkj-st-520 jig-stage pk-stage" id="tripwire" data-build="tripwire"></div></div>
+  </div>
+  <h3 class="pkj-h3-gap-l pkj-h3">Where a signal came from <span class="pkj-tag" data-k="proposed">Proposed</span></h3>
+  <p class="pkj-mb-s pkj-hint">Replaces the DI-002 dump viewer and the DI-004 §7 popover. "Voice note, Today 07:40" under From in the Signal pane opens the dump's peek, kept inside the stage. Its expand icon swaps the pane to the dump, with Back.</p>
+  <div class="pkj-st-640 jig-stage pk-stage" id="provenance" data-build="provenance"></div>
+</section>
+
+<section class="pkj-min-s jig-section" data-decision="narrow" data-question="At 390, what does a peek become?">
+  <h2>Narrow screens</h2>
+  <p>The coordinator's review says bottom sheet. The earlier DI-004 provenance note said a tethered card, "not a bottom sheet". Neither dims the page. Tap the second signal in each phone.</p>
+  <div class="jig-compare">
+    <div class="jig-option" data-option="Bottom sheet"><div class="jig-label"><b>A</b> Bottom sheet</div><p class="jig-note">Always in thumb reach and the same place every time. It covers the bottom of the list, but not the row you tapped.</p><div class="jig-stage pk-stage pkj-phone" id="phone-sheet" data-build="phone" data-narrow="sheet"></div></div>
+    <div class="jig-option" data-option="Tethered card"><div class="jig-label"><b>B</b> Tethered card</div><p class="jig-note">Grows from the row, as on desktop, and flips above it when the row is low on the screen.</p><div class="jig-stage pk-stage pkj-phone" id="phone-card" data-build="phone" data-narrow="card"></div></div>
+  </div>
+</section>
+
+<section class="jig-section">
+  <h2>Pane rigour: Signal B and Dump B, measured</h2>
+  <p>Computed styles inside <code>.pn-doc</code> in the DI-004 jig (before), against the panes in this jig (after). Script: <code>measure.mjs</code>, Playwright at 1440. Contrast is measured against the pane's white.</p>
+  <div class="pkj-mb-l pkj-shots">
+    <figure><img src="evidence/di004-signal-pane-b-crop.png" alt="DI-004 Signal pane B, before" loading="lazy"><figcaption><span class="pkj-tag" data-k="current">Before</span> DI-004 Signal pane B. Labels are #8a8a8a (3.45:1). The 12px chip icons sit 1.5px high. There's a grey heading, "What the source says", and a grey illustrative note.</figcaption></figure>
+    <figure><img src="evidence/di004-dump-pane-b-crop.png" alt="DI-004 Dump pane B, before" loading="lazy"><figcaption><span class="pkj-tag" data-k="current">Before</span> DI-004 Dump pane B. It uses seven text sizes (11, 12, 13, 14, 15, 22 and 26 across both panes). "Made" and "Transcript" are 12px grey headings, and the theme names are 11px grey.</figcaption></figure>
+  </div>
+  <table class="jig-table pkj-diff" id="measure-table">
+    <thead><tr><th>Property</th><th>Rule</th><th>Before (DI-004 B panes)</th><th>After (this jig)</th></tr></thead>
+    <tbody>
+      <tr><td>Text sizes</td><td>14 body and labels, 22 title, 12 counts only</td><td>11, 12, 13, 14, 15, 22, 26</td><td data-after="sizes">12, 14, 22</td></tr>
+      <tr><td>Field label colour</td><td>ink-2, at least 4.5:1</td><td>#8a8a8a, 3.45:1</td><td data-after="label">ink-2 #525252, 7.81:1</td></tr>
+      <tr><td>Lowest contrast of any text</td><td>at least 4.5:1</td><td>3.45:1 (labels, headings, 11px theme names)</td><td data-after="mincr">5.65:1 (the red failure text); body 17.93:1</td></tr>
+      <tr><td>Title sizes</td><td>one, 22–24</td><td>26 (signal), 22 (dump)</td><td data-after="title">22 in both panes; peeks use 14 w600</td></tr>
+      <tr><td>Icon sizes</td><td>16 in a 24px slot</td><td>10, 12, 13 and 16</td><td data-after="icons">16 only (12 in the Signal pane, 8 in the Dump pane)</td></tr>
+      <tr><td>Icon centre vs first line</td><td>within ±0.5px</td><td>−1.5 to +4px (12px chips high, 13px margin marks low)</td><td data-after="align">+0.5px on every icon</td></tr>
+      <tr><td>Grey section headings and notes</td><td>none; one set of field labels</td><td>"What the source says", "Made", "Transcript", "Illustrative."</td><td>None. Sources, Note, Themes, Theories, From, Passage, Merged; Captured, Kind, Made, Processed, Audio, Transcript</td></tr>
+      <tr><td>Reading measure</td><td>at most 68ch</td><td>68ch (kept)</td><td>68ch</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="jig-section">
+  <h2>The contract</h2>
+  <table class="jig-table">
+    <thead><tr><th>Rule</th><th>Proposed behaviour</th></tr></thead>
+    <tbody>
+      <tr><td>Tier</td><td>Tier 4, a tethered float. It sits above the surface with a float shadow. No scrim, no blocking, never centred.</td></tr>
+      <tr><td>Origin</td><td>It grows from the row or token that opened it (scale 0.96 → 1, 180ms, ease-out); with reduced motion it only fades. The row keeps a ring while its peek is open.</td></tr>
+      <tr><td>Placement</td><td>Below the trigger, aligned to its left edge, 6px gap. It flips above when there's more room there, and is clamped 8px inside the scroller it opened from. The body scrolls inside the peek only if the space left is shorter than the content.</td></tr>
+      <tr><td>Width</td><td>360px. At 390 it becomes either a sheet or a full-width card (open choice above).</td></tr>
+      <tr><td>One at a time</td><td>Opening a peek closes any other. Clicking a link inside a peek replaces it in place, with Back in its header. A peek never opens on top of a peek.</td></tr>
+      <tr><td>Close</td><td>Esc or X closes it and returns focus to the trigger. An outside click closes it and leaves focus where you clicked. Clicking the same trigger again toggles it shut. It also closes if its row scrolls out of view.</td></tr>
+      <tr><td>Keyboard</td><td>Enter or Space on a row opens its peek, and focus moves into the peek. Tab moves through the peek's links; Esc goes back. The trigger has <code>aria-haspopup="dialog"</code> and <code>aria-expanded</code>; the peek is <code>role="dialog"</code>, non-modal.</td></tr>
+      <tr><td>To the pane</td><td>The expand icon (top right, beside X) opens the object in the docked pane and closes the peek. Focus moves to the pane's title.</td></tr>
+      <tr><td>Pickers and menus</td><td>File in theme, Add theory and Retire stay anchored popovers or menus from the pane. If a quick verb is chosen for peeks, its picker replaces the peek; it doesn't stack.</td></tr>
+      <tr><td>Not peeks</td><td>Creation (an empty object in the pane), Merge (immediate, with Undo), Delete dump (a modal), Find (a palette) and toasts. These are actions, not reading.</td></tr>
+      <tr><td>Editing contexts</td><td>Inside the pane, a field's own control edits it; a reference's text opens its peek. In pickers and the palette a row selects; it doesn't peek.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="jig-section">
+  <h2>What this supersedes</h2>
+  <table class="jig-table">
+    <thead><tr><th>Earlier</th><th>Status</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>DI-004 A (field sheet in place) and C (provenance trail in place)</td><td><span class="pkj-tag" data-k="superseded">Superseded</span></td><td>Both unfold the object inside its list. C's order of fields (source, then Maggie's words, then the signal) carries into the pane.</td></tr>
+      <tr><td>DI-004 B, docked Signal and Dump panes</td><td>Kept</td><td>Becomes rung 3. Its contents are redrawn to the measured rules above.</td></tr>
+      <tr><td>DI-004 §2 options in the feed</td><td><span class="pkj-tag" data-k="superseded">Superseded</span></td><td>Replaced by the feed stages above.</td></tr>
+      <tr><td>DI-004 §7 popover with the pane, and the provenance popover note ("not a bottom sheet")</td><td><span class="pkj-tag" data-k="superseded">Superseded</span></td><td>It becomes the dump peek from "From". Whether it's a sheet at 390 is now an open choice.</td></tr>
+      <tr><td>DI-002 dump viewer, "unfold in place" alternative</td><td><span class="pkj-tag" data-k="superseded">Superseded</span></td><td>The dump peek replaces both the modal and the unfold.</td></tr>
+      <tr><td>DI-002 decisions on creation, pickers, Retire, Merge, Delete and Find</td><td>Kept</td><td>Untouched; listed under "Not peeks" in the contract.</td></tr>
+      <tr><td>DI-001 object references and DI-006 marks</td><td>Kept</td><td>Rows use the type glyph and marks those jigs settled; this jig only adds what a click reveals.</td></tr>
+      <tr><td>Design model §3, §4 and §5</td><td>Edit proposed</td><td>See <a href="model-diff.md">model-diff.md</a>.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</body>
+</html>

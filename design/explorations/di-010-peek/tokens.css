@@ -1,0 +1,132 @@
+/* DI-010 proposed tokens. The only file allowed literal values. */
+:root {
+  /* Ink and surfaces */
+  --pk-ink: rgb(23 23 23);
+  --pk-ink-2: rgb(82 82 82);
+  --pk-on-ink: rgb(255 255 255);
+  --pk-ink-hover: rgb(50 50 50);
+  --pk-bg: rgb(250 250 250);
+  --pk-surface: rgb(255 255 255);
+  --pk-sunk: rgb(244 244 244);
+  --pk-hover: rgb(240 240 240);
+  --pk-line: rgb(0 0 0 / 0.09);
+  --pk-line-2: rgb(0 0 0 / 0.05);
+  --pk-line-strong: rgb(0 0 0 / 0.18);
+  --pk-dash: rgb(0 0 0 / 0.22);
+  --pk-track: rgb(0 0 0 / 0.12);
+  --pk-bars: rgb(0 0 0 / 0.25);
+  --pk-handle: rgb(0 0 0 / 0.15);
+  --pk-on-ink-hover: rgb(255 255 255 / 0.12);
+  --pk-pos: rgb(31 122 77);
+  --pk-neg: rgb(180 64 47);
+  --pk-neg-soft: rgb(180 64 47 / 0.1);
+  --pk-neg-wave: rgb(180 64 47 / 0.6);
+  --pk-fresh: rgb(31 160 110);
+  --pk-highlight: rgb(255 214 102 / 0.45);
+  --pk-thumb-a: rgb(241 239 233);
+  --pk-thumb-b: rgb(227 224 216);
+  --pk-thumb-ink: rgb(255 255 255 / 0.85);
+
+  /* Type: three sizes */
+  --pk-font: "Inter", system-ui, sans-serif;
+  --pk-text-s: 12px;   --pk-lh-s: 16px;     /* counts and badges only */
+  --pk-text: 14px;     --pk-lh: 20px;       /* every value and label */
+  --pk-lh-read: 22px;                       /* long passages */
+  --pk-text-title: 22px; --pk-lh-title: 28px;
+  --pk-track-title: -0.01em;
+  --pk-track-tag: 0.01em;
+  --pk-measure: 68ch;
+
+  /* Space */
+  --pk-space-1: 2px;
+  --pk-space-2: 4px;
+  --pk-space-3: 6px;
+  --pk-space-4: 8px;
+  --pk-space-5: 10px;
+  --pk-space-6: 12px;
+  --pk-space-7: 16px;
+  --pk-space-8: 20px;
+  --pk-space-9: 24px;
+  --pk-space-10: 32px;
+  --pk-space-11: 48px;
+
+  /* Strokes and radii */
+  --pk-hair: 0.5px;
+  --pk-stroke: 1px;
+  --pk-stroke-2: 1.5px;
+  --pk-ring: 2px;
+  --pk-r-xs: 2px;
+  --pk-r-s: 4px;
+  --pk-r-m: 6px;
+  --pk-r-l: 8px;
+  --pk-r-xl: 10px;
+  --pk-r-2xl: 12px;
+  --pk-r-bubble: 14px;
+  --pk-r-sheet: 16px;
+
+  /* Component sizes */
+  --pk-slot: 24px;          /* icon slot */
+  --pk-glyph: 16px;
+  --pk-ctl: 28px;           /* buttons and icon buttons */
+  --pk-hit-out: -6px;       /* invisible hit-area extension */
+  --pk-touch: 40px;         /* touch-width control size */
+  --pk-dot: 6px;
+  --pk-mark: 7px;
+  --pk-ring-dot: 8px;
+  --pk-dash-w: 10px;
+  --pk-dash-h: 3px;
+  --pk-token-h: 24px;
+  --pk-label-w: 104px;
+  --pk-peek-label-w: 84px;
+  --pk-peek-w: 360px;
+  --pk-peek-max-default: 520px;
+  --pk-peek-head-h: 44px;
+  --pk-sheet-head-h: 52px;
+  --pk-handle-w: 36px;
+  --pk-handle-h: 4px;
+  --pk-bar-h: 48px;
+  --pk-audio-h: 36px;
+  --pk-toast-h: 40px;
+  --pk-note-min: 64px;
+  --pk-doc-w: 640px;
+  --pk-chat-w: 560px;
+  --pk-day-w: 88px;
+  --pk-trip-ring: 3.5px;
+  --pk-filed-drop: -5px;
+  --pk-mark-raise: 1px;
+
+  /* Elevation */
+  --pk-shadow-float: 0 0 0 0.5px rgb(0 0 0 / 0.12), 0 2px 4px rgb(0 0 0 / 0.04), 0 12px 32px rgb(0 0 0 / 0.12);
+  --pk-shadow-card: 0 0 0 0.5px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.04);
+  --pk-shadow-card-hover: 0 0 0 0.5px rgb(0 0 0 / 0.18), 0 2px 6px rgb(0 0 0 / 0.06);
+  --pk-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Jig framing only (not part of the proposal) */
+  --pkj-ink: rgb(61 58 52);
+  --pkj-ink-2: rgb(93 88 80);
+  --pkj-tag-current: rgb(138 132 122);
+  --pkj-tag-proposed: rgb(43 41 37);
+  --pkj-tag-superseded: rgb(243 217 211);
+  --pkj-bad: rgb(122 44 31);
+  --pkj-good: rgb(31 90 58);
+  --pkj-ledger: rgb(246 244 240);
+  --pkj-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 8px 24px rgb(0 0 0 / 0.06);
+  --pkj-phone-shadow: 0 0 0 8px rgb(43 41 37), 0 12px 40px rgb(0 0 0 / 0.18);
+  --pkj-phone-w: 390px;
+  --pkj-phone-h: 760px;
+  --pkj-phone-r: 28px;
+  --pkj-tag-h: 22px;
+  --pkj-rung-row: 260px;
+  --pkj-compact-min: 340px;
+  --pkj-shot-min: 420px;
+  --pkj-prov-pane: 600px;
+  --pkj-stage-s: 520px;
+  --pkj-stage-m: 560px;
+  --pkj-stage-l: 600px;
+  --pkj-stage-xl: 640px;
+  --pkj-stage-xxl: 720px;
+  --pkj-min-s: 400px;
+  --pkj-min-m: 520px;
+  --pkj-stage-480: 480px;
+  --pkj-stage-440: 440px;
+}
