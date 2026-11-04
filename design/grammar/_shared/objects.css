@@ -286,3 +286,8 @@
 .ob-pk-body > .ob-attach { margin-left: 0; }
 .ob-body > .ob-prose, .ob-body > .ob-fields, .ob-reply > .ob-prose { margin-left: calc(var(--hang) * -1); }
 .ob-block > .ob-why-t { margin-left: var(--inset-row); }
+
+/* A full view that fills the main area (Maggie, 4 Nov, from 08): 48 on every side, content at most 720 wide, left-aligned. Docked panes
+   (Columns, Atlas, Timeline) keep the pane inset. An empty top bar takes no height, so the top margin reads the same as the sides. */
+.nv-main .ob-full { padding: var(--main-inset-block) var(--main-inset-inline) 96px; max-width: calc(720px + var(--main-inset-inline) * 2); }
+.ob-full > .ob-top:empty { display: none; }

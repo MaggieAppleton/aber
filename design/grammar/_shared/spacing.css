@@ -23,6 +23,7 @@
   --inset-nav-block: 12px;  --inset-nav-inline: 8px;    /* rail */
   --inset-list-block: 12px; --inset-list-inline: 16px;  /* main column */
   --inset-pane-block: 20px; --inset-pane-inline: 24px;  /* pane */
+  --main-inset-inline: 48px; --main-inset-block: var(--main-inset-inline);  /* a full view filling the main area (08, 4 Nov): 48 all round, content max 720, left-aligned; docked panes keep the pane inset */
   --inset-canvas: 16px;     /* map and timeline content from the canvas edge (list level) */
   --inset-float: 12px;      /* floating controls (zoom, filter, view switcher) from the window edge */
   /* Heights */

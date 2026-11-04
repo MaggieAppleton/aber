@@ -275,3 +275,7 @@ button.nv-chip:hover, .nv-chip[aria-expanded="true"] { background: var(--hover);
 /* A label/value list reads as a key line: no 96 label column; label in ink 2, value right after it, pairs 16 apart, on the tile edge */
 .nv-fields { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-tight) var(--gap-key); }
 .nv-fields dd { margin-right: calc(var(--gap-group) - var(--gap-key)); }
+
+/* A full view filling the main area: 48 all round, content at most 720, left-aligned (4 Nov, from 08); an empty top bar takes no height */
+.nv-main .nv-doc { padding: var(--main-inset-block) var(--main-inset-inline) 96px; max-width: calc(720px + var(--main-inset-inline) * 2); }
+.nv-doc > .nv-top:empty { display: none; }
