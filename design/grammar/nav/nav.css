@@ -247,3 +247,10 @@ button.nv-chip:hover, .nv-chip[aria-expanded="true"] { background: var(--hover);
 .nv-row.two .sub > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .nv-row > .nv-n, .nv-row > .nv-ring, .nv-row > .nv-pending, .nv-row > .st, .nv-row .marks { flex: none; }
 .nv-glabel > :not(.nv-n):not(.nv-ib):not(i) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── 4 Nov: rail narrower (dial "Type rail width", 200 → 160); rows are placeholders until 06 Objects ── */
+:root { --nv-rail-w: 160px; }
+.nv-row { color: var(--ink-2); }
+.nv-row[aria-current="true"] { color: var(--ink); }
+.nv-placeholder { margin: var(--inset-nav-block) var(--inset-nav-inline) 0; padding: 6px 8px; border-radius: var(--r-sm); outline: 1px dashed oklch(0.6 0.15 60); outline-offset: -1px;
+  background: oklch(0.97 0.03 85); color: oklch(0.42 0.08 60); font: 500 var(--fs-label)/1.4 var(--font); }

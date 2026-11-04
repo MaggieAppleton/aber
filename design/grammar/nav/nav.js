@@ -202,14 +202,14 @@
 
     if (t === "briefing") {
       add = false; meta = "";
-      body = BRIEF.map(([label, ids]) => group(label, ids.map(id => O[id]).map(o => row(o, `${g(o.kind, o.draft)}<span class="nm">${o.name}</span>${o.pending ? `<span class="nv-pending">${o.pending}</span>` : ""}`, "mixed", o.challenge ? dot("neg", "Challenge") : o.fresh ? dot("new", "New") : "")), { n: ids.length })).join("");
+      body = BRIEF.map(([label, ids]) => group(label, ids.map(id => O[id]).map(o => row(o, `<span class="nm">${o.name}</span>`)))).join("");
     } else if (t === "theme") {
-      const r = o => row(o, `<span class="nm">${o.name}</span>${theoriesOf(o).length ? `<span class="nv-n" title="${theoriesOf(o).length} theories">${theoriesOf(o).length}</span>` : '<span class="nv-ring" role="img" aria-label="Open: no theory yet" title="Open: no theory yet"></span>'}`, "", o.fresh ? dot("new", `${o.fresh} new signals`) : "");
+      const r = o => row(o, `<span class="nm">${o.name}</span>${theoriesOf(o).length ? `<span class="nv-n">${theoriesOf(o).length}</span>` : ""}`);
       const mine = all("theme").filter(o => !o.draft).sort((a, b) => (b.fresh || 0) - (a.fresh || 0));
       body = group("", mine.map(r)) + group("Drafts", all("theme").filter(o => o.draft).map(r));
     } else if (t === "theory") {
       tools = search("Find a theory") + filter();
-      const r = o => row(o, `<span class="nm">${o.name}</span><span class="marks">${o.pending ? `<span class="nv-pending" aria-label="${o.pending} pending suggestions">${o.pending}</span>` : ""}</span>`, "two", o.challenge ? dot("neg", "Challenge") : "");
+      const r = o => row(o, `<span class="nm">${o.name}</span>`);
       const ts = all("theory").filter(hit);
       body = group("Held", ts.filter(o => !o.draft && !o.retired).map(r)) + group("Drafts", ts.filter(o => o.draft).map(r))
         + (ts.some(o => o.retired) ? fold("retired", "Retired", ts.filter(o => o.retired).length, ts.filter(o => o.retired).map(r)) : "");
@@ -220,19 +220,20 @@
     } else if (t === "signal") {
       add = false;
       tools = search("Find a signal") + filter();
-      const r = o => row(o, `<span class="nm">${o.name}</span><span class="sub"><span>${o.src}</span></span>`, "two", o.fresh ? dot("new", "New") : "");
+      const r = o => row(o, `<span class="nm">${o.name}</span>`);
       const unseen = s.opt.unseen === "yes", sigs = all("signal").filter(hit);
       body = (unseen ? group("Unseen", sigs.filter(o => o.fresh).map(r), { n: sigs.filter(o => o.fresh).length, act: ib("check", "Mark all seen", 'class="nv-ib sm"', "A") }) : "")
         + DAYS.map((d, i) => group(d, sigs.filter(o => o.day === i && !(unseen && o.fresh)).map(r))).join("") + OLDER.signal.map(([m, n]) => fold(m, m, n, [])).join("");
     } else if (t === "dump") {
       add = false;
       tools = search("Find a dump");
-      const r = o => row(o, `<span class="nm">${o.name}</span><span class="marks"><span class="nv-mono">${o.time}</span></span><span class="sub"><span>${o.ask ? "Ask, 1 reply" : `${o.made.length} made`}</span>${o.len ? `<span>${o.len}</span>` : ""}</span>`, "two");
+      const r = o => row(o, `<span class="nm">${o.name}</span>`);
       body = DAYS.map((d, i) => group(d, all("dump").filter(o => o.day === i && hit(o)).map(r))).join("") + OLDER.dump.map(([m, n]) => fold(m, m, n, [])).join("");
     }
     if (!body.replace(/<[^>]+>/g, "").trim()) body = `<p class="nv-empty">Nothing matches</p>`;
     return `
       <section class="nv-list" aria-label="${TYPES[t].name}">
+        <p class="nv-placeholder">Row designs are placeholders, not proposals. They'll be designed in 06 Objects.</p>
         <div class="nv-lhead"><span class="h">${t === "briefing" ? "Since yesterday" : TYPES[t].name}</span>${meta !== "" ? `<span class="nv-meta">${meta}</span>` : ""}${add ? ib("plus", `New ${TYPES[t].one.toLowerCase()}`) : ""}</div>
         ${tools ? `<div class="nv-tools">${tools}</div>` : ""}
         <div class="nv-scroll">${body}</div>
@@ -347,11 +348,11 @@
   };
 
   /* ── Frame ─────────────────────────────────────────── */
-  const W = { A: [200, 280, 0], B: [200, 272, 440], C: [56, 272, 448] };
+  const W = { A: ["var(--nv-rail-w)", 280, 0], B: ["var(--nv-rail-w)", 272, 440], C: ["56px", 272, 448] };
   const frame = s => {
     if (s.view !== "default") return `<div class="stg-host nv-stagehost" data-stage='{"view":"${s.view}"}'></div>`;
     const [rw, lw, pw] = W[s.v], pane = s.v !== "A" && s.pane && O[s.pane], home = s.type === "home";
-    const cols = [`${rw}px`, home ? null : `${lw}px`, "minmax(0, 1fr)", pane ? `${pw}px` : null].filter(Boolean).join(" ");
+    const cols = [rw, home ? null : `${lw}px`, "minmax(0, 1fr)", pane ? `${pw}px` : null].filter(Boolean).join(" ");
     const content = home ? digest() : s.v === "B" ? boxes(O[s.sel[s.type]], s) : doc(O[s.sel[s.type]], s, "main");
     return `<div class="nv" data-v="${s.v}" data-switch="${s.opt.switchAt}" data-at-home="${home}" style="grid-template-columns:${cols}">${rail(s)}${home ? "" : list(s)}<main class="nv-main"><div class="nv-scroller">${content}</div>${s.opt.switchAt === "main" ? switcher() : ""}</main>${pane ? `<aside class="nv-pane" aria-label="Open object">${doc(pane, s, "pane")}</aside>` : ""}</div>`;
   };
