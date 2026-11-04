@@ -91,6 +91,7 @@ Evidence: today's CSS uses 36 distinct paddings, 18 gaps, 18 margins and 19 row 
    - Floating controls (zoom, filter, view switcher) sit `--inset-float` from the window edge in every view: 8 / 12 / 16.
    - Columns view: the Themes column is navigation (`--inset-nav`); the Theories column is a list (`--inset-list`).
    - Timeline cells pad by `--inset-row` and stack items with `--gap-item`.
+   - **List column width, fixed; pane flexes.** `--list-w` is 296, the app's theories column (measured in jig `/app` at 1440: 296 including its insets, cards 240). It is the same in Sections and Columns; Columns' Themes column is fixed at 230 (`--colnav-w`). A wider window widens the pane, never the theories column. A jig changes the width only by setting `--list-w`. **DECIDED, 4 Nov.**
 6. **Two click heights.** `--row` is 32, for list and rail rows. `--control` is 28, for buttons and inputs; `--control-sm` is 24, inside dense rows. Every target has a 40px hit area.
 7. **Text inputs** centre their text in `--control`. Their horizontal padding is the vertical padding plus 4.
 8. **Separate with space first.**

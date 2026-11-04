@@ -369,3 +369,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 4 Nov 2026 (Maggie, 01-spacing): density is Regular (4px base; gaps 4/6/8/16/32; insets chip 8, control 10, row 8, card 12; region insets nav 12/8, list 12/16, pane 20/24; canvas 16, floating controls 12; rows 32, controls 28). Middle-column theories are separate cards with gaps. Padding grows with focus: navigation < list < pane.
 
 4 Nov 2026 (Maggie, 02-type): type scale B 11/12/13/20, pane title 24, section headers ink 2. 11 is for counts and badges only; 12 for labels, meta, buttons, chips, tooltips and keys; 13 body; 24 the pane title alone. Nothing uses 20 after this. Supersedes the "Type scale" item under Still open.
+
+4 Nov 2026 (Maggie): theories column stays at the app's width; never widens implicitly; width is a token (`--list-w`, 296, measured in jig /app at 1440). The pane takes the remaining width. Columns view: Themes 230, Theories `--list-w`.
