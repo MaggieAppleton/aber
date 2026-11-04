@@ -215,7 +215,7 @@ export function wrap(text: string, width: number, weight = 500): string[] {
   const hit = cache.get(k); if (hit) return hit;
   ctx ??= document.createElement("canvas").getContext("2d");
   if (!ctx) return [text];
-  ctx.font = `${weight} 13px Inter, system-ui, sans-serif`;
+  ctx.font = `${weight} 13px Geist, Inter, system-ui, sans-serif`;
   const out: string[] = [];
   let line = "";
   for (const w of text.split(" ")) {
@@ -229,6 +229,6 @@ export function wrap(text: string, width: number, weight = 500): string[] {
 export function textWidth(text: string, weight = 500) {
   ctx ??= document.createElement("canvas").getContext("2d");
   if (!ctx) return text.length * 7;
-  ctx.font = `${weight} 13px Inter, system-ui, sans-serif`;
+  ctx.font = `${weight} 13px Geist, Inter, system-ui, sans-serif`;
   return ctx.measureText(text).width;
 }

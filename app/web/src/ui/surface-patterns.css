@@ -5,18 +5,18 @@
  * Red means a tripped tripwire, and nothing else.
  */
 :root {
-  --ab-shc: var(--ap-shc, 26 33 30);
-  --ab-accent: var(--ap-accent, #29a383);
-  --ab-focus: var(--ap-focus-ring, #29a383);
+  --ab-shc: var(--ap-shc, 42 41 38);
+  --ab-accent: var(--accent);
+  --ab-focus: var(--focus);
   --ab-new: var(--ap-new, var(--ab-accent));
-  --ab-red-dot: #e5484d;                       /* Radix red 9: challenge dots, brighter than the --ap-neg text red */
-  --ab-press: var(--ap-press, 0.98);
-  --ab-ink: #1a211e; --ab-ink-2: #5f6563; --ab-ink-3: #868e8b;   /* sage 12, 11, 9 */
-  --ab-sage-3: #eef1f0;
-  --ab-tripped: #ce2c31; --ab-tripped-line: #e5484d;             /* red 11 (signpost), red 9 (wavy underline) */
-  --ab-draft-line: rgb(var(--ab-shc) / 12%); --ab-draft-fill: rgb(255 255 255 / 45%);
-  --ab-spring: cubic-bezier(0.16, 1, 0.3, 1); --ab-spring-dur: 380ms;
-  --ab-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ab-red-dot: var(--neg-dot);                       /* Radix red 9: challenge dots, brighter than the --ap-neg text red */
+  --ab-press: var(--press-scale);
+  --ab-ink: var(--ink); --ab-ink-2: var(--ink-2); --ab-ink-3: var(--ink-2);   /* sage 12, 11, 9 */
+  --ab-sage-3: var(--ground-2);
+  --ab-tripped: var(--neg); --ab-tripped-line: var(--neg-dot);             /* red 11 (signpost), red 9 (wavy underline) */
+  --ab-draft-line: var(--hairline-strong); --ab-draft-fill: var(--draft-fill);
+  --ab-spring: var(--spring); --ab-spring-dur: var(--t-pane);
+  --ab-ease: var(--ease-out);
 }
 
 /* ── 1. Draft cards act from their edge ──

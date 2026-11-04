@@ -1,4 +1,5 @@
-/* Shared primitive values from the canonical Aber styles. Semantic tokens stay local to their surfaces. */
+/* Shared primitive values from the canonical Aber styles. The grammar tokens (end of file) are the semantic layer;
+   the most used neutrals below now point at them. */
 :root {
   /* Lengths retain their original units, including negative offsets. */
   --size-ch-4: 4ch;
@@ -178,7 +179,7 @@
   --color-gray-0-a-20: rgb(0 0 0 / 20%);
   --color-gray-0-a-22: rgb(0 0 0 / 22%);
   --color-gray-0-a-25: rgb(0 0 0 / 25%);
-  --color-gray-0-a-28: rgb(0 0 0 / 28%);
+  --color-gray-0-a-28: var(--hairline-strong);   /* dashed: not yet mine */
   --color-gray-0-a-30: rgb(0 0 0 / 30%);
   --color-gray-0-a-32: rgb(0 0 0 / 32%);
   --color-gray-0-a-34: rgb(0 0 0 / 34%);
@@ -190,30 +191,30 @@
   --color-gray-0-a-55: rgb(0 0 0 / 55%);
   --color-gray-0-a-75: rgb(0 0 0 / 75%);
   --color-gray-17: #111;
-  --color-gray-23: #171717;
+  --color-gray-23: var(--ink);
   --color-gray-23-a-0: rgb(23 23 23 / 0%);
   --color-gray-23-a-3: rgb(23 23 23 / 3%);
   --color-gray-23-a-30: rgb(23 23 23 / 30%);
   --color-gray-23-a-60: rgb(23 23 23 / 60%);
-  --color-gray-26: #1a1a1a;
+  --color-gray-26: var(--ink);
   --color-gray-51: #333;
   --color-gray-58: #3a3a3a;
-  --color-gray-82: #525252;
-  --color-gray-104: #686868;
-  --color-gray-138: #8a8a8a;
+  --color-gray-82: var(--ink-2);
+  --color-gray-104: var(--ink-2);
+  --color-gray-138: var(--ink-2);   /* was ink 3 as text; ink 3 is never text */
   --color-gray-142: #8e8e8e;
   --color-gray-182: #b6b6b6;
   --color-gray-226: #e2e2e2;
   --color-gray-237: #ededed;
   --color-gray-238: #eee;
   --color-gray-240: #f0f0f0;
-  --color-gray-244: #f4f4f4;
-  --color-gray-250: #fafafa;
+  --color-gray-244: var(--ground-2);
+  --color-gray-250: var(--ground);
   --color-gray-250-a-0-fraction: rgb(250 250 250 / 0);
   --color-gray-250-a-60: rgb(250 250 250 / 60%);
   --color-gray-250-a-92: rgb(250 250 250 / 92%);
   --color-gray-252: #fcfcfc;
-  --color-gray-255: #fff;
+  --color-gray-255: var(--surface);
   --color-gray-255-a-2: rgb(255 255 255 / 2%);
   --color-gray-255-a-2-5: rgb(255 255 255 / 2.5%);
   --color-gray-255-a-3: rgb(255 255 255 / 3%);
@@ -239,7 +240,7 @@
   --color-rgb-24-25-28: #18191c;
   --color-rgb-29-35-41: #1d2329;
   --color-rgb-29-37-48: #1d2530;
-  --color-rgb-31-122-77: #1f7a4d;
+  --color-rgb-31-122-77: var(--pos);
   --color-rgb-38-39-43: #26272b;
   --color-rgb-42-52-66: #2a3442;
   --color-rgb-47-111-237: #2f6fed;
@@ -257,7 +258,7 @@
   --color-rgb-107-127-150: #6b7f96;
   --color-rgb-127-155-132: #7f9b84;
   --color-rgb-169-188-205: #a9bccd;
-  --color-rgb-180-64-47: #b4402f;
+  --color-rgb-180-64-47: var(--neg);
   --color-rgb-183-121-31: #b7791f;
   --color-rgb-185-198-211: #b9c6d3;
   --color-rgb-191-212-230: #bfd4e6;
@@ -276,10 +277,113 @@
   --color-rgb-238-241-244: #eef1f4;
   --color-rgb-243-210-184: #f3d2b8;
   --color-rgb-245-227-179: #f5e3b3;
-  --color-rgb-246-245-241: #f6f5f1;
+  --color-rgb-246-245-241: var(--ground);
   --color-rgb-246-245-241-a-85: rgb(246 245 241 / 85%);
   --color-rgb-246-246-239: #f6f6ef;
   --color-rgb-247-249-250: #f7f9fa;
   --color-rgb-250-251-252: #fafbfc;
   --color-rgb-255-102-0: #ff6600;
 }
+
+/* ═══ Aber grammar (DECIDED 4 Nov 2026, design/grammar/RULES.md 00–06) ════════════════════════════════
+   Ported from design/grammar/_shared (tokens, spacing, type, icons, surfaces, controls, objects).
+   Colour system D, "Linen, bright types". The app's older names (--ap-*, --ab-*) map onto these in homes.css and
+   surface-patterns.css, so existing components pick them up. */
+:root {
+  /* 00 Colour: neutral hue 85, chroma 0.004 */
+  --nh: 85; --nc: 0.004;
+  --shade: 0.17 0.008 85;                                   /* channels for lines and shadows */
+  --ground:   oklch(0.975 0.004 85);
+  --ground-2: oklch(0.955 0.004 85);                        /* sunk: rail, field wells */
+  --ground-3: oklch(0.925 0.004 85);                        /* hovered fill on sunk */
+  --surface:  oklch(0.998 0.0012 85);
+  --hover:    oklch(var(--shade) / 5%);
+  --tile-bg:  oklch(var(--shade) / 6%);
+  --ink:      oklch(0.17 0.0048 85);
+  --ink-2:    oklch(0.47 0.0056 85);                        /* text that names or describes; >= 4.5:1 */
+  --ink-3:    oklch(0.74 0.0056 85);                        /* lines and marks only, never text */
+  --ink-hover: oklch(0.27 0.0048 85);
+  --on-ink: oklch(0.99 0 0); --on-ink-2: oklch(0.82 0.005 85);
+  --hairline:        oklch(var(--shade) / 8%);
+  --hairline-strong: oklch(var(--shade) / 11%);
+  --draft-fill:      oklch(1 0 0 / 45%);
+  --scrim:           oklch(var(--shade) / 18%);
+  /* Teal accent: focus ring and the current view only */
+  --accent:      oklch(0.6 0.1 182);
+  --accent-text: oklch(0.5 0.09 182);
+  --accent-wash: oklch(0.955 0.03 182);
+  --focus: var(--accent);
+  /* Primary is black ink */
+  --primary: var(--ink); --primary-hover: var(--ink-hover); --on-primary: var(--on-ink);
+  /* Status: two meanings. Up = accent; down, challenge = red. No amber. */
+  --pos: var(--accent-text); --pos-mark: var(--accent);
+  --neg: oklch(0.56 0.2 26); --neg-dot: oklch(0.59 0.2 26);
+  --fell: var(--neg); --fell-mark: var(--neg-dot);
+  /* Per-type hues: a pale tile and a bright glyph */
+  --t-dump: 288; --t-signal: 245; --t-theme: 340; --t-theory: 70; --t-prototype: 122; --t-tripwire: 25;
+  --tt-L: 0.958; --tt-C: 0.048; --tg-L: 0.56; --tg-C: 0.16;
+
+  /* 02 Type: Geist; Geist Mono for keys only. 11 / 12 / 13, pane title 24. */
+  --font: "Geist", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist", ui-monospace, monospace;
+  --fs-small: 11px; --fs-label: 12px; --fs-body: 13px; --fs-read: 13px; --fs-title: 24px;
+  --lh-ui: 1.4; --lh-prose: 1.55; --lh-head: 1.2; --measure: 68ch;
+  --w-regular: 400; --w-medium: 500; --w-strong: 600;
+  --sechead-ink: var(--ink-2);
+
+  /* 01 Spacing: Regular */
+  --gap-tight: 4px; --gap-icon: 6px; --gap-item: 8px; --gap-group: 16px; --gap-section: 32px;
+  --inset-chip: 8px; --inset-control: 10px; --inset-row: 8px; --inset-card: 12px;
+  --card-inline: 10px; --card-block: 8px;
+  --inset-peek: 16px; --inset-peek-top: 12px;
+  --gap-tile: 8px; --gap-tile-title: 12px; --gap-key: 6px;
+  --inset-nav-block: 12px; --inset-nav-inline: 8px;
+  --inset-list-block: 12px; --inset-list-inline: 16px;
+  --inset-pane-block: 20px; --inset-pane-inline: 24px;
+  --main-inset-inline: 48px; --main-inset-block: 48px; --main-max: 720px;
+  --inset-canvas: 16px; --inset-float: 12px;
+  --list-w: 296px; --colnav-w: 230px;
+  --row: 32px; --control: 28px; --control-sm: 24px; --chip-h: 24px; --hit: 40px; --composer-h: 40px;
+
+  /* 03 Icons */
+  --icon: 16px; --icon-label: 14px;
+  --tile: 18px; --tile-glyph: 12px; --tile-title: 32px; --tile-title-glyph: 20px;
+  --line-ui: calc(var(--fs-body) * var(--lh-ui));
+  --line-prose: calc(var(--fs-read) * var(--lh-prose));
+  --hang: calc(var(--tile) + var(--gap-tile));
+
+  /* 04 Surfaces: radii 4 / 7 / 10 / 14; shadows by tier; z by tier */
+  --r-xs: 4px; --r-sm: 7px; --r-md: 10px; --r-lg: 14px; --r-pill: 999px;
+  --r-control: 7px; --r-box: 10px; --r-bar: 14px;
+  --sh-raised: 0 0 0 0.5px oklch(var(--shade) / 10%), 0 1px 2px oklch(var(--shade) / 4.25%);
+  --sh-float:  var(--sh-raised);
+  --sel:       0 0 0 0.5px oklch(var(--shade) / 12%), 0 1px 2px oklch(var(--shade) / 5.1%), 0 3px 8px -2px oklch(var(--shade) / 8.5%);
+  --sh-sheet:  0 0 0 0.5px oklch(var(--shade) / 10%), 0 8px 16px -4px oklch(var(--shade) / 6.8%), 0 20px 44px -10px oklch(var(--shade) / 15.3%);
+  --sh-pop:    0 0 0 0.5px oklch(var(--shade) / 12%), 0 6px 12px -2px oklch(var(--shade) / 6.8%), 0 16px 36px -8px oklch(var(--shade) / 17%);
+  --sh-modal:  0 0 0 0.5px oklch(var(--shade) / 12%), 0 24px 56px -12px oklch(var(--shade) / 22%);
+  --sh-toast:  0 4px 12px oklch(var(--shade) / 17%);
+  --sh-tip:    0 2px 6px oklch(var(--shade) / 15%);
+  --btn-shadow: 0 1px 2px oklch(var(--shade) / 12%);
+  --ring: 0 0 0 0.5px var(--hairline-strong);
+  --edge: 0 0 0 0.5px var(--hairline-strong);
+  --z-0: 0; --z-chrome: 10; --z-raised: 20; --z-sheet: 30; --z-pop: 40; --z-modal: 50; --z-toast: 60; --z-tip: 70;
+
+  /* 05 Controls */
+  --fill-rest: oklch(var(--shade) / 6%);
+  --fill-hover: oklch(var(--shade) / 10%);
+  --surface-hover: color-mix(in oklab, var(--surface), oklch(var(--shade)) 5%);
+  --in-bg: var(--ground-2); --in-bg-hover: var(--ground-3); --in-bg-focus: var(--surface);
+  --disabled-o: 0.4;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-hover: 90ms; --t-press: 90ms; --t-float: 160ms; --t-surface: 260ms; --t-pane: 380ms;
+  --press-scale: 0.98;
+}
+/* Per-type colour: one hue per object, a pale tile and a bright glyph */
+[data-type="dump"] { --h: var(--t-dump); } [data-type="signal"] { --h: var(--t-signal); } [data-type="theme"] { --h: var(--t-theme); }
+[data-type="theory"] { --h: var(--t-theory); } [data-type="prototype"] { --h: var(--t-prototype); } [data-type="tripwire"] { --h: var(--t-tripwire); }
+[data-type] { --type-tile: oklch(var(--tt-L) var(--tt-C) var(--h)); --type-glyph: oklch(var(--tg-L) var(--tg-C) var(--h)); }
+[data-type="suggestion"] { --type-tile: var(--draft-fill); --type-glyph: var(--ink-2); }
+[data-type="briefing"] { --type-tile: var(--tile-bg); --type-glyph: var(--ink-2); }
