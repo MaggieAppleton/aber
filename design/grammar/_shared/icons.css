@@ -1,15 +1,16 @@
-/* Aber grammar: icons (PROPOSED, see RULES.md). Phosphor, Regular at rest, Fill only for the current or selected thing.
-   Scoped to stages carrying data-icons (03-icons sets it), so decided pages keep their glyphs until this is chosen.
-   Choices: data-iconsize="one" (16 everywhere) | "two" (14 beside 12px text); data-tile="lists" | "always" | "never". */
+/* Aber grammar: icons (DECIDED 4 Nov 2026, see RULES.md). Phosphor, Regular at rest, Fill only for the current or selected thing.
+   Every stage is in icons mode (data-icons) unless it opts out with {"icons":0}.
+   Decided: 16 beside 13 body, 14 beside 12px text; object glyphs on their tile everywhere.
+   03-icons keeps the weighed alternatives as scopes: data-iconsize="one" (16 everywhere); data-tile="lists" | "never". */
 
 :root {
   --icon: 16px;          /* the icon size, beside 13 body */
-  --icon-label: 16px;    /* beside 12px labels, chips, buttons and meta (choice 1) */
+  --icon-label: 14px;    /* beside 12px labels, chips, buttons and meta */
   --tile: 24px;          /* object glyph tile: icon + 4 each side */
   --line-ui: calc(var(--fs-body) * var(--lh-ui));      /* 18.2: one line of interface text */
   --line-prose: calc(var(--fs-read) * var(--lh-prose)); /* 20.15: one line of prose */
 }
-[data-iconsize="two"] { --icon-label: 14px; }
+[data-iconsize="one"] { --icon-label: 16px; }
 
 /* Every glyph is a square of its size, so boxes never depend on the font's line box */
 .stg[data-icons] i[class^="ph"] { width: var(--isz, var(--icon)); height: var(--isz, var(--icon)); font-size: var(--isz, var(--icon)); }
@@ -23,9 +24,9 @@
 /* Tile contexts. "lists": headers and list rows (section and column heads, rail rows, the column strips, evidence rows, the tripwire row, map labels).
    "always": also chips and inline meta. "never": colour alone carries the type. */
 .stg[data-icons]:is([data-tile="lists"], [data-tile="always"], :not([data-tile])) :is(.stg-sec-head, .stg-col-head, .stg-protos, .stg-strip, .stg-ev-item, .stg-trip, .stg-area-label) > .g,
-.stg[data-icons][data-tile="always"] :is(.stg-chip, .stg-inline) > .g { --slot: var(--tile); background: var(--type-tile); }
+.stg[data-icons]:is([data-tile="always"], :not([data-tile])) :is(.stg-chip, .stg-inline) > .g { --slot: var(--tile); background: var(--type-tile); }
 .stg[data-icons]:is([data-tile="lists"], [data-tile="always"], :not([data-tile])) .g[data-type="suggestion"]:is(.stg-ev-item > *),
-.stg[data-icons][data-tile="always"] .stg-chip > .g[data-type="suggestion"] { outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
+.stg[data-icons]:is([data-tile="always"], :not([data-tile])) .stg-chip > .g[data-type="suggestion"] { outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
 .stg[data-icons] .g i { width: var(--isz, var(--icon)); height: var(--isz, var(--icon)); }
 
 /* ── Optical alignment: centre the slot on the FIRST line of its text ──
@@ -42,9 +43,9 @@
 .stg[data-icons] .stg-protos { justify-content: flex-start; }
 /* A chip with a leading bare glyph pads 2 less on the glyph side; a tiled glyph sits flush in the chip's corner */
 .stg[data-icons] .stg-chip { padding-left: calc(var(--inset-chip) - 2px); }
-.stg[data-icons][data-tile="always"] .stg-chip { padding-left: 0; }
-.stg[data-icons][data-tile="always"] .stg-chip > .g { border-radius: var(--r-icon) 0 0 var(--r-icon); }
-.stg[data-icons][data-tile="always"] .stg-inline > .g { --slot: calc(var(--icon-label) + 4px); }
+.stg[data-icons]:is([data-tile="always"], :not([data-tile])) .stg-chip { padding-left: 0; }
+.stg[data-icons]:is([data-tile="always"], :not([data-tile])) .stg-chip > .g { border-radius: var(--r-icon) 0 0 var(--r-icon); }
+.stg[data-icons]:is([data-tile="always"], :not([data-tile])) .stg-inline > .g { --slot: calc(var(--icon-label) + 4px); }
 
 /* ── Icon-only buttons: a control-sized square (28), 24 inside dense rows; every one has a 40 hit area ── */
 .stg[data-icons] :is(.stg-iconbtn, .stg-switch button) { position: relative; width: var(--control); height: var(--control); color: var(--ink-2); }

@@ -371,3 +371,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 4 Nov 2026 (Maggie, 02-type): type scale B 11/12/13/20, pane title 24, section headers ink 2. 11 is for counts and badges only; 12 for labels, meta, buttons, chips, tooltips and keys; 13 body; 24 the pane title alone. Nothing uses 20 after this. Supersedes the "Type scale" item under Still open.
 
 4 Nov 2026 (Maggie): theories column stays at the app's width; never widens implicitly; width is a token (`--list-w`, 296, measured in jig /app at 1440). The pane takes the remaining width. Columns view: Themes 230, Theories `--list-w`.
+
+4 Nov 2026 (Maggie, 03-icons): icons are 16 beside 13 body and 14 beside 12px text; object glyphs sit on their pale tile everywhere (lists, headers, chips, card meta). The one-icon-per-meaning vocabulary, tooltips (name + key in mono) and icon-button sizes (28, 24 dense, 40 hit) in RULES.md section 03 are the default on every stage. Rejecting a suggestion stays a labelled "Dismiss" text button left of Accept, never an icon (DI-009).

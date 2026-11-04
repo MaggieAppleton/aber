@@ -28,7 +28,7 @@
 
 <header class="jig-head">
   <h1>Grammar 03: Icons</h1>
-  <p>Icon size, slot, alignment, buttons, tooltips, colour and one icon per meaning. Already decided: Phosphor; Regular at rest, Fill only for the current or selected thing; the object glyphs; per-type glyph colour on a pale tile; icon to text 6; X only closes transient surfaces. Type is scale B (11 / 12 / 13, title 24) and spacing is Regular.</p>
+  <p><b>Decided 4 Nov 2026:</b> 16 beside 13 body, 14 beside 12px text; object glyphs on their tile everywhere. These rules are now the default on every grammar stage. Icon size, slot, alignment, buttons, tooltips, colour and one icon per meaning. Already decided: Phosphor; Regular at rest, Fill only for the current or selected thing; the object glyphs; per-type glyph colour on a pale tile; icon to text 6; X only closes transient surfaces. Type is scale B (11 / 12 / 13, title 24) and spacing is Regular.</p>
 </header>
 
 <div class="decide">
@@ -67,16 +67,16 @@
 </section>
 
 <section class="jig-section" id="rules">
-  <h2>The rules (proposed)</h2>
+  <h2>The rules (decided 4 Nov 2026)</h2>
   <ol class="rules">
     <li><b>Phosphor only, Regular at rest.</b> Fill marks the current or selected thing (the current view, a pressed toggle) and nothing else. No Light, Bold or Duotone.</li>
-    <li><b>Icons are 16, beside 13 body.</b> Nothing smaller than 14. No icon sits beside an 11 count or the 24 title. (Open: whether 12px text takes 16 or 14.)</li>
-    <li><b>Every icon is a square of its size, in a fixed slot.</b> A bare glyph's slot is 16. A tiled object glyph's slot is the 24 tile (16 plus 4 each side). Slots in a list share a left edge, so the text after them lines up.</li>
+    <li><b>Icons are 16, beside 13 body.</b> 14 beside 12px text (chips, card meta, evidence headers, buttons). Nothing smaller than 14. No icon sits beside an 11 count or the 24 title.</li>
+    <li><b>Every icon is a square of its size, in a fixed slot.</b> A bare glyph's slot is 16. Every object glyph sits on its pale tile: 24 in rows, headers and chips (flush in the chip's corner), glyph + 4 in card meta. Slots in a list share a left edge, so the text after them lines up.</li>
     <li><b>Centre the slot on the first line of its text.</b> Geist's cap-height centre sits within 0.3px of the line-box centre, so the line box is the reference. Single-line rows centre. Rows that wrap align to the top and drop the slot by (line − slot) ÷ 2: 1 for a 16 icon beside 13 text, −3 for a 24 tile. No hand nudges.</li>
     <li><b>Icon to text is always 6</b> (<code>--gap-icon</code>). A chip pads 2 less on its glyph side.</li>
     <li><b>Icon-only buttons are 28 squares</b> (<code>--control</code>), 24 inside dense rows (<code>--control-sm</code>), with the 16 glyph centred and a 40 hit area.</li>
     <li><b>Every icon-only button has a tooltip:</b> its name from the vocabulary, then its key in Geist Mono. 12 / 500 on ink, below the button (above in bottom bars), after a 500ms rest.</li>
-    <li><b>Give it a text label</b> when the verb is destructive or rare (Retire, Delete), when it's the main decision on a surface (Accept, Dismiss), or when it isn't in the vocabulary. Icon-only is for frequent, standard verbs: close, find, add, zoom, views.</li>
+    <li><b>Give it a text label</b> when the verb is destructive or rare (Retire, Delete), when it's the main decision on a surface, or when it isn't in the vocabulary. Rejecting a suggestion is always a labelled <b>Dismiss</b> text button left of <b>Accept</b>, never an icon (DI-009). Icon-only is for frequent, standard verbs: close, find, add, zoom, views.</li>
     <li><b>Colour has four roles.</b> Ink 2 at rest. Ink on hover and when pressed. Type colour only for object glyphs. Accent only for the current view. Status is a dot, never a coloured icon. Ink 3 is never an icon.</li>
     <li><b>One icon per meaning.</b> The table below is the whole vocabulary. A new meaning gets a new row; it never borrows an icon.</li>
   </ol>
@@ -129,12 +129,12 @@
   <h2>The stage, built only from these rules</h2>
   <div class="viewer-bar">
     <span class="seg" data-seg="view"><span>View</span><span class="seg-group"><button type="button" value="sections" aria-pressed="true">Sections</button><button type="button" value="columns">Columns</button><button type="button" value="atlas">Atlas</button><button type="button" value="timeline">Timeline</button></span></span>
-    <span class="seg" data-seg="iconsize"><span>Icon size</span><span class="seg-group"><button type="button" value="one" aria-pressed="true">16</button><button type="button" value="two">16 and 14</button></span></span>
-    <span class="seg" data-seg="tile"><span>Tiles</span><span class="seg-group"><button type="button" value="lists" aria-pressed="true">Lists and headers</button><button type="button" value="always">Everywhere</button><button type="button" value="never">Never</button></span></span>
+    <span class="seg" data-seg="iconsize"><span>Icon size</span><span class="seg-group"><button type="button" value="one">16</button><button type="button" value="two" aria-pressed="true">16 and 14</button></span></span>
+    <span class="seg" data-seg="tile"><span>Tiles</span><span class="seg-group"><button type="button" value="lists">Lists and headers</button><button type="button" value="always" aria-pressed="true">Everywhere</button><button type="button" value="never">Never</button></span></span>
     <span class="seg" data-seg="overlay"><span>Show icon specs</span><span class="seg-group"><button type="button" value="off" aria-pressed="true">Off</button><button type="button" value="on">On</button></span></span>
   </div>
   <p class="stage-label">The app's layout. Hover any icon button for its tooltip; Close shows one pinned. Show icon specs labels each icon with its role, size, weight and slot, and dashes each button's 40 hit area.</p>
-  <div class="stg-host" id="viewer" data-stage='{"view":"sections","icons":1,"iconsize":"one","tile":"lists"}'></div>
+  <div class="stg-host" id="viewer" data-stage='{"view":"sections","icons":1,"iconsize":"two","tile":"always"}'></div>
 </section>
 
 <section class="jig-section" id="views">
@@ -147,7 +147,7 @@
   </div>
 </section>
 
-<section class="jig-section" id="size" data-decision="size" data-question="1. What size are icons beside 12px text?" data-default="A 16 everywhere">
+<section class="jig-section" id="size" data-decision="size" data-question="1. What size are icons beside 12px text?" data-default="B 16 and 14">
   <p>Beside 13 body every icon is 16. The question is the 12px places: chips, card meta, the evidence headers and buttons. Look at the theme chip, Rival, the related chips and the prototype count on the cards.</p>
   <div class="jig-compare" style="--jig-min:440px">
     <div class="jig-option" data-option="A 16 everywhere"><div class="jig-label"><b>A</b> One size: 16 everywhere</div><p class="jig-note">One number to remember; glyphs read clearly in chips. The glyph is taller than the 12px text beside it.</p><div class="stg-host" data-option-stage data-stage='{"icons":1,"iconsize":"one"}'></div></div>
@@ -155,7 +155,7 @@
   </div>
 </section>
 
-<section class="jig-section" id="tile" data-decision="tile" data-question="2. Where do object glyphs sit on their pale tile?" data-default="A lists and headers">
+<section class="jig-section" id="tile" data-decision="tile" data-question="2. Where do object glyphs sit on their pale tile?" data-default="B everywhere">
   <p>The tile is 24 with the 16 glyph inside. Look at the section headers, the evidence rows, the chips in the pane and the card meta.</p>
   <div class="jig-compare" style="--jig-min:300px">
     <div class="jig-option" data-option="A lists and headers"><div class="jig-label"><b>A</b> In lists and headers</div><p class="jig-note">Tiles mark the start of a row or group: section heads, rail, evidence, tripwire, map labels. Chips and inline meta show the bare glyph.</p><div class="stg-host" data-option-stage data-stage='{"icons":1,"tile":"lists"}'></div></div>

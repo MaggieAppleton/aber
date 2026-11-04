@@ -42,28 +42,7 @@
     }
     stg.append(layer);
   };
-  // Tooltips: name, then key; below the button, above it in bottom bars, beside it in the zoom stack
-  const local = (stg, el) => { const sr = stg.getBoundingClientRect(), k = sr.width / parseFloat(getComputedStyle(stg).width) || 1, r = el.getBoundingClientRect();
-    return { x: (r.left - sr.left) / k, y: (r.top - sr.top) / k, w: r.width / k, h: r.height / k, W: parseFloat(getComputedStyle(stg).width) }; };
-  const showTip = (btn, pinned) => {
-    const stg = btn.closest(".stg[data-icons]"); if (!stg) return;
-    if (!pinned) stg.querySelector(".stg-tip:not([data-pinned])")?.remove();
-    const t = document.createElement("div"); t.className = "stg-tip"; t.setAttribute("role", "tooltip"); if (pinned) t.dataset.pinned = "";
-    t.innerHTML = `<span>${btn.dataset.tip}</span>${btn.dataset.key ? `<kbd>${btn.dataset.key}</kbd>` : ""}`;
-    stg.append(t);
-    const { x, y, w, h, W } = local(stg, btn), tw = t.offsetWidth, th = t.offsetHeight;
-    let left = x + w / 2 - tw / 2, top = y + h + 4;
-    if (btn.closest(".stg-switch")) top = y - th - 4;
-    if (btn.closest(".stg-zoom")) { left = x + w + 4; top = y + h / 2 - th / 2; }
-    left = Math.max(4, Math.min(W - tw - 4, left));
-    Object.assign(t.style, { left: `${left}px`, top: `${top}px` });
-  };
-  let timer;
-  document.addEventListener("pointerover", e => { const b = e.target.closest(".stg[data-icons] [data-tip]"); if (!b || b.hasAttribute("data-tip-pin")) return; clearTimeout(timer); timer = setTimeout(() => showTip(b), 500); });
-  document.addEventListener("pointerout", e => { const b = e.target.closest(".stg[data-icons] [data-tip]"); if (!b) return; clearTimeout(timer); b.closest(".stg")?.querySelector(".stg-tip:not([data-pinned])")?.remove(); });
-  document.addEventListener("focusin", e => { const b = e.target.closest(".stg[data-icons] [data-tip]"); if (b && !b.hasAttribute("data-tip-pin")) showTip(b); });
-  document.addEventListener("focusout", e => { e.target.closest(".stg")?.querySelector(".stg-tip:not([data-pinned])")?.remove(); });
-
+  const showTip = (...a) => window.AberStage.showTip(...a);
   const tagAll = () => document.querySelectorAll(".stg[data-icons]").forEach(stg => { tag(stg);
     stg.querySelector(".stg-tip[data-pinned]")?.remove(); const p = stg.querySelector("[data-tip-pin]"); if (p) showTip(p, true); });
   // Re-tag whenever a stage re-renders or is refitted
@@ -72,7 +51,7 @@
 
   const viewer = document.getElementById("viewer");
   const pin = () => viewer.querySelector('.stg-pane-close [data-key="Esc"]')?.setAttribute("data-tip-pin", "");
-  const state = { view: "sections", icons: 1, iconsize: "one", tile: "lists" };
+  const state = { view: "sections", icons: 1, iconsize: "two", tile: "always" };
   const rerender = () => { viewer.dataset.stage = JSON.stringify(state); window.AberStage.render(viewer); pin(); };
   for (const seg of document.querySelectorAll("[data-seg]")) {
     seg.addEventListener("click", e => {

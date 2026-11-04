@@ -5,8 +5,8 @@
   const ICON = { dump: "tray-arrow-down", signal: "pulse", theme: "binoculars", theory: "target", prototype: "pencil-ruler", tripwire: "signpost", suggestion: "sparkle" };
   const g = (t, lg) => `<span class="g${lg ? " lg" : ""}" data-type="${t}"><i class="ph ph-${ICON[t]}" aria-hidden="true"></i></span>`;
   const conf = (n, lg) => `<span class="stg-conf${lg ? " lg" : ""}" role="img" aria-label="Confidence ${n} of 5">${[1, 2, 3, 4, 5].map(i => `<i${i <= n ? " data-on" : ""}></i>`).join("")}</span>`;
-  // Icon rules (03-icons): with "icons" set, the stage uses the one-icon-per-meaning vocabulary, fill only for the current
-  // view, and data-tip tooltips (name + key) instead of native titles. Other pages keep the original glyphs.
+  // Icon rules (decided 4 Nov): every stage uses the one-icon-per-meaning vocabulary, Fill only for the current view,
+  // and data-tip tooltips (name + key). {"icons":0} renders the old glyphs for comparison.
   let V = false;
   const I = (today, rule) => V ? rule : today;
   const iconBtn = (icon, label, key) => `<button type="button" class="stg-iconbtn" aria-label="${label}${key ? ` (${key})` : ""}" ${V ? `data-tip="${label}"${key ? ` data-key="${key}"` : ""}` : `title="${label}"`}><i class="ph ph-${icon}" aria-hidden="true"></i></button>`;
@@ -115,8 +115,8 @@
   const ro = new ResizeObserver(entries => entries.forEach(e => fit(e.target)));
   const render = host => {
     const o = JSON.parse(host.dataset.stage || "{}");
-    const attrs = [o.scale && `data-scale="${o.scale}"`, o.title && `data-title="${o.title}"`, o.sechead && `data-sechead="${o.sechead}"`, o.system && `data-system="${o.system}"`, o.primary && `data-primary="${o.primary}"`, o.mark && `data-mark="${o.mark}"`, o.density && `data-density="${o.density}"`, o.list && `data-list="${o.list}"`, o.iconsize && `data-iconsize="${o.iconsize}"`, o.tile && `data-tile="${o.tile}"`, o.icons && "data-icons"].filter(Boolean).join(" ");
-    V = !!o.icons;
+    const attrs = [o.scale && `data-scale="${o.scale}"`, o.title && `data-title="${o.title}"`, o.sechead && `data-sechead="${o.sechead}"`, o.system && `data-system="${o.system}"`, o.primary && `data-primary="${o.primary}"`, o.mark && `data-mark="${o.mark}"`, o.density && `data-density="${o.density}"`, o.list && `data-list="${o.list}"`, o.iconsize && `data-iconsize="${o.iconsize}"`, o.tile && `data-tile="${o.tile}"`, o.icons !== 0 && "data-icons"].filter(Boolean).join(" ");
+    V = o.icons !== 0;
     host.innerHTML = `<div class="stg" ${attrs}>${html(o.view)}</div>`;
     fit(host); ro.observe(host);
   };
@@ -127,6 +127,28 @@
     const c = e.target.closest(".stg-card"); if (!c) return;
     c.parentElement.closest(".stg-main").querySelectorAll(".stg-card").forEach(x => x.toggleAttribute("data-open", x === c));
   });
-  window.AberStage = { renderAll: (root = document) => root.querySelectorAll("[data-stage]").forEach(render), render };
+  // Tooltips (icons rule 7): name, then key; below the button, above it in bottom bars, beside it in the zoom stack
+  const local = (stg, el) => { const sr = stg.getBoundingClientRect(), k = sr.width / parseFloat(getComputedStyle(stg).width) || 1, r = el.getBoundingClientRect();
+    return { x: (r.left - sr.left) / k, y: (r.top - sr.top) / k, w: r.width / k, h: r.height / k, W: parseFloat(getComputedStyle(stg).width) }; };
+  const showTip = (btn, pinned) => {
+    const stg = btn.closest(".stg[data-icons]"); if (!stg) return;
+    if (!pinned) stg.querySelector(".stg-tip:not([data-pinned])")?.remove();
+    const t = document.createElement("div"); t.className = "stg-tip"; t.setAttribute("role", "tooltip"); if (pinned) t.dataset.pinned = "";
+    t.innerHTML = `<span>${btn.dataset.tip}</span>${btn.dataset.key ? `<kbd>${btn.dataset.key}</kbd>` : ""}`;
+    stg.append(t);
+    const { x, y, w, h, W } = local(stg, btn), tw = t.offsetWidth, th = t.offsetHeight;
+    let left = x + w / 2 - tw / 2, top = y + h + 4;
+    if (btn.closest(".stg-switch")) top = y - th - 4;
+    if (btn.closest(".stg-zoom")) { left = x + w + 4; top = y + h / 2 - th / 2; }
+    left = Math.max(4, Math.min(W - tw - 4, left));
+    Object.assign(t.style, { left: `${left}px`, top: `${top}px` });
+  };
+  let timer;
+  document.addEventListener("pointerover", e => { const b = e.target.closest(".stg[data-icons] [data-tip]"); if (!b || b.hasAttribute("data-tip-pin")) return; clearTimeout(timer); timer = setTimeout(() => showTip(b), 500); });
+  document.addEventListener("pointerout", e => { const b = e.target.closest(".stg[data-icons] [data-tip]"); if (!b) return; clearTimeout(timer); b.closest(".stg")?.querySelector(".stg-tip:not([data-pinned])")?.remove(); });
+  document.addEventListener("focusin", e => { const b = e.target.closest(".stg[data-icons] [data-tip]"); if (b && !b.hasAttribute("data-tip-pin")) showTip(b); });
+  document.addEventListener("focusout", e => { e.target.closest(".stg")?.querySelector(".stg-tip:not([data-pinned])")?.remove(); });
+
+  window.AberStage = { renderAll: (root = document) => root.querySelectorAll("[data-stage]").forEach(render), render, showTip };
   if (document.readyState === "loading") addEventListener("DOMContentLoaded", () => window.AberStage.renderAll()); else window.AberStage.renderAll();
 })();
