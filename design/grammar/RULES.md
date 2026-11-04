@@ -399,24 +399,23 @@ Evidence: six loading treatments and no skeleton ("Loading Aber…" hides the wh
 - A finished dump: **A a toast with Undo** ("Made 3 signals"; Undo removes the dump and what it made). The one success toast, since its result lands where you may not be looking.
 - Offline: **A beside the view switcher** (at the rail foot, above the switcher; beside it in the other views).
 
-## 09 Making things — PROPOSED (jig `09-making/`; round 2: capture through the chat column)
+## 09 Making things — PROPOSED (jig `09-making/`; round 3: capture matches the live chat sidebar)
 
-Evidence:
-- Capture already works through the pill and a docked chat column (`pill-study.tsx:440–451`, `:798–800`), but in its own vocabulary: bubbles, theme tokens, cards and "sees" pills that aren't 06 objects, an X that discards drafts and takes (`object-card.tsx:24`, `pill-study.tsx:390`), and a green "?" on Send.
-- Everything else goes through one modal: 9 of the 13 ways to make or link something open `ask()` (`app/dialogs.tsx:13`). Its only name check is the browser's `required` bubble (`:40`); Cancel is an X at the bottom right (`:44`); pickers end in a chevron that doesn't expand (`:38`).
-- Esc keeps a rename (`editable.tsx:16`).
+Evidence: the live app (127.0.0.1:5174, read-only) captures through a pill that grows into a chat column. Its shape and behaviour are right. Its styling is its own: a capsule pill, a grey round Send that becomes a "?" bubble, a dot or an X that discards takes and drafts (`pill-study.tsx:390`, `object-card.tsx:24`), and tokens and cards that aren't 06 objects. Everything else goes through one modal: 9 of 13 ways to make or link open `ask()` (`app/dialogs.tsx:13`); its only name check is the browser's `required` bubble (`:40`). Esc keeps a rename (`editable.tsx:16`). The jig's "Every difference" table lists each kept, restyled and improved part.
 
-1. **Capture is the pill and its chat column.**
-   - Closed: the pill floats at the bottom right of every view (tier 1 floating: 40 high, radius 14, the float shadow). It holds the dump glyph with "Dump or ask" (⌘J) and the microphone, which records without opening anything.
-   - Open: the pill grows into a 360 column docked to the right edge. It pushes the main area, with a seam and no shadow. Inside: the head ("Dump or ask", Close X, Esc), the thread, then the foot (what the agent sees, and the composer).
-2. **Chat is dumps.** Every message is a dump, and the thread is the history.
-   - Mine: a sunk bubble on the right with its attachments inside. Under it: what it saw, the time, and Delete dump on hover.
-   - The agent's: prose on the left, then what it made as 06 previews. "Filed in" with the theme chip over the signal rows; drafts as dashed rows with Discard | Accept.
-   - Every preview peeks (500ms or on click). Open puts it in the main area while the column stays open.
-   - While the agent works, "Reading" with the Working spinner holds the reply's place.
-3. **What the agent sees** is a row of removable 06 chips above the composer. It starts with the object in the main area. The crosshair picks one more from the screen, with the focus ring under the cursor; Esc stops picking.
-4. **The composer is a filled well** in the column's foot: microphone, field, paperclip, send. It has no float shadow, because it's docked. Return sends; links and files become removable chips (minus, never X).
-   - Recording (⌘⇧J or the microphone): Discard (trash), the wave, the time, then Stop as the primary, which sends. A discarded take offers Undo, which returns it as a voice chip.
+1. **Capture keeps the live shape.**
+   - **Pill:** bottom right, 12 in, 40 high: "Dump or ask" (⌘J) and the microphone, which records without opening anything.
+   - **Column:** opening grows the pill into a 360 column, 12 in from the top, right and bottom, radius 14 and the float shadow. It pushes the main area.
+   - **Closing:** a grab handle at the top centre (Close, Esc) or Esc. Clicking away doesn't close it. Esc discards a take before it closes anything.
+2. **Chat is dumps; the thread is the conversation's history.**
+   - **Mine:** a sunk bubble on the right, the time under it, Delete dump on hover. A voice dump is a playable bubble with its transcript.
+   - **The agent's:** prose, then 06 previews. A filed token (the theme chip and a count) unfolds to signal rows. A theory comes with its Supports / Undermines split. Drafts are dashed rows with Rephrase, Discard and Accept.
+   - **Previews peek** on click or after 500ms. Open shows the object in the main area while the column stays open.
+3. **What the agent sees** floats over the thread's foot: 06 chips with a minus, and the crosshair to pick something on screen.
+4. **The composer.**
+   - Under a hairline: "Dump anything, or ask", paperclip, microphone, send.
+   - Send is a 28 primary, ink once there's something to send; it shows a question mark when the text asks. Links and files become chips.
+   - Recording turns the pill or the composer into the take: Discard (trash), the wave, the time, "Stop and dump". A discarded take offers Undo.
 5. **A dump reports once** (10, decided). While it's read, the Dumps rail entry shows the Working spinner in place of its count. When it's done, the reply in the thread is the report if the column is open. If the column is closed, a toast says what it made, with Undo.
 6. **Asking and making are one act, owned differently.** What the agent makes from a message arrives as a draft, dashed in the thread and in its list. What I make with + is mine from the first keystroke. Accepting in either place solidifies the same object.
 7. **Make it where it will live.** + at a list's head (or N) makes one of that type: it appears in the list and fills the main area, with the caret in its name. Add theory inside a theme makes a solid card in place; Return keeps it and starts another, ⌘Return opens it. No modal.
@@ -434,9 +433,9 @@ Evidence:
 13. **A modal only when it must block:** Delete dump and Find. The title (13 / 600) and the X sit in the head. The foot sits at the bottom right with Cancel left of the primary. Focus starts on Cancel and stays inside.
 14. **Full views in the main area use 08's main-area inset** (48, top equal, a 720 column) and 06's anatomy: two left edges and section labels on the tile edge. The two-edge audit on this page has 1 element of 382 off either edge: the dump's text inside its well, which 06 defines.
 
-**Open (choices on the jig):**
-- Send for a question: A the same send glyph, with the tooltip "Ask" (recommended), or B a question mark in ink.
-- The pill's history: A no log segment, since the thread and Dumps are the history (recommended), or B keep a history segment that goes to Dumps.
+15. **History:** ⌘⇧L raises the live Dumps sheet above the pill (tier 3), with 06 dump rows, what each made ("Nothing filed" when nothing), the bin and X.
+
+**Open (choice on the jig):** where ⌘⇧L goes: A keep the live Dumps sheet, or B go to Dumps in the rail, the one list of dumps in the default view.
 
 ## 08 Briefing — PROPOSED (jig `08-briefing/`)
 

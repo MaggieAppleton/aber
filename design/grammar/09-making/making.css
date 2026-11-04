@@ -83,51 +83,73 @@ body[data-jig="grammar-09-making"] { --jig-min: 1200px; }
 @media (prefers-reduced-motion: reduce) { .mk .mk-wave i { animation: none; scale: 1 0.5; } }
 .mk .mk-time { min-width: 4ch; padding-right: var(--gap-icon); text-align: right; font-size: var(--fs-label); color: var(--ink-2); font-variant-numeric: tabular-nums; }
 
-/* ── Capture, open: the column, docked to the right edge (tier 1), pushing the main area; a seam, no shadow ── */
-.mk .mk-chat { position: relative; z-index: var(--z-chrome); min-width: 0; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; background: var(--surface); box-shadow: -0.5px 0 0 var(--hairline-strong); }
-.mk .mk-chat-head { display: flex; align-items: center; justify-content: space-between; min-height: var(--control); padding: var(--inset-nav-block) var(--inset-list-inline) 0; }
-.mk .mk-chat-head .h { font-weight: 600; color: var(--sechead-ink); }
-.mk .mk-chat-head .nv-ib { margin-right: calc((var(--control) - var(--icon)) / -2); }
-.mk .mk-thread { overflow: hidden auto; display: grid; align-content: start; gap: var(--gap-group); padding: var(--gap-item) var(--inset-list-inline) var(--gap-group); scrollbar-width: thin; }
+/* ── Capture, open (live shape): the pill grows into a 360 column, 12 in from the top, right and bottom, radius 14 (the pill's bar radius),
+   with the float shadow it had as a pill. It pushes the main area. No header: a grab handle at the top centre closes it. ── */
+.mk .mk-chat { position: relative; z-index: var(--z-chrome); min-width: 0; min-height: 0; margin: var(--inset-float) var(--inset-float) var(--inset-float) 0; display: grid; grid-template-rows: minmax(0, 1fr) auto auto;
+  border-radius: var(--r-bar); background: var(--surface); box-shadow: var(--sh-float); overflow: hidden; }
+.mk .mk-grab { position: absolute; z-index: 2; top: 4px; left: 50%; translate: -50% 0; display: grid; place-items: center; width: 64px; height: 18px; border-radius: var(--r-control); }
+.mk .mk-grab i { display: block; width: 32px; height: 4px; border-radius: 2px; background: var(--hairline-strong); transition: background-color var(--t-hover) var(--ease-out); }
+.mk .mk-grab:hover i { background: var(--ink-3); }
+.mk .mk-thread { overflow: hidden auto; display: grid; align-content: start; gap: var(--gap-group); padding: var(--gap-group) var(--inset-list-inline) calc(var(--gap-group) + var(--chip-h)); scrollbar-width: thin; }
 .mk .mk-day { font-size: var(--fs-label); font-weight: 500; color: var(--ink-2); }
 .mk .mk-day:not(:first-child) { margin-top: var(--gap-item); }
-/* What I sent: a sunk bubble on the right (it's mine), its attachments inside, the time and what it saw under it */
-.mk .mk-me { display: grid; justify-items: end; gap: var(--gap-tight); }
-.mk .mk-bubble { max-width: 88%; display: grid; gap: var(--gap-icon); padding: var(--card-block) var(--card-inline); border-radius: var(--r-box); background: var(--ground-2); }
+/* Mine (live): a sunk bubble on the right, at most the column less 64; the time under it, right-aligned */
+.mk .mk-me { display: grid; justify-items: end; gap: var(--gap-tight); padding-left: 48px; }
+.mk .mk-bubble { display: grid; gap: var(--gap-icon); padding: var(--card-block) var(--card-inline); border-radius: var(--r-box); background: var(--ground-2); }
 .mk .mk-bubble p { margin: 0; line-height: var(--lh-prose); text-wrap: pretty; }
 .mk .mk-batts { display: flex; flex-wrap: wrap; gap: var(--gap-tight); }
+.mk .mk-voice { display: flex; align-items: center; gap: var(--gap-icon); padding: var(--gap-tight) var(--card-inline) var(--gap-tight) var(--gap-tight); width: 220px; }
+.mk .mk-wave.still i { animation: none; scale: 1 calc(0.25 + mod(var(--i) * 37, 10) / 13); }
+.mk .mk-transcript { margin: 0; font-size: var(--fs-label); color: var(--ink-2); text-align: right; line-height: var(--lh-ui); }
 .mk .mk-when { display: flex; align-items: center; gap: var(--gap-icon); min-height: var(--control-sm); font-size: var(--fs-label); color: var(--ink-2); }
-.mk .mk-saw { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); }
 .mk .mk-when .mk-del { opacity: 0; margin-right: -4px; transition: opacity var(--t-hover) var(--ease-out); }
 .mk .mk-me:is(:hover, :focus-within) .mk-del { opacity: 1; }
 @media (hover: none) { .mk .mk-when .mk-del { opacity: 1; } }
-/* The agent's reply: prose, then what it filed and drafted as 06 previews (rows bleed 8 so their tiles sit on the content edge) */
+/* The agent's (live): prose on the left, then what it filed and drafted, as 06 previews */
 .mk .mk-agent { display: grid; gap: var(--gap-item); }
 .mk .mk-say { margin: 0; line-height: var(--lh-prose); text-wrap: pretty; }
 .mk .mk-gone { color: var(--ink-2); }
-.mk .mk-filed { display: grid; gap: var(--gap-tight); }
-.mk .mk-filed .ob-label { gap: var(--gap-icon); }
-.mk .mk-agent .ob-rows { margin-inline: calc(var(--inset-row) * -1); }
+.mk .mk-filed { display: grid; gap: var(--gap-tight); justify-items: start; }
+.mk .mk-token { gap: var(--gap-icon); }
+.mk .mk-token .ob-n { margin-left: 2px; }
+.mk .mk-token > i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); color: var(--ink-2); }
+.mk .mk-filed > .ob-rows { justify-self: stretch; }
+.mk .mk-agent .ob-rows, .mk .mk-split > .ob-row { margin-inline: calc(var(--inset-row) * -1); }
+.mk .mk-split { display: grid; gap: var(--gap-tight); padding: var(--card-block) var(--card-inline); margin-inline: calc(var(--card-inline) * -1); border-radius: var(--r-box); box-shadow: var(--ring); }
+.mk .mk-split > .ob-row { margin-inline: calc(var(--inset-row) * -1); }
+.mk .mk-split-cols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap-item); }
+.mk .mk-split-cols .ob-rows { margin-inline: calc(var(--inset-row) * -1); }
+.mk .mk-split-cols .ob-row > .nm { -webkit-line-clamp: 2; }
 .mk .mk-draft { display: grid; gap: var(--gap-tight); }
 .mk .mk-draft > .ob-row { margin-inline: calc(var(--inset-row) * -1); }
 .mk .mk-draft > .ob-row.draft { outline: 1px dashed var(--hairline-strong); outline-offset: -1px; background: var(--draft-fill); }
-.mk .mk-draft > .ob-decide { justify-content: flex-end; }
+.mk .mk-draft > .ob-decide { justify-content: flex-end; align-items: center; }
 .mk .mk-working { display: flex; align-items: center; gap: var(--gap-icon); color: var(--ink-2); }
 .mk .mk-spin { display: inline-grid; place-items: center; width: var(--icon-label); height: var(--icon-label); }
 .mk .mk-spin i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); animation: ctl-spin 700ms linear infinite; }
 @media (prefers-reduced-motion: reduce) { .mk .mk-spin i.ph { animation: ctl-pulse 1.2s ease-in-out infinite; } }
-/* The foot: what the agent will see (chips, the crosshair), then the composer as a filled well (it's docked, so no float shadow) */
-.mk .mk-chat-foot { display: grid; gap: var(--gap-item); padding: 0 var(--inset-row) var(--inset-row); }
-.mk .mk-ctx { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-tight); padding: 0 var(--inset-row); min-width: 0; }
-.mk .mk-ctxchip { padding-right: 2px; }
+/* What the agent sees (live): chips floating over the thread's foot, just above the composer, with the crosshair */
+.mk .mk-ctx { position: relative; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-tight); margin-top: calc((var(--chip-h) + var(--gap-item)) * -1); padding: 0 var(--inset-row) var(--gap-item) var(--inset-list-inline); min-width: 0; pointer-events: none; }
+.mk .mk-ctx > * { pointer-events: auto; }
+.mk .mk-ctxchip { padding-right: 2px; box-shadow: inset 0 0 0 0.5px var(--hairline-strong), var(--sh-float); }
 .mk .mk-ctxchip .rm { position: relative; display: inline-grid; place-items: center; width: 20px; height: 20px; margin-left: -2px; border-radius: calc(var(--r-control) - 2px); color: var(--ink-2); }
 .mk .mk-ctxchip .rm::before, .mk .mk-att .rm::before { content: ""; position: absolute; inset: -10px -6px; }
 .mk .mk-ctxchip .rm:hover { background: var(--hover); color: var(--ink); }
 .mk .mk-ctxchip .rm i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
-.mk .mk-chat .ctl-composer { position: static; width: auto; background: var(--ground-2); box-shadow: none; border-radius: var(--r-box); }
-.mk .mk-chat .ctl-composer:is(:hover, .is-hover):not(:focus-within) { background: var(--ground-3); box-shadow: none; }
-.mk .mk-chat .ctl-composer:focus-within { background: var(--surface); box-shadow: var(--edge); }
-.mk .mk-chat .ctl-composer .ctl-icon { border-radius: calc(var(--r-box) - 6px); }
+.mk .mk-ctx > .nv-ib { background: var(--surface); box-shadow: var(--sh-float); }
+/* The composer (live): a hairline over it, then field, attach, microphone, send; 6 / 8 around 28 controls (the 05 composer's 40) */
+.mk .mk-comp { display: flex; align-items: flex-end; gap: 2px; padding: var(--gap-icon) var(--gap-icon) var(--gap-icon) var(--inset-list-inline); box-shadow: inset 0 0.5px 0 var(--hairline-strong); }
+.mk .mk-comp textarea { all: unset; flex: 1; min-width: 0; align-self: center; padding: 5px 0; font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); white-space: pre-wrap; max-height: calc(var(--fs-body) * var(--lh-ui) * 6); overflow: auto; field-sizing: content; }
+.mk .mk-comp textarea::placeholder { color: var(--ink-2); opacity: 1; }
+.mk .mk-comp .mk-take { flex: 1; }
+/* History (live): ⌘⇧L raises a Dumps sheet just above the pill (tier 3), 360 wide */
+.mk .mk-log { position: absolute; z-index: var(--z-sheet); right: var(--inset-float); bottom: calc(var(--inset-float) + var(--composer-h) + var(--gap-item)); width: var(--chat-w); max-height: 480px; display: grid; grid-template-rows: auto minmax(0, 1fr);
+  border-radius: var(--r-bar); background: var(--surface); box-shadow: var(--sh-modal); animation: mk-rise var(--t-float) var(--spring); }
+.mk .mk-log-head { display: flex; align-items: center; justify-content: space-between; min-height: var(--control); padding: var(--inset-card) var(--inset-list-inline) var(--gap-tight); }
+.mk .mk-log-head .h { font-weight: 600; color: var(--sechead-ink); }
+.mk .mk-log-body { overflow: auto; display: grid; align-content: start; gap: var(--gap-group); padding: 0 var(--inset-row) var(--inset-card); }
+.mk .mk-logrow { display: grid; }
+.mk .mk-made { display: flex; align-items: center; gap: var(--gap-item); padding: 0 var(--inset-row) var(--gap-tight) calc(var(--inset-row) + var(--hang)); margin-top: -4px; font-size: var(--fs-label); color: var(--ink-2); }
 .mk .mk-comp.has-atts { flex-wrap: wrap; }
 .mk .mk-atts { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: var(--gap-tight); padding: 2px 2px var(--gap-tight); min-width: 0; }
 .mk .mk-att { display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--chip-h); max-width: 100%; min-width: 0; padding: 0 2px 0 var(--gap-icon); border-radius: var(--r-control);
@@ -167,3 +189,12 @@ body[data-jig="grammar-09-making"] { --jig-min: 1200px; }
 
 /* Section headers keep the rows' measure, so a header's + sits over the rows it adds to (rows are at most 560, 06) */
 .mk .ob-full .ob-sh { max-width: calc(560px + var(--hang)); }
+.mk .mk-ctxchip .rm { opacity: 1; }
+/* Live vs redesign, side by side: the live screenshot on the left, the redesign's window on the right */
+.mk-vs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; align-items: start; }
+.mk-vs figure { margin: 0; display: grid; gap: 6px; min-width: 0; }
+.mk-vs img { display: block; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.1), 0 4px 16px rgb(0 0 0 / 0.06); }
+.mk-vs figcaption { font-size: 13px; color: #5d5850; }
+.mk-vs figcaption b { color: #2b2925; font-weight: 600; }
+.mk-vs .mk-host .nv { height: 800px; }   /* 1280 × 800 matches the live screenshots' 1440 × 900 aspect */
+@media (max-width: 700px) { .mk-vs { grid-template-columns: minmax(0, 1fr); } }

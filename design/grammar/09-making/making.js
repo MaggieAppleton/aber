@@ -13,7 +13,7 @@
   const RAIL = ["theme", "theory", "prototype", "signal", "dump"];
   const MAKE = ["theme", "theory", "prototype"];
   const DAYS = ["Today", "Yesterday", "Monday 2 Nov", "Sunday 1 Nov"];
-  const OPT = { send: "plane", log: "none" };
+  const OPT = { log: "sheet" };
   const PH = { theme: "Name this theme", theory: "State the claim", prototype: "Name this prototype", signal: "Say what you saw" };
   const esc = t => String(t ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const cap = t => t[0].toUpperCase() + t.slice(1);
@@ -152,49 +152,68 @@
       <div class="ob-pk-foot"><button type="button" class="nv-btn secondary" data-open="${o.id}">Open${ic("arrow-right")}</button></div></div>`;
   };
 
-  /* ── Capture: the pill and the chat column ─────────── */
+  /* ── Capture: the pill and the chat column, shaped like the live app (127.0.0.1:5174), restyled to the grammar ── */
   const mmss = sec => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
   const ATT = { link: "link", image: "image", voice: "waveform" };
+  // The take (live: a recording dot, the wave, the time, Stop). Improved: Discard is a trash button (DI-009: never X, never an unlabelled dot).
   const take = (c, where) => `<div class="mk-take" data-take="${where}">
       ${ib("trash", "Discard take", "data-rec-no", "Esc")}
-      <span class="mk-wave" aria-hidden="true">${Array.from({ length: where === "pill" ? 18 : 26 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</span>
+      <span class="mk-wave" aria-hidden="true">${Array.from({ length: where === "pill" ? 20 : 26 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</span>
       <span class="mk-time" data-time>${mmss(c.rec.sec || 0)}</span>
-      <button type="button" class="ctl-icon primary" aria-label="Stop and send" data-tip="Stop and send" data-key="⏎" data-rec-stop>${ic("stop", true)}</button></div>`;
-  // Closed: the pill. Its label is the way in (⌘J); the microphone records without opening anything.
+      <button type="button" class="ctl-icon primary" aria-label="Stop and dump" data-tip="Stop and dump" data-key="⏎" data-rec-stop>${ic("stop", true)}</button></div>`;
+  // Closed (live): a 40-high pill, bottom right, 12 from both edges: the dump glyph and "Dump or ask" (⌘J), then the microphone.
   const pill = s => s.chat ? "" : `<div class="mk-pill${s.comp.rec ? " rec" : ""}" role="group" aria-label="Dump or ask">${s.comp.rec ? take(s.comp, "pill")
-    : `${s.opt.log === "segment" ? ib("clock-counter-clockwise", "Dump log", 'data-go="dump"', "⌘⇧L") : ""}<button type="button" class="mk-pill-open" data-chat-open aria-label="Dump or ask" data-tip="Dump or ask" data-key="⌘J">${ic("tray-arrow-down")}<span>Dump or ask</span></button>${ib("microphone", "Voice dump", "data-rec-start", "⌘⇧J")}`}</div>`;
+    : `<button type="button" class="mk-pill-open" data-chat-open aria-label="Dump or ask" data-tip="Dump or ask" data-key="⌘J">${ic("tray-arrow-down")}<span>Dump or ask</span></button>${ib("microphone", "Voice dump", "data-rec-start", "⌘⇧J")}`}</div>`;
   const att = (a, rm) => `<span class="mk-att">${ic(ATT[a.kind])}<span class="t">${esc(a.title)}</span>${rm ? `<button type="button" class="rm" aria-label="Remove ${esc(a.title)}" data-att-rm="${a.id}">${ic("minus")}</button>` : ""}</span>`;
-  const msg = (s, m) => {
+  const msg = (s, m, i) => {
     if (m.day != null) return `<div class="mk-day">${DAYS[m.day]}</div>`;
-    if (m.who === "me") return `<div class="mk-me" data-dump="${m.dump}"><div class="mk-bubble">${m.text ? `<p>${esc(m.text)}</p>` : ""}${m.atts?.length ? `<div class="mk-batts">${m.atts.map(a => att(a)).join("")}</div>` : ""}</div>
-        <div class="mk-when">${m.ctx?.length ? `<span>Saw</span>${m.ctx.map(id => s.O[id] ? `<span class="mk-saw">${esc(nameOf(s.O[id]))}</span>` : "").join("")}` : ""}<span class="ob-mono">${m.time}</span>${ib("trash", "Delete dump", `data-del="${m.dump}"`, "", "sm mk-del")}</div></div>`;
+    if (m.who === "me") {
+      // Live: a sunk bubble on the right, the time under it. A voice dump is a playable bubble with its transcript under it.
+      const voice = m.voice ? `<div class="mk-bubble mk-voice">${ib("play", "Play voice note", "", "", "sm")}<span class="mk-wave still" aria-hidden="true">${Array.from({ length: 24 }, (_, k) => `<i style="--i:${k}"></i>`).join("")}</span><span class="mk-time">${m.voice}</span></div>${m.text ? `<p class="mk-transcript">${esc(m.text)}</p>` : ""}` : "";
+      return `<div class="mk-me" data-dump="${m.dump}">${voice || `<div class="mk-bubble">${m.text ? `<p>${esc(m.text)}</p>` : ""}${m.atts?.length ? `<div class="mk-batts">${m.atts.map(a => att(a)).join("")}</div>` : ""}</div>`}
+        <div class="mk-when"><span class="ob-mono">${m.time}</span>${ib("trash", "Delete dump", `data-del="${m.dump}"`, "", "sm mk-del")}</div></div>`;
+    }
     if (m.working) return `<div class="mk-agent mk-working" role="status"><span class="mk-spin">${ic("circle-notch")}</span><span>Reading</span></div>`;
-    return `<div class="mk-agent">${m.parts.map(p => {
+    return `<div class="mk-agent">${m.parts.map((p, j) => {
       if (p.say) return `<p class="mk-say">${esc(p.say)}</p>`;
-      if (p.filed) return `<div class="mk-filed"><div class="ob-label">Filed in${chip(s.O[p.filed])}</div><div class="ob-rows">${p.signals.map(id => s.O[id]).filter(x => x && !x.gone).map(x => orow(s, x)).join("")}</div></div>`;
-      if (p.rows) return `<div class="ob-rows mk-found">${p.rows.map(id => orow(s, s.O[id])).join("")}</div>`;
+      // Live: a theme token with a count that unfolds the gists filed there. Restyled: the 06 theme chip and a bare count; unfolds to signal rows.
+      if (p.filed) { const key = `${i}:${j}`, open = s.unfold.has(key), sigs = p.signals.map(id => s.O[id]).filter(x => x && !x.gone);
+        return `<div class="mk-filed"><button type="button" class="ctl-chip ob-chip mk-token" data-unfold="${key}" aria-expanded="${open}">${g("theme")}<span class="t">${esc(s.O[p.filed].name)}</span><span class="ob-n">${sigs.length}</span>${ic(open ? "caret-up" : "caret-down")}</button>
+          ${open ? `<div class="ob-rows">${sigs.map(x => orow(s, x)).join("")}</div>` : ""}</div>`; }
+      if (p.theory) { const t = s.O[p.theory]; const ev = st => t.ev.filter(e => e[1] === st && !e[2]).map(e => s.O[e[0]]);
+        return `<div class="mk-split">${orow(s, t)}<div class="mk-split-cols">${[["Supports", "+"], ["Undermines", "-"]].map(([l, st]) => `<div><div class="ob-label">${l}<span class="ob-n">${ev(st).length}</span></div><div class="ob-rows">${ev(st).map(x => orow(s, x)).join("")}</div></div>`).join("")}</div></div>`; }
+      // Live: a dashed draft card with Rephrase, Discard and Accept under it. Restyled: the 06 draft row; Rephrase opens it with the claim editable.
       if (p.draft) { const o = s.O[p.draft]; if (!o || o.gone) return `<p class="mk-say mk-gone">Draft discarded</p>`;
-        return `<div class="mk-draft">${orow(s, o, { cls: o.draft ? "" : "mk-mine" })}${o.draft ? `<div class="ob-decide"><button type="button" class="nv-btn secondary" data-draft-no="${o.id}">Discard</button><button type="button" class="nv-btn primary" data-draft-yes="${o.id}">Accept</button></div>` : ""}</div>`; }
+        return `<div class="mk-draft">${orow(s, o)}${o.draft ? `<div class="ob-decide">${ib("pencil-simple", "Rephrase", `data-rephrase="${o.id}"`, "", "sm")}<button type="button" class="nv-btn secondary" data-draft-no="${o.id}">Discard</button><button type="button" class="nv-btn primary" data-draft-yes="${o.id}">Accept</button></div>` : ""}</div>`; }
       return "";
     }).join("")}</div>`;
   };
+  // Live: what the agent sees floats above the composer (a pill per region, minus to stop sharing) with the crosshair beside it.
+  const ctxRow = s => `<div class="mk-ctx">${s.comp.ctx.map(id => s.O[id] && !s.O[id].gone ? `<span class="ctl-chip ob-chip mk-ctxchip">${g(s.O[id].kind, s.O[id].draft)}<span class="t">${esc(nameOf(s.O[id]))}</span><button type="button" class="rm" aria-label="Stop sharing ${esc(nameOf(s.O[id]))}" data-ctx-rm="${id}">${ic("minus")}</button></span>` : "").join("")}
+        ${ib("crosshair", s.picking ? "Stop picking" : "Add something on screen", `aria-pressed="${!!s.picking}" data-pick-ctx`, s.picking ? "Esc" : "", "sm")}</div>`;
+  // Live: a hairline, then field, attach, microphone, send. Send turns into a question mark when the text asks.
   const composer = s => {
     const c = s.comp, ready = c.text.trim() || c.atts.length, ask = c.text.includes("?");
-    const sendIcon = s.opt.send === "ask" && ask ? "question" : "paper-plane-right", sendLabel = ask ? "Ask" : "Send";
-    return `<div class="mk-ctx">${c.ctx.map(id => s.O[id] && !s.O[id].gone ? `<span class="ctl-chip ob-chip removable mk-ctxchip">${g(s.O[id].kind, s.O[id].draft)}<span class="t">${esc(nameOf(s.O[id]))}</span><button type="button" class="rm" aria-label="Stop showing ${esc(nameOf(s.O[id]))} to the agent" data-ctx-rm="${id}">${ic("minus")}</button></span>` : "").join("")}
-        <button type="button" class="nv-ib sm" aria-label="${s.picking ? "Stop picking" : "Add something on screen"}" data-tip="${s.picking ? "Stop picking" : "Add something on screen"}" data-key="${s.picking ? "Esc" : ""}" aria-pressed="${!!s.picking}" data-pick-ctx>${ic("crosshair", s.picking)}</button></div>
-      ${c.rec ? `<div class="ctl-composer mk-comp">${take(c, "chat")}</div>` : `<form class="ctl-composer mk-comp${c.atts.length ? " has-atts" : ""}" aria-label="Dump or ask" onsubmit="return false">
+    if (c.rec) return `<div class="mk-comp">${take(c, "chat")}</div>`;
+    return `<form class="mk-comp${c.atts.length ? " has-atts" : ""}" aria-label="Dump or ask" onsubmit="return false">
         ${c.atts.length ? `<div class="mk-atts">${c.atts.map(a => att(a, true)).join("")}</div>` : ""}
-        <button type="button" class="ctl-icon" aria-label="Voice dump" data-tip="Voice dump" data-key="⌘⇧J" data-rec-start>${ic("microphone")}</button>
-        <textarea rows="1" placeholder="Dump or ask" aria-label="Dump or ask" data-comp${s.focusCls === "comp" ? ' class="is-focus"' : ""}>${esc(c.text)}</textarea>
+        <textarea rows="1" placeholder="Dump anything, or ask" aria-label="Dump or ask" data-comp${s.focusCls === "comp" ? ' class="is-focus"' : ""}>${esc(c.text)}</textarea>
         <button type="button" class="ctl-icon" aria-label="Attach" data-tip="Attach" data-attach>${ic("paperclip")}</button>
-        <button type="button" class="ctl-icon primary" aria-label="${sendLabel}" data-tip="${sendLabel}" data-key="⏎" data-send aria-disabled="${!ready}">${ic(sendIcon)}</button></form>`}`;
+        <button type="button" class="ctl-icon" aria-label="Voice dump" data-tip="Voice dump" data-key="⌘⇧J" data-rec-start>${ic("microphone")}</button>
+        <button type="button" class="ctl-icon primary" aria-label="${ask ? "Ask" : "Dump"}" data-tip="${ask ? "Ask" : "Dump"}" data-key="⏎" data-send aria-disabled="${!ready}">${ic(ask ? "question" : "paper-plane-right")}</button></form>`;
   };
-  // Open: the column, docked to the right edge (tier 1), pushing the main area. The thread is the history: every message is a dump.
+  // Open (live): the pill grows into a 360 column, 12 in from the top, right and bottom, radius 14, pushing the view.
+  // No header: a grab handle at the top centre closes it (Esc). Clicking away doesn't close it.
   const chat = s => s.chat ? `<aside class="mk-chat" aria-label="Dump or ask">
-      <div class="mk-chat-head"><span class="h">Dump or ask</span>${ib("x", "Close", "data-chat-close", "Esc")}</div>
-      <div class="mk-thread" data-thread>${s.thread.map(m => msg(s, m)).join("")}</div>
-      <div class="mk-chat-foot">${composer(s)}</div></aside>` : "";
+      <button type="button" class="mk-grab" aria-label="Close" data-tip="Close" data-key="Esc" data-chat-close><i aria-hidden="true"></i></button>
+      <div class="mk-thread" data-thread>${s.thread.map((m, i) => msg(s, m, i)).join("")}</div>
+      ${ctxRow(s)}${composer(s)}</aside>` : "";
+  // History (live): ⌘⇧L raises a "Dumps" sheet just above the pill (tier 3): day groups, each dump with what it made, the bin.
+  const logSheet = s => s.log ? `<div class="mk-log" role="dialog" aria-label="Dumps">
+      <div class="mk-log-head"><span class="h">Dumps</span><span class="ob-tools">${ib("trash", "Bin")}${ib("x", "Close", "data-log-close", "Esc")}</span></div>
+      <div class="mk-log-body">${DAYS.map((d, i) => { const ds = all(s, "dump").filter(x => x.day === i); return ds.length ? `<div class="ob-group"><div class="ob-glabel"><span>${d}</span></div>${ds.map(x => {
+        const n = x.made.filter(id => s.O[id]?.kind === "signal" && !s.O[id].gone).length, dr = x.made.length - n;
+        return `<div class="mk-logrow">${orow(s, x)}<div class="mk-made">${x.processing ? `<span class="mk-spin">${ic("circle-notch")}</span><span>Reading</span>` : x.made.length ? `${n ? cnt("pulse", n, "signals") : ""}${dr ? cnt("target", dr, "drafts") : ""}` : "<span>Nothing filed</span>"}</div></div>`; }).join("")}</div>` : ""; }).join("")}</div></div>` : "";
 
   /* ── Transient layers: one at a time (picker, peek, modal, toast) ── */
   const toast = s => s.toast ? `<div class="mk-toast" role="status"><span class="t">${esc(s.toast.text)}</span>${s.toast.undo ? `<button type="button" class="mk-undo" data-undo>Undo<kbd>⌘Z</kbd></button>` : ""}</div>` : "";
@@ -222,9 +241,9 @@
   /* ── Frame ─────────────────────────────────────────── */
   const frame = s => {
     const o = s.O[s.sel];
-    return `<div class="nv mk ob-win" data-v="A"${s.picking ? " data-picking" : ""} style="grid-template-columns:var(--nv-rail-w) 280px minmax(0,1fr)${s.chat ? " var(--chat-w)" : ""}">${rail(s)}${list(s)}
+    return `<div class="nv mk ob-win" data-v="A"${s.picking ? " data-picking" : ""} style="grid-template-columns:var(--nv-rail-w) 280px minmax(0,1fr)${s.chat ? " calc(var(--chat-w) + var(--inset-float))" : ""}">${rail(s)}${list(s)}
       <main class="nv-main"><div class="nv-scroller">${o && !o.gone ? full(s, o) : `<p class="ob-empty mk-nothing">Nothing selected</p>`}</div></main>
-      ${chat(s)}${pill(s)}${picker(s)}${toast(s)}${modal(s)}</div>`;
+      ${chat(s)}${pill(s)}${logSheet(s)}${picker(s)}${toast(s)}${modal(s)}</div>`;
   };
 
   /* ── Render and placement ─────────────────────────── */
@@ -235,7 +254,7 @@
   const place = host => {
     const s = host._s, nv = host.querySelector(".nv");
     // The toast sits just above whatever the composer is: the pill when closed, the column's composer when open (10 States rule 6)
-    const t = nv.querySelector(".mk-toast"), anchor = nv.querySelector(".mk-chat .mk-chat-foot, .mk-pill");
+    const t = nv.querySelector(".mk-toast"), anchor = nv.querySelector(".mk-chat .mk-comp, .mk-pill");
     if (t && anchor) { const a = local(nv, anchor); t.style.bottom = `${nv.offsetHeight - a.y + 8}px`; t.style.right = `${nv.offsetWidth - (a.x + a.w) + (s.chat ? 12 : 0)}px`; }
     const pop = nv.querySelector(".mk-pop");
     if (pop) {
@@ -351,7 +370,8 @@
       let parts;
       if (text.includes("?")) {
         const hits = all(s, "signal").filter(x => x.themes.includes(theme.id)).slice(0, 2).map(x => x.id);
-        parts = [{ say: `Two of your signals in ${theme.name} touch this.` }, { rows: hits }];
+        const held = theoriesOf(s, theme).find(t => !t.draft);
+        parts = [{ say: `Two of your signals in ${theme.name} touch this.` }, held ? { theory: held.id } : { rows: hits }];
         d.reply = parts[0].say;
       } else {
         const sg = { id: `s${++nid}x`, kind: "signal", name: (text || (voice ? "Voice note about pricing" : link?.title) || "A new signal").split(/[.?!\n]/)[0].slice(0, 80), src: link?.title || "My own observation", day: 0, themes: [theme.id], unseen: true };
@@ -400,9 +420,12 @@
 
   /* ── Seed thread: two earlier exchanges (chat is dumps) ── */
   const seedThread = () => [
-    { day: 1 },
+    { day: 2 },
     { who: "me", dump: "d5", text: "Is anyone pricing agents per outcome?", time: "21:05", ctx: ["ps"] },
-    { who: "agent", parts: [{ say: "Two of your signals touch this. I drafted a theory and a prototype from it." }, { draft: "t12" }, { draft: "p8" }] },
+    { who: "agent", parts: [{ say: "Not yet in your signals, but it sits next to a theory you hold. I drafted a theory and a prototype from it." }, { theory: "t8" }, { draft: "t12" }, { draft: "p8" }] },
+    { day: 1 },
+    { who: "me", dump: "d3", voice: "2:14", text: "The demo was great but they kept saying memory is off for now because of the privacy stuff. Also everyone in the room complained about reviewing agent PRs.", time: "18:20" },
+    { who: "agent", parts: [{ say: "Filed 3 observations and drafted a theme." }, { filed: "coi", signals: ["s5"] }, { filed: "rev", signals: ["s7"] }, { filed: "mem", signals: ["s8"] }, { draft: "voice" }] },
     { day: 0 },
     { who: "me", dump: "d1", text: "Prices keep falling at the small end. Routine stuff just stops costing anything I'd notice. Maybe local models eat it entirely", atts: [{ kind: "link", title: "x.com" }, { kind: "link", title: "news.ycombinator.com" }], time: "09:12", ctx: ["coi"] },
     { who: "agent", parts: [{ filed: "coi", signals: ["s1", "s2"] }, { filed: "mem", signals: ["s3"] }, { say: "The ramble reads like a claim, so I drafted a theory." }, { draft: "t11" }] },
@@ -422,6 +445,9 @@
         h.push({ who: "agent", parts: [{ filed: "coi", signals: ["s15"] }, { say: "This reads like a claim, so I drafted a theory from it." }, { draft: "t20" }] }); },
       "chat-pick": () => { s.chat = true; s.comp.ctx = ["coi"]; s.picking = true; },
       "toast": () => { s.toast = { text: "Made 1 signal", undo: () => {} }; },
+      "chat-top": () => { s.chat = true; s.comp.ctx = ["coi"]; s.scrollThread = false; },
+      "chat-filed": () => { s.chat = true; s.comp.ctx = ["coi"]; s.unfold.add("8:0"); },
+      "log": () => { s.log = true; },
       "new-theme": () => { const id = "n0"; s.O = { [id]: { id, kind: "theme", name: "Robots in the home", themes: [], ev: [] }, ...s.O }; s.type = "theme"; s.sel = id; s.newId = id; s.focusCls = "title"; },
       "dup-theme": () => { const id = "n0"; s.O = { [id]: { id, kind: "theme", name: "Agent memory", themes: [], ev: [] }, ...s.O }; s.type = "theme"; s.sel = id; s.newId = id; },
       "new-card": () => { s.cardFor = s.sel; s.cardText = "Inference becomes a utility line item"; s.focusCls = "card"; },
@@ -440,7 +466,7 @@
   const init = host => {
     const o = JSON.parse(host.dataset.mk || "{}");
     const s = host._s = { uid: ++uid, O: window.MkSeed(), type: o.type || "theme", sel: o.sel || "coi", opt: { ...OPT, ...(o.opt || {}) }, chat: !!o.chat, thread: seedThread(),
-      comp: { text: "", atts: [], rec: null, ctx: o.chat ? [o.sel || "coi"] : [] }, toast: null, pop: null, modal: null, peek: null, newId: null, cardFor: null, picking: false };
+      comp: { text: "", atts: [], rec: null, ctx: o.chat ? [o.sel || "coi"] : [] }, toast: null, pop: null, modal: null, peek: null, newId: null, cardFor: null, picking: false, log: false, unfold: new Set() };
     if (host.dataset.crop) host.classList.add("mk-crop");
     render(host); ro.observe(host);
     if (o.scene) document.fonts.ready.then(() => scene(host, o.scene));
@@ -499,7 +525,10 @@
       else if (d.delYes) { const o = s.O[d.delYes]; o.gone = true; o.made.forEach(id => { if (s.O[id]) s.O[id].gone = true; }); s.thread = s.thread.filter((m, i, a) => m.dump !== o.id && !(a[i - 1]?.dump === o.id && m.who === "agent"));
         s.modal = null; if (s.sel === o.id || s.O[s.sel]?.gone) s.sel = all(s, s.type)[0]?.id; render(host); }   // confirmed, so no toast after (10 States rule 7)
       else if ("undo" in d) undo(host);
-      else if ("chatOpen" in d) openChat(host);
+      else if ("chatOpen" in d) { s.log = false; openChat(host); }
+      else if (d.unfold) { s.unfold.has(d.unfold) ? s.unfold.delete(d.unfold) : s.unfold.add(d.unfold); s.scrollThread = false; render(host); s.scrollThread = true; }
+      else if (d.rephrase) { go(host, d.rephrase); const t = host.querySelector(`[data-title="${d.rephrase}"]`); t?.focus(); t && caretEnd(t); }
+      else if ("logClose" in d) { s.log = false; render(host); }
       else if ("chatClose" in d) { s.chat = false; s.picking = false; render(host, "[data-chat-open]"); }
       else if ("send" in d) send(host);
       else if ("attach" in d) { s.comp.atts.push({ id: `a${++nid}`, kind: "image", title: "Screenshot 09.41.png" }); render(host, "[data-comp]"); }
@@ -527,7 +556,7 @@
         if (m) { s.comp.atts.push({ id: `a${++nid}`, kind: "link", title: m[3].replace(/\/.*$/, "") }); s.comp.text = t.value.slice(0, m.index + m[1].length); render(host, "[data-comp]"); return; }
         const was = s.comp.text.includes("?"); s.comp.text = t.value;
         const b = host.querySelector("[data-send]"); b.setAttribute("aria-disabled", String(!(t.value.trim() || s.comp.atts.length)));
-        if (was !== t.value.includes("?")) { const ask = t.value.includes("?"); b.setAttribute("aria-label", ask ? "Ask" : "Send"); b.dataset.tip = ask ? "Ask" : "Send"; if (s.opt.send === "ask") b.innerHTML = ic(ask ? "question" : "paper-plane-right"); }
+        if (was !== t.value.includes("?")) { const ask = t.value.includes("?"); b.setAttribute("aria-label", ask ? "Ask" : "Dump"); b.dataset.tip = ask ? "Ask" : "Dump"; b.innerHTML = ic(ask ? "question" : "paper-plane-right"); }
       }
       else if (t.matches("[data-pq]")) { s.pop.q = t.value; s.pop.i = 0; render(host, "[data-pq]"); }
     });
@@ -555,6 +584,7 @@
     const s = host._s, mod = e.metaKey || e.ctrlKey, typing = e.target.closest?.("input, textarea, [contenteditable]");
     if (mod && e.key.toLowerCase() === "j") { e.preventDefault(); if (e.shiftKey) { if (!s.comp.rec) recStart(host); } else if (s.chat && host.contains(document.activeElement) && document.activeElement.matches("[data-comp]")) { s.chat = false; render(host, "[data-chat-open]"); } else openChat(host); return; }
     if (mod && e.key.toLowerCase() === "z" && !typing && s.toast?.undo) { e.preventDefault(); undo(host); return; }
+    if (mod && e.shiftKey && e.key.toLowerCase() === "l") { e.preventDefault(); if (s.opt.log === "rail") { s.chat = false; s.type = "dump"; s.sel = all(s, "dump")[0]?.id; render(host); return; } s.log = !s.log; if (s.log) s.chat = false; render(host); return; }
     if (e.key === "Escape") {
       if (e.target.closest?.("[data-title], [data-card]")) return;
       e.preventDefault();
@@ -563,6 +593,7 @@
       if (s.modal) { const id = s.modal; s.modal = null; render(host, `[data-del="${id}"]`); return; }
       if (s.pop) { const st = s.pop.st; s.pop = null; render(host, `[data-ev-add="${st}"]`); return; }
       if (s.peek) { closePeek(host); return; }
+      if (s.log) { s.log = false; render(host); return; }
       if (s.chat) { s.chat = false; render(host, "[data-chat-open]"); return; }
     }
     if (!typing && !mod && !e.altKey && e.key.toLowerCase() === "n" && MAKE.includes(s.type) && host.contains(document.activeElement)) { e.preventDefault(); newObject(host, s.type); }
