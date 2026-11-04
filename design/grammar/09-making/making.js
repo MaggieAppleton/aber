@@ -20,7 +20,7 @@
   const ic = (n, fill) => `<i class="ph${fill ? "-fill" : ""} ph-${n}" aria-hidden="true"></i>`;
   const ib = (icon, label, attr = "", key = "") => `<button type="button" class="nv-ib" aria-label="${label}" data-tip="${label}"${key ? ` data-key="${key}"` : ""} ${attr}>${ic(icon)}</button>`;
   const conf = n => `<span class="nv-conf lg" role="img" aria-label="Confidence ${n} of 5">${[1, 2, 3, 4, 5].map(i => `<i${i <= n ? " data-on" : ""}></i>`).join("")}</span>`;
-  const dot = (kind, label) => `<span class="nv-dot ${kind}" role="img" aria-label="${label}"></span>`;
+  // No new dots on objects or rail tiles (decided 4 Nov).
   const nameOf = o => o.name || `Untitled ${TYPES[o.kind].one}`;
   const chip = o => `<button type="button" class="nv-chip${o.draft ? " draft" : ""}" data-go-to="${o.id}">${g(o.kind, o.draft)}<span class="t">${esc(nameOf(o))}</span></button>`;
 
@@ -34,7 +34,7 @@
   /* ── Rail ──────────────────────────────────────────── */
   const rail = s => `<aside class="nv-rail">
       <div class="nv-brand"><span>Aber</span>${ib("magnifying-glass", "Find", "", "⌘K")}</div>
-      <nav class="nv-types" aria-label="Types">${RAIL.map(t => `<button type="button" class="nv-type" data-go="${t}" aria-current="${s.type === t}"><span class="gw">${g(t)}${s.fresh[t] ? dot("new", "New") : ""}</span><span class="nm">${TYPES[t].name}</span><span class="nv-n">${countOf(s, t)}</span></button>`).join("")}</nav>
+      <nav class="nv-types" aria-label="Types">${RAIL.map(t => `<button type="button" class="nv-type" data-go="${t}" aria-current="${s.type === t}"><span class="gw">${g(t)}</span><span class="nm">${TYPES[t].name}</span><span class="nv-n">${countOf(s, t)}</span></button>`).join("")}</nav>
       <div class="nv-switch" role="group" aria-label="Views">${[["rows", "Default", "⌘1"], ["columns", "Columns", "⌘2"], ["map-trifold", "Atlas", "⌘3"], ["chart-scatter", "Timeline", "⌘4"]].map(([i, l, k], n) =>
         `<button type="button" aria-pressed="${n === 0}" aria-label="${l}" data-tip="${l}" data-key="${k}">${ic(i, n === 0)}</button>`).join("")}</div>
     </aside>`;
@@ -42,7 +42,7 @@
   /* ── List (rows are placeholders: 06 Objects designs them) ── */
   const list = s => {
     const t = s.type, cur = s.sel;
-    const row = o => `<button type="button" class="nv-row${o.draft ? " draft" : ""}${o.name ? "" : " untitled"}" data-sel="${o.id}" aria-current="${o.id === cur}">${o.fresh ? `<span class="slot">${dot("new", "New")}</span>` : ""}<span class="nm">${esc(nameOf(o))}</span></button>`;
+    const row = o => `<button type="button" class="nv-row${o.draft ? " draft" : ""}${o.name ? "" : " untitled"}" data-sel="${o.id}" aria-current="${o.id === cur}"><span class="nm">${esc(nameOf(o))}</span></button>`;
     const group = (label, rows) => rows.length ? `<div class="nv-group">${label ? `<div class="nv-glabel">${label}</div>` : ""}${rows.map(row).join("")}</div>` : "";
     const xs = all(s, t);
     let body = "";

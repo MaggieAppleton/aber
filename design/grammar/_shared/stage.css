@@ -54,10 +54,9 @@
 .stg-conf i { display: block; width: 9px; height: 3px; border-radius: 2px; background: var(--hairline-strong); }
 .stg-conf i[data-on] { background: var(--ink); }
 .stg-inline { display: inline-flex; align-items: center; gap: var(--gap-tight, 3px); }
-.stg-pending { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--r-pill); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; font-size: var(--text-sm); color: var(--ink); }
+/* The one dot left: the failed-dump global mark (10 States). No new, pending or challenge marks on objects (4 Nov). */
 .stg-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
 .stg-dot.neg { background: var(--neg-dot); box-shadow: 0 0 0 3px color-mix(in oklab, var(--neg-dot) 18%, transparent); }
-.stg-dot.new { background: var(--new); box-shadow: 0 0 0 3px color-mix(in oklab, var(--new) 18%, transparent); }
 
 /* Pane: docked right, top-aligned, a hairline seam, no shadow */
 .stg-pane { position: relative; min-width: 0; background: var(--surface); box-shadow: -0.5px 0 0 var(--hairline-strong); overflow: hidden; padding: var(--inset-pane-block, 28px) var(--inset-pane-inline, 32px) var(--inset-pane-block, 24px); display: grid; align-content: start; gap: var(--gap-group, var(--s-4)); }
@@ -75,7 +74,7 @@
 .stg-conf.lg i { width: 18px; height: 5px; border-radius: 3px; }
 .stg-spark { width: 64px; height: 16px; }
 .stg-note { margin: 0; padding: var(--inset-card, var(--s-3)); border-radius: var(--r-sm); background: var(--ground); color: var(--ink-2); text-wrap: pretty; }
-.stg-trip { display: flex; align-items: center; gap: var(--gap-icon, var(--s-2)); color: var(--ink-2); padding-bottom: var(--gap-item, var(--s-2)); border-bottom: 1px dashed var(--hairline-strong); }
+.stg-trip { display: flex; align-items: center; gap: var(--gap-icon, var(--s-2)); color: var(--ink); padding-bottom: var(--gap-item, var(--s-2)); border-bottom: 1px dashed var(--hairline-strong); }
 .stg-ev { display: grid; grid-template-columns: 1fr 1fr; border-radius: var(--r-md); box-shadow: inset 0 0 0 0.5px var(--hairline-strong); overflow: hidden; }
 .stg-ev-col + .stg-ev-col { box-shadow: -0.5px 0 0 var(--hairline-strong); }
 .stg-ev-head { display: flex; align-items: center; gap: var(--gap-icon, var(--s-1h)); height: var(--row, 32px); padding: 0 var(--inset-card, var(--s-3)); background: var(--ground); font-size: var(--text-label); color: var(--ink-2); box-shadow: inset 0 -0.5px 0 var(--hairline-strong); }

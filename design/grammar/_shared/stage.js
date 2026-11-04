@@ -12,10 +12,11 @@
   const iconBtn = (icon, label, key) => `<button type="button" class="stg-iconbtn" aria-label="${label}${key ? ` (${key})` : ""}" ${V ? `data-tip="${label}"${key ? ` data-key="${key}"` : ""}` : `title="${label}"`}><i class="ph ph-${icon}" aria-hidden="true"></i></button>`;
 
   const THEMES = [["Cost of intelligence", 5, true], ["Agent memory", 2], ["Code review after agents", 2], ["Personal software", 2], ["AI funding cycle", 2], ["Novel agent interfaces"], ["Agent observability"]];
-  const card = (claim, { c, up, down, proto, pending, neg, open, draft, sp } = {}) => `
+  // No pending-suggestion badge, challenge dot or new dot on previews (decided 4 Nov).
+  const card = (claim, { c, up, down, proto, open, draft, sp } = {}) => `
     <div class="stg-card"${sp ? ` data-sp="${sp}" data-gap` : ""}${open ? " data-open" : ""}${draft ? " data-draft" : ""} role="button" tabindex="0">
       <div class="stg-claim"${open ? ' data-tr="card name"' : ""}>${claim}</div>
-      <div class="stg-meta">${c ? conf(c) : ""}<span>+${up} −${down}</span>${proto ? `<span class="stg-inline">${g("prototype")}${proto}</span>` : ""}${pending ? `<span class="stg-pending"${open ? ' data-tr="badge"' : ""} aria-label="${pending} pending suggestions">${pending}</span>` : ""}${neg ? `<span class="stg-dot neg" role="img" aria-label="Challenge"></span>` : ""}</div>
+      <div class="stg-meta">${c ? conf(c) : ""}<span>+${up} −${down}</span>${proto ? `<span class="stg-inline">${g("prototype")}${proto}</span>` : ""}</div>
     </div>`;
 
   const switcher = view => `
@@ -34,14 +35,14 @@
       <section>
         <div class="stg-sec-head">${g("theme")}<span data-tr="section header">Cost of intelligence</span><span class="n" data-tr="meta">23 signals</span></div>
         <div class="stg-cards" data-sp="item gap" data-gap>
-          ${card("Tokens become nearly free for routine work", { c: 3, up: 5, down: 2, proto: 1, pending: 2, open: true })}
-          ${card("Frontier intelligence stays scarce and expensive", { c: 2, up: 3, down: 4, pending: 1, sp: "card inset, item gap" })}
+          ${card("Tokens become nearly free for routine work", { c: 3, up: 5, down: 2, proto: 1, open: true })}
+          ${card("Frontier intelligence stays scarce and expensive", { c: 2, up: 3, down: 4, sp: "card inset, item gap" })}
           ${card("Local models absorb most everyday agent work", { up: 3, down: 0, draft: true })}
         </div>
       </section>
       <section>
         <div class="stg-sec-head">${g("theme")}<span>Agent memory</span><span class="n">31 signals</span></div>
-        <div class="stg-cards">${card("Agents keep context across months, not sessions", { c: 4, up: 8, down: 1, proto: 1, neg: true })}</div>
+        <div class="stg-cards">${card("Agents keep context across months, not sessions", { c: 4, up: 8, down: 1, proto: 1 })}</div>
       </section>
     </main>`;
 
@@ -49,14 +50,14 @@
     <div class="stg-strip">${g("dump")}</div><div class="stg-strip">${g("signal")}</div>
     <section class="stg-col stg-col-nav" data-sp="nav inset, row height">
       <div class="stg-col-head">${g("theme")}<span data-tr="section header">Themes</span></div>
-      <nav class="stg-index">${THEMES.map(([n, , a], i) => `<a href="#"${a ? " data-active" : ""}><span>${n}</span>${i < 5 ? '<span class="stg-dot new" role="img" aria-label="New"></span>' : '<span class="stg-ring" aria-label="Open"></span>'}</a>`).join("")}</nav>
+      <nav class="stg-index">${THEMES.map(([n, c, a]) => `<a href="#"${a ? " data-active" : ""}><span>${n}</span><span>${c ?? ""}</span></a>`).join("")}</nav>
     </section>
     <section class="stg-col" data-sp="list inset, item gap" data-gap>
       <div class="stg-col-head">${g("theory")}<span>Theories</span></div>
       <div class="stg-cards">
-        ${card("Tokens become nearly free for routine work", { c: 3, up: 5, down: 2, pending: 2, open: true })}
-        ${card("Frontier intelligence stays scarce and expensive", { c: 2, up: 3, down: 4, pending: 1 })}
-        ${card("Agents keep context across months, not sessions", { c: 4, up: 8, down: 1, neg: true })}
+        ${card("Tokens become nearly free for routine work", { c: 3, up: 5, down: 2, open: true })}
+        ${card("Frontier intelligence stays scarce and expensive", { c: 2, up: 3, down: 4 })}
+        ${card("Agents keep context across months, not sessions", { c: 4, up: 8, down: 1 })}
         ${card("Local models absorb most everyday agent work", { up: 3, down: 0, draft: true })}
       </div>
     </section>`;
@@ -112,7 +113,7 @@
       <div class="stg-ev">
         <div class="stg-ev-col">
           <div class="stg-ev-head"><i class="ph ph-arrow-up"></i><span data-tr="group label">Supports 2</span><span class="plus">${iconBtn("plus", "Add support")}</span></div>
-          <div class="stg-ev-item" data-sp="row inset, card inset x">${g("signal")}<span class="t"><span data-tr="list name">Lab cuts API prices again for its small tier</span><span class="stg-dot new" role="img" aria-label="New"></span></span><span class="src" data-tr="meta">x.com</span></div>
+          <div class="stg-ev-item" data-sp="row inset, card inset x">${g("signal")}<span class="t"><span data-tr="list name">Lab cuts API prices again for its small tier</span></span><span class="src" data-tr="meta">x.com</span></div>
           <div class="stg-ev-item" data-draft>${g("suggestion")}<span class="t">Braintrust raises Series B</span><span class="src">Suggested by agent</span>
             <div class="stg-decide"><button type="button" class="stg-btn secondary">Dismiss</button><button type="button" class="stg-btn primary" data-sp="control inset" data-tr="button label">Accept</button></div></div>
         </div>

@@ -52,18 +52,17 @@
 .nv-ib::before { content: ""; position: absolute; left: 50%; top: 50%; width: var(--hit); height: var(--hit); translate: -50% -50%; }
 .nv-ib:hover { background: var(--hover); color: var(--ink); }
 .nv-ib.sm { width: var(--control-sm); height: var(--control-sm); }
+/* The one dot left: the failed-dump global mark (10 States). No new, pending or challenge marks on objects (4 Nov). */
 .nv-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
-.nv-dot.new { background: var(--new); box-shadow: 0 0 0 3px color-mix(in oklab, var(--new) 18%, transparent); }
 .nv-dot.neg { background: var(--neg-dot); box-shadow: 0 0 0 3px color-mix(in oklab, var(--neg-dot) 18%, transparent); }
 .nv-ring { width: 7px; height: 7px; border-radius: 50%; box-shadow: inset 0 0 0 1.25px var(--ink-2); flex: none; }
-.nv-pending { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--r-pill); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; font-size: var(--fs-small); font-weight: 500; color: var(--ink); flex: none; }
 .nv-conf { display: inline-flex; gap: 2px; }
 .nv-conf i { display: block; width: 9px; height: 3px; border-radius: 2px; background: var(--hairline-strong); }
 .nv-conf i[data-on] { background: var(--ink); }
 .nv-conf.lg i { width: 18px; height: 5px; border-radius: 3px; }
 .nv-n { font-size: var(--fs-small); font-weight: 500; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .nv-meta { font-size: var(--fs-label); font-weight: 400; color: var(--ink-2); }
-.nv-mono { font: 500 var(--fs-label)/1 var(--font-mono); color: var(--ink-2); }
+.nv-mono { font: inherit; color: inherit; font-variant-numeric: tabular-nums; }   /* times: Geist tabular in the surrounding role; Geist Mono is for keys only */
 .nv-tip { position: absolute; z-index: 20; display: flex; align-items: center; gap: 8px; padding: 4px 8px; border-radius: var(--r-sm); background: var(--ink); color: var(--on-primary);
   font: 500 var(--fs-label)/1.4 var(--font); white-space: nowrap; pointer-events: none; box-shadow: var(--elev-2); }
 .nv-tip kbd { font: 500 var(--fs-label)/1.4 var(--font-mono); color: color-mix(in oklab, var(--on-primary) 65%, var(--ink)); }
@@ -80,10 +79,7 @@
 .nv-type[aria-current="true"] { background: var(--surface); color: var(--ink); font-weight: 500; box-shadow: var(--elev-2); }
 .nv-type .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .nv-type.brief { margin-bottom: var(--gap-item); }
-/* A new dot rides on the glyph's tile, so the count on the right always means quantity */
 .nv-type .gw { position: relative; display: inline-grid; }
-.nv-type .gw .nv-dot { position: absolute; top: -2px; right: -2px; width: 7px; height: 7px; box-shadow: 0 0 0 2px var(--ground-2); }
-.nv-type[aria-current="true"] .gw .nv-dot { box-shadow: 0 0 0 2px var(--surface); }
 .nv[data-v="C"] .nv-rail { align-items: center; padding-inline: 8px; }
 .nv[data-v="C"] .nv-brand { padding: 0; justify-content: center; }
 .nv[data-v="C"] .nv-type { width: 40px; justify-content: center; padding: 0; }
@@ -170,9 +166,8 @@ button.nv-chip:hover, .nv-chip[aria-expanded="true"] { background: var(--hover);
 .nv-fields dt { font-size: var(--fs-label); font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 .nv-fields dd { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-tight); min-width: 0; }
 .nv-note { margin: 0; padding: var(--inset-card); border-radius: var(--r-sm); background: var(--ground); line-height: var(--lh-prose); max-width: var(--measure); text-wrap: pretty; }
-.nv-trip { display: flex; align-items: flex-start; gap: var(--gap-icon); color: var(--ink-2); padding-bottom: var(--gap-item); border-bottom: 1px dashed var(--hairline-strong); line-height: var(--lh-prose); }
+.nv-trip { display: flex; align-items: flex-start; gap: var(--gap-icon); color: var(--ink); padding-bottom: var(--gap-item); border-bottom: 1px dashed var(--hairline-strong); line-height: var(--lh-prose); }
 .nv-trip > .g { margin-top: calc((var(--line-prose) - var(--tile)) / 2); }
-.nv-trip > .nv-dot { margin-top: 7px; }
 .nv-decide { display: flex; gap: var(--gap-item); }
 .nv-btn { display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--control-sm); padding: 0 var(--inset-control); border-radius: var(--r-sm); font-size: var(--fs-label); font-weight: 500; white-space: nowrap; transition: background-color var(--t-hover); }
 .nv-btn i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
@@ -245,7 +240,7 @@ button.nv-chip:hover, .nv-chip[aria-expanded="true"] { background: var(--hover);
 .nv-pk-foot { display: flex; justify-content: flex-end; padding-top: var(--gap-tight); }
 .nv-peek.panel .nv-pk-foot { justify-content: flex-start; }
 .nv-row.two .sub > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.nv-row > .nv-n, .nv-row > .nv-ring, .nv-row > .nv-pending, .nv-row > .st, .nv-row .marks { flex: none; }
+.nv-row > .nv-n, .nv-row > .nv-ring, .nv-row > .st, .nv-row .marks { flex: none; }
 .nv-glabel > :not(.nv-n):not(.nv-ib):not(i) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 
 /* ── 4 Nov: rail narrower (dial "Type rail width", 200 → 160); rows are placeholders until 06 Objects ── */

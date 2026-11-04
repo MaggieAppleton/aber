@@ -75,7 +75,7 @@
       small: t => svg(14, 14, ring(14, 2.5, 22, t.c), "ring"),
       large: (c, pv) => `<span class="cf-ring">${svg(48, 48, ring(48, 6, 10, c, pv), "ring")}<span class="n">${pv || c || "–"}</span></span>`,
       unset: "An empty ring.",
-      notes: [["Legibility", "At 14px the five segments blur into a pie; you read \"about three quarters\" more than \"4\"."], ["Scanning", "Rings down a list read as a column of loading spinners or progress charts."], ["Right of the name", "Compact and centred on the line; the circle echoes the challenge dot, which then has less to itself."], ["Without colour", "Filled arcs against hairline arcs. aria-label as A."], ["Setter", "A 48 ring with the number in the middle; click a segment, or use the keys. Segments are short targets, so the whole ring also takes arrows."]] },
+      notes: [["Legibility", "At 14px the five segments blur into a pie; you read \"about three quarters\" more than \"4\"."], ["Scanning", "Rings down a list read as a column of loading spinners or progress charts."], ["Right of the name", "Compact and centred on the line."], ["Without colour", "Filled arcs against hairline arcs. aria-label as A."], ["Setter", "A 48 ring with the number in the middle; click a segment, or use the keys. Segments are short targets, so the whole ring also takes arrows."]] },
     { k: "E", name: "Numeral and arrow", idea: "The number itself, with a trend arrow only when it just rose or fell.",
       small: t => t.c ? `<span class="cf-num"><b>${t.c}</b><span>/5</span>${trend(t) ? ico(trend(t).dir === "rose" ? "trend-up" : "trend-down", tone(t)) : ""}</span>` : `<span class="cf-num"><span>–</span></span>`,
       large: (c, pv) => `<span class="cf-seg">${[1, 2, 3, 4, 5].map(i => `<span class="hz${i === c ? " sel" : ""}${i === pv && i !== c ? " pv" : ""}" data-v="${i}">${i}</span>`).join("")}</span>`,
@@ -117,13 +117,12 @@
 
   /* ═══ Object markup (06's classes; the confidence slot is new) ═══ */
   const tile = (t) => `<span class="g${t.draft ? " draft" : ""}" data-type="theory"><i class="ph ph-target" aria-hidden="true"></i></span>`;
-  const dotNeg = `<span class="ob-dot neg" role="img" aria-label="Challenged" title="Challenged"></span>`;
+  // No challenge dot on previews (decided 4 Nov); how a challenge shows is open in 06.
   const mark = (e, t) => `<span class="cf-mark" data-enc="${e.k}" role="img" aria-label="${label(t)}" title="${label(t)}">${e.small(t)}</span>`;
-  // pos "right": [tile][name][status mark][confidence] on the first line, no second line. "below": today's key line.
+  // pos "right": [tile][name][confidence] on the first line, no second line. "below": today's key line.
   const preview = (e, t, as, pos) => {
-    const st = t.challenge ? `<span class="st">${dotNeg}</span>` : "";
-    const tail = pos === "right" ? `<span class="cf-slot">${st}${mark(e, t)}</span>`
-      : `<span class="kv">${t.draft ? (e.k === "F" ? mark(e, t) : `<span>Draft</span>`) : mark(e, t)}${st}<span class="when">By ${t.by}</span></span>`;
+    const tail = pos === "right" ? `<span class="cf-slot">${mark(e, t)}</span>`
+      : `<span class="kv">${t.draft ? (e.k === "F" ? mark(e, t) : `<span>Draft</span>`) : mark(e, t)}<span class="when">By ${t.by}</span></span>`;
     return `<div class="ob-${as} cf-${pos}${t.draft ? " draft" : ""}"><span class="g${t.draft ? " draft" : ""}" data-type="theory"><i class="ph ph-target" aria-hidden="true"></i></span><button type="button" class="nm">${t.name}</button>${tail}</div>`;
   };
   const list = (e, pos, ids = ["t6", "t4", "t1", "t3", "t2", "t11"]) => `<div class="cf-list">${ids.map(id => preview(e, T[id], "row", pos)).join("")}</div>`;

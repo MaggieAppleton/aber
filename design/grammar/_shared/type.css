@@ -43,9 +43,8 @@
 .stg .stg-note, .stg .stg-trip > span:not(.g) { font-size: var(--fs-read); line-height: var(--lh-prose); font-weight: 400; color: var(--ink); max-width: var(--measure); }
 /* Meta: sources, times, counts beside a header, axis labels */
 .stg .stg-sec-head .n, .stg .stg-ev-item .src, .stg .stg-tl-year, .stg .stg-meta, .stg .stg-area-label .n { font-size: var(--fs-label); font-weight: 400; color: var(--ink-2); font-variant-numeric: tabular-nums; }
-/* Count and badge: numbers on their own */
-.stg .stg-index a span:last-child, .stg .stg-protos span:last-child, .stg .stg-pending { font-size: var(--fs-small); font-weight: 500; color: var(--ink-2); font-variant-numeric: tabular-nums; }
-.stg .stg-pending { color: var(--ink); }
+/* Count: numbers on their own (no pending badge, decided 4 Nov) */
+.stg .stg-index a span:last-child, .stg .stg-protos span:last-child { font-size: var(--fs-small); font-weight: 500; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 /* Button and chip labels */
 .stg .stg-btn { font-size: var(--fs-label); font-weight: 500; }
 .stg .stg-chip { font-size: var(--fs-label); font-weight: 500; color: var(--ink-2); }
@@ -56,4 +55,3 @@
   padding: 1px 4px; border-radius: 3px; background: oklch(0.42 0.14 250); color: #fff; font: 600 9px/1.3 var(--font); letter-spacing: 0; white-space: nowrap; pointer-events: none; }
 [data-typeoverlay] .stg [data-tr="meta"]::after { bottom: auto; top: 100%; }
 [data-typeoverlay] .stg [data-tr="count"]::after { left: auto; right: 0; bottom: auto; top: 100%; }
-[data-typeoverlay] .stg [data-tr="badge"]::after { bottom: auto; top: 100%; }

@@ -4,7 +4,8 @@
   -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
 .fx *, .fx *::before, .fx *::after { box-sizing: border-box; }
 .fx i.ph, .fx i[class^="ph"] { font-size: var(--icon); line-height: 1; display: block; }
-.mono { font-family: var(--font-mono); font-size: var(--text-sm); }
+.mono { font-family: var(--font-mono); font-size: var(--text-sm); }   /* keyboard keys only */
+.tnum { font-variant-numeric: tabular-nums; }   /* times: Geist tabular in the surrounding role */
 
 /* Specimen plates: a patch of the base plane */
 .plate { background: var(--ground); border-radius: var(--r-lg); padding: var(--s-5); min-width: 0; box-shadow: inset 0 0 0 0.5px var(--hairline); }
@@ -96,18 +97,14 @@ button.tile:active { scale: var(--press-scale); }
 
 .tag { display: inline-flex; align-items: center; gap: var(--s-1); font-size: var(--text-label); line-height: var(--lh-sm); font-weight: var(--w-medium); color: var(--ink-2); white-space: nowrap; }
 .tag i { --icon: 14px; }
-.tag.ink { color: var(--ink); } .tag.pos { color: var(--pos); } .tag.neg { color: var(--neg); } .tag.fell { color: var(--fell); } .tag.building { color: var(--building); }
+.tag.ink { color: var(--ink); } .tag.pos { color: var(--pos); } .tag.neg { color: var(--ink); } .tag.neg i { color: var(--neg); } .tag.fell { color: var(--fell); } .tag.building { color: var(--building); }
 .tag .spin { animation: fx-spin 900ms linear infinite; }
 @keyframes fx-spin { to { rotate: 360deg; } }
 .tags { display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-5); }
 
 .badge { display: inline-grid; place-items: center; min-width: 20px; height: 18px; padding: 0 var(--s-1h); border-radius: var(--r-pill);
   background: var(--ground-2); color: var(--ink-2); font-size: var(--text-sm); line-height: 1; font-weight: var(--w-medium); }
-.badge.pending { background: var(--draft-fill); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; color: var(--ink); }
-.dot-new, .dot-neg { width: 7px; height: 7px; border-radius: 50%; flex: none; }
-.dot-new { background: var(--new); box-shadow: 0 0 0 3px color-mix(in oklab, var(--new) 18%, transparent); }
-.dot-neg { background: var(--neg-dot); box-shadow: 0 0 0 3px color-mix(in oklab, var(--neg-dot) 18%, transparent); }
-.dot-new + .mono, .dot-neg + .mono { margin-left: var(--s-1); }
+/* No new dots, challenge dots or pending-suggestion badges (decided 4 Nov) */
 .badge-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-5); }
 .badge-row > span { display: inline-flex; align-items: center; gap: var(--s-2); }
 

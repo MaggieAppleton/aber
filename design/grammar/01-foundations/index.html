@@ -48,8 +48,8 @@
 <section class="jig-section" id="primary" data-decision="primary" data-question="1. What colour is the primary button?" data-default="A jade">
   <p>See Accept on the suggestion in Supports, and the current view in the switcher at the bottom of the rail.</p>
   <div class="jig-compare" style="--jig-min:900px">
-    <div class="jig-option" data-option="A jade"><div class="jig-label"><b>A</b> Jade</div><p class="jig-note">The accent means "you are acting here": primary, focus, new dots and the current view share one colour.</p><div data-option-stage class="stg-host" data-stage='{"primary":"accent"}'></div></div>
-    <div class="jig-option" data-option="B black"><div class="jig-label"><b>B</b> Black</div><p class="jig-note">Ink primary. Calmer; jade stays for focus, new dots and the current view.</p><div data-option-stage class="stg-host" data-stage='{"primary":"ink"}'></div></div>
+    <div class="jig-option" data-option="A jade"><div class="jig-label"><b>A</b> Jade</div><p class="jig-note">The accent means "you are acting here": primary, focus and the current view share one colour.</p><div data-option-stage class="stg-host" data-stage='{"primary":"accent"}'></div></div>
+    <div class="jig-option" data-option="B black"><div class="jig-label"><b>B</b> Black</div><p class="jig-note">Ink primary. Calmer; jade stays for focus and the current view.</p><div data-option-stage class="stg-host" data-stage='{"primary":"ink"}'></div></div>
   </div>
 </section>
 
@@ -68,9 +68,9 @@
     <ul class="agent-picks">
       <li>Layout and navigation stay as the app has them; jigs restyle, they don't re-layout. The pane aligns to the top of the main area.</li>
       <li>Per-type object colour is back (4 Nov, reverses 1 Nov). Neutral tone is a dial; the default system is D Linen, bright types (00-colour): linen neutrals, bright type colours, black primary.</li>
-      <li>Jade accent means "you are acting here": focus ring, new dots, current view, primary (unless black wins above).</li>
+      <li>Jade accent means "you are acting here": focus ring, current view, primary (unless black wins above).</li>
       <li>Phosphor Regular 16; fill only when selected. Glyphs from OBJECT_ICONS plus Signpost; Sparkle for suggestions.</li>
-      <li>Geist and Geist Mono; 11/12/13/20 at 13/1.4; 15 for modal titles; names 600.</li>
+      <li>Geist (tabular figures for times), Geist Mono for keyboard keys only; 11/12/13/20 at 13/1.4; 15 for modal titles; names 600.</li>
       <li>4px grid; rows 30, controls 28, card padding 12. Radii 4/7/10/14 + pill, concentric.</li>
       <li>Buttons 28px (26 small), radius 7, 12/500; secondary is white with a hairline. Dismiss left of Accept; X only closes fleeting surfaces.</li>
       <li>Selection is neutral, light and raised; hover a 5% state layer; press 0.98. Dashed means not yet mine.</li>
@@ -120,7 +120,7 @@
           <div class="ramp-row"><span>Modal <code data-px="--text-modal"></code></span><div class="t-modal">Delete this dump?</div></div>
           <div class="ramp-row"><span>Body <code data-px="--text-body"></code></span><div>Foglamp ships an agent HUD that shows every tool call as it happens.</div></div>
           <div class="ramp-row"><span>Label <code data-px="--text-label"></code></span><div class="t-label t-2">Confidence&ensp;Happens by&ensp;Supports</div></div>
-          <div class="ramp-row"><span>Small <code data-px="--text-sm"></code></span><div class="t-sm t-2">12 signals&ensp;<span class="mono">4d</span>&ensp;<span class="mono">⌘K</span></div></div>
+          <div class="ramp-row"><span>Small <code data-px="--text-sm"></code></span><div class="t-sm t-2">12 signals&ensp;<span class="tnum">4d</span>&ensp;<span class="mono">⌘K</span></div></div>
           <div class="ramp-row"><span>Weight and ink</span><div class="weights"><span class="t-strong">Name 600</span><span style="font-weight:500">Control 500</span><span>Body 400</span><span class="t-2">Context ink 2</span></div></div>
         </div>
       </div>
@@ -210,9 +210,6 @@
         <p class="cap" style="margin-top:var(--s-5)">Counts and marks</p>
         <div class="badge-row">
           <span><span class="badge">12</span>signals</span>
-          <span><span class="badge pending">3</span>pending suggestions</span>
-          <span><span class="dot-new" role="img" aria-label="New"></span>new</span>
-          <span><span class="dot-neg" role="img" aria-label="Challenge"></span>challenge</span>
           <span><kbd class="mono t-2">⌘K</kbd>key</span>
         </div>
       </div>

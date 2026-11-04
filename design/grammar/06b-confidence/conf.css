@@ -24,7 +24,6 @@
 /* ═══ The right-hand slot: [tile][name][status][mark] on the first line ═══ */
 .ob-row.cf-right, .ob-card.cf-right { grid-template-columns: var(--tile) minmax(0, 1fr) auto; grid-template-areas: "g nm cf"; column-gap: var(--gap-tile); }
 .cf-slot { grid-area: cf; display: flex; align-items: center; justify-content: flex-end; gap: var(--gap-key); height: var(--name-lh); min-width: 0; }
-.cf-slot .st { display: flex; }
 .ob-row.cf-right > .nm, .ob-card.cf-right > .nm { padding-right: 2px; }
 .cf-pkname.cf-right { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--gap-tile); align-items: start; }
 .cf-pkname.cf-right > .cf-mark { height: var(--name-lh); }

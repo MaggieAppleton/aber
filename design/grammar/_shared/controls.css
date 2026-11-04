@@ -138,7 +138,7 @@
   padding: 0 var(--inset-chip) 0 0; border: 0; border-radius: var(--r-control); background: var(--surface); box-shadow: inset 0 0 0 0.5px var(--hairline-strong);
   font: var(--w-medium) var(--fs-label)/1 var(--font); color: var(--ink-2); white-space: nowrap; cursor: pointer; transition: var(--ctl-t); }
 :is(.ctl, .stg, .nv) :is(.ctl-chip, .stg-chip, button.nv-chip):is(:hover, .is-hover, [aria-expanded="true"]):not([aria-disabled="true"]) { background: var(--surface-hover); color: var(--ink); }
-:is(.ctl, .stg, .nv) .ctl-chip > .g { flex: none; display: inline-grid; place-items: center; width: var(--tile); height: var(--tile); border-radius: var(--r-control) 0 0 var(--r-control); background: var(--type-tile); color: var(--type-glyph); }
+:is(.ctl, .stg, .nv) .ctl-chip > .g { flex: none; display: inline-grid; place-items: center; width: var(--chip-h); height: var(--chip-h); border-radius: var(--r-control) 0 0 var(--r-control); background: var(--type-tile); color: var(--type-glyph); }
 :is(.ctl, .stg, .nv) .ctl-chip > .g i { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
 .ctl-chip .t { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .ctl-chip[data-draft] { box-shadow: none; outline: 1px dashed var(--hairline-strong); outline-offset: -1px; background: var(--draft-fill); }
@@ -155,12 +155,9 @@
 :is(.ctl, .stg, .nv) .ctl-chip.filter:is(:hover, .is-hover):not([aria-pressed="true"], [aria-disabled="true"]) { background: var(--hover); }
 :is(.ctl, .stg, .nv) .ctl-chip.filter[aria-pressed="true"] { background: var(--surface); box-shadow: var(--sel); color: var(--ink); }
 
-/* Tags and badges are not controls: no box, no hover. A 14 icon or a 7 dot, then 12/500 ink 2. A pending count is an 18 dashed pill. */
+/* Tags are not controls: no box, no hover. A 14 icon, then 12/500 ink 2. No dots and no pending-suggestion badge (decided 4 Nov). */
 .ctl-tag { display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--chip-h); font: var(--w-medium) var(--fs-label)/1 var(--font); color: var(--ink-2); white-space: nowrap; }
 .ctl-tag > i { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
-.ctl-tag .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--new); }
-.ctl-tag .dot.neg { background: var(--neg-dot); }
-.ctl-badge { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--r-pill); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; font: var(--w-medium) var(--fs-small)/1 var(--font); color: var(--ink); font-variant-numeric: tabular-nums; }
 
 /* ═══ Segmented control ═══════════════════════════════════════════════════════
    Text segments (tabs inside a surface): a 6% track, 28 high, 2 inset, radius 10 outside and 8 inside; segments 24, label 12/500.

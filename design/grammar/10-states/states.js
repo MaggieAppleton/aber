@@ -243,7 +243,6 @@
       const sh = host.firstElementChild; window.AberStage.render(sh);
       const s = sh.firstElementChild;
       const vb = s.querySelector('.stg-switch button[data-view="sections"]'); if (vb) { vb.dataset.tip = "Default"; vb.setAttribute("aria-label", "Default"); vb.dataset.view = "default"; }
-      s.querySelectorAll(".stg-dot.new, .stg-pending").forEach(x => x.replaceWith(document.createElement("span")));   // 4 Nov: no new dots or pending badges on previews
       sc.stg?.[view]?.(s);
       s.insertAdjacentHTML("beforeend", composer({ work: sc.work, offline: sc.offline }, ch));
       if (sc.offline && ch.offline === "switcher") s.insertAdjacentHTML("beforeend", offlineTag());

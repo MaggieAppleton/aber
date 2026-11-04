@@ -134,7 +134,7 @@
   const conf = (n, lg) => `<span class="nv-conf${lg ? " lg" : ""}" role="img" aria-label="Confidence ${n} of 5">${[1, 2, 3, 4, 5].map(i => `<i${i <= n ? " data-on" : ""}></i>`).join("")}</span>`;
   const ib = (icon, label, attr = "", key = "") => `<button type="button" class="nv-ib" aria-label="${label}" data-tip="${label}"${key ? ` data-key="${key}"` : ""} ${attr}><i class="ph ph-${icon}" aria-hidden="true"></i></button>`;
   const chip = o => `<button type="button" class="nv-chip${o.draft ? " draft" : ""}" data-open="${o.id}">${g(o.kind, o.draft)}<span class="t">${o.name}</span></button>`;
-  const dot = (kind, label) => `<span class="nv-dot ${kind}" role="img" aria-label="${label}" title="${label}"></span>`;
+  // No new dots, pending-suggestion badges or challenge dots on objects (decided 4 Nov).
   const statusIcon = p => `<i class="ph ph-${STATUS[p.status][1]} st" role="img" aria-label="${STATUS[p.status][0]}" title="${STATUS[p.status][0]}"></i>`;
   const subOf = o => ({
     theme: () => `<span>${o.signals} signals</span><span>${theoriesOf(o).length} theories</span>`,
@@ -147,8 +147,8 @@
 
   const card = (o, cur) => {
     const meta = o.kind === "theory"
-      ? `${o.c && !o.draft ? conf(o.c) : ""}<span>+${ups(o)} −${downs(o)}</span>${protosOf(o).length ? `<span class="in">${g("prototype", false, true)}${protosOf(o).length}</span>` : ""}${o.pending ? `<span class="nv-pending" aria-label="${o.pending} pending suggestions">${o.pending}</span>` : ""}${o.challenge ? dot("neg", "Challenge") : ""}`
-      : o.kind === "signal" ? `<span>${o.src}</span>${o.fresh ? dot("new", "New") : ""}`
+      ? `${o.c && !o.draft ? conf(o.c) : ""}<span>+${ups(o)} −${downs(o)}</span>${protosOf(o).length ? `<span class="in">${g("prototype", false, true)}${protosOf(o).length}</span>` : ""}`
+      : o.kind === "signal" ? `<span>${o.src}</span>`
       : o.kind === "theme" ? `<span>${o.signals} signals</span><span>${theoriesOf(o).length} theories</span>`
       : o.kind === "prototype" ? `<span class="in">${statusIcon(o)}${STATUS[o.status][0]}</span>`
       : `<span class="nv-mono">${o.time}</span><span>${DAYS[o.day]}</span>`;
@@ -156,7 +156,7 @@
   };
   const item = (o, cur, extra = "") => {
     const src = o.kind === "signal" ? `<span>${o.src}</span>` : o.kind === "dump" ? `<span class="nv-mono">${o.time}</span><span>${DAYS[o.day]}</span>` : o.kind === "theory" ? subOf(o) : o.kind === "theme" ? `<span>${o.signals} signals</span>` : o.kind === "prototype" ? `<span>${STATUS[o.status][0]}</span>` : "";
-    return `<button type="button" class="nv-item${o.draft ? " draft" : ""}" data-open="${o.id}" aria-current="${o.id === cur}">${g(o.kind, o.draft)}<span class="t"><span>${o.name}</span>${o.fresh ? dot("new", "New") : ""}${o.challenge ? dot("neg", "Challenge") : ""}</span>${src || extra ? `<span class="src">${extra}${src}</span>` : ""}</button>`;
+    return `<button type="button" class="nv-item${o.draft ? " draft" : ""}" data-open="${o.id}" aria-current="${o.id === cur}">${g(o.kind, o.draft)}<span class="t"><span>${o.name}</span></span>${src || extra ? `<span class="src">${extra}${src}</span>` : ""}</button>`;
   };
   const feed = (list, cur) => {
     let out = "", day = -1;
@@ -177,19 +177,19 @@
   const countOf = t => t === "briefing" ? BRIEF.reduce((n, [, ids]) => n + ids.length, 0) : TOTAL[t] ?? all(t).filter(o => !o.retired).length;
   const rail = s => {
     const home = s.opt.brief === "home", types = [...(home ? [] : ["briefing"]), ...orderOf(s)];
-    const brand = s.v === "C" ? "" : home ? `<button type="button" class="nv-home" data-home aria-current="${s.type === "home"}">Aber${dot("new", "New since yesterday")}</button>` : "<span>Aber</span>";
+    const brand = s.v === "C" ? "" : home ? `<button type="button" class="nv-home" data-home aria-current="${s.type === "home"}">Aber</button>` : "<span>Aber</span>";
     return `
     <aside class="nv-rail">
       <div class="nv-brand">${brand}${ib("magnifying-glass", "Find", "", "⌘K")}</div>
       <nav class="nv-types" aria-label="Types">
-        ${types.map(t => `<button type="button" class="nv-type${t === "briefing" ? " brief" : ""}" data-go="${t}" aria-current="${s.type === t}" aria-label="${TYPES[t].name}"${s.v === "C" ? ` data-tip="${TYPES[t].name}"` : ""}><span class="gw">${g(t)}${t === "signal" || t === "briefing" ? dot("new", "New since yesterday") : ""}</span><span class="nm">${TYPES[t].name}</span><span class="nv-n">${countOf(t)}</span></button>`).join("")}
+        ${types.map(t => `<button type="button" class="nv-type${t === "briefing" ? " brief" : ""}" data-go="${t}" aria-current="${s.type === t}" aria-label="${TYPES[t].name}"${s.v === "C" ? ` data-tip="${TYPES[t].name}"` : ""}><span class="gw">${g(t)}</span><span class="nm">${TYPES[t].name}</span><span class="nv-n">${countOf(t)}</span></button>`).join("")}
       </nav>
       ${s.opt.switchAt === "rail" ? switcher() : ""}
     </aside>`;
   };
 
   /* ── Item list (second sidebar) ────────────────────── */
-  // Rows: one status slot on the left (new teal, challenge red), the name, then quantity on the right (a count, or a ring for none).
+  // Rows: the name, then quantity on the right (a count). No status dots (decided 4 Nov).
   const list = s => {
     const t = s.type, cur = s.sel[t], q = s.q.toLowerCase();
     const hit = o => (!q || o.name.toLowerCase().includes(q)) && (!s.tf || (o.themes || []).includes(s.tf));
@@ -263,7 +263,7 @@
           ${o.follows ? `<dt>Follows from</dt><dd>${o.follows.map(id => chip(O[id])).join("")}</dd>` : ""}
         </dl>
         ${o.note ? `<p class="nv-note">${o.note}</p>` : ""}
-        ${o.trip ? `<div class="nv-trip">${g("tripwire")}<span>${o.trip}</span>${o.challenge ? dot("neg", "Tripped") : ""}</div>` : ""}
+        ${o.trip ? `<div class="nv-trip">${g("tripwire")}<span>${o.trip}</span></div>` : ""}
         <div class="nv-ev">${evCol("Supports", "arrow-up", sup)}${evCol("Undermines", "arrow-down", und)}</div>
         ${rel.length ? `<div class="nv-related">${rel.map(x => chip(x)).join("")}</div>` : ""}`;
     } else if (o.kind === "theme") {

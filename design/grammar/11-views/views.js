@@ -102,7 +102,7 @@
         </div>
       </section>`).join("")}<div class="v-col-pane"></div></div>`,
     list: kind => kind === "theme" ? THEMES.map(t => `<button type="button" class="v-row" data-id="${t.id}"><span class="v-name">${esc(t.name)}</span></button>`).join("")
-      : kind === "theory" ? THEORIES.map(t => `<button type="button" class="v-card" data-id="${t.id}"${t.draft ? " data-draft" : ""}><span class="v-claim">${esc(t.claim)}</span><span class="v-meta">${t.draft ? "" : conf(t.c)}${t.challenge ? '<span class="v-neg" role="img" aria-label="Challenged"></span>' : ""}</span></button>`).join("")
+      : kind === "theory" ? THEORIES.map(t => `<button type="button" class="v-card" data-id="${t.id}"${t.draft ? " data-draft" : ""}><span class="v-claim">${esc(t.claim)}</span><span class="v-meta">${t.draft ? "" : conf(t.c)}</span></button>`).join("")
       : kind === "prototype" ? PROTOS.map(p => `<button type="button" class="v-proto" data-id="${p.id}">${g("prototype")}<span class="v-name">${esc(p.name)}</span></button>`).join("")
       : kind === "signal" ? SIGNALS.map(s => `<button type="button" class="v-card" data-id="${s.id}" data-flowrow><span class="v-name">${esc(s.gist)}</span><span class="v-meta">${esc(s.source)}</span></button>`).join("")
       : DUMPS.map(d => `<button type="button" class="v-card" data-id="${d.id}" data-flowrow><span class="v-name">${esc(d.first)}</span><span class="v-meta">${esc(d.when)}</span></button>`).join(""),
@@ -160,7 +160,7 @@
     html: S => `<div class="v-main"><div class="v-map" tabindex="-1" aria-label="Atlas">
         ${THEMES.map(t => `<div class="v-area" data-area="${t.id}"><button type="button" class="disc" data-id="${t.id}" aria-label="${esc(t.name)}, ${t.signals} signals"></button>
           <span class="v-alabel">${g("theme")}${esc(t.name)}<span class="n">${t.signals}</span></span></div>`).join("")}
-        ${THEORIES.map(t => `<button type="button" class="v-pin" data-id="${t.id}" aria-label="${esc(t.claim)}" style="--d:${t.draft ? 10 : 8 + t.c * 1.5}px"${t.draft ? " data-draft" : ""}><span class="dot"></span>${t.challenge ? '<span class="v-neg"></span>' : ""}</button>
+        ${THEORIES.map(t => `<button type="button" class="v-pin" data-id="${t.id}" aria-label="${esc(t.claim)}" style="--d:${t.draft ? 10 : 8 + t.c * 1.5}px"${t.draft ? " data-draft" : ""}><span class="dot"></span></button>
           <span class="v-plabel" data-for="${t.id}"${t.draft ? " data-draft" : ""}>${esc(t.claim)}</span>`).join("")}
       </div><div class="v-float col v-zoom">${ib("magnifying-glass-plus", "Zoom in", "+", 'data-zoom="in"')}${ib("magnifying-glass-minus", "Zoom out", "−", 'data-zoom="out"')}${ib("corners-in", "Fit", "0", 'data-zoom="fit"')}</div></div>`,
     init(S) {
@@ -279,7 +279,7 @@
           <svg class="v-links" aria-hidden="true"></svg>
           <span></span>${YEARS.map(y => `<span class="v-tl-year">${y}</span>`).join("")}
           ${LANES.map(l => `<span class="v-tl-gutter">${l ? conf(l) : '<span class="v-draftdot" role="img" aria-label="Drafts"></span>'}</span>${YEARS.map(y => `<div class="v-tl-cell">${THEORIES.filter(t => laneOf(t) === l && t.year === y)
-            .map(t => `<button type="button" class="v-tl-item" data-id="${t.id}"${t.draft ? " data-draft" : ""}><span class="dot">${t.challenge ? '<span class="v-neg"></span>' : ""}</span><span class="t">${esc(t.claim)}</span></button>`).join("")}</div>`).join("")}`).join("")}
+            .map(t => `<button type="button" class="v-tl-item" data-id="${t.id}"${t.draft ? " data-draft" : ""}><span class="dot"></span><span class="t">${esc(t.claim)}</span></button>`).join("")}</div>`).join("")}`).join("")}
         </div></div>`;
     },
     init(S) { S.filter = null; S.chain = false; S.menu = false; },

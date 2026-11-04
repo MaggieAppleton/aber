@@ -1,4 +1,4 @@
-/* Snapshot of 06-objects/objects.css (4 Nov), copied so 06b is stable while 06 changes. Grammar 06: objects. One anatomy at every rung; values only from _shared (tokens, spacing, type, icons, surfaces, controls).
+/* Snapshot of 06-objects/objects.css (re-synced 4 Nov), copied so 06b is stable while 06 changes. No 06b overrides: no challenge dot on previews (decided 4 Nov). Grammar 06: objects. One anatomy at every rung; values only from _shared (tokens, spacing, type, icons, surfaces, controls).
    .ob-scope is any page area that shows objects outside a window (matrix, states, before/after); .ob-win is a window (nav frame). */
 
 .ob-scope { font: 400 var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; text-align: left; }
@@ -32,12 +32,10 @@
 :is(.ob-scope, .ob-win) .g.draft { background: var(--draft-fill); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
 
 /* Marks: one status slot, at the end of the key line */
-.ob-dot { display: block; width: 7px; height: 7px; border-radius: 50%; flex: none; }
-.ob-dot.neg { background: var(--neg-dot); box-shadow: 0 0 0 3px color-mix(in oklab, var(--neg-dot) 18%, transparent); }
 .ob-conf { display: inline-flex; gap: 2px; align-items: center; }
 .ob-conf i { display: block; width: 10px; height: 3px; border-radius: 2px; background: var(--hairline-strong); }
 .ob-conf i[data-on] { background: var(--ink); }
-.ob-mono { font: 500 var(--fs-label)/1 var(--font-mono); color: var(--ink-2); }
+.ob-mono { font: inherit; color: inherit; font-variant-numeric: tabular-nums; }   /* times use the surrounding role, tabular; Geist Mono is for keys only (proposed amendment to 02) */
 .ob-st { display: inline-flex; align-items: center; gap: var(--gap-tight); }
 .ob-st i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
 .ob-n { font: 500 var(--fs-small)/1 var(--font); color: var(--ink-2); font-variant-numeric: tabular-nums; }
@@ -151,9 +149,9 @@
 .ob-pk-list { position: relative; display: grid; min-width: 0; }
 /* Relations: as many as fit, then a surface-colour fade rising from the bottom edge (decided 4 Nov). No scroll, no "show more"; Open sits below the fade. */
 :root { --pk-max: 156px; }
-.ob-pk-rel.has-more .ob-pk-list { max-height: var(--pk-max); overflow: hidden; margin-inline: calc(var(--inset-peek) * -1); padding-inline: var(--inset-peek); }
+.ob-pk-list { max-height: var(--pk-max); overflow: hidden; margin-inline: calc(var(--inset-peek) * -1); padding-inline: var(--inset-peek); }
 .ob-fade { display: none; }
-.ob-pk-rel.has-more .ob-fade { display: block; position: absolute; left: 0; right: 0; bottom: 0; height: 40px; pointer-events: none;
+.ob-pk-rel.overflows .ob-fade { display: block; position: absolute; left: 0; right: 0; bottom: 0; height: 40px; pointer-events: none;
   background: linear-gradient(to bottom, color-mix(in oklab, var(--surface) 0%, transparent), var(--surface)); }
 
 .ob-pk-rel .ob-row { margin-inline: calc(var(--inset-row) * -1); }
@@ -165,8 +163,6 @@
 .ob-attach > :not(.g) { line-height: var(--name-lh); }
 .ob-attach > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .ob-attach b { font-weight: 500; color: var(--ink); }
-.ob-attach.tripped > span { color: var(--neg); }
-.ob-attach.tripped b { color: var(--neg); }
 .ob-attach.lg { --L: var(--line-prose); }
 .ob-attach.lg > .ob-prose { line-height: var(--lh-prose); }
 .ob-attach.lg > .ob-prose { color: var(--ink-2); }
@@ -176,7 +172,6 @@
 .ob-block > :not(.ob-row) { margin-left: var(--inset-row); }   /* inside a dashed block everything starts at the block inset; its row puts its tile there too */
 .ob-block > .ob-row { margin: 0; }
 .ob-blabel { display: flex; align-items: center; font: 500 var(--fs-label)/var(--lh-ui) var(--font); color: var(--ink-2); }
-.ob-blabel.neg { color: var(--neg); }
 .ob-block > .ob-decide { justify-content: flex-end; margin-top: var(--gap-tight); }
 .ob-peek .ob-block { padding-bottom: var(--gap-tight); }
 .ob-peek .ob-col > .ob-block:last-child { margin-bottom: var(--gap-tight); }
@@ -260,3 +255,27 @@
 .ob-pk-key { display: flex; align-items: center; height: var(--name-lh); font-size: var(--fs-label); color: var(--ink-2); white-space: nowrap; }
 .ob-pk-key .ob-n { font-size: var(--fs-small); }
 .ob-pk-key .ob-st i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
+.ob-rows .ob-block > .ob-row { margin: 0; }
+
+/* Counts: a bare glyph (ink 2, 14) and a tabular number; 4 inside a pair, 8 between pairs */
+.ob-cnts { display: inline-flex; align-items: center; gap: var(--gap-item); }
+.ob-cnt { display: inline-flex; align-items: center; gap: var(--gap-tight); font-size: var(--fs-label); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.ob-cnt i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); color: var(--ink-2); }
+.ob-meta.lg .ob-cnt { font-size: var(--fs-body); }
+.ob-attach.tripped b { font-weight: 500; }
+/* Challenged (06 choice, data-challenge): a small Signpost tile at the bottom right (a), stacked under the type tile (b), or not on previews (c) */
+:is(.ob-scope, .ob-win) .g.xs { width: 16px; height: 16px; }
+:is(.ob-scope, .ob-win) .g.xs i { width: 12px; height: 12px; font-size: 12px; }
+.ob-chal { display: none; }
+[data-challenge="a"] .ob-chal { display: block; position: absolute; right: var(--inset-row); bottom: calc((var(--row) - var(--name-lh)) / 2); }
+[data-challenge="a"] .ob-card > .ob-chal { right: var(--card-inline); bottom: var(--card-block); }
+[data-challenge="b"] .ob-chal { display: block; grid-column: 1; grid-row: 2; justify-self: center; margin-top: var(--gap-tight); }
+/* A relation group after the body starts a group gap (16) below it; label to first row stays tight */
+.ob-pk-body + .ob-pk-rel { margin-top: var(--gap-item); }
+/* Equal visual space around a peek's head (Maggie, 4 Nov): 12 from the card's top edge to the tile, and 12 from the head's visual bottom
+   (the key line's baseline, or the tile's bottom when the title line is the whole head) to the hairline. Line-box half-leading is accounted for:
+   the key line's baseline sits 4.25 above its box, so it needs no extra margin; a title-only head ends on its tile and needs 4. */
+.ob-peek { padding-top: 12px; }
+.ob-peek > .ob-div { margin-top: var(--gap-tight); }
+.ob-peek.has-meta > .ob-div { margin-top: 0; }
+[data-align="b"] .ob-peek { padding-top: calc(12px - 2.37px); }   /* b drops the tile 2.37; keep the visual top at 12 */
