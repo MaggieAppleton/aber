@@ -30,114 +30,119 @@
 
 <header class="jig-head">
   <h1>Grammar 09: Making things</h1>
-  <p><b>Proposed.</b> How every new thing gets into Aber: a dump from the composer, a theme, a theory, a prototype, a link between a signal and a theory, and a new name. Built only from 00–05 and the type-first default view. Everything below is live: type, press keys, undo.</p>
+  <p><b>Proposed, round 2.</b> How new things get into Aber, in the type-first default view. Capture now follows the app's real model: the "Dump or ask" pill at the bottom right grows into a chat column docked to the right edge. Everything you send is a dump, and the agent's reply shows what it filed and drafted. Making and linking happen in place. Objects use 06's decided components; the full view uses 08's main-area inset. Everything is live.</p>
 </header>
 
 <div class="decide">
   <div class="decide-box">
     <h2>Decide on this page</h2>
     <ol>
-      <li data-pick="unnamed"><a href="#unnamed">Leaving a new object without a name: hold you there, or keep it as Untitled</a> <span class="pick"></span></li>
-      <li data-pick="draftedit"><a href="#draftedit">Editing a draft's wording: that makes it yours, or it stays a draft until Accept</a> <span class="pick"></span></li>
-      <li data-pick="evadd"><a href="#evadd">Adding evidence: a + on each stance, or one Add evidence with the stance inside</a> <span class="pick"></span></li>
+      <li data-pick="send"><a href="#send">Send when the message is a question: the same send glyph, or a question mark</a> <span class="pick"></span></li>
+      <li data-pick="log"><a href="#log">The pill's history: the thread and Dumps are the history, or keep a log segment on the pill</a> <span class="pick"></span></li>
     </ol>
+    <p class="why"><b>Decided 4 Nov:</b> a new object left without a name but with content is kept as "Untitled", with Undo. Editing a draft's wording accepts it. Evidence is added with a + on each stance (Supports, Undermines).</p>
   </div>
 </div>
 
 <section class="jig-section" id="today">
   <h2>Today, measured</h2>
-  <p><b>Nine of the thirteen ways to make or link something open the same centred modal</b> (<code>ask()</code>, <code>app/dialogs.tsx:13</code>). None of them looks like the thing it makes. The only name check is the browser's own <code>required</code> bubble. Cancel is an X at the bottom right, and there's no close at the top right. Paths are in <code>app/web/src/</code>.</p>
-  <div class="table-wrap">
+  <p><b>Capture works through a pill that grows into a chat column.</b> It's the app's best flow, but it's styled on its own terms. The rest of making goes through one modal: nine of the thirteen ways to make or link something open <code>ask()</code> (<code>app/dialogs.tsx:13</code>). Screenshots are from the jig at <code>localhost:5181/app</code>. The app at <code>:5174</code> answered 502, because its API wasn't running.</p>
+  <div class="mk-real">
+    <figure><img src="screenshots/real/jig-01-closed.png" alt="The app today with the Dump or ask pill closed at the bottom right"><figcaption><b>Closed.</b> The pill sits bottom-right: log segment (history glyph, red dot), the dump glyph, "Dump or ask", what it sees ("Theme sections") and the microphone.</figcaption></figure>
+    <figure><img src="screenshots/real/jig-02-open.png" alt="The app today with the chat column open on the right"><figcaption><b>Open.</b> The pill grows into a 360 column docked to the right edge, pushing the view from 1128 to 756. It has a grab handle, the thread, context pills with a crosshair, then the composer.</figcaption></figure>
+    <figure><img src="screenshots/real/jig-04-attach.png" alt="Typing with a link attached; the send button has turned into a green question mark"><figcaption><b>Typing and attaching.</b> A pasted URL becomes a link chip. A "?" turns Send into a green question mark, so a third green joins the accent.</figcaption></figure>
+    <figure><img src="screenshots/real/jig-05-voice.png" alt="Recording a voice note in the column"><figcaption><b>Voice.</b> The composer becomes the take: an X that discards it, the wave, the time and Stop.</figcaption></figure>
+    <figure><img src="screenshots/real/jig-08-filed-open.png" alt="The agent's reply: a theme token that unfolds to the gists it filed, and a dashed draft theory card"><figcaption><b>The reply.</b> A theme token with a count unfolds the gists filed there. A dashed draft card has check and X on its edge.</figcaption></figure>
+    <figure><img src="screenshots/real/jig-06-log.png" alt="The dump log sheet rising from the pill"><figcaption><b>History.</b> The log segment raises a "Dumps" sheet: day groups, status in words, Retry, what each dump made, and the bin.</figcaption></figure>
+  </div>
+  <div class="table-wrap" style="margin-top:20px">
   <table class="audit">
     <thead><tr><th>Flow</th><th>Opens as</th><th>Where</th><th>What's off</th></tr></thead>
     <tbody>
-      <tr><td>Dump, text</td><td>Pill grows into the docked column</td><td><code>ui/pill-study.tsx:440–451</code>, <code>chat/use-dump.ts:37–50</code></td><td>No "saved" moment: the toast waits for processing to finish (<code>capture-results.ts:91–109</code>). Five controls in the input row. Attach is a <em>plus</em> (<code>pill-study.tsx:449</code>), not the paperclip.</td></tr>
-      <tr><td>Dump, voice</td><td>The pill becomes the take</td><td><code>ui/pill-study.tsx:386–395</code></td><td><em>An X discards the take</em> (<code>:390</code>, against DI-009). Esc throws the take away with no Undo (<code>:489</code>).</td></tr>
-      <tr><td>New theme</td><td><em>Centred modal</em></td><td><code>ui/current-sidebar.tsx:74</code>, <code>:81</code> → <code>app/dialogs.tsx:58</code></td><td>A bare "Name" field that looks nothing like a theme. <em>The only error is the browser's tooltip</em> (<code>required</code>, <code>dialogs.tsx:40</code>). Cancel is an X beside Create (<code>:44</code>).</td></tr>
-      <tr><td>New theory</td><td><em>Centred modal</em></td><td><code>ui/current.tsx:63</code>, <code>ui/panes.tsx:205</code> → <code>dialogs.tsx:58</code></td><td>The same modal. Horizon is silently set to two years out (<code>:62</code>). Filed in a theme only if you started there.</td></tr>
-      <tr><td>New prototype</td><td><em>Centred modal</em></td><td><code>ui/current-sidebar.tsx:97</code></td><td>A text row, "New prototype", where themes use an icon +. That's three different triggers for one verb.</td></tr>
-      <tr><td>Rename</td><td>In place, contentEditable</td><td><code>ui/editable.tsx:6–19</code>; <code>panes.tsx:100</code>, <code>:139</code>, <code>:226</code>, <code>:287</code></td><td>Esc blurs and <em>keeps</em> the edit (<code>editable.tsx:16</code>), so you can't cancel a rename. A blank name saves as blank. Nothing shows on hover that it's editable.</td></tr>
-      <tr><td>Rephrase a draft</td><td><em>Modal</em></td><td><code>chat/object-card.tsx:18</code></td><td>Uses the rename field, but in a modal. DI-002 decided it should edit in place.</td></tr>
-      <tr><td>Add evidence</td><td><em>Centred modal</em></td><td><code>panes.tsx:171</code> → <code>dialogs.tsx:66–79</code></td><td>Lists every signal unranked, including ones already linked. <em>Each option ends in a chevron that doesn't expand</em> (<code>dialogs.tsx:38</code>).</td></tr>
-      <tr><td>Add a relationship</td><td><em>Modal, then a second modal</em></td><td><code>panes.tsx:137</code></td><td>It takes two modals to link one theme.</td></tr>
-      <tr><td>File in a theme, unfile</td><td><em>Modal</em></td><td><code>panes.tsx:113</code></td><td>Unfile asks which theme in a modal. Remove evidence is an <em>X</em> on the same row.</td></tr>
-      <tr><td>Accept or discard a draft</td><td>Inline, three layouts</td><td><code>panes.tsx:143</code>, <code>:202</code>, <code>:288</code>; <code>draft-edge.tsx:55</code></td><td>The order is <em>Accept, then an X</em>. Accept is a check icon in one place and a text button in two.</td></tr>
-      <tr><td>Merge signals</td><td><em>Modal, then a confirm modal</em></td><td><code>app/signal-merge.tsx:15–17</code></td><td>DI-002 decided merge applies at once with Undo.</td></tr>
-      <tr><td>Delete dump</td><td>Modal</td><td><code>dialogs.tsx:94</code></td><td>The one modal that should stay. It has no X; you can only leave through Cancel.</td></tr>
+      <tr><td>Dump or ask</td><td>Pill → docked column</td><td><code>ui/pill-study.tsx:440–451</code>, <code>:798–800</code>; <code>chat/parts.tsx:11–33</code></td><td>Its own vocabulary: the bubble, theme token, card and "sees" pills aren't 06 objects. <em>An X discards a draft</em> (<code>object-card.tsx:24</code>). A <em>green "?"</em> on Send. Attach is a <em>plus</em> (<code>pill-study.tsx:449</code>).</td></tr>
+      <tr><td>Voice</td><td>The take, in pill or column</td><td><code>ui/pill-study.tsx:386–395</code></td><td><em>An X discards the take</em> (<code>:390</code>, against DI-009). Esc throws it away with no Undo (<code>:489</code>).</td></tr>
+      <tr><td>Dump log</td><td>Sheet from the pill</td><td><code>ui/dump-log.tsx</code></td><td>In the type-first view, the Dumps type in the rail lists the same thing.</td></tr>
+      <tr><td>New theme, theory, prototype</td><td><em>Centred modal</em></td><td><code>current-sidebar.tsx:74</code>, <code>:97</code>; <code>current.tsx:63</code> → <code>dialogs.tsx:58</code></td><td>A bare Name field; the <em>only error is the browser's tooltip</em> (<code>required</code>, <code>:40</code>); Cancel is an X beside Create (<code>:44</code>).</td></tr>
+      <tr><td>Rename</td><td>In place</td><td><code>ui/editable.tsx:6–19</code></td><td>Esc <em>keeps</em> the edit (<code>:16</code>). A blank name saves as blank.</td></tr>
+      <tr><td>Rephrase a draft</td><td><em>Modal</em></td><td><code>chat/object-card.tsx:18</code></td><td>DI-002 decided edit in place.</td></tr>
+      <tr><td>Add evidence, relationships, file, unfile, merge</td><td><em>Modals</em></td><td><code>panes.tsx:113</code>, <code>:137</code>, <code>:171</code>; <code>signal-merge.tsx:15–17</code></td><td>Every signal listed unranked; <em>option rows end in a chevron that doesn't expand</em> (<code>dialogs.tsx:38</code>); two modals to link one theme.</td></tr>
+      <tr><td>Delete dump</td><td>Modal</td><td><code>dialogs.tsx:94</code></td><td>The one modal that should stay; it has no X.</td></tr>
     </tbody>
   </table>
   </div>
-  <ul class="offenders">
-    <li><b>One dialog serves four jobs:</b> creation, pickers, confirmations and a read-only viewer all go through <code>ask()</code>. That's why every picker is a modal and why the anatomy is weak everywhere at once.</li>
-    <li><b>The prototype jig doesn't build any of this yet.</b> On <code>jig/src/homes</code> the + buttons are inert (<code>panes.tsx:191</code>, <code>current.tsx:62</code>), so the app's modals are the only working flows.</li>
-    <li><b>The Add theory slot in the nav jig is dashed</b> (<code>nav/nav.css:201</code>). Dashed means "not yet mine", so an empty slot shouldn't be dashed.</li>
-  </ul>
 </section>
 
 <section class="jig-section" id="rules">
   <h2>The rules (proposed)</h2>
   <ol class="rules">
-    <li><b>Make it where it will live.</b> A new theme, theory or prototype appears as itself, already in its list and open in the main area, with the caret in its name. It looks like the final object from the first keystroke. No modal.</li>
-    <li><b>Where you start sets the context.</b> The + at the head of a type's list (or N) makes one of that type and opens its full view. "Add theory" inside a theme makes a theory card in place, filed in that theme. Return keeps the card and opens the next one; ⌘Return opens the card's theory. A prototype started from a theory tests that theory.</li>
-    <li><b>A modal only when it must block.</b> Two remain: Delete dump and Find. Pickers are popovers from their own button. Everything else happens in place, with Undo.</li>
-    <li><b>Modal anatomy:</b> a 400-wide surface (radius 14, the modal shadow, padding 20). The head has the title (13 / 600, ink) and the X at the top right, its glyph on the content edge. Below it: the description (13 / 400 ink 2, prose leading), then the foot at the bottom right with Cancel (secondary) left of the primary. Focus starts on Cancel and stays inside; Esc, the X and the scrim all close it. No 15px title: the type scale has no 15.</li>
-    <li><b>The name is the title.</b> There's no separate Name field: the 24 / 600 title is the field, with an ink 2 placeholder ("Name this theme", "State the claim"). At rest it reads as the title. On hover it gets the 5% layer; while it has the caret it gets the surface, hairline and ring of a field.</li>
-    <li><b>Validation is inline, never a tooltip and never red.</b> A message sits under the field it's about: a 14 icon, 12 / 500 ink, <code>aria-invalid</code> on the field and a polite live region. A theme name that already exists says so and links to the other theme, but doesn't stop you. A new object left with no name and nothing else in it simply goes.</li>
-    <li><b>Rename in place.</b> Click the title, or press F2 on a row or double-click it. Return or clicking away saves; Esc puts the old name back. A blank rename keeps the old name. No toast, because the change is in front of you.</li>
-    <li><b>The composer lives at the bottom right of every view</b> (the 05 bar: microphone, field, paperclip, send). ⌘J focuses it from anywhere. It has six states:
+    <li><b>Capture is the pill and its chat column.</b>
       <ul>
-        <li><b>Empty:</b> Send waits for something to send.</li>
-        <li><b>Typing:</b> the field grows to 6 lines; Return sends and Shift-Return adds a line.</li>
-        <li><b>Attaching:</b> pasted links and files become removable chips inside the bar.</li>
-        <li><b>Recording</b> (⌘⇧J or the microphone): the bar becomes the take, with Discard (trash), the wave, the time and Stop. Stop is the primary and sends the take.</li>
-        <li><b>Sending:</b> Send spins and the text dims.</li>
-        <li><b>Sent:</b> the bar clears and a toast says "Dump saved" with Undo. Undo deletes the dump and puts your words back in the bar.</li>
-      </ul>
-      Discarding a take (trash or Esc) offers Undo too, which returns it as a voice chip.</li>
-    <li><b>Linking is a popover picker.</b> It opens from the + on the place the link will show (Supports, Undermines), with Find focused. Signals in this theory's themes come first and ones already linked are left out. Arrows move, Return links and Esc closes it and returns focus to the +. The new row lands where it will stay and flashes the accent wash once. There's no toast, because the result is in front of you; Remove (minus) on the row takes it off again.</li>
-    <li><b>Mine, a draft, or a suggestion: three looks.</b>
-      <ul>
-        <li><b>Mine:</b> things you make are solid from the start, even unnamed.</li>
-        <li><b>A draft</b> (a whole object the agent made) is dashed wherever it's listed, and its name is in ink 2. In its full view, Discard and Accept sit at the top right, as 06 places an object's verbs. The key line reads "Draft from" with a dashed Draft tag and a chip for its dump. Accepting solidifies it in place.</li>
-        <li><b>A suggestion</b> (a change the agent proposes to something of yours) is a dashed block inside your solid object. It holds the proposed thing as an ordinary row, "Suggested by agent", and Dismiss left of Accept.</li>
+        <li><b>Closed:</b> the pill floats at the bottom right of every view (tier 1 floating: 40 high, radius 14, the float shadow). It holds the dump glyph with "Dump or ask" (the way in, ⌘J) and the microphone, which records without opening anything.</li>
+        <li><b>Open:</b> the pill grows into a 360 column docked to the right edge. It pushes the main area and has a seam, no shadow. The head has "Dump or ask" and Close (X, Esc). Then the thread, then the foot: what the agent will see, and the composer.</li>
       </ul></li>
-    <li><b>Add slots are quiet buttons</b>: a plus and a 12 / 500 label, ink 2, the 5% layer on hover, never dashed.</li>
-    <li><b>A toast only when something leaves the screen</b> (10 States rule 8). Sending a dump, discarding a take, a draft or a new object, dismissing a suggestion, and keeping something as Untitled each show one toast with Undo (⌘Z): ink, one line, 44 high, just above the composer, 5 seconds, held while hovered. Making, linking, renaming and accepting stay silent, because what changed is in front of you. Delete dump was confirmed first, so no toast follows it.</li>
+    <li><b>Chat is dumps.</b> Every message is a dump, and the thread is the history.
+      <ul>
+        <li><b>Mine:</b> a sunk bubble on the right with its attachments inside. Under it: what it saw, the time, and Delete dump on hover.</li>
+        <li><b>The agent's:</b> prose on the left, then what it made as 06 previews. "Filed in" with the theme's chip over the signals as rows. Drafts as dashed rows, with Discard | Accept under them.</li>
+        <li>Every preview peeks after 500ms or on click, and Open puts it in the main area while the column stays open.</li>
+        <li>While the agent works, a "Reading" line with the Working spinner stands in for its reply.</li>
+      </ul></li>
+    <li><b>What the agent sees</b> is a row of removable 06 chips above the composer. Opening the column starts it with the object in the main area. The crosshair turns on picking: the next object you click joins the row, with the focus ring under the cursor. Esc stops.</li>
+    <li><b>The composer is a filled well</b> in the column's foot (it's docked, so no float shadow): microphone, field, paperclip, send. Return sends and Shift-Return adds a line. Pasted links and files become removable chips (minus, never X).
+      <ul>
+        <li><b>Recording</b> (⌘⇧J, or the microphone in the pill or the column): Discard (trash), the wave, the time, then Stop as the primary, which sends.</li>
+        <li><b>Discarding a take</b> (trash or Esc) offers Undo, which brings it back as a voice chip.</li>
+        <li><b>While a dump is being read,</b> the Dumps rail entry shows the Working spinner in place of its count (10, decided).</li>
+        <li><b>When it's done,</b> it reports once. With the column open, the reply in the thread is the report. With it closed (a voice dump from the pill), a toast says what it made ("Made 1 signal") with Undo, which removes the dump and what it made (10, decided).</li>
+      </ul></li>
+    <li><b>Asking and making are the same act, owned differently.</b> Anything the agent makes from a message arrives as a draft (dashed), in the thread and in its list. Things you make with + are yours from the first keystroke. Accepting a draft in the thread or in its full view solidifies the same object everywhere.</li>
+    <li><b>Make it where it will live.</b>
+      <ul>
+        <li>+ at the head of a type's list (or N) makes one of that type. It appears in the list and fills the main area, with the caret in its name. No modal.</li>
+        <li>Add theory inside a theme makes a solid card in place. Return keeps it and opens the next card; ⌘Return opens the theory.</li>
+      </ul></li>
+    <li><b>The name is the title, edited in place.</b> At rest it's plain text. Hover and editing put the 5% layer behind the text (radius 7, padded 2 / 6 with a matching negative margin, so the text never moves), and the caret shows you're editing. No ring, hairline or field surface. An unnamed object shows its placeholder ("Name this theme") in ink 2, in the same type role. Notes work the same way.</li>
+    <li><b>Rename:</b> click the title, or press F2 or double-click on its row. Return or clicking away saves; Esc restores the old name. A blank rename keeps the old one.</li>
+    <li><b>Leaving a new object.</b> If it's empty, it goes. If it's unnamed but has content, it stays as "Untitled theory" with Undo (<b>decided</b>).</li>
+    <li><b>The eyebrow.</b> Notes about the object as a whole sit on one line above the title: where a draft came from, or a name that's already taken. They're 12 ink 2, with a chip to the related object. The eyebrow shares the top bar with the object's verbs (drafts: Discard | Accept), with the group gap (16) to the title. Never between the title and its key line, and an empty top bar takes no height.</li>
+    <li><b>Drafts.</b> Editing a draft's wording accepts it (<b>decided</b>). Accepting solidifies it in place, with no toast.</li>
+    <li><b>Linking is a popover picker</b> from the + at the end of a section header, one on Supports and one on Undermines (<b>decided</b>). Find is focused. Signals from the theory's themes come first and linked ones are left out. ↑ ↓ move, Return links and Esc closes, returning focus to the +. The row lands in place and flashes the accent wash once.</li>
+    <li><b>A modal only when it must block:</b> Delete dump and Find. The head holds the title (13 / 600) and the X at the top right. The foot sits at the bottom right with Cancel left of the primary. Focus starts on Cancel and stays inside.</li>
+    <li><b>Toasts only when something leaves the screen</b> (10 States rule 8), just above the pill or the column's composer.</li>
   </ol>
   <h3 class="sub">Keys</h3>
   <dl class="mk-keys">
-    <dt>⌘J</dt><dd>Focus the composer</dd>
-    <dt>⌘⇧J</dt><dd>Start a voice dump; Esc discards the take (with Undo), Stop or Return sends it</dd>
-    <dt>⏎ / ⇧⏎</dt><dd>Send / new line, in the composer</dd>
-    <dt>N</dt><dd>New theme, theory or prototype, in the list you're in (not while typing)</dd>
-    <dt>F2</dt><dd>Rename the focused row</dd>
-    <dt>⏎ / Esc</dt><dd>In a name: save / put the old name back</dd>
-    <dt>⌘⏎</dt><dd>In a new theory card: keep it and open it</dd>
-    <dt>↑ ↓ ⏎ Esc</dt><dd>In a picker: move, link, close</dd>
+    <dt>⌘J</dt><dd>Open the column with the caret in the composer; again from the composer, close it</dd>
+    <dt>⌘⇧J</dt><dd>Record a voice dump, from anywhere</dd>
+    <dt>⏎ / ⇧⏎</dt><dd>Send / new line</dd>
+    <dt>Esc</dt><dd>One stack: stop picking, discard the take (with Undo), close the picker, peek or modal, then close the column</dd>
+    <dt>N, F2</dt><dd>New in the list you're in; rename the focused row</dd>
     <dt>⌘Z</dt><dd>Undo from the toast</dd>
   </dl>
 </section>
 
 <section class="jig-section" id="try">
-  <h2>Try it: the default view, with every flow working</h2>
-  <p>Press + on Themes (or N) and name a theme. Open a theme and press Add theory. Open a theory and press + on Supports. Click a title to rename it. Type in the composer and press Return, or press the microphone. Accept or discard the draft theory.</p>
-  <span class="placeholder-note">List rows, theory cards and evidence rows are placeholders from 06 Objects, not proposals. Only the making parts are proposed here.</span>
-  <div class="mk-host" data-live="1" data-mk='{"type":"theme","sel":"coi"}'></div>
+  <h2>Try it: the default view with the column open</h2>
+  <p>Type in the composer and press Return; a "will" or "theory" in it also gets you a draft. Accept or discard drafts in the thread. Click any row to peek it, then Open. Press the crosshair, then click a card. Close the column (Esc) and use the pill's microphone. Make a theme with +, rename a title, and add evidence on a theory.</p>
+  <div class="mk-host" data-live="1" data-mk='{"type":"theme","sel":"coi","chat":1}'></div>
 </section>
 
 <section class="jig-section" id="flows">
   <h2>Each flow, step by step</h2>
 
   <div class="mk-flow" id="capture">
-    <h3>1. Capture a dump</h3>
-    <p>The composer in each of its states, at full size in the window's corner. Each one works: type, attach, record, send, undo.</p>
+    <h3>1. Capture: the pill and the chat column</h3>
+    <p>The right edge of the window at full size. Each one is live.</p>
     <div class="mk-board">
-      <figure><div class="mk-host" data-crop="composer" data-mk='{"type":"theme","sel":"coi"}'></div><figcaption><b>Empty.</b> Send waits for something to send.</figcaption></figure>
-      <figure><div class="mk-host" data-crop="composer" data-mk='{"type":"theme","sel":"coi","scene":"comp-typing"}'></div><figcaption><b>Typing.</b> Grows to 6 lines; Return sends.</figcaption></figure>
-      <figure><div class="mk-host" data-crop="composer" data-mk='{"type":"theme","sel":"coi","scene":"comp-attach"}'></div><figcaption><b>Attaching.</b> A pasted link or a file is a chip; minus removes it.</figcaption></figure>
-      <figure><div class="mk-host" data-crop="composer" data-mk='{"type":"theme","sel":"coi","scene":"comp-rec"}'></div><figcaption><b>Recording.</b> Discard, the take, Stop and send.</figcaption></figure>
-      <figure><div class="mk-host" data-crop="composer" data-mk='{"type":"theme","sel":"coi","scene":"comp-sending"}'></div><figcaption><b>Sending.</b> Same width; Send spins.</figcaption></figure>
-      <figure><div class="mk-host" data-crop="composer" data-mk='{"type":"theme","sel":"coi","scene":"comp-sent"}'></div><figcaption><b>Sent.</b> Cleared, with Undo just above.</figcaption></figure>
+      <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi"}'></div><figcaption><b>Closed.</b> The pill: "Dump or ask" (⌘J) and the microphone.</figcaption></figure>
+      <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","chat":1}'></div><figcaption><b>Open, with history.</b> Yesterday's ask made two drafts; this morning's links were filed in two themes.</figcaption></figure>
+      <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"chat-typing"}'></div><figcaption><b>Typing and attaching.</b> A pasted link is a chip; it asks because there's a "?".</figcaption></figure>
+      <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"chat-working"}'></div><figcaption><b>Sent.</b> The message is in the thread at once; "Reading" holds the reply's place.</figcaption></figure>
+      <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"chat-reply"}'></div><figcaption><b>The reply.</b> Filed in the theme, as a signal row; a draft theory with Discard | Accept.</figcaption></figure>
+      <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"chat-pick"}'></div><figcaption><b>Picking what it sees.</b> The crosshair is on; the card under the cursor gets the ring.</figcaption></figure>
+      <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"chat-rec"}'></div><figcaption><b>Recording in the column.</b> Discard, the take, Stop and send.</figcaption></figure>
+      <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"pill-rec"}'></div><figcaption><b>Recording from the pill.</b> Nothing opens; Stop sends, and the Dumps entry spins until it's read.</figcaption></figure>
+      <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"toast"}'></div><figcaption><b>Done, with the column closed.</b> The one success toast (10): what it made, with Undo.</figcaption></figure>
     </div>
   </div>
 
@@ -145,68 +150,56 @@
     <h3>2. Create a theme</h3>
     <p>+ at the head of Themes. The new theme is already in the list and fills the main area, with the caret in its name.</p>
     <div class="mk-steps">
-      <figure><div class="mk-host" data-mk='{"scene":"new-theme"}'></div><figcaption><b>Naming.</b> The row follows as you type. Below the name, the empty theme is already its final shape.</figcaption></figure>
-      <figure><div class="mk-host" data-mk='{"scene":"dup-theme"}'></div><figcaption><b>A name that exists.</b> An inline note links to the other theme. It doesn't block.</figcaption></figure>
+      <figure><div class="mk-host" data-mk='{"scene":"new-theme"}'></div><figcaption><b>Naming.</b> The row follows as you type; the empty theme already has its final shape.</figcaption></figure>
+      <figure><div class="mk-host" data-mk='{"scene":"dup-theme"}'></div><figcaption><b>A name that's taken.</b> The eyebrow says so and links to the other theme. It doesn't block.</figcaption></figure>
     </div>
   </div>
 
   <div class="mk-flow" id="theory">
     <h3>3. Create a theory inside a theme</h3>
-    <p>Add theory sits where theories appear. It makes a card in place, filed in this theme.</p>
     <div class="mk-steps">
-      <figure><div class="mk-host" data-mk='{"type":"theme","sel":"rev"}'></div><figcaption><b>The slot.</b> A quiet button, not dashed.</figcaption></figure>
-      <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","scene":"new-card"}'></div><figcaption><b>Stating it.</b> A solid card (it's yours). Return keeps it and opens the next; ⌘Return opens it.</figcaption></figure>
+      <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","scene":"new-card"}'></div><figcaption><b>Stating it.</b> Add theory makes a solid card in place (it's yours), filed in this theme.</figcaption></figure>
     </div>
   </div>
 
   <div class="mk-flow" id="evidence">
     <h3>4. Add a signal as evidence</h3>
-    <p>The + on Supports opens a picker under it. Signals from this theory's themes come first.</p>
     <div class="mk-steps">
-      <figure><div class="mk-host" data-mk='{"type":"theory","sel":"t1","scene":"picker"}'></div><figcaption><b>Picking.</b> Find is focused; arrows and Return work.</figcaption></figure>
+      <figure><div class="mk-host" data-mk='{"type":"theory","sel":"t1","scene":"picker"}'></div><figcaption><b>Picking.</b> The + on Supports opens the picker under it. The suggested signal waits first in Supports, as a dashed block.</figcaption></figure>
       <figure><div class="mk-host" data-mk='{"type":"theory","sel":"t1","scene":"linked"}'></div><figcaption><b>Linked.</b> The row lands where it will stay and flashes once. No toast.</figcaption></figure>
     </div>
   </div>
 
   <div class="mk-flow" id="rename">
-    <h3>5. Rename, and the three kinds of thing</h3>
-    <p>Click a title to rename it. A draft has Discard | Accept at the top right and a dashed Draft tag. A suggestion is a dashed block inside something of yours.</p>
+    <h3>5. Rename, drafts and Untitled</h3>
     <div class="mk-steps">
-      <figure><div class="mk-host" data-mk='{"type":"theory","sel":"t1","scene":"rename"}'></div><figcaption><b>Renaming a theory of mine.</b> A suggested piece of evidence (a dashed block) waits in Supports.</figcaption></figure>
-      <figure><div class="mk-host" data-mk='{"type":"theory","sel":"t11"}'></div><figcaption><b>A draft theory.</b> The agent drafted it from a dump; Accept makes it yours.</figcaption></figure>
+      <figure><div class="mk-host" data-mk='{"type":"theory","sel":"t1","scene":"rename"}'></div><figcaption><b>Renaming.</b> The 5% layer behind the title and the caret; nothing moves.</figcaption></figure>
+      <figure><div class="mk-host" data-mk='{"type":"theory","sel":"t11"}'></div><figcaption><b>A draft.</b> "Draft from" and its dump in the eyebrow, Discard | Accept on the same line. Editing the claim accepts it.</figcaption></figure>
+      <figure><div class="mk-host" data-mk='{"type":"theory","scene":"untitled"}'></div><figcaption><b>Kept as Untitled</b> (decided). You left an unnamed theory with a note in it; it stays in the list, with Undo.</figcaption></figure>
     </div>
   </div>
 
   <div class="mk-flow" id="modal">
     <h3>6. The one modal that stays</h3>
-    <p>Deleting a dump is the only thing that asks first. The title and X are in the head; Cancel sits left of the primary in the foot.</p>
     <div class="mk-steps">
       <figure><div class="mk-host" data-mk='{"type":"dump","sel":"d3","scene":"modal"}'></div><figcaption><b>Delete dump.</b> Focus starts on Cancel.</figcaption></figure>
     </div>
   </div>
 </section>
 
-<section class="jig-section" id="unnamed" data-decision="unnamed" data-question="1. You made a theory, wrote a note, then clicked away without a name. What happens?" data-default="B keep as Untitled">
-  <p>A new object with nothing in it simply goes. This is the case where it has something in it. DI-002 left this open.</p>
+<section class="jig-section" id="send" data-decision="send" data-question="1. When the message is a question, what does Send look like?" data-default="A same glyph">
+  <p>Today a "?" turns Send into a green question mark. Green is the accent, so both options keep Send ink; the question is whether the glyph changes.</p>
   <div class="jig-compare">
-    <div class="jig-option" data-option="A hold with an error"><div class="jig-label"><b>A</b> Hold you there with an inline error</div><p class="jig-note">You stay on the theory. The title gets an ink underline and the line under it says what's missing, with Discard. Nothing is lost, but you're blocked until you name it or discard it.</p><div class="mk-host" data-option-stage data-mk='{"type":"theory","scene":"unnamed","opt":{"unnamed":"hold"}}'></div></div>
-    <div class="jig-option" data-option="B keep as Untitled"><div class="jig-label"><b>B</b> Keep it as Untitled, with Undo</div><p class="jig-note">You go where you clicked. The theory stays in the list as "Untitled theory" in ink 2, and Undo takes you back to name it. Never blocks; you may collect untitled things.</p><div class="mk-host" data-option-stage data-mk='{"type":"theory","scene":"unnamed","opt":{"unnamed":"untitled"}}'></div></div>
+    <div class="jig-option" data-option="A same glyph"><div class="jig-label"><b>A</b> The same send glyph; the tooltip says Ask</div><p class="jig-note">One glyph per meaning (03). Whether it's a dump or an ask is the agent's business; both are stored as dumps.</p><div class="mk-host" data-option-stage data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"chat-typing","opt":{"send":"plane"}}'></div></div>
+    <div class="jig-option" data-option="B question mark"><div class="jig-label"><b>B</b> A question mark, in ink</div><p class="jig-note">Tells you it will be answered, not just filed. It adds a glyph to the vocabulary for a distinction you didn't choose.</p><div class="mk-host" data-option-stage data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"chat-typing","opt":{"send":"ask"}}'></div></div>
   </div>
 </section>
 
-<section class="jig-section" id="draftedit" data-decision="draftedit" data-question="2. You change the wording of a draft theory. Is it now yours?" data-default="A editing accepts it">
-  <p>design-model §1 says accepting or rephrasing makes a draft yours. With rephrasing now done in place (DI-002), a rename and a rephrase are the same act.</p>
+<section class="jig-section" id="log" data-decision="log" data-question="2. Where does the pill's history live?" data-default="A thread and Dumps">
+  <p>Today the pill's left segment opens a log sheet. In the default view, the Dumps type in the rail already lists every dump with its status.</p>
   <div class="jig-compare">
-    <div class="jig-option" data-option="A editing accepts it"><div class="jig-label"><b>A</b> Editing accepts it</div><p class="jig-note">Saving new wording solidifies the draft: the dashes go and the name turns ink. One step, and it matches the model. But you can't polish a draft and still leave it undecided.</p><div class="mk-host" data-option-stage data-mk='{"type":"theory","sel":"t11","scene":"draft-edit","opt":{"draftEdit":"accept"}}'></div></div>
-    <div class="jig-option" data-option="B stays a draft until Accept"><div class="jig-label"><b>B</b> It stays a draft until you press Accept</div><p class="jig-note">The new wording is kept, but it stays dashed, with Discard | Accept. Accepting is always one explicit act, at the cost of one more click.</p><div class="mk-host" data-option-stage data-mk='{"type":"theory","sel":"t11","scene":"draft-edit","opt":{"draftEdit":"keep"}}'></div></div>
-  </div>
-</section>
-
-<section class="jig-section" id="evadd" data-decision="evadd" data-question="3. How do you add a signal as evidence?" data-default="A a plus on each stance">
-  <p>The picker is the same either way. What differs is where you choose supports or undermines.</p>
-  <div class="jig-compare">
-    <div class="jig-option" data-option="A a plus on each stance"><div class="jig-label"><b>A</b> A + on Supports and on Undermines</div><p class="jig-note">Today's split. You choose the stance by where you press, and the row lands right under it. There are two buttons, and the stance is fixed before you've seen the signal.</p><div class="mk-host" data-option-stage data-mk='{"type":"theory","sel":"t1","scene":"picker","opt":{"evAdd":"two"}}'></div></div>
-    <div class="jig-option" data-option="B one Add evidence"><div class="jig-label"><b>B</b> One Add evidence, with the stance inside</div><p class="jig-note">One + on the Evidence header. The picker opens with a Supports | Undermines segment. Calmer column heads, and the stance can change after you've found the signal.</p><div class="mk-host" data-option-stage data-mk='{"type":"theory","sel":"t1","scene":"picker","opt":{"evAdd":"one"}}'></div></div>
+    <div class="jig-option" data-option="A thread and Dumps"><div class="jig-label"><b>A</b> No log segment: the thread and Dumps are the history</div><p class="jig-note">A shorter pill. Scrolling the thread is the conversation's history; Dumps in the rail is the full record, with status in words.</p><div class="mk-host" data-option-stage data-crop="right" data-mk='{"type":"theme","sel":"coi","opt":{"log":"none"}}'></div></div>
+    <div class="jig-option" data-option="B log segment"><div class="jig-label"><b>B</b> Keep a history segment on the pill</div><p class="jig-note">A history button (⌘⇧L) that goes to Dumps. It's one hop from anywhere, but a second way into the same list.</p><div class="mk-host" data-option-stage data-crop="right" data-mk='{"type":"theme","sel":"coi","opt":{"log":"segment"}}'></div></div>
   </div>
 </section>
 

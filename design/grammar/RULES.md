@@ -399,49 +399,44 @@ Evidence: six loading treatments and no skeleton ("Loading Aber…" hides the wh
 - A finished dump: **A a toast with Undo** ("Made 3 signals"; Undo removes the dump and what it made). The one success toast, since its result lands where you may not be looking.
 - Offline: **A beside the view switcher** (at the rail foot, above the switcher; beside it in the other views).
 
-## 09 Making things — PROPOSED (jig `09-making/`)
+## 09 Making things — PROPOSED (jig `09-making/`; round 2: capture through the chat column)
 
-Evidence: 9 of the 13 ways to make or link something open the same centred modal (`ask()`, `app/dialogs.tsx:13`). None of them looks like what it makes. The only name check is the browser's `required` bubble (`:40`). Cancel is an X at the bottom right (`:44`). Pickers list every signal, including linked ones, and end in a chevron that doesn't expand (`:38`). Esc keeps a rename (`editable.tsx:16`). An X discards a voice take (`pill-study.tsx:390`). The nav jig's Add theory slot is dashed.
+Evidence:
+- Capture already works through the pill and a docked chat column (`pill-study.tsx:440–451`, `:798–800`), but in its own vocabulary: bubbles, theme tokens, cards and "sees" pills that aren't 06 objects, an X that discards drafts and takes (`object-card.tsx:24`, `pill-study.tsx:390`), and a green "?" on Send.
+- Everything else goes through one modal: 9 of the 13 ways to make or link something open `ask()` (`app/dialogs.tsx:13`). Its only name check is the browser's `required` bubble (`:40`); Cancel is an X at the bottom right (`:44`); pickers end in a chevron that doesn't expand (`:38`).
+- Esc keeps a rename (`editable.tsx:16`).
 
-1. **Make it where it will live.** A new theme, theory or prototype appears as itself, already in its list and open in the main area, with the caret in its name. No modal. In Columns, Atlas and Timeline it opens in their docked pane (DI-002 B).
-2. **Where you start sets the context.**
-   - The list head's + (or N) makes one of that type.
-   - Add theory inside a theme makes a solid card in place, filed in that theme. Return keeps the card and opens the next one; ⌘Return opens the card's theory; Esc on an empty card removes it.
-   - A prototype started from a theory tests it.
-3. **A modal only when it must block:** Delete dump and Find. Pickers are tethered popovers from their own button.
-4. **Modal anatomy.**
-   - The surface is 400 wide, radius 14, padding 20, with the modal shadow and a scrim.
-   - The head holds the title (13 / 600 ink) and the X at the top right, its glyph on the content edge.
-   - The description is 13 / 400 ink 2 at prose leading.
-   - The foot sits at the bottom right: Cancel (secondary) left of the primary.
-   - Focus starts on Cancel and stays inside. Esc, the X and the scrim close it. No 15px title.
-5. **The name is the title.** The 24 / 600 title is the field, with an ink 2 placeholder ("Name this theme", "State the claim"). In-place editable text (titles, notes, field values) has no ring, no hairline and no field surface: plain text at rest; the 5% layer behind the text block (radius 7, padded with a matching negative margin) on hover and while editing, where it and the caret are the focus indicator. The text never moves between rest, hover and editing. The jade ring is for controls only. Notes work the same way at prose size.
-6. **Validation is inline, never a tooltip and never red.**
-   - A message sits under its field: a 14 icon, 12 / 500 ink, `aria-invalid` on the field and a polite live region.
-   - A theme name that already exists says so with a chip to the other theme, without blocking.
-   - A new object with no name and nothing in it simply goes.
-7. **Rename in place.** Click the title, or press F2 or double-click on a row. Return or clicking away saves; Esc restores the old name. A blank rename keeps the old name. No toast.
-8. **The composer** is the 05 bar at the bottom right of every view: microphone, field, paperclip, send. ⌘J focuses it.
-   - **Empty:** Send waits for text or an attachment.
-   - **Typing:** the field grows to 6 lines; Return sends and Shift-Return adds a line.
-   - **Attaching:** pasted links and files become removable chips inside the bar (minus, never X).
-   - **Recording** (⌘⇧J or the microphone): Discard (trash), the wave, the time in mono, then Stop as the primary, which sends.
-   - **Sending:** Send shows the Working spinner at the same width, and the text dims.
-   - **Sent:** the bar clears, and "Dump saved" with Undo appears. Undo deletes the dump and puts the words back.
-   - A discarded take (trash or Esc) also offers Undo, which brings it back as a voice chip.
-   - New vocabulary rows: image (an image attachment) and warning-circle (an inline error).
-9. **Linking is a popover picker** from the + where the link will show. Find is focused. Signals from the theory's themes come first and linked ones are left out. ↑ ↓ move, Return links and Esc closes, returning focus to the +. The row lands in place and flashes the accent wash once.
-10. **Mine, draft, suggestion.**
-    - **Mine:** what I make is solid from the start, even unnamed.
-    - **A draft** (an object the agent made) is dashed in lists, with its name in ink 2. Its full view puts Discard | Accept at the top right (06) and "Draft from" with a dashed Draft tag and its dump chip in the key line. Accept solidifies it in place.
-    - **A suggestion** (a change to something of mine) is a dashed block inside my solid object: the proposed thing as an ordinary row, "Suggested by agent", and Dismiss | Accept.
-11. **Add slots are quiet buttons** (plus and a 12 / 500 label in ink 2, the 5% layer on hover), never dashed.
-12. **Toasts follow 10 States rule 8:** a toast appears only when something leaves the screen. Sending, discarding a take, a draft or a new object, dismissing a suggestion, and keeping something as Untitled each show one with Undo (⌘Z). Making, linking, renaming and accepting are silent. Delete dump is confirmed first, so no toast follows it.
+1. **Capture is the pill and its chat column.**
+   - Closed: the pill floats at the bottom right of every view (tier 1 floating: 40 high, radius 14, the float shadow). It holds the dump glyph with "Dump or ask" (⌘J) and the microphone, which records without opening anything.
+   - Open: the pill grows into a 360 column docked to the right edge. It pushes the main area, with a seam and no shadow. Inside: the head ("Dump or ask", Close X, Esc), the thread, then the foot (what the agent sees, and the composer).
+2. **Chat is dumps.** Every message is a dump, and the thread is the history.
+   - Mine: a sunk bubble on the right with its attachments inside. Under it: what it saw, the time, and Delete dump on hover.
+   - The agent's: prose on the left, then what it made as 06 previews. "Filed in" with the theme chip over the signal rows; drafts as dashed rows with Discard | Accept.
+   - Every preview peeks (500ms or on click). Open puts it in the main area while the column stays open.
+   - While the agent works, "Reading" with the Working spinner holds the reply's place.
+3. **What the agent sees** is a row of removable 06 chips above the composer. It starts with the object in the main area. The crosshair picks one more from the screen, with the focus ring under the cursor; Esc stops picking.
+4. **The composer is a filled well** in the column's foot: microphone, field, paperclip, send. It has no float shadow, because it's docked. Return sends; links and files become removable chips (minus, never X).
+   - Recording (⌘⇧J or the microphone): Discard (trash), the wave, the time, then Stop as the primary, which sends. A discarded take offers Undo, which returns it as a voice chip.
+5. **A dump reports once** (10, decided). While it's read, the Dumps rail entry shows the Working spinner in place of its count. When it's done, the reply in the thread is the report if the column is open. If the column is closed, a toast says what it made, with Undo.
+6. **Asking and making are one act, owned differently.** What the agent makes from a message arrives as a draft, dashed in the thread and in its list. What I make with + is mine from the first keystroke. Accepting in either place solidifies the same object.
+7. **Make it where it will live.** + at a list's head (or N) makes one of that type: it appears in the list and fills the main area, with the caret in its name. Add theory inside a theme makes a solid card in place; Return keeps it and starts another, ⌘Return opens it. No modal.
+8. **The name is the title, edited in place** (controls' in-place rule).
+   - At rest it's plain text. Hover and editing put the 5% layer behind the text (radius 7, 2 / 6 with a matching negative margin, so the text never moves); the caret marks editing. No ring, hairline or field surface.
+   - An unnamed object shows its placeholder in ink 2 in the same role.
+   - Rename: click the title, or press F2 or double-click its row. Esc restores the old name, and a blank rename keeps it.
+9. **The eyebrow** (proposed amendment to 06 rule 10). Notes about the object as a whole sit on one line above the title, at 12 ink 2 with a chip to the related object: "Draft from [dump]", "Already a theme [chip]". The eyebrow shares the top bar with the object's verbs (drafts: Discard | Accept), with the group gap (16) to the title. Never between the title and its key line; an empty top bar takes no height (08).
+10. **Leaving a new object: empty goes; unnamed with content is kept as "Untitled", with Undo.** DECIDED (Maggie, 4 Nov).
+11. **Editing a draft's wording accepts it.** Accepting solidifies in place, with no toast. DECIDED (Maggie, 4 Nov).
+12. **Linking is a popover picker from a + on each stance** (Supports, Undermines), at the end of the section header. DECIDED (Maggie, 4 Nov).
+    - Find is focused. The theory's own themes come first, and linked signals are left out.
+    - ↑ ↓ move, Return links, and Esc returns focus to the +.
+    - The row lands in place and flashes the accent wash once.
+13. **A modal only when it must block:** Delete dump and Find. The title (13 / 600) and the X sit in the head. The foot sits at the bottom right with Cancel left of the primary. Focus starts on Cancel and stays inside.
+14. **Full views in the main area use 08's main-area inset** (48, top equal, a 720 column) and 06's anatomy: two left edges and section labels on the tile edge. The two-edge audit on this page has 1 element of 382 off either edge: the dump's text inside its well, which 06 defines.
 
 **Open (choices on the jig):**
-- Leaving a new object unnamed but with content: A hold with an inline error, or B (recommended) keep it as "Untitled" with Undo.
-- Editing a draft's wording: A (recommended, and it matches design-model §1) it accepts the draft, or B it stays a draft until Accept.
-- Adding evidence: A (recommended) a + on Supports and on Undermines, or B one Add evidence with a stance segment in the picker.
+- Send for a question: A the same send glyph, with the tooltip "Ask" (recommended), or B a question mark in ink.
+- The pill's history: A no log segment, since the thread and Dumps are the history (recommended), or B keep a history segment that goes to Dumps.
 
 ## 08 Briefing — PROPOSED (jig `08-briefing/`)
 

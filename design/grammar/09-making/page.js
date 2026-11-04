@@ -2,9 +2,7 @@
 addEventListener("load", () => {
   const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d);
   const page = document.body.dataset.jig;
-  const MAP = { unnamed: ["unnamed", { "A hold with an error": "hold", "B keep as Untitled": "untitled" }],
-    draftedit: ["draftEdit", { "A editing accepts it": "accept", "B stays a draft until Accept": "keep" }],
-    evadd: ["evAdd", { "A a plus on each stance": "two", "B one Add evidence": "one" }] };
+  const MAP = { send: ["send", { "A same glyph": "plane", "B question mark": "ask" }], log: ["log", { "A thread and Dumps": "none", "B log segment": "segment" }] };
   const pick = id => { let v; try { v = JSON.parse(localStorage.getItem(`jig:${page}:${id}`))?.choice; } catch {} return v === undefined ? document.querySelector(`[data-decision="${id}"]`)?.dataset.default : v; };
   const hero = document.querySelector(".mk-host[data-live]");
   const paint = () => {
