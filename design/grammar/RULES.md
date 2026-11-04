@@ -407,3 +407,49 @@ Evidence: 9 of the 13 ways to make or link something open the same centred modal
 ## Still to come
 
 07 rungs.
+
+## 11 Columns, Atlas, Timeline — PROPOSED (4 Nov 2026)
+
+A restyle, not a re-layout: each view keeps today's layout, navigation and docked pane. Jig: `11-views/`, with today's views beside live rebuilds. Values live in `11-views/views.css`. Pane contents, object cards and rows, and the Dump or ask pill are placeholders there.
+
+Evidence: each view draws its floating controls differently. The view switcher is 40/32/radius 20 with ink 3 icons. Atlas zoom is radius 8 with the card shadow. Timeline tools are separate 32 squares and use the Theme glyph to filter. The pane pads 40/48 (40/36 in Timeline). "Unrelated" is dimmed at five opacities. Columns' open card sinks (sunk fill, `!important`), its cards sit 4 apart with 8/10 insets, and its rails show ink-filled count badges. Atlas has its own ground, ink 3 counts and 12/600 claim labels; disc size encodes nothing; names collide with discs and pins. Timeline labels are 13/500 with a text-shadow halo; the year axis is ink 3; empty lanes are as tall as full ones.
+
+1. **Canvases sit on the ground**, never a ground of their own. Plot content starts at `--inset-canvas`.
+2. **One float bar recipe.** Each group of floating controls is one bar: surface, `--sh-float`, radius 14, padding 2, 28 icon buttons (radius 12) with tooltips. It sits `--inset-float` from the window edge: the view switcher bottom-left, zoom and Timeline tools top-left.
+3. **The pane enters from its edge and pushes.**
+   - Pane and view move together on the spring, 380ms; contents fade in over 160ms. Under reduced motion it cross-fades.
+   - Default widths stay today's: Columns takes what the rails leave, Atlas 940, Timeline 560.
+   - Pane inset is `--inset-pane`. Close and Full width sit in its 28 header row, glyphs on the content edge.
+4. **One selection grammar.**
+   - The open object is `--sel` on a surface: a card, theme row, territory label, map label or timeline item. A pin gets a ground gap and an ink ring instead.
+   - Related objects stay as they are; unrelated objects recede with one treatment (choice 1).
+   - Esc, X or a click on empty canvas closes the pane.
+5. **Columns.**
+   - Widths are fixed: Themes 230 (nav inset), Theories `--list-w` (list inset), Prototypes 220, Dumps 250, Signals 290. Flows sit on sunk.
+   - A head is a 32 row: tile, then the section header. Fold shows on hover.
+   - A folded column is a 40 rail: its tile on the head's centre line, then a plain count (11/500 ink 2) of objects related to what's open.
+   - Theory cards: inset 12, 8 apart.
+6. **Atlas encoding.**
+   - A territory is a disc: 4% ink with the strong hairline; selected, 6% with a 1px ink 3 edge.
+   - A theory is a pin sized by confidence (8 + 1.5 per step); drafts are a dashed 10.
+   - Text is placed in screen space, so it stays 13 at any zoom.
+7. **Map labels never collide.**
+   - Territory names try the inside top of their disc, then just above it, then the inside bottom.
+   - Theory names try the right of their pin, then the left, then centred below.
+   - No name covers another name, a pin or a floating control, or leaves the map. A name with no clear place waits for hover.
+   - The open object's name always shows, and opening a territory names its theories.
+8. **Timeline lanes and axis.**
+   - Years run across as meta (12/400 ink 2). Confidence runs down, 5 at the top, then drafts behind a dashed dot. The gutter is 56.
+   - An empty lane is 40; populated lanes share the rest. Cells pad `--inset-row` and stack with `--gap-item`.
+   - An item is an 8 dot plus a list name (13/400 ink).
+9. **Timeline with something open.**
+   - Related items drop to one line, unrelated items to their dot.
+   - Follows lines are 1.5 ink 2 elbows with a head. They run along the target lane's edge, never through a label. Rivals are 1 ink 3 with no head.
+   - Chain appears only while something is open.
+   - Filter by theme is the funnel, opening a tethered menu; once set, it becomes a labelled button.
+10. **Vocabulary:** Fold a column uses `sidebar-simple`.
+
+**Open (jig `11-views/`):**
+- With something open, unrelated objects: A fade to 40% (default), or B flatten (no surface, ink 2).
+- Atlas disc size: A as placed today, or B area ∝ the theme's signals (recommended).
+- Atlas theory names: A on hover, on open and when zoomed in (today, default), or B always, wherever they fit.
