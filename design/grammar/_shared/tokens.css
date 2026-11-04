@@ -1,0 +1,164 @@
+/* Aber grammar: the single source of literal values, shared by every grammar page.
+   Structure (type, space, radius, elevation, motion) follows PRIOR-DECISIONS.md.
+   Colour comes from a colour system (data-system on any scope) plus three dials:
+     --tone    -1 cool … 0 as designed … +1 warm   (rotates and tints the neutrals)
+     --type-k   0 neutral glyphs … 1 full type colour
+     --r, --text-body, --soft   (structure dials)
+   Every derived token is declared on :root and on every [data-system] scope, so a stage
+   inside the page recomputes them with its own system. */
+
+:root {
+  --tone: 0.25;          /* default a touch warmer than designed: Maggie found Sage too cool */
+  --type-k: 1;
+  --r: 7px;
+  --text-body: 13px;
+  --soft: 1;
+}
+
+/* ═══ Colour systems ═══════════════════════════════════════════════════════════
+   Each sets: neutral hue/chroma and lightness steps, accent, type hues and their
+   tile/glyph lightness+chroma (shared, so the six hues sit at one weight), status. */
+
+/* Default for 01-foundations until a system is chosen on 00-colour: Sage, warmed. */
+:root, [data-system="sage"] {
+  --n-h: 165; --n-c: 0.006;
+  --L-ground: 0.972; --L-sunk: 0.948; --L-surface: 1; --L-ink: 0.235; --L-ink2: 0.48; --L-ink3: 0.66;
+  --acc-h: 170; --acc-c: 0.115; --acc-L: 0.64; --acc-L-text: 0.52;
+  --primary-default: accent;
+  --t-dump: 285; --t-signal: 240; --t-theme: 335; --t-theory: 75; --t-prototype: 118; --t-tripwire: 28;
+  --tt-L: 0.952; --tt-C: 0.038; --tg-L: 0.53; --tg-C: 0.13;
+  --st-neg: oklch(0.55 0.19 25); --st-neg-dot: oklch(0.63 0.2 25); --st-pos: oklch(0.52 0.13 145); --st-fell: oklch(0.55 0.12 65);
+}
+
+/* 1. Clean light: near-neutral white and grey, crisp ink, fresh light type tints, jade accent (Foglamp). */
+[data-system="clean"] {
+  --n-h: 90; --n-c: 0.002;
+  --L-ground: 0.978; --L-sunk: 0.955; --L-surface: 1; --L-ink: 0.21; --L-ink2: 0.48; --L-ink3: 0.7;
+  --acc-h: 172; --acc-c: 0.12; --acc-L: 0.6; --acc-L-text: 0.5;
+  --primary-default: accent;
+  --t-dump: 288; --t-signal: 245; --t-theme: 340; --t-theory: 70; --t-prototype: 122; --t-tripwire: 25;
+  --tt-L: 0.958; --tt-C: 0.045; --tg-L: 0.56; --tg-C: 0.155;
+  --st-neg: oklch(0.55 0.2 25); --st-neg-dot: oklch(0.63 0.21 25); --st-pos: oklch(0.52 0.14 148); --st-fell: oklch(0.56 0.13 65);
+}
+
+/* 2. Warm paper: stone and sand neutrals, earthy muted type hues, deep teal accent. */
+[data-system="paper"] {
+  --n-h: 72; --n-c: 0.014;
+  --L-ground: 0.952; --L-sunk: 0.922; --L-surface: 0.988; --L-ink: 0.26; --L-ink2: 0.47; --L-ink3: 0.64;
+  --acc-h: 196; --acc-c: 0.075; --acc-L: 0.47; --acc-L-text: 0.45;
+  --primary-default: accent;
+  --t-dump: 295; --t-signal: 242; --t-theme: 350; --t-theory: 82; --t-prototype: 128; --t-tripwire: 38;
+  --tt-L: 0.925; --tt-C: 0.032; --tg-L: 0.5; --tg-C: 0.085;
+  --st-neg: oklch(0.52 0.16 30); --st-neg-dot: oklch(0.6 0.17 30); --st-pos: oklch(0.5 0.1 140); --st-fell: oklch(0.53 0.11 65);
+}
+
+/* 3. Ink on linen: warm off-white, near-black ink and a black primary, dusty pastel tints; teal only for new and focus. */
+[data-system="linen"] {
+  --n-h: 85; --n-c: 0.009;
+  --L-ground: 0.968; --L-sunk: 0.943; --L-surface: 0.996; --L-ink: 0.17; --L-ink2: 0.45; --L-ink3: 0.66;
+  --acc-h: 182; --acc-c: 0.1; --acc-L: 0.6; --acc-L-text: 0.5;
+  --primary-default: ink;
+  --t-dump: 290; --t-signal: 238; --t-theme: 345; --t-theory: 78; --t-prototype: 125; --t-tripwire: 32;
+  --tt-L: 0.94; --tt-C: 0.026; --tg-L: 0.52; --tg-C: 0.075;
+  --st-neg: oklch(0.53 0.18 27); --st-neg-dot: oklch(0.61 0.19 27); --st-pos: oklch(0.5 0.11 145); --st-fell: oklch(0.54 0.12 65);
+}
+
+/* 4. Porcelain and jade (agent's proposal): cool-white surfaces on a faintly warm ground, so cards glow;
+      jade owns action; type colour lives in the glyph, with tiles barely tinted. */
+[data-system="porcelain"] {
+  --n-h: 100; --n-c: 0.005;
+  --L-ground: 0.958; --L-sunk: 0.935; --L-surface: 1; --L-ink: 0.22; --L-ink2: 0.47; --L-ink3: 0.67;
+  --acc-h: 168; --acc-c: 0.11; --acc-L: 0.55; --acc-L-text: 0.49;
+  --primary-default: accent;
+  --t-dump: 292; --t-signal: 248; --t-theme: 338; --t-theory: 68; --t-prototype: 120; --t-tripwire: 27;
+  --tt-L: 0.968; --tt-C: 0.022; --tg-L: 0.54; --tg-C: 0.14;
+  --st-neg: oklch(0.55 0.19 25); --st-neg-dot: oklch(0.63 0.2 25); --st-pos: oklch(0.52 0.13 148); --st-fell: oklch(0.55 0.12 65);
+}
+
+/* ═══ Derived colour tokens (recomputed in every system scope) ═══════════════ */
+:root, [data-system] {
+  --tone-abs: max(var(--tone), calc(var(--tone) * -1));
+  --nh: calc(var(--n-h) - var(--tone) * 40);                    /* warm turns hue toward sand, cool toward sage */
+  --nc: calc(var(--n-c) + var(--tone-abs) * 0.007);
+  --ground:   oklch(var(--L-ground) var(--nc) var(--nh));
+  --ground-2: oklch(var(--L-sunk) var(--nc) var(--nh));                                   /* sunk: rail, field wells */
+  --ground-3: oklch(calc(var(--L-sunk) - 0.03) var(--nc) var(--nh));                      /* hovered fill on sunk */
+  --surface:  oklch(var(--L-surface) calc(var(--nc) * 0.3) var(--nh));
+  --shade:    calc(var(--L-ink)) calc(var(--nc) * 2) var(--nh);                            /* channels for lines and shadows */
+  --hover:    oklch(var(--shade) / 5%);
+  --tile-bg:  oklch(var(--shade) / 6%);
+  --ink:      oklch(var(--L-ink) calc(var(--nc) * 1.2) var(--nh));
+  --ink-2:    oklch(var(--L-ink2) calc(var(--nc) * 1.4) var(--nh));                       /* >= 4.5:1 on ground, sunk and surface */
+  --ink-3:    oklch(var(--L-ink3) calc(var(--nc) * 1.4) var(--nh));                       /* lines and marks only */
+  --ink-hover: oklch(calc(var(--L-ink) + 0.1) calc(var(--nc) * 1.2) var(--nh));
+  --on-ink: oklch(0.99 0 0); --on-ink-2: oklch(0.82 0.005 var(--nh)); --on-ink-fill: oklch(1 0 0 / 0.16);
+  --hairline:        oklch(var(--shade) / 9%);
+  --hairline-strong: oklch(var(--shade) / 13%);
+  --draft-fill:      oklch(1 0 0 / 45%);
+  --scrim:           oklch(var(--shade) / 18%);
+
+  --accent:       oklch(var(--acc-L) var(--acc-c) var(--acc-h));
+  --accent-hover: oklch(calc(var(--acc-L) - 0.04) var(--acc-c) var(--acc-h));
+  --accent-text:  oklch(var(--acc-L-text) calc(var(--acc-c) * 0.9) var(--acc-h));
+  --accent-wash:  oklch(0.955 calc(var(--acc-c) * 0.3) var(--acc-h));
+  --accent-line:  oklch(0.8 calc(var(--acc-c) * 0.6) var(--acc-h));
+  --on-accent: oklch(1 0 0);
+  --new: var(--accent); --focus: var(--accent);
+
+  --neg: var(--st-neg); --neg-dot: var(--st-neg-dot); --pos: var(--st-pos); --fell: var(--st-fell);
+  --building: var(--accent-text);   /* DI-007 open: Maggie wants green; jade shown */
+
+  /* Elevation: shadow means height; a 0.5px tinted ring plus soft drops */
+  --elev-0: none;
+  --elev-1: inset -0.5px 0 0 var(--hairline);
+  --elev-2: 0 0 0 0.5px oklch(var(--shade) / 10%), 0 calc(1px * var(--soft)) calc(2px * var(--soft)) oklch(var(--shade) / calc(5% / var(--soft)));
+  --sel:    0 0 0 0.5px oklch(var(--shade) / 12%), 0 calc(1px * var(--soft)) calc(2px * var(--soft)) oklch(var(--shade) / calc(6% / var(--soft))),
+            0 calc(3px * var(--soft)) calc(8px * var(--soft)) -2px oklch(var(--shade) / calc(10% / var(--soft)));
+  --elev-3: 0 0 0 0.5px oklch(var(--shade) / 10%), 0 calc(8px * var(--soft)) calc(16px * var(--soft)) -4px oklch(var(--shade) / calc(8% / var(--soft))),
+            0 calc(20px * var(--soft)) calc(44px * var(--soft)) -10px oklch(var(--shade) / calc(18% / var(--soft)));
+  --elev-4: 0 0 0 0.5px oklch(var(--shade) / 12%), 0 calc(6px * var(--soft)) calc(12px * var(--soft)) -2px oklch(var(--shade) / calc(8% / var(--soft))),
+            0 calc(16px * var(--soft)) calc(36px * var(--soft)) -8px oklch(var(--shade) / calc(20% / var(--soft)));
+  --elev-5: 0 0 0 0.5px oklch(var(--shade) / 12%), 0 calc(24px * var(--soft)) calc(56px * var(--soft)) -12px oklch(var(--shade) / calc(26% / var(--soft)));
+  --elev-6: 0 calc(4px * var(--soft)) calc(12px * var(--soft)) oklch(var(--shade) / calc(20% / var(--soft)));
+  --elev-7: 0 calc(2px * var(--soft)) calc(6px * var(--soft)) oklch(var(--shade) / calc(18% / var(--soft)));
+  --btn-shadow: 0 1px 2px oklch(var(--shade) / 12%);
+  --window-shadow: 0 0 0 0.5px oklch(var(--shade) / 12%), 0 8px 30px oklch(var(--shade) / 6%);
+
+  /* Primary follows the system unless a page scope sets data-primary */
+  --primary: var(--accent); --primary-hover: var(--accent-hover); --on-primary: var(--on-accent);
+}
+[data-system="linen"] { --primary: var(--ink); --primary-hover: var(--ink-hover); --on-primary: var(--on-ink); }
+[data-primary="accent"], [data-primary="accent"] [data-system] { --primary: var(--accent); --primary-hover: var(--accent-hover); --on-primary: var(--on-accent); }
+[data-primary="ink"], [data-primary="ink"] [data-system] { --primary: var(--ink); --primary-hover: var(--ink-hover); --on-primary: var(--on-ink); }
+
+/* Per-type colour: one hue per object, shared lightness and chroma; --type-k fades to neutral */
+[data-type="dump"] { --h: var(--t-dump); } [data-type="signal"] { --h: var(--t-signal); } [data-type="theme"] { --h: var(--t-theme); }
+[data-type="theory"] { --h: var(--t-theory); } [data-type="prototype"] { --h: var(--t-prototype); } [data-type="tripwire"] { --h: var(--t-tripwire); }
+[data-type] { --type-tile: oklch(var(--tt-L) calc(var(--tt-C) * var(--type-k)) var(--h)); --type-glyph: oklch(var(--tg-L) calc(var(--tg-C) * var(--type-k)) var(--h)); }
+[data-type="suggestion"] { --type-tile: var(--draft-fill); --type-glyph: var(--ink-2); }
+
+/* ═══ Structure (decided) ═════════════════════════════════════════════════════ */
+:root {
+  --font: "Geist", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist", ui-monospace, monospace;
+  --text-sm: calc(var(--text-body) - 2px);       /* 11 */
+  --text-label: calc(var(--text-body) - 1px);    /* 12 */
+  --text-title: calc(var(--text-body) + 7px);    /* 20 */
+  --text-modal: calc(var(--text-body) + 2px);    /* 15, modal titles only */
+  --lh-sm: 1.4; --lh-body: 1.4; --lh-title: 1.25;
+  --w-regular: 400; --w-medium: 500; --w-strong: 600;
+  --icon: 16px;
+
+  --r-xs: calc(var(--r) - 3px); --r-sm: var(--r); --r-md: calc(var(--r) + 3px); --r-lg: calc(var(--r) + 7px);
+  --r-icon: calc(var(--r) - 1px); --r-pill: 999px;
+
+  --s-0: 2px; --s-1: 4px; --s-1h: 6px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-4h: 20px; --s-5: 24px; --s-6: 32px;
+  --row: 30px; --control: 28px; --control-sm: 26px; --card-pad: 12px; --hit: 40px;
+  --tile: 24px; --tile-sm: 18px;
+  --z-0: 0; --z-1: 10; --z-2: 20; --z-3: 30; --z-4: 40; --z-5: 50; --z-6: 60; --z-7: 70;
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-press: 90ms; --t-hover: 90ms; --t-float: 160ms; --t-surface: 260ms;
+  --press-scale: 0.98;
+}

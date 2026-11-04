@@ -1,0 +1,92 @@
+/* The stage: the app's current layout (jig /app, app-shell + current view + object pane), unchanged.
+   Only components and tokens are restyled. Every value comes from tokens.css. */
+
+.stg-host { min-width: 0; }
+.stg { --stg-w: 1080px; --rail-w: 208px; --pane-w: 560px;
+  position: relative; width: var(--stg-w); height: 640px; overflow: hidden; display: grid; grid-template-columns: var(--rail-w) minmax(0, 1fr) var(--pane-w);
+  background: var(--ground); color: var(--ink); border-radius: var(--r-md); box-shadow: var(--window-shadow);
+  font: var(--w-regular) var(--text-body)/var(--lh-body) var(--font); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; text-align: left; }
+.stg *, .stg *::before, .stg *::after { box-sizing: border-box; }
+.stg i[class^="ph"] { display: block; font-size: var(--icon); line-height: 1; }
+.stg button { font: inherit; color: inherit; }
+.stg a { color: inherit; text-decoration: none; }
+
+/* Glyph: per-type colour, on an optional tile (data-mark="bare" drops the tile) */
+.stg .g { flex: none; display: inline-grid; place-items: center; width: var(--tile-sm); height: var(--tile-sm); border-radius: var(--r-xs); background: var(--type-tile); color: var(--type-glyph); }
+.stg .g i { font-size: 13px; }
+.stg .g.lg { width: var(--tile); height: var(--tile); } .stg .g.lg i { font-size: 15px; }
+.stg .g[data-type="suggestion"] { outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
+[data-mark="bare"] .stg .g, .stg[data-mark="bare"] .g { background: transparent; outline: 0; width: auto; }
+
+/* Rail */
+.stg-rail { display: flex; flex-direction: column; gap: var(--s-3); padding: 14px 10px; background: var(--ground-2); box-shadow: inset -0.5px 0 0 var(--hairline); min-width: 0; }
+.stg-brand { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--s-1h); font-weight: var(--w-strong); }
+.stg-index { display: grid; gap: 1px; }
+.stg-index a, .stg-protos { display: flex; align-items: center; justify-content: space-between; gap: var(--s-2); height: var(--row); padding: 0 var(--s-2); border-radius: var(--r-icon); color: var(--ink-2); cursor: pointer; transition: background-color var(--t-hover) var(--ease-out); }
+.stg-index a:hover, .stg-protos:hover { background: var(--hover); }
+.stg-index a[data-active] { background: var(--surface); color: var(--ink); box-shadow: var(--elev-2); }
+.stg-index a span:last-child, .stg-protos span:last-child { font-size: var(--text-label); color: var(--ink-2); }
+.stg-protos { margin-top: auto; justify-content: flex-start; }
+.stg-protos span:last-child { margin-left: auto; }
+.stg-switch { display: flex; gap: 2px; align-self: flex-start; padding: 3px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--elev-2); }
+.stg-switch button { display: grid; place-items: center; width: 30px; height: 28px; border: 0; border-radius: calc(var(--r-lg) - 3px); background: transparent; color: var(--ink-2); cursor: pointer; }
+.stg-switch button[aria-pressed="true"] { background: var(--accent-wash); color: var(--accent-text); }
+.stg-iconbtn { display: inline-grid; place-items: center; width: var(--control); height: var(--control); border: 0; border-radius: var(--r-icon); background: transparent; color: var(--ink-2); cursor: pointer; transition: background-color var(--t-hover) var(--ease-out); }
+.stg-iconbtn:hover { background: var(--hover); color: var(--ink); }
+.stg-iconbtn:active, .stg-btn:active, .stg-chip:active, .stg-card:active { scale: var(--press-scale); }
+
+/* Main: theme sections of contained cards */
+.stg-main { min-width: 0; overflow: hidden; padding: 24px 28px; display: grid; align-content: start; gap: 22px; }
+.stg-sec-head { display: flex; align-items: center; gap: var(--s-2); height: var(--control); margin-bottom: var(--s-2); }
+.stg-sec-head .n { color: var(--ink-2); }
+.stg-cards { display: grid; gap: 10px; }
+.stg-card { display: grid; gap: var(--s-2); padding: 10px var(--card-pad); border-radius: var(--r-sm); background: var(--surface); box-shadow: var(--elev-2); cursor: pointer;
+  transition: box-shadow var(--t-float) var(--ease-out), scale var(--t-press) var(--ease-out); }
+.stg-card[data-open] { box-shadow: var(--sel); }
+.stg-card[data-draft] { background: var(--draft-fill); box-shadow: none; outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
+.stg-card[data-draft] .stg-claim { color: var(--ink-2); }
+.stg-claim { font-weight: var(--w-strong); text-wrap: pretty; }
+.stg-meta { display: flex; align-items: center; gap: 10px; font-size: var(--text-label); color: var(--ink-2); }
+.stg-conf { display: inline-flex; gap: 2px; }
+.stg-conf i { display: block; width: 9px; height: 3px; border-radius: 2px; background: var(--hairline-strong); }
+.stg-conf i[data-on] { background: var(--ink); }
+.stg-inline { display: inline-flex; align-items: center; gap: 3px; }
+.stg-pending { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--r-pill); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; font-size: var(--text-sm); color: var(--ink); }
+.stg-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.stg-dot.neg { background: var(--neg-dot); box-shadow: 0 0 0 3px color-mix(in oklab, var(--neg-dot) 18%, transparent); }
+.stg-dot.new { background: var(--new); box-shadow: 0 0 0 3px color-mix(in oklab, var(--new) 18%, transparent); }
+
+/* Pane: docked right, top-aligned, a hairline seam, no shadow */
+.stg-pane { position: relative; min-width: 0; background: var(--surface); box-shadow: -0.5px 0 0 var(--hairline-strong); overflow: hidden; padding: 28px 32px 24px; display: grid; align-content: start; gap: var(--s-4); }
+.stg-pane-close { position: absolute; top: 10px; right: 10px; display: flex; gap: 2px; }
+.stg-chip { display: inline-flex; align-items: center; gap: var(--s-1); height: 24px; max-width: 100%; padding: 0 var(--s-2) 0 var(--s-1); border: 0; border-radius: var(--r-icon); background: var(--surface);
+  box-shadow: inset 0 0 0 0.5px var(--hairline-strong); font-size: var(--text-label); color: var(--ink-2); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background-color var(--t-hover); }
+.stg-chip:hover { background: var(--hover); color: var(--ink); }
+.stg-chip[data-draft] { box-shadow: none; outline: 1px dashed var(--hairline-strong); outline-offset: -1px; background: var(--draft-fill); }
+.stg-chip .go { font-size: 11px; color: var(--ink-3); }
+.stg-chips { display: flex; flex-wrap: wrap; gap: var(--s-1); }
+.stg-title { margin: 0; font-size: var(--text-title); line-height: var(--lh-title); font-weight: var(--w-strong); letter-spacing: -0.01em; text-wrap: balance; }
+.stg-fields { display: grid; grid-template-columns: 96px 1fr; row-gap: var(--s-2); align-items: center; }
+.stg-fields dt { font-size: var(--text-label); font-weight: var(--w-medium); color: var(--ink-2); }
+.stg-fields dd { margin: 0; display: flex; align-items: center; gap: var(--s-2); min-width: 0; }
+.stg-conf.lg i { width: 18px; height: 5px; border-radius: 3px; }
+.stg-spark { width: 64px; height: 16px; }
+.stg-note { margin: 0; padding: var(--s-3) var(--s-3); border-radius: var(--r-sm); background: var(--ground); color: var(--ink-2); text-wrap: pretty; }
+.stg-trip { display: flex; align-items: center; gap: var(--s-2); color: var(--ink-2); padding-bottom: var(--s-2); border-bottom: 1px dashed var(--hairline-strong); }
+.stg-ev { display: grid; grid-template-columns: 1fr 1fr; border-radius: var(--r-md); box-shadow: inset 0 0 0 0.5px var(--hairline-strong); overflow: hidden; }
+.stg-ev-col + .stg-ev-col { box-shadow: -0.5px 0 0 var(--hairline-strong); }
+.stg-ev-head { display: flex; align-items: center; gap: var(--s-1h); height: 32px; padding: 0 var(--s-3); background: var(--ground); font-size: var(--text-label); color: var(--ink-2); box-shadow: inset 0 -0.5px 0 var(--hairline-strong); }
+.stg-ev-head .plus { margin-left: auto; }
+.stg-ev-item { display: grid; grid-template-columns: auto 1fr; column-gap: var(--s-2); padding: var(--s-2) var(--s-3); }
+.stg-ev-item + .stg-ev-item { box-shadow: inset 0 0.5px 0 var(--hairline-strong); }
+.stg-ev-item .g { margin-top: 1px; }
+.stg-ev-item .src { grid-column: 2; font-size: var(--text-label); color: var(--ink-2); }
+.stg-ev-item .t { display: flex; align-items: center; gap: var(--s-1h); }
+.stg-ev-item[data-draft] { margin: var(--s-1); padding: var(--s-2); border-radius: var(--r-sm); background: var(--draft-fill); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; box-shadow: none; }
+.stg-decide { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: var(--s-1h); margin-top: var(--s-2); }
+.stg-btn { display: inline-flex; align-items: center; gap: var(--s-1h); height: var(--control-sm); padding: 0 10px; border: 0; border-radius: var(--r-sm); font-size: var(--text-label); font-weight: var(--w-medium); cursor: pointer; transition: background-color var(--t-hover), scale var(--t-press); }
+.stg-btn.primary { background: var(--primary); color: var(--on-primary); box-shadow: var(--btn-shadow); }
+.stg-btn.primary:hover { background: var(--primary-hover); }
+.stg-btn.secondary { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 0.5px var(--hairline-strong), var(--btn-shadow); }
+.stg-related { display: flex; flex-wrap: wrap; gap: var(--s-1); padding-top: var(--s-3); box-shadow: inset 0 0.5px 0 var(--hairline-strong); }
+.stg :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }

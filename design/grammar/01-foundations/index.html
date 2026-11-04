@@ -11,10 +11,12 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dialkit@2.1.0/dist/vanilla/styles.css">
 <link rel="stylesheet" href="../../explorations/_shell/jig.css">
-<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/stage.css">
 <link rel="stylesheet" href="foundations.css">
 <script src="https://cdn.jsdelivr.net/npm/dialkit@2.1.0/dist/vanilla/browser.global.js" defer></script>
 <script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/stage.js" defer></script>
 <script src="foundations.js" defer></script>
 <script type="module" src="../_shared/agentation.js" data-app-name="Grammar 1: Foundations"></script>
 </head>
@@ -22,69 +24,61 @@
 
 <header class="jig-head">
   <h1>Grammar 1: Foundations</h1>
-  <p>The parts every Aber object is built from, shown first where they live: a small Aber screen with the rail, a mixed list and a peek. Tokens follow the decided surface language (Sage, Jade, Geist, 4px grid). Jig 2 assembles the six objects in full.</p>
-  <ul class="jig-rules">
-    <li>The dials (top right) and the switches above the screen restyle the whole page live. Pin keeps the screen in view while you dial (it covers the top of the page while on).</li>
-    <li>Every open choice below is shown inside the same screen, so only the thing in question changes. Annotate anything with Agentation (bottom right).</li>
-  </ul>
+  <p>The parts every Aber object is built from, tuned on the app's real layout. Colour itself is being decided on <a href="../00-colour/">Grammar 00: Colour</a>; this page uses the current default system.</p>
 </header>
 
-<details class="decided"><summary>Already decided, applied here</summary><ul>
-  <li>Radix Sage neutrals; lines and shadows tinted sage 12</li>
-  <li>Radix Jade accent: primary, focus ring (2px, offset 2), new dots with a halo</li>
-  <li>Object glyphs neutral in every state, no per-type colour</li>
-  <li>Glyphs from OBJECT_ICONS, Phosphor Regular 16, fill only when selected</li>
-  <li>Geist and Geist Mono; 11/12/13/20 at 13/1.4; 15 for modal titles; names 600</li>
-  <li>4px spacing grid; rows 30, controls 28, card padding 12</li>
-  <li>Radii 4/7/10/14 + pill, concentric</li>
-  <li>Buttons 28px, radius 7, 12/500; secondary is white with a hairline</li>
-  <li>Selection is neutral, light and raised; hover a 5% sage layer; press scales to 0.98</li>
-  <li>Challenge red 11 text, red 9 dots; rose grass 11; fell amber 11</li>
-  <li>Dashed means not yet mine: drafts and suggestions</li>
-  <li>Dismiss left of Accept; X only closes fleeting surfaces</li>
-</ul></details>
-
-<div class="preview-dock">
-  <div class="preview-bar">
-    <span class="seg" data-seg="primary" data-default="accent"><span>Primary</span><span class="seg-group"><button type="button" value="accent">Jade</button><button type="button" value="ink">Black</button></span></span>
-    <span class="seg" data-seg="sel" data-default="sunk"><span>Selected</span><span class="seg-group"><button type="button" value="white">a White list</button><button type="button" value="sunk">b Sunk list</button></span></span>
-    <span class="seg" data-seg="mark" data-default="tile"><span>Glyph</span><span class="seg-group"><button type="button" value="tile">Tile</button><button type="button" value="bare">Bare</button></span></span>
-    <span class="seg" data-seg="pin" data-default="off"><span>Pin</span><span class="seg-group"><button type="button" value="on">On</button><button type="button" value="off">Off</button></span></span>
+<div class="decide">
+  <div class="decide-box">
+    <h2>Decide on this page</h2>
+    <ol>
+      <li data-pick="primary"><a href="#primary">Primary button: jade or black</a> <span class="pick"></span></li>
+      <li data-pick="glyph-mark"><a href="#glyph-mark">Type glyph: on a tinted tile, or bare</a> <span class="pick"></span></li>
+    </ol>
   </div>
-  <div data-ms='{"peek":"always"}'></div>
 </div>
 
-<section class="jig-section" data-decision="primary" data-question="What colour is the primary button?" data-default="A jade">
-  <h2>Open choices, in context</h2>
-  <p>Look at New theory in the theme header, Accept on the suggestion in the peek, and the quiet icon buttons beside them. Jade is decided; black is the alternative Maggie asked to see.</p>
+<p class="stage-label">Stage: the app's current layout, unchanged. Only the components and tokens are being tuned here.</p>
+<div class="stage-top"><div class="stg-host" data-stage='{}'></div></div>
+
+<section class="jig-section" id="primary" data-decision="primary" data-question="1. What colour is the primary button?" data-default="A jade">
+  <p>See Accept on the suggestion in Supports, and the current view in the switcher at the bottom of the rail.</p>
   <div class="jig-compare" style="--jig-min:900px">
-    <div class="jig-option" data-option="A jade"><div class="jig-label"><b>A</b> Jade (decided 1 Nov)</div><p class="jig-note">The accent means "you are acting here": primary, focus and new dots share one colour. White 12px text on jade 9 is 3.1:1, under the 4.5:1 text minimum.</p><div data-option-stage data-ms='{"primary":"accent","peek":"always"}'></div></div>
-    <div class="jig-option" data-option="B black"><div class="jig-label"><b>B</b> Black</div><p class="jig-note">Ink primary, as in DI-002 and DI-010. Calmer; jade stays for focus, new dots and the current view.</p><div data-option-stage data-ms='{"primary":"ink","peek":"always"}'></div></div>
+    <div class="jig-option" data-option="A jade"><div class="jig-label"><b>A</b> Jade</div><p class="jig-note">The accent means "you are acting here": primary, focus, new dots and the current view share one colour.</p><div data-option-stage class="stg-host" data-stage='{"primary":"accent"}'></div></div>
+    <div class="jig-option" data-option="B black"><div class="jig-label"><b>B</b> Black</div><p class="jig-note">Ink primary. Calmer; jade stays for focus, new dots and the current view.</p><div data-option-stage class="stg-host" data-stage='{"primary":"ink"}'></div></div>
   </div>
 </section>
 
-<section class="jig-section" data-decision="selected" data-question="Which list does a selected row rise from?" data-default="b sunk">
-  <p>Both keep the decided selection: neutral, white and raised with --sel. The theory row is selected with its peek open; hover any row.</p>
+<section class="jig-section" id="glyph-mark" data-decision="glyph-mark" data-question="2. Does a type glyph sit on a tinted tile?" data-default="A tile">
+  <p>Look at the theme headers, the chips in the pane and the evidence lists.</p>
   <div class="jig-compare" style="--jig-min:900px">
-    <div class="jig-option" data-option="a white"><div class="jig-label"><b>a</b> White list</div><p class="jig-note">Rows sit in a white card; the selected one gains a hairline and a small lift. Quiet, but the lift is subtle on white.</p><div data-option-stage data-ms='{"sel":"white","peek":"always"}'></div></div>
-    <div class="jig-option" data-option="b sunk"><div class="jig-label"><b>b</b> Sunk list</div><p class="jig-note">Rows sit in sage 3, like the rail; the selected one rises to white. Clearer, and the same as the rail's active row.</p><div data-option-stage data-ms='{"sel":"sunk","peek":"always"}'></div></div>
+    <div class="jig-option" data-option="A tile"><div class="jig-label"><b>A</b> Tinted tile</div><p class="jig-note">Glyph in its hue on a pale tint of it. Type reads at a glance; more colour on screen.</p><div data-option-stage class="stg-host" data-stage='{"mark":"tile"}'></div></div>
+    <div class="jig-option" data-option="B bare"><div class="jig-label"><b>B</b> Bare glyph</div><p class="jig-note">Just the coloured glyph. Quieter; colour stays at icon scale.</p><div data-option-stage class="stg-host" data-stage='{"mark":"bare"}'></div></div>
   </div>
 </section>
 
-<section class="jig-section" data-decision="glyph-mark" data-question="Does a row's glyph sit on a neutral tile?" data-default="B bare">
-  <p>Glyphs are neutral either way. The tile only adds a shape for the eye to line up on.</p>
-  <div class="jig-compare" style="--jig-min:440px">
-    <div class="jig-option" data-option="A tile"><div class="jig-label"><b>A</b> Neutral tile</div><p class="jig-note">A 6% sage square behind each glyph. A steadier left edge in mixed lists; one more shape per row.</p><div data-option-stage data-ms='{"mark":"tile"}'></div></div>
-    <div class="jig-option" data-option="B bare"><div class="jig-label"><b>B</b> Bare glyph</div><p class="jig-note">Just the glyph in ink 2. Lighter; the list is mostly text.</p><div data-option-stage data-ms='{"mark":"bare"}'></div></div>
-  </div>
-</section>
-
-<section class="jig-section" data-decision="hero-size" data-question="How big is a hero number?" data-default="A title size">
-  <p>Shown in a theme's overview strip, above its list.</p>
-  <div class="jig-compare" style="--jig-min:440px">
-    <div class="jig-option" data-option="A title size"><div class="jig-label"><b>A</b> Title size, 20</div><p class="jig-note">Stays within the decided 11/12/13/20 scale; told apart by weight and the grey unit.</p><div data-option-stage data-ms='{"mode":"theme"}'></div></div>
-    <div class="jig-option" data-option="B display size"><div class="jig-label"><b>B</b> Display size, 31</div><p class="jig-note">Health-card punch, but adds a size the scale doesn't have.</p><div data-option-stage data-ms='{"mode":"theme","hero":"display"}'></div></div>
-  </div>
+<section class="jig-section decided-sec">
+  <details>
+    <summary>Already decided (applied, no action needed)</summary>
+    <p style="margin:12px 0 4px;color:#5d5850">From Maggie (PRIOR-DECISIONS.md, 1 to 4 Nov):</p>
+    <ul class="agent-picks">
+      <li>Layout and navigation stay as the app has them; jigs restyle, they don't re-layout. The pane aligns to the top of the main area.</li>
+      <li>Per-type object colour is back (4 Nov, reverses 1 Nov). Neutral tone is a dial, warmer than Radix Sage by default.</li>
+      <li>Jade accent means "you are acting here": focus ring, new dots, current view, primary (unless black wins above).</li>
+      <li>Phosphor Regular 16; fill only when selected. Glyphs from OBJECT_ICONS plus Signpost; Sparkle for suggestions.</li>
+      <li>Geist and Geist Mono; 11/12/13/20 at 13/1.4; 15 for modal titles; names 600.</li>
+      <li>4px grid; rows 30, controls 28, card padding 12. Radii 4/7/10/14 + pill, concentric.</li>
+      <li>Buttons 28px (26 small), radius 7, 12/500; secondary is white with a hairline. Dismiss left of Accept; X only closes fleeting surfaces.</li>
+      <li>Selection is neutral, light and raised; hover a 5% state layer; press 0.98. Dashed means not yet mine.</li>
+      <li>Challenge red, confidence rose green, fell amber. Shadows mean height only.</li>
+    </ul>
+    <p style="margin:16px 0 4px;color:#5d5850">Decided by the agent; change if you disagree:</p>
+    <ul class="agent-picks">
+      <li>Selected card: the decided neutral raised style (--sel) on white cards, as the app has it. The earlier white-list vs sunk-list choice is retired; it doesn't arise in this layout.</li>
+      <li>Hero numbers use the 20px title size. The current layout has no hero numbers, so a fifth size isn't worth adding yet.</li>
+      <li>Field labels use ink 2, not ink 3, so every label passes 4.5:1.</li>
+      <li>"Building" shows in jade text until DI-007 is decided (you wanted green).</li>
+    </ul>
+  </details>
 </section>
 
 <div class="specimens-head"><h2>Specimens</h2><p>The same parts in isolation, with their tokens.</p></div>
@@ -92,7 +86,7 @@
 <!-- Tokens -->
 <section class="jig-section">
   <h2>Tokens</h2>
-  <p>Radix Sage neutrals with a Jade accent, all decided on 1 Nov. Lines and shadows are tinted with sage 12.</p>
+  <p>From the current colour system (being decided on <a href="../00-colour/">Grammar 00: Colour</a>). Lines and shadows are tinted from the neutral hue.</p>
   <div class="fx">
     <div class="plate">
       <p class="cap">Neutrals</p>
@@ -171,7 +165,7 @@
 <!-- 3. Glyph tiles -->
 <section class="jig-section">
   <h2>Object glyphs</h2>
-  <p>One Phosphor glyph per object, neutral in every state: the shape carries the type, so jade never competes with a type colour. Glyphs are the app's OBJECT_ICONS (Pulse, Binoculars, Target, PencilRuler, TrayArrowDown) plus Signpost for tripwires. Regular at rest, fill when selected. Suggestion has no app icon, so it takes Sparkle with a dashed edge: dashed already means "not yet mine". Click a tile to select it.</p>
+  <p>One Phosphor glyph per object, in its type colour on a pale tint of the same hue (4 Nov: type colour is back). No type hue sits near the accent, which means "you are acting here". Glyphs are the app's OBJECT_ICONS (Pulse, Binoculars, Target, PencilRuler, TrayArrowDown) plus Signpost for tripwires. Regular at rest, fill when selected. Suggestion has no app icon, so it takes Sparkle with a dashed edge: dashed already means "not yet mine". Click a tile to select it.</p>
   <div class="fx">
     <div class="plate">
       <div class="glyph-table" id="glyph-table">
@@ -234,6 +228,7 @@
     </div>
   </div>
 </section>
+
 
 
 

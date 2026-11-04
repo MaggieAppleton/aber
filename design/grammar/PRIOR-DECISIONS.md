@@ -357,3 +357,9 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
   - What a peek becomes at 390px.
   - How the connection actions reveal.
   - DI-010 isn't logged in `docs/design-issues.md` yet.
+
+---
+
+## 4 Nov 2026 (Maggie), round 3 of the foundations jig
+
+4 Nov 2026 (Maggie): per-type object colour is back (reverses 1 Nov). Neutrals should be warmer than Radix Sage; tone is a dial. The app's current layout and navigation are liked and stay; jigs restyle, they don't re-layout. The right pane aligns to the top of the main area.
