@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grammar 06b: Confidence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="../../explorations/_shell/jig.css">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/stage.css">
+<link rel="stylesheet" href="../_shared/spacing.css">
+<link rel="stylesheet" href="../_shared/type.css">
+<link rel="stylesheet" href="../_shared/icons.css">
+<link rel="stylesheet" href="../_shared/surfaces.css">
+<link rel="stylesheet" href="../nav/nav.css">
+<link rel="stylesheet" href="../_shared/controls.css">
+<link rel="stylesheet" href="objects.css">
+<link rel="stylesheet" href="conf.css">
+<script src="conf.js" defer></script>
+<script src="choose.js" defer></script>
+<script type="module" src="../_shared/agentation.js" data-app-name="Grammar 06b: Confidence"></script>
+</head>
+<body class="jig" data-jig="grammar-06b-confidence" data-align="c">
+
+<header class="jig-head">
+  <h1>Grammar 06b: Confidence</h1>
+  <p><b>Exploration.</b> Confidence is my stance on a theory, 1 to 5, set by me, with a dated history. Today it's five short dashes on the line below the name, and a larger version plus a sparkline in the full view. You asked for something more concise, possibly on the right of the name. Below are eight encodings, each drawn small (lists, cards, peeks) and large (the full view's setter), all with the same theories.</p>
+  <ul class="jig-rules">
+    <li>Real cases throughout: <b>Code review becomes the bottleneck</b> at 4, just rose from 3 (2 Nov). <b>Frontier intelligence stays scarce</b> at 2, just fell from 3 (3 Nov). <b>Tokens become nearly free</b> and <b>Agents run continuously</b> at 3, steady. <b>Agents keep context</b> at 4 with a challenge. <b>Local models absorb most everyday agent work</b> is a draft with nothing set.</li>
+    <li>Colour stays two meanings (D): accent for up, red for down. Every mark is ink first; colour only ever doubles what shape or words already say.</li>
+    <li>Setters: point to preview, click or drag to set, or focus and use arrows, Home, End or 1–5. Setting the draft shows the unset state turning into a first stance.</li>
+  </ul>
+</header>
+
+<div class="decide">
+  <div class="decide-box">
+    <h2>Decide on this page</h2>
+    <ol>
+      <li data-pick="small"><a href="#enc-A">Small: the mark in rows, cards and peeks</a><span class="pick"></span>
+        <span class="why">Recommended A Ticks: exact at 12px, fixed width so the right-hand column stays straight, and a list of them reads as a tiny bar chart. Trend goes in words in the peek, not on the preview (G is the version that puts it on the preview).</span>
+        <div data-decision="small" data-question="Small: which mark beside a theory's name?" data-default="A Ticks"></div></li>
+      <li data-pick="large"><a href="#enc-A">Large: the setter in the full view</a><span class="pick"></span>
+        <span class="why">Recommended A Ticks: the same five ticks at 22 tall, so the thing you set is the thing you scan, with H's step line and "Rose from 3, 2 Nov" beside it as the history. If you want the history to be the setter, H is the richer large.</span>
+        <div data-decision="large" data-question="Large: which setter in the full view?" data-default="A Ticks"></div></li>
+      <li data-pick="position"><a href="#position">Position in rows: right of the name, or the line below</a><span class="pick"></span>
+        <span class="why">Recommended right of the name: it's one less line per theory, the marks form a column you can scan, and the challenge dot sits beside them.</span></li>
+    </ol>
+  </div>
+</div>
+
+<section class="jig-section wide" id="today-sec">
+  <h2>Today</h2>
+  <p>06's mark: five 10 × 3 dashes on the key line under the name, with the challenge dot and the hover date. The dashes are short and low, so at a glance they read as a rule rather than a level.</p>
+  <div class="cf-small ob-scope ctl" data-align="c" id="today"></div>
+</section>
+
+<div id="encodings"></div>
+
+<section class="jig-section wide" id="position" data-decision="position" data-question="Position in rows: where does the mark sit?" data-default="a Right of the name">
+  <p class="lede">Both use the small pick (<b data-pos-enc></b>). Right of the name moves the mark to the first line and drops the second line; the challenge dot sits just before the mark, and the date leaves the row (it's in the peek). Below keeps today's key line, with the date on hover.</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="a Right of the name"><div class="jig-label"><b>a</b> Right of the name, on the first line</div><p class="jig-note">One line shorter per theory: 6 rows go from about 260 to about 210 tall. The name loses about 26px, which in a 296 column moves a few names onto a second line.</p>
+      <div class="cf-pos ob-scope ctl" data-align="c" data-pos="right" data-option-stage></div></div>
+    <div class="jig-option" data-option="b The line below"><div class="jig-label"><b>b</b> The line below, as today</div><p class="jig-note">The name gets the full width; the mark leads the key line, so marks align on the left edge of the text, not in a right-hand column.</p>
+      <div class="cf-pos ob-scope ctl" data-align="c" data-pos="below" data-option-stage></div></div>
+  </div>
+</section>
+
+</body>
+</html>
