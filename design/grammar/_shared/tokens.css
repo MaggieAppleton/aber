@@ -19,9 +19,22 @@
    Each sets: neutral hue/chroma and lightness steps, accent, type hues and their
    tile/glyph lightness+chroma (shared, so the six hues sit at one weight), status. */
 
+/* D. Linen, bright types (Maggie, 4 Nov: linen neutrals + bright types). Ink on linen's neutrals, ink, black primary and
+      teal-for-new/focus, with Clean light's bright type tiles and glyphs. The default for every page. */
+:root, [data-system="linenbright"] {
+  --n-h: 85; --n-c: 0.004;
+  --L-ground: 0.975; --L-sunk: 0.955; --L-surface: 0.998; --L-ink: 0.17; --L-ink2: 0.47; --L-ink3: 0.74;
+  --hl-a: 8%; --hl2-a: 11%; --sh-k: 0.85;
+  --acc-h: 182; --acc-c: 0.1; --acc-L: 0.6; --acc-L-text: 0.5;
+  --primary-default: ink;
+  --t-dump: 288; --t-signal: 245; --t-theme: 340; --t-theory: 70; --t-prototype: 122; --t-tripwire: 25;
+  --tt-L: 0.958; --tt-C: 0.048; --tg-L: 0.56; --tg-C: 0.16;
+  --st-neg: oklch(0.53 0.17 27); --st-neg-dot: oklch(0.61 0.18 27); --st-pos: oklch(0.5 0.1 145); --st-fell: oklch(0.54 0.11 65);
+}
+
 /* 1. Clean light (lead; Maggie leaning, 4 Nov): near-white, barely warm, crisp ink, fresh light type tints, jade primary.
-      Also the default for every page until a system is chosen. Neutrals almost disappear: sunk sits 0.017 below ground. */
-:root, [data-system="clean"] {
+      Neutrals almost disappear: sunk sits 0.017 below ground. */
+[data-system="clean"] {
   --n-h: 90; --n-c: 0.0015;
   --L-ground: 0.986; --L-sunk: 0.969; --L-surface: 1; --L-ink: 0.2; --L-ink2: 0.5; --L-ink3: 0.76;
   --hl-a: 7%; --hl2-a: 10%; --sh-k: 0.8;
@@ -109,7 +122,8 @@
   /* Primary follows the system unless a page scope sets data-primary */
   --primary: var(--accent); --primary-hover: var(--accent-hover); --on-primary: var(--on-accent);
 }
-[data-system="linen"] { --primary: var(--ink); --primary-hover: var(--ink-hover); --on-primary: var(--on-ink); }
+:root, [data-system="linen"], [data-system="linenbright"] { --primary: var(--ink); --primary-hover: var(--ink-hover); --on-primary: var(--on-ink); }
+[data-system="clean"], [data-system="studio"] { --primary: var(--accent); --primary-hover: var(--accent-hover); --on-primary: var(--on-accent); }
 [data-primary="accent"], [data-primary="accent"] [data-system] { --primary: var(--accent); --primary-hover: var(--accent-hover); --on-primary: var(--on-accent); }
 [data-primary="ink"], [data-primary="ink"] [data-system] { --primary: var(--ink); --primary-hover: var(--ink-hover); --on-primary: var(--on-ink); }
 

@@ -24,7 +24,7 @@
 
 <header class="jig-head">
   <h1>Grammar 00: Colour</h1>
-  <p>Three complete colour systems on the app's real layout. Each sets the neutrals, inks, accent, selection, six type hues and status colours. The dials (top right) shift neutral tone and type-colour strength on top of whichever system you're looking at.</p>
+  <p>Four complete colour systems on the app's real layout. Each sets the neutrals, inks, accent, selection, six type hues and status colours. The dials (top right) shift neutral tone and type-colour strength on top of whichever system you're looking at.</p>
 </header>
 
 <div class="decide">
@@ -38,20 +38,27 @@
   <div class="viewer-bar">
     <span class="viewer-label">Full size</span>
     <span class="seg-group" role="group" aria-label="System at full size">
-      <button type="button" value="clean" aria-pressed="true">A Clean light</button>
+      <button type="button" value="linenbright" aria-pressed="true">D Linen, bright types</button>
+      <button type="button" value="clean" aria-pressed="false">A Clean light</button>
       <button type="button" value="linen" aria-pressed="false">B Ink on linen</button>
       <button type="button" value="studio" aria-pressed="false">C Studio grey</button>
     </span>
   </div>
   <p class="stage-label">Stage: the app's current layout, unchanged. Only colour changes here.</p>
-  <div class="stg-host" id="viewer" data-stage='{"system":"clean"}'></div>
+  <div class="stg-host" id="viewer" data-stage='{"system":"linenbright"}'></div>
 </section>
 
-<section class="jig-section" id="systems" data-decision="system" data-question="Which colour system?" data-default="A clean light">
+<section class="jig-section" id="systems" data-decision="system" data-question="Which colour system?" data-default="D linen bright types">
   <div class="jig-compare systems">
+    <div class="jig-option" data-option="D linen bright types">
+      <div class="jig-label"><b>D</b> Linen, bright types</div>
+      <p class="jig-note"><b>Maggie, 4 Nov: linen neutrals + bright types.</b> Ink on linen's quiet off-white, near-black ink and black primary, with Clean light's bright type tints and glyphs. Teal only marks new and focus.</p>
+      <div class="stg-host" data-option-stage data-stage='{"system":"linenbright"}'></div>
+      <div class="strip" data-strip="linenbright"></div>
+    </div>
     <div class="jig-option" data-option="A clean light">
       <div class="jig-label"><b>A</b> Clean light</div>
-      <p class="jig-note"><b>Leaning (Maggie, 4 Nov).</b> Near-white and barely warm, crisp ink, fresh light type tints and a jade primary. The neutrals almost disappear; colour comes from glyphs, jade and status. Closest to Foglamp.</p>
+      <p class="jig-note">Near-white and barely warm, crisp ink, fresh light type tints and a jade primary. The neutrals almost disappear; colour comes from glyphs, jade and status. Closest to Foglamp.</p>
       <div class="stg-host" data-option-stage data-stage='{"system":"clean"}'></div>
       <div class="strip" data-strip="clean"></div>
     </div>
