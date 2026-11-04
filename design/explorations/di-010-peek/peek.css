@@ -269,10 +269,12 @@ textarea.pk-sig-note { width: calc(100% + var(--pk-space-4)); margin-left: calc(
 @media (max-width: 600px) { .pk-ib, .pk-btn { min-width: var(--pk-touch); height: var(--pk-touch); } .pk-peek-ctl, .pk-peek-head > [data-act="peek-back"] { margin-top: calc((var(--pk-lh) - var(--pk-touch)) / 2); } }
 .pkj-pad { padding: var(--pk-space-4); }
 .pkj-min-full { --jig-min: var(--pkj-min-full); }
-.pkj-opt { display: grid; gap: var(--pk-space-9); }
+.pkj-opt { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--pk-space-9); }
 .pkj-opt .pkj-rungs h3 { color: var(--pkj-ink); }
-.pkj-edge { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--pk-peek-w)), var(--pk-peek-w))); gap: var(--pk-space-8) var(--pk-space-7); align-items: start; }
-.pkj-edge > div { display: grid; gap: var(--pk-space-4); min-width: 0; }
+.pkj-edge { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--pk-peek-w)), 1fr)); gap: var(--pk-space-8) var(--pk-space-7); align-items: start; }
+.pkj-edge > div { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--pk-space-4); min-width: 0; max-width: var(--pk-peek-w); }
+/* The shell's floating dock only clears the content column at 1440 and wider; below that it joins the page flow so it never covers a peek, sheet or control. */
+@media (max-width: 1439px) { .jig-dock { position: static; width: max-content; margin: 0 var(--pk-space-9) var(--pk-space-9) auto; } }
 .pkj-before { margin: 0 0 var(--pk-space-9); display: grid; gap: var(--pk-space-4); max-width: var(--pkj-before-w); }
 .pkj-before img { width: 100%; border-radius: var(--pk-r-xl); box-shadow: var(--pkj-shadow); }
 .pkj-before figcaption { font-size: var(--pk-text); color: var(--pkj-ink); }
