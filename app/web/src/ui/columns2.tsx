@@ -6,7 +6,7 @@ import { VoicePlayback } from "./pill-study";
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { AnimatePresence, motion, LayoutGroup } from "motion/react";
 import { DUMPS, SIGNALS, THEMES, THEORIES, PROTOTYPES, theoriesIn, signal } from "./data";
-import { Icon, IconButton, DumpIcon, Mark, Pill, type IconName } from "./atoms";
+import { Icon, IconButton, DumpIcon, Mark, Pill, Tile, type IconName } from "./atoms";
 import { lineage, key, type Kind } from "./graph";
 import { DraftEdgeFor } from "./draft-edge";
 import { ObjectPane, SignalDetail, Claim, ThemeName, ProtoName, ProtoStatus, TheoryConf, type ObjKind, type PaneNav } from "./panes";
@@ -143,9 +143,9 @@ function ColumnList({ kind, icon, name, related, open, unfolded, fold, scrollOff
 }) {
   const items: { id: string; draft?: boolean; body: ReactNode; detail?: ReactNode }[] =
     kind === "dump" ? DUMPS.map(d => ({ id: d.id, body: <><span className="cd-line"><DumpIcon d={d} /><span className="cd-clip">{d.first}</span></span><span className="ap-muted ap-num cd-sub">{d.day === "Today" ? d.time : d.day}</span></>, detail: <DumpDetail id={d.id} onOpen={onOpen} onUnfold={onUnfold} /> }))
-    : kind === "signal" ? SIGNALS.map(s => ({ id: s.id, body: <><span className="cd-line">{s.day === "Today" && <Mark kind="fresh" />}<span>{s.gist}</span></span><span className="ap-muted cd-sub">{s.source}</span></>, detail: <SignalDetail s={s} onOpen={onOpen} onDump={id => onUnfold("dump", id)} /> }))
-    : kind === "theme" ? THEMES.map(t => ({ id: t.id, body: <span className="cd-line cd-spread"><span><ThemeName id={t.id} /></span>{theoriesIn(t.id).length === 0 ? <Mark kind="open" /> : t.fresh > 0 ? <Mark kind="fresh" /> : null}</span> }))
-    : kind === "theory" ? THEORIES.map(t => ({ id: t.id, draft: t.draft, body: <><span className="cd-claim"><Claim id={t.id} /></span><span className="cd-line">{!t.draft && <TheoryConf id={t.id} />}{t.challenge && <Mark kind="challenge" />}{t.pending > 0 && <Mark kind="pending" n={t.pending} />}</span></> }))
+    : kind === "signal" ? SIGNALS.map(s => ({ id: s.id, body: <><span className="cd-line"><span data-unseen={field(s,"seenAt")==null ? "" : undefined}>{s.gist}</span></span><span className="ap-muted cd-sub">{s.source}</span></>, detail: <SignalDetail s={s} onOpen={onOpen} onDump={id => onUnfold("dump", id)} /> }))
+    : kind === "theme" ? THEMES.map(t => ({ id: t.id, body: <span className="cd-line cd-spread"><span data-unseen={t.fresh > 0 ? "" : undefined}><ThemeName id={t.id} /></span><span className="ab-count">{theoriesIn(t.id).length || null}</span></span> }))
+    : kind === "theory" ? THEORIES.map(t => ({ id: t.id, draft: t.draft, body: <><span className="cd-claim"><Claim id={t.id} /></span><span className="cd-line">{!t.draft && <TheoryConf id={t.id} />}</span></> }))
     : PROTOTYPES.map(p => ({ id: p.id, body: <span className="cd-line"><ProtoStatus id={p.id} /><span><ProtoName id={p.id} /></span></span> }));
 
   // Selection changes emphasis, never order or the reader's place in a column.
@@ -205,8 +205,8 @@ function ColumnList({ kind, icon, name, related, open, unfolded, fold, scrollOff
   return (
     <motion.div className="cd-inner" initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 0.08, duration: 0.2 } }}>
       <header className="cd-head">
-        <Icon name={icon} size={14} /><span>{name}</span>
-        <span className="cd-head-fold"><IconButton icon={fold === "rails" ? "chevronLeft" : "x"} label={`Fold ${name}`} onClick={onFold} /></span>
+        <Tile kind={kind} /><span>{name}</span>
+        <span className="cd-head-fold"><IconButton icon="sidebar" label={`Fold ${name}`} onClick={onFold} /></span>
       </header>
       <div className="cd-list-wrap">
       <div className="cd-list ap-scroll" ref={listRef} onScroll={event => { scrollOffsets.current[kind] = event.currentTarget.scrollTop; }}>
@@ -269,10 +269,10 @@ function DumpDetail({id,onOpen,onUnfold}:{id:string;onOpen:(k:Kind,id:string)=>v
     {json<any[]>(dump.transcripts,[]).map((t,i)=><p className="cd-transcript" key={i}>{t.text}</p>)}
     {atts.filter(a=>a.kind!=="audio").map((a,i)=>a.kind==="image"?<img key={i} src={a.url} alt={a.title??"Dump attachment"} style={{width:"100%",borderRadius:SURFACE_RADII.media}}/>:<a key={i} className="cd-link" href={a.url} target="_blank" rel="noreferrer"><Icon name="link" size={12}/>{a.title??a.url}</a>)}
     {d.produced.map(id=>{
-      const signal=SIGNALS.find(s=>s.id===id);if(signal)return <button key={id} className="cd-link" onClick={()=>onUnfold("signal",id)}><Icon name="signal" size={12}/>{signal.gist}</button>;
-      const theory=THEORIES.find(t=>t.id===id);if(theory)return <button key={id} className="cd-link" data-suggested={theory.draft?"":undefined} onClick={()=>onOpen("theory",id)}><Icon name="theory" size={12}/><Claim id={id}/></button>;
-      const theme=THEMES.find(t=>t.id===id);if(theme)return <button key={id} className="cd-link" onClick={()=>onOpen("theme",id)}><Icon name="theme" size={12}/><ThemeName id={id}/></button>;
-      const prototype=PROTOTYPES.find(t=>t.id===id);return prototype?<button key={id} className="cd-link" onClick={()=>onOpen("prototype",id)}><Icon name="prototype" size={12}/><ProtoName id={id}/></button>:null;
+      const signal=SIGNALS.find(s=>s.id===id);if(signal)return <button key={id} className="cd-link" onClick={()=>onUnfold("signal",id)}><Tile kind="signal"/>{signal.gist}</button>;
+      const theory=THEORIES.find(t=>t.id===id);if(theory)return <button key={id} className="cd-link" data-suggested={theory.draft?"":undefined} onClick={()=>onOpen("theory",id)}><Tile kind="theory"/><Claim id={id}/></button>;
+      const theme=THEMES.find(t=>t.id===id);if(theme)return <button key={id} className="cd-link" onClick={()=>onOpen("theme",id)}><Tile kind="theme"/><ThemeName id={id}/></button>;
+      const prototype=PROTOTYPES.find(t=>t.id===id);return prototype?<button key={id} className="cd-link" onClick={()=>onOpen("prototype",id)}><Tile kind="prototype"/><ProtoName id={id}/></button>:null;
     })}
   </div>;
 }

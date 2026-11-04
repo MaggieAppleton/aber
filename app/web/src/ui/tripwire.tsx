@@ -1,7 +1,7 @@
 import { TooltipButton } from "./tooltip";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { Icon } from "./atoms";
+import { Decide, Icon } from "./atoms";
 import { Editable } from "./editable";
 import { SignalCard } from "./signal-card";
 import "./tripwire.css";
@@ -43,8 +43,7 @@ export function HitRow({ hit, decision, onDecide, conf, compact }: { hit: Hit; d
         {decision
           ? <TooltipButton className="pn-step" aria-label="Undo" tooltip="Undo" onClick={() => onDecide(undefined)}><Icon name="undo" size={12} /></TooltipButton>
           : <>
-              <button className="ap-btn tw-accept" onClick={() => onDecide("accepted")} title="Accept and lower confidence">Accept</button>
-              <TooltipButton className="pn-step tw-dismiss" aria-label="Dismiss" tooltip="Dismiss" onClick={() => onDecide("dismissed")}><Icon name="x" size={12} /></TooltipButton>
+              <Decide onDismiss={() => onDecide("dismissed")} onAccept={() => onDecide("accepted")} acceptTitle="Accept and lower confidence" />
             </>}
       </span>}>
         <span className="tw-hit-why">{decision ? (decision === "accepted" ? <>Accepted{hit.loweredTo!=null?`, lowered to ${hit.loweredTo}`:""}</> : <>Dismissed</>) : <>{hit.why}</>}</span>
@@ -110,7 +109,7 @@ export function Tripwire(p: TripwireProps) {
           {p.state === "watching" && <span className="tw-tc-after"><Watch /></span>}
           {tripped && (
             <TooltipButton className="tw-tc-flag" aria-expanded={open} onClick={() => setOpen(o => !o)} tooltip={live.length === 1 ? "1 signal matches" : `${live.length} signals match`} aria-label={live.length === 1 ? "1 signal matches" : `${live.length} signals match`}>
-              <span className="ap-ghost-badge">{live.length}</span>
+              <span className="ab-count">{live.length}</span>
             </TooltipButton>
           )}
         </span>

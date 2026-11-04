@@ -25,6 +25,7 @@ import { DialogHost, findObjects, createObject } from "../app/dialogs";
 import "../app/production.css";
 import "../app/hit-areas.css";
 import "./surface-patterns.css";
+import "./grammar.css";
 
 export const APP_W = 1360, APP_H = 820;
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -188,9 +189,9 @@ export function AppShell({ initial = "current" }: { initial?: View }) {
       if (inPane && live.current.open && ((e.metaKey && (e.key === "[" || e.key === "]")) || (e.altKey && !mod && (e.key === "ArrowLeft" || e.key === "ArrowRight") && !isTyping(e.target)))) {
         e.preventDefault(); live.current.step(e.key === "[" || e.key === "ArrowLeft" ? 1 : -1); return;
       }
-      if((inPane||stack.current.at(-1)==="pane")&&!live.current.s.picking&&live.current.s.rec==null&&!mod&&!e.altKey&&!e.shiftKey&&!isTyping(e.target)&&live.current.open&&["a","x"].includes(e.key.toLowerCase())){
+      if((inPane||stack.current.at(-1)==="pane")&&!live.current.s.picking&&live.current.s.rec==null&&!mod&&!e.altKey&&!e.shiftKey&&!isTyping(e.target)&&live.current.open&&["a"].includes(e.key.toLowerCase())){
         const object=live.current.open,row=rowFor(object.kind,object.id);
-        if(row&&(row.status==="draft"||row.draft)){e.preventDefault();act(e.key.toLowerCase()==="a"?"acceptDraft":"discardDraft",{kind:object.kind,id:object.id});return;}
+        if(row&&(row.status==="draft"||row.draft)){e.preventDefault();act("acceptDraft",{kind:object.kind,id:object.id});return;}
       }
       if (e.key !== "Escape" || e.defaultPrevented) return;
       const { s: st, open: o, unfolded: u } = live.current;

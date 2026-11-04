@@ -37,7 +37,7 @@ function Log({ s }: { s: Stance[] }) {
         return (
           <span key={st.id} className="cs-row">
             <span className="ap-muted">{st.short}</span>
-            <span className="cs-d" data-tone={tone(s, i)}>{d === 0 ? "Set" : <><Icon name={d > 0 ? "arrowUp" : "arrowDown"} size={12} />{st.level}</>}</span>
+            <span className="cs-d" data-tone={tone(s, i)}>{d === 0 ? "Set" : <><Icon name={d > 0 ? "trendUp" : "trendDown"} size={14} />{st.level}</>}</span>
             <span>{st.note || "No note"}</span>
           </span>
         );

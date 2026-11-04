@@ -342,7 +342,7 @@ export function FieldPlot({ scale, width, height = H, bottom = BOTTOM, variant, 
               onPointerEnter={() => dwell.enter(t.id)} onPointerLeave={() => dwell.leave(t.id)} onFocus={() => dwell.enter(t.id)} onBlur={() => dwell.leave(t.id)}
               onPointerDown={e => onDown(e, t)}
               onClick={() => { if (justDragged.current) { justDragged.current = false; return; } onOpen("theory", t.id); }}>
-              <i className="t2a-dot" data-challenge={t.challenge ? "" : undefined} />
+              <i className="t2a-dot" />
               {m !== "dots" && <span className="t2a-label">{t.claim}</span>}
             </motion.button>
           );

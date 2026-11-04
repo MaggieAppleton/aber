@@ -84,8 +84,8 @@ const stanceText = (tk: Tick) => !tk.theory ? "Not evidence for a theory yet"
   : `${tk.suggested ? "Suggested: " : ""}${tk.stance === "supports" ? "Supports" : "Undermines"} \u201c${theory(tk.theory).claim}\u201d`;
 /** A tick's state: new, suggested (not yet yours), part of the signal under the pointer, or the signal open in the pane. */
 const tickMarks = (tk: Tick, hot: Tick | undefined, selSig: string | undefined) => ({
-  "data-challenge": world.suggestions.some(s=>s.kind==="challenge"&&s.status==="pending"&&currentSuggestion(s)&&field(s,"targetId")===tk.theory&&((json<any>(s.payload??s.payload_json,{}).signalId??json<any>(s.payload??s.payload_json,{}).signal_id)===tk.sig.id))?"":undefined,
-  "data-fresh": tk.fresh ? "" : undefined, "data-sug": tk.suggested ? "" : undefined,
+  
+  "data-sug": tk.suggested ? "" : undefined,
   "data-hot": hot?.sig.id === tk.sig.id ? "" : undefined, "data-sel": selSig === tk.sig.id ? "" : undefined,
 });
 
@@ -95,7 +95,7 @@ function SignalTip({ tk, at, vw }: { tk: Tick; at: { x: number; y: number; below
   return (
     <motion.div className="a2-tip" role="tooltip" data-below={at.below ? "" : undefined} style={{ left: x, top: at.y, ["--tx" as string]: `${at.x - x}px` }}
       initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, transition: { duration: 0.1 } }} transition={{ duration: 0.16, ease: "easeOut" }}>
-      <span className="a2-tip-gist">{tk.fresh && <Mark kind="fresh" />}{tk.sig.gist}</span>
+      <span className="a2-tip-gist"><span data-unseen={tk.fresh ? "" : undefined}>{tk.sig.gist}</span></span>
       <span className="a2-tip-how">{stanceText(tk)}</span>
     </motion.div>
   );
@@ -284,8 +284,8 @@ function ZoomControl({ cam }: { cam: Camera }) {
   );
   return (
     <div className="a2-zoom" data-cam-ignore="" onKeyDown={e => e.stopPropagation()}>
-      {btn("Zoom in (+)", () => cam.zoomBy(1.5), <Icon name="plus" />, cam.atMax)}
-      {btn("Zoom out (\u2212)", () => cam.zoomBy(1 / 1.5), <Icon name="minus" />, cam.atMin)}
+      {btn("Zoom in (+)", () => cam.zoomBy(1.5), <Icon name="zoomIn" />, cam.atMax)}
+      {btn("Zoom out (\u2212)", () => cam.zoomBy(1 / 1.5), <Icon name="zoomOut" />, cam.atMin)}
       {btn("Fit map (0)", cam.fitAll, <CornersIn size={16} aria-hidden />)}
     </div>
   );

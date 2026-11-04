@@ -117,11 +117,11 @@ const Spinner = ({ size = 14 }: { size?: number }) => (
 
 /* ── Chips ── */
 export function LinkChip({ a, onRemove, big }: { a: Att; onRemove?: () => void; big?: boolean }) {
-  if(a.object)return <span className="ps-link"><I n={a.object.kind} size={14}/><span className="ps-link-title">{a.object.label}</span>{onRemove&&<TooltipButton className="ps-chip-x" aria-label={`Remove ${a.object.label}`} onClick={onRemove}><I n="x" size={12}/></TooltipButton>}</span>;
+  if(a.object)return <span className="ps-link"><I n={a.object.kind} size={14}/><span className="ps-link-title">{a.object.label}</span>{onRemove&&<TooltipButton className="ps-chip-x" aria-label={`Remove ${a.object.label}`} onClick={onRemove}><I n="minus" size={14}/></TooltipButton>}</span>;
   if (a.kind === "image") return (
     <span className="ps-thumb" data-big={big ? "" : undefined}>
       <span className="ps-thumb-img" title={a.host} aria-hidden>{a.url?<img src={a.url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<I n="image"/>}</span>
-      {onRemove && <TooltipButton type="button" className="ps-thumb-x" aria-label="Remove" tooltip="Remove" onClick={onRemove}><I n="x" size={10} /></TooltipButton>}
+      {onRemove && <TooltipButton type="button" className="ps-thumb-x" aria-label="Remove" tooltip="Remove" onClick={onRemove}><I n="minus" size={14} /></TooltipButton>}
     </span>
   );
   return (
@@ -134,7 +134,7 @@ export function LinkChip({ a, onRemove, big }: { a: Att; onRemove?: () => void; 
             : <motion.span key="h" className="ps-link-host" exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }}>{a.host}<i className="ps-shimmer" /></motion.span>}
         </AnimatePresence>
       </span>
-      {onRemove && <TooltipButton type="button" className="ps-chip-x" aria-label="Remove link" tooltip="Remove link" onClick={onRemove}><I n="x" size={12} /></TooltipButton>}
+      {onRemove && <TooltipButton type="button" className="ps-chip-x" aria-label="Remove link" tooltip="Remove link" onClick={onRemove}><I n="minus" size={14} /></TooltipButton>}
     </span>
   );
 }
@@ -148,7 +148,7 @@ export function CtxChip({ c, onRemove, onHot }: { c: Ctx; onRemove?: () => void;
       onPointerEnter={() => onHot?.(c.region)} onPointerLeave={() => onHot?.(null)}>
       <I n={c.kind} size={13} />
       <span className="ps-ctx-label" title={`The agent sees ${c.label}`}>{c.label}</span>
-      {onRemove && <TooltipButton type="button" className="ps-chip-x" aria-label={`Stop sharing ${c.label}`} tooltip="Remove" onClick={onRemove}><I n="x" size={12} /></TooltipButton>}
+      {onRemove && <TooltipButton type="button" className="ps-chip-x" aria-label={`Stop sharing ${c.label}`} tooltip="Remove" onClick={onRemove}><I n="minus" size={14} /></TooltipButton>}
     </motion.span>
   );
 }
@@ -294,8 +294,8 @@ export function FiledToken({ f }: { f: Filed }) {
 /** A draft or suggestion: dashed means not yet yours. Actions straddle the card's top edge; accepting solidifies it in place. */
 export function DraftView({ d, onDecide, target }: { d: Draft; onDecide: (s: "accepted" | "discarded") => void; target?: boolean }) {
   const pending = d.state === "pending";
-  const accept = <IconBtn n="check" label="Accept (A)" onClick={() => onDecide("accepted")} target={target ? "accept" : undefined} />;
-  const discard = <IconBtn n="x" label="Discard (X)" onClick={() => onDecide("discarded")} />;
+  const accept = <button type="button" className="ab-btn primary sm" title="Accept (A)" data-target={target ? "accept" : undefined} onClick={() => onDecide("accepted")}>Accept</button>;
+  const discard = <button type="button" className="ab-btn secondary sm" onClick={() => onDecide("discarded")}>Discard</button>;
   const meta = (
     <span className="ps-draft-meta">
       <span className="ps-draft-joins" title={d.kind === "theory" ? `Would join ${d.joins}` : `Revises ${d.joins}`}><I n={d.kind === "theory" ? "theme" : "edit"} size={12} />{d.joins}</span>
@@ -315,7 +315,7 @@ export function DraftView({ d, onDecide, target }: { d: Draft; onDecide: (s: "ac
             <span className="ps-draft-claim">{d.claim}</span>
             {meta}
             <AnimatePresence initial={false}>
-              {pending && <motion.span className="ps-draft-edge" initial={false} exit={{ opacity: 0, scale: 0.6, transition: { duration: 0.15 } }}>{accept}{discard}</motion.span>}
+              {pending && <motion.span className="ps-draft-edge ab-decide" initial={false} exit={{ opacity: 0, scale: 0.6, transition: { duration: 0.15 } }}>{discard}{accept}</motion.span>}
             </AnimatePresence>
           </motion.div>
         </motion.div>
@@ -378,7 +378,7 @@ export function SendBtn({ text, ready, onSend, size = 32 }: { text: string; read
   return (
     <TooltipButton type="button" className="ps-send" style={{ width: size, height: size }} data-ready={ready ? "" : undefined} data-ask={ask ? "" : undefined} disabled={!ready}
       aria-label={ask ? "Ask (Return)" : "Dump (Return)"} tooltip={ask ? "Ask (Return)" : "Dump (Return)"} onClick={onSend} data-target="send">
-      <SwapIcon k={ask ? "ask" : "send"}><I n={ask ? "questionMark" : "send"} weight="bold" /></SwapIcon>
+      <SwapIcon k={ask ? "ask" : "send"}><I n={ask ? "questionMark" : "send"} /></SwapIcon>
     </TooltipButton>
   );
 }
@@ -387,7 +387,7 @@ export function Recorder({ s, api, onStop, time }: { s: DumpState; api: DumpApi;
   const now = useNow(s.rec != null && !time);
   return (
     <div className="ps-rec">
-      <IconBtn n="x" label="Discard recording" onClick={api.cancelRec} />
+      <IconBtn n="trash" label="Discard recording" onClick={api.cancelRec} />
       <LiveWave bars={40} height={20} />
       <span className="ps-rec-time ap-num">{time ?? mmss(s.rec ? (now - s.rec) / 1000 : 0)}</span>
       <TooltipButton type="button" className="ps-stop" aria-label="Stop and dump" tooltip="Stop and dump" onClick={onStop}><StopGlyph /></TooltipButton>
@@ -839,8 +839,8 @@ function PillRows({ s, api, recClosed, restWidth, onWidth, hitRef, onHover, onPr
         {mode === "rec" && (
           <div className="ps-pill ps-pill-rec">
             {/* The take: a jade pulsing dot (it turns into discard on approach), the waveform, the time and, in the mic slot, a round ink stop. */}
-            <TooltipButton type="button" className="ps-ib ps-recdot-btn" style={{ width: 28, height: 28 }} aria-label="Discard (Esc)" tooltip="Discard (Esc)" onClick={api.cancelRec}>
-              <span className="ps-recdot" aria-hidden /><span className="ps-recdot-x" aria-hidden><I n="x" size={14} /></span>
+            <TooltipButton type="button" className="ps-ib ps-recdot-btn" style={{ width: 28, height: 28 }} aria-label="Discard recording (Esc)" tooltip="Discard recording (Esc)" onClick={api.cancelRec}>
+              <span className="ps-recdot" aria-hidden /><span className="ps-recdot-x" aria-hidden><I n="trash" size={14} /></span>
             </TooltipButton>
             <LiveWave bars={30} height={18} />
             <span className="ps-rec-time ap-num">{time ?? mmss(s.rec ? (now - s.rec) / 1000 : 0)}</span>
@@ -884,7 +884,7 @@ function VoiceSheet({ s, api, time }: { s: DumpState; api: DumpApi; time?: strin
       </p>
       <LiveWave bars={46} height={36} />
       <div className="ps-vsheet-row">
-        <IconBtn n="x" label="Discard" onClick={api.cancelRec} size={44} />
+        <IconBtn n="trash" label="Discard recording" onClick={api.cancelRec} size={44} />
         <span className="ps-rec-time ap-num">{time ?? mmss(secs)}</span>
         <TooltipButton type="button" className="ps-stop ps-stop-big" aria-label="Stop and dump" tooltip="Stop and dump" onClick={api.stopRecInto} data-target="stop"><StopGlyph size={16} /></TooltipButton>
       </div>

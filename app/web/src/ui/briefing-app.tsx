@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Accordion } from "@base-ui/react/accordion";
 import { DUMPS, THEMES, THEORIES, SIGNALS } from "./data";
-import { Balance, Icon, IconButton, Mark } from "./atoms";
+import { Balance, Decide, Icon, IconButton, Mark, Tile, type TileKind } from "./atoms";
 import { SignalRow, ThemeName, type ObjKind, type OnOpen } from "./panes";
 import { field, json, markRead, mutate, useWorld, world, type Row } from "../data/live";
 import "./briefing-app.css";
@@ -46,13 +46,12 @@ export function BriefingView({host,phone}:{host:BriefingHost;phone?:boolean}) {
   useEffect(()=>{
     const key=(e:KeyboardEvent)=>{
       if(e.metaKey||e.ctrlKey||e.altKey||e.defaultPrevented||typing(e.target)||(e.target instanceof Element&&e.target.closest(".as-pane,.ps-surface,.ab-dialog,.ab-proposal-form")))return;
-      if(live.current.paneOpen&&["a","x","u"].includes(e.key.toLowerCase()))return;
+      if(live.current.paneOpen&&["a","u"].includes(e.key.toLowerCase()))return;
       const {items,current,open,decide}=live.current;
       const index=Math.max(0,items.findIndex(x=>x.id===current?.id));
       if(["j","k","ArrowDown","ArrowUp"].includes(e.key)){e.preventDefault();const step=e.key==="j"||e.key==="ArrowDown"?1:-1;const item=items[Math.max(0,Math.min(items.length-1,index+step))];if(item){setCursor(item.id);root.current?.querySelector(`[data-bid="${CSS.escape(item.id)}"]`)?.scrollIntoView({block:"nearest",behavior:"smooth"});}}
       if(!current)return;
       if(e.key.toLowerCase()==="a"){e.preventDefault();void decide(current,"accepted");}
-      if(e.key.toLowerCase()==="x"){e.preventDefault();void decide(current,"discarded");}
       if(e.key.toLowerCase()==="u"&&current.kind==="near-dup"){e.preventDefault();void decide(current,"discarded");}
       if(e.key.toLowerCase()==="o"||e.key==="Enter"&&!(e.target instanceof HTMLButtonElement)){e.preventDefault();open(current);}
     };
@@ -87,10 +86,10 @@ function BriefingItem({item,host,onOpen,onDecide}:{item:Item;host:BriefingHost;o
   let title=item.row.claim??item.row.name??"";
   if(item.kind!=="draft"&&item.kind!=="signals") title=THEORIES.find(t=>t.id===item.target)?.claim??THEMES.find(t=>t.id===item.target)?.name??signal?.gist??"Merged signals";
   if(item.kind==="merge")title=`Merge ${title} with ${THEMES.find(t=>t.id===(payload.otherId??payload.other_id))?.name??THEORIES.find(t=>t.id===(payload.otherId??payload.other_id))?.claim??""}`;
-  const actions=<span className="br-acts">{item.kind==="near-dup"?<><button className="ap-btn" title="Undo merge (U)" onClick={()=>onDecide("discarded")}><Icon name="split" size={12}/>Undo merge</button><IconButton icon="check" label="Keep merge (A)" onClick={()=>onDecide("accepted")}/></>:<><button className="ap-btn" onClick={()=>onDecide("accepted")}>Accept</button><IconButton icon="x" label={item.kind==="challenge"?"Dismiss (X)":"Discard (X)"} onClick={()=>onDecide("discarded")}/></>}</span>;
+  const actions=<span className="br-acts">{item.kind==="near-dup"?<Decide dismiss="Undo merge" accept="Keep merge" acceptTitle="Keep merge (A)" onDismiss={()=>onDecide("discarded")} onAccept={()=>onDecide("accepted")}/>:<Decide dismiss={item.kind==="draft"?"Discard":"Dismiss"} acceptTitle="Accept (A)" onDismiss={()=>onDecide("discarded")} onAccept={()=>onDecide("accepted")}/>}</span>;
   if(item.kind==="signals") return <NewSignals item={item} host={host} onOpen={onOpen} onSeen={()=>onDecide("accepted")}/>;
   const glyph=item.kind==="near-dup"||item.kind==="merge"?"merge":item.kind==="revision"?"edit":item.targetKind;
-  return <div className="br-row" data-draft={item.kind==="draft"?"":undefined}><span className="br-glyph"><Icon name={glyph} size={14}/>{review&&!reviewing&&<span className="br-rephrase"><IconButton icon="edit" label="Review suggestion" onClick={()=>setReviewing(true)}/></span>}</span><div className="br-main"><div className="br-title"><button className="br-open" onClick={onOpen}>{item.kind==="revision"?<s className="br-was">{title}</s>:title}{item.kind==="challenge"&&<Mark kind="challenge"/>}</button></div><div className="br-detail">
+  return <div className="br-row" data-draft={item.kind==="draft"?"":undefined}><span className="br-glyph">{glyph==="merge"||glyph==="edit"?<Icon name={glyph} size={14}/>:<Tile kind={glyph as TileKind} draft={item.kind==="draft"}/>}{review&&!reviewing&&<span className="br-rephrase"><IconButton icon="edit" label="Review suggestion" onClick={()=>setReviewing(true)}/></span>}</span><div className="br-main"><div className="br-title"><button className="br-open" onClick={onOpen}>{item.kind==="revision"?<s className="br-was">{title}</s>:title}{item.kind==="challenge"&&<Mark kind="challenge"/>}</button></div><div className="br-detail">
     {reviewing?<><SuggestionReview suggestion={item.row}/><button className="br-link" onClick={()=>setReviewing(false)}>Close review</button></>:<>{signal&&<SignalCard gist={signal.gist} source={signal.source} stance={payload.stance==="supports"?"supports":"undermines"}/>}
     {(payload.claim||payload.bodyInsert||payload.body_insert)&&<span className="br-ghost">{payload.claim??payload.bodyInsert??payload.body_insert}</span>}
     {item.row.reasoning&&!review&&<span className="br-why">{item.row.reasoning}</span>}
@@ -103,10 +102,10 @@ function NewSignals({item,host,onOpen,onSeen}:{item:Item;host:BriefingHost;onOpe
   const [expanded,setExpanded]=useState(false);
   const [signalOpen,setSignalOpen]=useState<string>();
   return <Accordion.Root className="br-new" value={expanded?[item.id]:[]} onValueChange={value=>setExpanded(value.length>0)}><Accordion.Item className="br-row" value={item.id}>
-    <span className="br-glyph"><Icon name="theme" size={14}/></span>
-    <div className="br-main"><div className="br-title"><button className="br-open" onClick={onOpen}>{item.row.name}<Mark kind="fresh"/></button></div>
+    <span className="br-glyph"><Tile kind="theme"/></span>
+    <div className="br-main"><div className="br-title"><button className="br-open" onClick={onOpen}><span data-unseen="">{item.row.name}</span></button></div>
       <Accordion.Panel className="ab-accordion-panel"><div className="br-siglist">
-        {item.row.signals.map((s:any)=>signalOpen===s.id?<SignalRow key={s.id} s={s} open onToggle={()=>setSignalOpen(undefined)} onOpen={host.onOpen}/>:<button key={s.id} className="br-siglist-row br-siglist-button" onClick={()=>{setSignalOpen(s.id);markRead("signal",s.id);}}><Icon name="signal" size={12}/><span>{s.gist} <span className="ap-muted">{s.source}</span></span></button>)}
+        {item.row.signals.map((s:any)=>signalOpen===s.id?<SignalRow key={s.id} s={s} open onToggle={()=>setSignalOpen(undefined)} onOpen={host.onOpen}/>:<button key={s.id} className="br-siglist-row br-siglist-button" onClick={()=>{setSignalOpen(s.id);markRead("signal",s.id);}}><Tile kind="signal"/><span>{s.gist} <span className="ap-muted">{s.source}</span></span></button>)}
       </div></Accordion.Panel>
     </div>
     <span className="br-acts"><Accordion.Header render={<span/>} className="br-count-head"><Accordion.Trigger className="br-count ap-num" title={expanded?"Fold":"Show the new signals"}>{item.row.signals.length} new<span className="br-caret" data-open={expanded?"":undefined}><Icon name="chevron" size={12}/></span></Accordion.Trigger></Accordion.Header><IconButton icon="check" label="Seen (A)" onClick={onSeen}/></span>

@@ -34,27 +34,15 @@
 .ap .cd-item[data-draft]:has(> [data-edge-card]) { outline-color: transparent; }
 .ap .cd-item[data-draft] > .cd-item-btn { padding-right: var(--size-px-30); }
 
-.ab-edge-acts { display: contents; }
-.ab-mini {
-  position: absolute; right: var(--size-px-6); z-index: 2; display: inline-grid; place-items: center; width: var(--size-px-24); height: var(--size-px-24);
-  padding: 0; border: 0; border-radius: 999px; background: var(--ap-surface, #fff); color: var(--ap-ink-2, var(--ab-ink-2)); cursor: pointer;
-  box-shadow: 0 0 0 0.5px rgb(var(--ab-shc) / 9%), 0 1px 2px rgb(var(--ab-shc) / 8%);
-  opacity: 0; pointer-events: none;
-  transition: opacity 160ms var(--ab-ease), transform 160ms var(--ab-ease), color 90ms var(--ab-ease);
-}
-.ab-mini[data-edge="no"] { top: var(--size-px-6); transform: translateY(-2px); }
-.ab-mini[data-edge="yes"] { bottom: var(--size-px-6); transform: translateY(2px); }
-:is(.ab-edge-host, .cd-item):is(:hover, :focus-within) .ab-mini { opacity: 1; transform: none; pointer-events: auto; }
-.ab-mini:hover { color: var(--ap-ink, var(--ab-ink)); }   /* no red: discarding a draft is not a challenge */
-.ab-mini:active { transform: scale(var(--ab-press)); }
-.ab-mini:focus-visible { outline: var(--size-px-2) solid var(--ab-focus); outline-offset: var(--size-px-2); }
+/* DI-009: a draft card's decision is Discard | Accept, labelled, at its bottom right; always visible (a decision waits, 08 rule 7). */
+.ab-edge-acts { position: absolute; right: var(--card-inline); bottom: var(--card-block); z-index: 2; }
 
 /* Accepting solidifies in place; discarding slides out to the right. */
 .ab-edge-host[data-settling] > .ap-card, .ap .cd-item[data-settling] { animation: ab-solidify var(--ab-spring-dur) var(--ab-spring); }
 @keyframes ab-solidify { 0% { transform: scale(0.97); } 60% { transform: scale(1.012); } 100% { transform: none; } }
 .ab-edge-host[data-leaving] > .ap-card, .ap .cd-item[data-leaving] { opacity: 0; transform: translateX(16px) scale(0.98); pointer-events: none;
   transition: opacity 160ms var(--ab-ease), transform 160ms var(--ab-ease); }
-.ab-edge-host[data-leaving] .ab-mini { opacity: 0; }
+.ab-edge-host[data-leaving] .ab-edge-acts { opacity: 0; }
 
 /* ── 2. Tripwire sentence states ──
    Empty: placeholder and a grey signpost. Watching: a grey dot trailing the sentence by 10px, breathing slowly.
@@ -168,7 +156,6 @@
 @media (prefers-reduced-motion: reduce) {
   .ab-edge-host[data-settling] > .ap-card, .ap .cd-item[data-settling], .ap .pn-conf-marks i[data-pop] { animation: none; }
   .ab-edge-host[data-leaving] > .ap-card, .ap .cd-item[data-leaving] { transform: none; }
-  .ab-mini, .ab-mini[data-edge] { transform: none; }
   .ap .tw-watch, .ps-recdot { animation: none; }
   .ab-tooltip { transition: none; }
   .ab-tooltip[data-starting-style], .ab-tooltip[data-ending-style] { transform: none; }
@@ -176,3 +163,4 @@
 
 /* A leading dot centres on the first line of text, even when the text wraps. */
 :is(.pn-line, .col-row, .cd-line, .brf-row) > .ap-mark:first-child { align-self: flex-start; margin-top: calc((1lh - 7px) / 2); }
+.ab-edge-host[data-draft] > .ap-card, .ap .cd-item:has(> .ab-edge-acts) { padding-bottom: calc(var(--control-sm) + var(--card-block) * 2); }

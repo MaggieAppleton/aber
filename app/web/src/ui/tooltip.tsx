@@ -4,7 +4,7 @@ import "./tooltip.css";
 
 // The shadcn Base UI pattern, using Aber's existing tokens and native controls.
 // Warm-up: about 450ms the first time, then instant for any tooltip opened within 400ms of the last one closing.
-export function TooltipProvider({ delay = 450, timeout = 400, ...props }: TooltipPrimitive.Provider.Props) {
+export function TooltipProvider({ delay = 500, timeout = 400, ...props }: TooltipPrimitive.Provider.Props) {
   return <TooltipPrimitive.Provider delay={delay} closeDelay={0} timeout={timeout} {...props} />;
 }
 
@@ -33,7 +33,7 @@ export function Tooltip({ onOpenChange, ...props }: TooltipPrimitive.Root.Props)
 export const TooltipTrigger = TooltipPrimitive.Trigger;
 
 type ContentProps = TooltipPrimitive.Popup.Props & Pick<TooltipPrimitive.Positioner.Props, "side" | "sideOffset" | "align" | "alignOffset">;
-export function TooltipContent({ children, side = "top", sideOffset = 6, align = "center", alignOffset = 0, ...props }: ContentProps) {
+export function TooltipContent({ children, side = "bottom", sideOffset = 6, align = "center", alignOffset = 0, ...props }: ContentProps) {
   return <TooltipPrimitive.Portal>
     <TooltipPrimitive.Positioner className="ab-tooltip-positioner" side={side} sideOffset={sideOffset} align={align} alignOffset={alignOffset}>
       <TooltipPrimitive.Popup className="ab-tooltip" role="tooltip" {...props}>

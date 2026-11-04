@@ -304,7 +304,7 @@
 .ps-draft-joins { display: inline-flex; align-items: center; gap: var(--size-px-4); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ps-draft-joins svg { flex-shrink: 0; }
 .ps-draft-ev { color: var(--ap-ink-2); }
-.ps-draft-edge { position: absolute; top: var(--size-px-neg-10); right: var(--size-px-8); display: inline-flex; gap: var(--size-px-2); padding: var(--size-px-2); border-radius: var(--size-px-10); background: var(--ap-surface); box-shadow: 0 0 0 var(--size-px-0-5) var(--color-gray-0-a-12), 0 var(--size-px-2) var(--size-px-6) var(--color-gray-0-a-10); }
+.ps-draft-edge { display: flex; justify-content: flex-end; gap: var(--gap-item); margin-top: var(--gap-item); }   /* DI-009: Discard | Accept, labelled, at the bottom right */
 .ps-draft-edge .ps-ib { width: var(--size-px-26) !important; height: var(--size-px-26) !important; border-radius: var(--size-px-8); }
 .ps-draft[data-state="accepted"] .ps-draft-meta { color: var(--ap-ink-2); }
 

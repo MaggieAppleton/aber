@@ -1,0 +1,52 @@
+/* Aber grammar in the app (design/grammar/RULES.md 00–06). Loaded after every other stylesheet, so these recipes win over
+   the older per-view styles. Values come only from the grammar tokens in design-tokens.css. */
+
+/* ── 03 Icons: an object glyph on its pale type tile ── */
+.ab-tile { flex: none; display: inline-grid; place-items: center; border-radius: var(--r-xs); background: var(--type-tile); color: var(--type-glyph); }
+.ab-tile[data-size="title"] { border-radius: var(--r-sm); }
+.ab-tile[data-draft] { background: var(--draft-fill); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
+.ab-tile svg { display: block; }
+
+/* ── 06: unseen activity is unread weight on the name, and no other mark ── */
+[data-unseen] { font-weight: var(--w-strong) !important; color: var(--ink) !important; }
+
+/* ── 05: Dismiss (or Discard) left of Accept; the one place two text buttons sit together ── */
+.ab-decide { display: inline-flex; align-items: center; gap: var(--gap-item); flex: none; }
+
+/* ── 05 Linked chip: 24 high, its tile flush in the left corner, 12/500 ink 2, surface + hairline ── */
+.ap .pn-chip { height: var(--chip-h); gap: var(--gap-icon); padding: 0 var(--inset-chip); border-radius: var(--r-control); background: var(--surface); box-shadow: var(--ring);
+  font: var(--w-medium) var(--fs-label)/var(--lh-ui) var(--font); color: var(--ink-2); transition: background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out), scale var(--t-press) var(--ease-out); }
+.ap .pn-chip:hover { background: var(--surface-hover); color: var(--ink); }
+.ap .pn-chip:active { scale: var(--press-scale); }
+.ap .pn-chip:has(> .ab-tile:first-child) { padding-left: 0; overflow: hidden; }
+.ap .pn-chip > .ab-tile:first-child { border-radius: var(--r-control) 0 0 var(--r-control); }
+.ap .cd-detail .pn-chip:has(> .ab-tile:first-child) { align-items: stretch; }
+.ap .cd-detail .pn-chip > .ab-tile:first-child { height: auto !important; min-height: var(--chip-h); margin-top: 0; }
+
+/* Tiles replace bare glyphs in signal cards, Briefing rows, column heads and relation links */
+.ap .ab-sigcard-well { width: auto; height: auto; border-radius: 0; background: none; }
+.ap .br-glyph { height: var(--line-ui); color: var(--ink-2); }
+.ap .cd-head > .ab-tile { flex-shrink: 0; }
+.ap .cd-link { align-items: flex-start; gap: var(--gap-tile); }
+.ap .cd-link > .ab-tile { margin-top: calc((var(--line-ui) - var(--tile)) / 2); }
+.ap .cd-link { font-size: var(--fs-body); line-height: var(--lh-ui); }
+.ap .ab-count { font: var(--w-medium) var(--fs-small)/1 var(--font); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+/* ── 05 Buttons: 28 (24 dense), inset 10 (8 on an icon's side), radius 7, label 12/500, icon 14 at 6. Hover is a 5% layer; press 0.98. ── */
+.ab-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: var(--gap-icon); flex: none;
+  height: var(--control); min-width: var(--control); padding: 0 var(--inset-control); border: 0; border-radius: var(--r-control);
+  font: var(--w-medium) var(--fs-label)/1 var(--font); white-space: nowrap; cursor: pointer; background: transparent; color: var(--ink-2); box-shadow: none;
+  transition: background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out), box-shadow var(--t-hover) var(--ease-out), scale var(--t-press) var(--ease-out); }
+.ab-btn::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, var(--hit)); height: var(--hit); translate: -50% -50%; }
+.ab-btn > svg { flex: none; }
+.ab-btn:has(> svg:first-child) { padding-left: calc(var(--inset-control) - 2px); }
+.ab-btn.sm { height: var(--control-sm); min-width: var(--control-sm); }
+.ab-btn:active:not(:disabled, [aria-disabled="true"]) { scale: var(--press-scale); }
+.ab-btn:is(:disabled, [aria-disabled="true"]) { opacity: var(--disabled-o); cursor: not-allowed; }
+.ab-btn.quiet:hover:not(:disabled), .ab-btn.quiet:is([aria-pressed="true"], [aria-expanded="true"]) { background: var(--hover); color: var(--ink); }
+.ab-btn.primary { background: var(--primary); color: var(--on-primary); box-shadow: var(--btn-shadow); }
+.ab-btn.primary:hover:not(:disabled) { background: var(--primary-hover); }
+.ab-btn.secondary { background: var(--surface); color: var(--ink); box-shadow: var(--edge), var(--btn-shadow); }
+.ab-btn.secondary:hover:not(:disabled) { background: var(--surface-hover); }
+.ab-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .ab-btn:active { scale: none; } }

@@ -10,7 +10,7 @@ import { mergeSignal } from "../app/signal-merge";
 import { useState, useRef, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { DUMPS, SIGNALS, THEORIES, PROTOTYPES, theoriesIn, theme, theory, signalsFor, prototypesFor, type Signal } from "./data";
-import { Icon, IconButton, Conf, DumpIcon, Mark, ProtoGlyph } from "./atoms";
+import { Icon, IconButton, Conf, DumpIcon, Mark, ProtoGlyph, Tile, Decide } from "./atoms";
 import { flushEdit, useEdit } from "./edits";
 import { Editable } from "./editable";
 import { Tripwire, tripState, type Decision } from "./tripwire";
@@ -18,6 +18,8 @@ import { tripFor } from "./trips";
 import { ConfidenceSpark, type SparkVariant } from "./confidence-spark";
 import { ConfidenceControl } from "./confidence-control";
 import { RetirementNotice, retirementLabel } from "./object-status";
+/** Retire is rare and destructive, so it carries a label (03 rule 8) and the archive glyph. */
+const RetireButton = ({ label, onClick }: { label: string; onClick: () => void }) => <button type="button" className="ab-btn quiet" aria-label={label} onClick={onClick}><Icon name="archive" size={14} />Retire</button>;
 import { SuggestionPreview } from "./suggestion-preview";
 import { stancesFor, TODAY } from "./histories";
 import "./panes.css";
@@ -83,8 +85,8 @@ const byNewest = (ss: Signal[]) => {
 function FeedLine({ s, context }: { s: Signal; context?: string }) {
   const moves = s.evidence.filter(e => !context || theory(e.theory).themes?.includes(context));
   return <>
-    <span className="pn-feed-glyph"><Icon name={/\./.test(s.source) ? "link" : "text"} size={14} />{field(s,"seenAt")==null&&<Mark kind="fresh"/>}</span>
-    <span className="pn-feed-text"><span>{s.gist}</span><span className="ap-muted">{s.source}</span></span>
+    <span className="pn-feed-glyph"><Tile kind="signal" /></span>
+    <span className="pn-feed-text"><span data-unseen={field(s,"seenAt")==null ? "" : undefined}>{s.gist}</span><span className="ap-muted">{s.source}</span></span>
     {moves.length>0&&<span className="pn-feed-to">{moves.map(e=><span key={e.theory} className="pn-feed-chip" data-suggested={e.suggested?"":undefined} title={e.stance==="supports"?"Supports":"Undermines"}><Icon name={e.stance==="supports"?"arrowUp":"arrowDown"} size={12}/><span><Claim id={e.theory}/></span></span>)}</span>}
   </>;
 }
@@ -106,11 +108,11 @@ export function SignalDetail({ s, onOpen, onDump, context }: { s: Signal; onOpen
         </button>
       ))}
       <div className="pn-chips">
-        {s.themes.filter(t => t !== context).map(t => <button key={t} className="pn-chip" title="Theme" onClick={() => onOpen("theme", t)}><Icon name="theme" size={12} /><ThemeName id={t} /></button>)}
+        {s.themes.filter(t => t !== context).map(t => <button key={t} className="pn-chip" title="Theme" onClick={() => onOpen("theme", t)}><Tile kind="theme" size="chip" /><ThemeName id={t} /></button>)}
         {origins.map(dump=><button key={dump!.id} className="pn-chip pn-origin" title={dump!.text??dump!.first} onClick={()=>onDump?onDump(dump!.id):inspectDump(dump!.id)}><DumpIcon d={dump as any}/><span>{dump!.first??dump!.text?.split("\n")[0]??"Voice note"}</span></button>)}
       </div>
       <div className="pn-chips">{json<any[]>(rowFor("signal",s.id)?.sources,[]).map((source,i)=>source.url ? <a key={source.id??i} className="pn-chip" href={source.url} target="_blank" rel="noreferrer"><Icon name="link" size={12}/>{source.title??source.url}</a> : <span key={i} className="ap-muted">{source.author??"Own observation"}</span>)}</div>
-      <div className="pn-chips"><IconButton icon="merge" label="Merge signal" onClick={()=>void mergeSignal(s.id)}/>{context&&THEORIES.some(t=>t.id===context)&&<IconButton icon="x" label="Remove evidence" onClick={()=>act("unlinkEvidence",{signalId:s.id,theoryId:context})}/>}<IconButton icon="minus" label="Unfile from a theme" onClick={async()=>{const themeId=await ask({title:"Unfile signal",choices:s.themes.map(id=>({id,label:world.themes.find(t=>t.id===id)?.name??"",kind:"theme"}))});if(themeId)act("unfileSignal",{signalId:s.id,themeId});}}/>{world.merges.filter(m=>field(m,"survivorId")===s.id&&!field(m,"undoneAt")).map(m=><button key={m.id} className="ap-btn" onClick={()=>act("undoMerge",{id:m.id})}>Undo merge</button>)}<IconButton icon="plus" label="File in a theme" onClick={async()=>{const id=await ask({title:"File signal",choices:world.themes.map(t=>({id:t.id,label:t.name,kind:"theme"}))});if(id)act("fileSignal",{signalId:s.id,themeId:id});}}/><IconButton icon="trash" label="Discard signal" onClick={()=>act("discardSignal",{id:s.id})}/></div>
+      <div className="pn-chips"><IconButton icon="merge" label="Merge signal" onClick={()=>void mergeSignal(s.id)}/>{context&&THEORIES.some(t=>t.id===context)&&<IconButton icon="minus" label="Remove evidence" onClick={()=>act("unlinkEvidence",{signalId:s.id,theoryId:context})}/>}<IconButton icon="minus" label="Unfile from a theme" onClick={async()=>{const themeId=await ask({title:"Unfile signal",choices:s.themes.map(id=>({id,label:world.themes.find(t=>t.id===id)?.name??"",kind:"theme"}))});if(themeId)act("unfileSignal",{signalId:s.id,themeId});}}/>{world.merges.filter(m=>field(m,"survivorId")===s.id&&!field(m,"undoneAt")).map(m=><button key={m.id} className="ap-btn" onClick={()=>act("undoMerge",{id:m.id})}>Undo merge</button>)}<IconButton icon="plus" label="File in a theme" onClick={async()=>{const id=await ask({title:"File signal",choices:world.themes.map(t=>({id:t.id,label:t.name,kind:"theme"}))});if(id)act("fileSignal",{signalId:s.id,themeId:id});}}/><IconButton icon="trash" label="Discard signal" onClick={()=>act("discardSignal",{id:s.id})}/></div>
     </div>
   );
 }
@@ -133,14 +135,14 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
   return (
     <div className="pn-doc pn-theory-doc">
       <div className="pn-theory-head">
-        <div className="pn-theory-themes">{t.themes.map(th => <button key={th} className="pn-chip" title="Theme" onClick={() => onOpen("theme", th)}><Icon name="theme" size={12} /><span className="pn-chip-name"><ThemeName id={th} /></span></button>)}</div>
-        <div className="pn-theory-actions"><IconButton icon="plus" label="Add a relationship" onClick={async()=>{const choice=await ask({title:"Theory relationships",choices:[{id:"theme",label:"Theme",kind:"theme"},{id:"rival",label:"Rival",kind:"swap"},{id:"follows",label:"Follows from",kind:"chevronLeft"},{id:"prototype",label:"Prototype",kind:"prototype"}]});if(choice)void linkObject(choice as any,id);}}/><IconButton icon="trash" label="Retire theory" onClick={()=>void retireObject("theory",id)}/></div>
+        <div className="pn-theory-themes">{t.themes.map(th => <button key={th} className="pn-chip" title="Theme" onClick={() => onOpen("theme", th)}><Tile kind="theme" size="chip" /><span className="pn-chip-name"><ThemeName id={th} /></span></button>)}</div>
+        <div className="pn-theory-actions"><IconButton icon="plus" label="Add a relationship" onClick={async()=>{const choice=await ask({title:"Theory relationships",choices:[{id:"theme",label:"Theme",kind:"theme"},{id:"rival",label:"Rival",kind:"swap"},{id:"follows",label:"Follows from",kind:"chevronLeft"},{id:"prototype",label:"Prototype",kind:"prototype"}]});if(choice)void linkObject(choice as any,id);}}/><RetireButton label="Retire theory" onClick={()=>void retireObject("theory",id)}/></div>
       </div>
       <Editable as="h1" className="pn-title" value={edit.claim} onChange={claim => set({ claim })} singleLine aria-label="Claim" data-draft={t.draft ? "" : undefined} />
       <RetirementNotice row={rowFor("theory",id)}/>
       <dl className="pn-meta">
         {t.draft
-          ? <div className="pn-meta-row"><dt className="ap-label">Draft</dt><dd><span className="ap-ghost-actions"><IconButton icon="check" label="Accept (A)" shortcut="a" onClick={()=>void flushEdit("theory",id).catch(()=>{}).then(()=>act("acceptDraft",{kind:"theory",id}))} /><IconButton icon="x" label="Discard (X)" shortcut="x" onClick={()=>act("discardDraft",{kind:"theory",id})} /></span></dd></div>
+          ? <div className="pn-meta-row"><dt className="ap-label">Draft</dt><dd><Decide dismiss="Discard" acceptKey="a" acceptTitle="Accept (A)" onDismiss={()=>act("discardDraft",{kind:"theory",id})} onAccept={()=>void flushEdit("theory",id).catch(()=>{}).then(()=>act("acceptDraft",{kind:"theory",id}))} /></dd></div>
           : <div className="pn-meta-row"><dt className="ap-label">Confidence</dt><dd>
               <ConfidenceControl value={conf} onChange={confidence => set({ confidence })} />
               <ConfidenceSpark stances={stancesFor(id, edit.log, edit.confidence)} variant={SPARK} />
@@ -195,11 +197,11 @@ export function ThemePane({ id, nav }: { id: string; nav: PaneNav }) {
   const ss = SIGNALS.filter(s => s.themes.includes(id));
   return (
     <div className="pn-doc">
-      <div className="pn-theme-actions"><IconButton icon="trash" label="Retire theme" onClick={()=>void retireObject("theme",id)}/></div>
+      <div className="pn-theme-actions"><RetireButton label="Retire theme" onClick={()=>void retireObject("theme",id)}/></div>
       <ThemeHead id={id} />
       <RetirementNotice row={rowFor("theme",id)}/>
       <SuggestionActions id={id}/>
-      {rowFor("theme",id)?.status==="draft"&&<div className="pn-chips"><button className="ap-btn" aria-keyshortcuts="a" title="Accept draft theme (A)" onClick={()=>act("acceptDraft",{kind:"theme",id})}>Accept</button><IconButton icon="x" label="Discard draft theme (X)" shortcut="x" onClick={()=>act("discardDraft",{kind:"theme",id})}/></div>}
+      {rowFor("theme",id)?.status==="draft"&&<div className="pn-chips"><Decide dismiss="Discard" acceptKey="a" acceptTitle="Accept draft theme (A)" onDismiss={()=>act("discardDraft",{kind:"theme",id})} onAccept={()=>act("acceptDraft",{kind:"theme",id})} /></div>}
       <div className="pn-cards pn-deck">
         {theoriesIn(id).map(t => <TheoryTile key={t.id} id={t.id} deck onClick={() => nav.onOpen("theory", t.id)} />)}
         <TooltipButton className="pn-tile pn-add" aria-label="State a theory" tooltip="State a theory" onClick={()=>void createObject("theory",id)}><Icon name="plus" /></TooltipButton>
@@ -285,7 +287,7 @@ export function PrototypePane({ id, nav }: { id: string; nav: PaneNav }) {
   return (
     <div className="pn-doc">
       <Editable as="h1" className="pn-title" value={edit.name} onChange={name => set({ name })} singleLine aria-label="Prototype name" data-draft={raw?.draft?"":undefined} />
-      {raw?.draft&&<div className="pn-chips"><button className="ap-btn" aria-keyshortcuts="a" title="Accept draft prototype (A)" onClick={()=>act("acceptDraft",{kind:"prototype",id})}>Accept</button><IconButton icon="x" label="Discard draft prototype (X)" shortcut="x" onClick={()=>act("discardDraft",{kind:"prototype",id})}/></div>}
+      {raw?.draft&&<div className="pn-chips"><Decide dismiss="Discard" acceptKey="a" acceptTitle="Accept draft prototype (A)" onDismiss={()=>act("discardDraft",{kind:"prototype",id})} onAccept={()=>act("acceptDraft",{kind:"prototype",id})} /></div>}
       <dl className="pn-meta">
         <div className="pn-meta-row"><dt className="ap-label">Status</dt><dd>
           <span className="pn-status" role="radiogroup" aria-label="Status">

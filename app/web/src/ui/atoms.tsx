@@ -8,7 +8,7 @@ import {
   MagnifyingGlass, Plus, Minus, Microphone, PencilRuler, TrayArrowDown, Check, X, CaretRight, CaretLeft, CaretDown, Pulse, Link,
   Waveform, TextAlignLeft, Sun, Target, Binoculars, MapTrifold, Table, Clock, ArrowUp, ArrowDown, SidebarSimple, Signpost,
   ArrowsLeftRight, Paperclip, Stop, Play, Pause, ArrowCounterClockwise, ArrowClockwise, Monitor, Image,
-  PencilSimple, Globe, Question, PushPin, QuestionMark, Crosshair, Rows, Columns, ChartScatter, ArrowsOutSimple, ArrowsInSimple, TreeStructure, ArrowRight, ArrowLeft, ArrowElbowDownRight, ArrowElbowUpRight, ClockCounterClockwise, Trash, ArrowsMerge, ArrowsSplit, Newspaper, type Icon as PhosphorIcon, type IconWeight,
+  PencilSimple, Globe, Question, PushPin, QuestionMark, Crosshair, Rows, Columns, ChartScatter, ArrowsOutSimple, ArrowsInSimple, TreeStructure, ArrowRight, ArrowLeft, ArrowElbowDownRight, ArrowElbowUpRight, ClockCounterClockwise, Trash, ArrowsMerge, ArrowsSplit, Newspaper, Archive, TrendUp, TrendDown, Funnel, PaperPlaneRight, MagnifyingGlassPlus, MagnifyingGlassMinus, CornersIn, CircleNotch, Sparkle, type Icon as PhosphorIcon, type IconWeight,
 } from "@phosphor-icons/react";
 
 /** One glyph per object type. Swap an object's icon here and every jig follows.
@@ -49,7 +49,7 @@ const ICONS = {
   turn: Signpost,
   swap: ArrowsLeftRight,
   paperclip: Paperclip,
-  send: ArrowUp,
+  send: PaperPlaneRight,
   stop: Stop,
   play: Play,
   pause: Pause,
@@ -73,6 +73,16 @@ const ICONS = {
   history: ClockCounterClockwise,
   trash: Trash,
   merge: ArrowsMerge,
+  archive: Archive,
+  trendUp: TrendUp,
+  trendDown: TrendDown,
+  funnel: Funnel,
+  zoomIn: MagnifyingGlassPlus,
+  zoomOut: MagnifyingGlassMinus,
+  fit: CornersIn,
+  working: CircleNotch,
+  tripwire: Signpost,
+  suggestion: Sparkle,
   split: ArrowsSplit,
   // surfaces
   briefing: Newspaper,
@@ -129,8 +139,6 @@ export function TheoryCard({ t, onEnter, onLeave, dim, hot, onClick, compact, ed
           {!t.draft && <Conf n={t.confidence} />}
           <Balance s={t.supports} u={t.undermines} />
           {protos.length > 0 && <span className="ap-muted ap-inline"><Icon name="prototype" size={12} />{protos.length}</span>}
-          {t.pending > 0 && <span className="ap-ghost-badge">{t.pending}</span>}
-          {t.challenge && <Mark kind="challenge" />}
         </div>
       )}
     </div>
@@ -150,13 +158,28 @@ export const Pill = ({ sees }: { sees: string }) => (
   </div>
 );
 
-/** Status glyphs instead of words. One meaning each, everywhere. */
+/** Status marks on previews were removed (RULES 06, 4 Nov): no new dot, challenge dot, open ring or pending badge.
+ *  Unseen activity is unread weight on the name instead (see `unseen` props). Kept as a no-op so old call sites compile. */
 export type MarkKind = "fresh" | "open" | "challenge";
-export const Mark = ({ kind, n }: { kind: MarkKind | "pending"; n?: number }) => {
-  const label = { fresh: "New since you last looked", open: "No theory yet", challenge: "Challenged", pending: `${n} suggestions` }[kind];
-  if (kind === "pending") return <span className="ap-ghost-badge" role="img" title={label} aria-label={label}>{n}</span>;
-  return <span className="ap-mark" role="img" data-kind={kind} title={label} aria-label={label} />;
+export const Mark = (_: { kind: MarkKind | "pending"; n?: number }) => null;
+
+/** An object glyph on its pale type tile (RULES 03, 06): 18 in rows, cards and peeks; 24 flush in chips; 32 for a full view's title. */
+export type TileKind = ObjectKind | "tripwire" | "suggestion" | "briefing";
+const TILE = { row: [18, 12], chip: [24, 14], title: [32, 20] } as const;
+export const Tile = ({ kind, size = "row", draft, weight }: { kind: TileKind; size?: keyof typeof TILE; draft?: boolean; weight?: IconWeight }) => {
+  const [box, glyph] = TILE[size];
+  return <span className="ab-tile" data-type={kind} data-size={size} data-draft={draft ? "" : undefined} style={{ width: box, height: box }} aria-hidden>
+    <Icon name={kind} size={glyph} weight={weight} />
+  </span>;
 };
+
+/** A decision on a suggestion or draft (DI-009): a labelled secondary Dismiss (Discard for drafts) left of the primary Accept. Never an X. */
+export const Decide = ({ onDismiss, onAccept, dismiss = "Dismiss", accept = "Accept", busy, acceptTitle, acceptKey }: {
+  onDismiss: () => void; onAccept: () => void; dismiss?: string; accept?: string; busy?: boolean; acceptTitle?: string; acceptKey?: string;
+}) => <span className="ab-decide">
+  <button type="button" className="ab-btn secondary" disabled={busy} onClick={e => { e.stopPropagation(); onDismiss(); }}>{dismiss}</button>
+  <button type="button" className="ab-btn primary" disabled={busy} title={acceptTitle} aria-keyshortcuts={acceptKey} onClick={e => { e.stopPropagation(); onAccept(); }}>{accept}</button>
+</span>;
 
 export const STATUS_COLOUR: Record<string, string> = { idea: "#c9c9c9", building: "#2f6fed", built: "#1f7a4d", shelved: "transparent" };
 export const ProtoGlyph = ({ status, selected }: { status: string; selected?: boolean }) => (

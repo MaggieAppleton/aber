@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Accordion } from "@base-ui/react/accordion";
 import { createObject, findObjects } from "../app/dialogs";
 import { THEMES, PROTOTYPES, theoriesIn } from "./data";
-import { Icon, IconButton, Mark } from "./atoms";
+import { Icon, IconButton, Mark, Tile } from "./atoms";
 import { ThemeName, ProtoName, type OnOpen } from "./panes";
 import { TooltipButton } from "./tooltip";
 import "./current-sidebar.css";
@@ -82,17 +82,17 @@ export function CurrentSidebar({ active, onTheme, onOpen, onCollapsedChange }: {
       <div className="cur-sidebar-scroll ap-scroll">
         <nav className="cur-index" aria-label="Themes">
           {THEMES.map(theme => <a key={theme.id} href={`#cur-${theme.id}`} data-active={active === theme.id ? "" : undefined} onClick={event => { event.preventDefault(); onTheme(theme.id); if (overlay) closeOverlay(true); }}>
-            <span><ThemeName id={theme.id} /></span>{theme.fresh > 0 && <Mark kind="fresh" />}<span className="ap-muted ap-num">{theoriesIn(theme.id).length || null}</span>
+            <span data-unseen={theme.fresh > 0 ? "" : undefined}><ThemeName id={theme.id} /></span><span className="ap-muted ap-num">{theoriesIn(theme.id).length || null}</span>
           </a>)}
         </nav>
         <Accordion.Root className="cur-prototype-section" value={prototypesOpen ? ["prototypes"] : []} onValueChange={value => setPrototypesOpen(value.length > 0)}>
           <Accordion.Item value="prototypes">
             <Accordion.Header className="cur-prototype-heading"><Accordion.Trigger className="cur-protos">
-              <Icon name="prototype" size={13} /><span className="cur-sidebar-label">Prototypes</span><span className="ap-muted ap-num">{PROTOTYPES.length}</span><span className="cur-protos-chevron"><Icon name="chevron" size={12} /></span>
+              <Tile kind="prototype" /><span className="cur-sidebar-label">Prototypes</span><span className="ap-muted ap-num">{PROTOTYPES.length}</span><span className="cur-protos-chevron"><Icon name="chevron" size={12} /></span>
             </Accordion.Trigger></Accordion.Header>
             <Accordion.Panel className="ab-accordion-panel"><div className="cur-prototype-list">
               {PROTOTYPES.map(prototype => <button className="cur-prototype-row" key={prototype.id} onClick={() => { onOpen?.("prototype", prototype.id); if (overlay) closeOverlay(true); }}>
-                <Icon name="prototype" size={13} /><span className="cur-sidebar-label"><ProtoName id={prototype.id} /></span><Icon name="chevron" size={12} />
+                <Tile kind="prototype" /><span className="cur-sidebar-label"><ProtoName id={prototype.id} /></span><Icon name="chevron" size={12} />
               </button>)}
               <button className="cur-prototype-row" onClick={async () => { await createObject("prototype"); if (overlay) closeOverlay(true); }}><Icon name="plus" size={13} /><span className="cur-sidebar-label">New prototype</span></button>
             </div></Accordion.Panel>

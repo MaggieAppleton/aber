@@ -108,7 +108,7 @@ export function ThemePicker({ scale, live, value, onChange, mode = "filter", fol
   return (
     <div className="t2-picker" ref={box}>
       <TooltipButton className="t2-tool" aria-label={mode === "lanes" ? "Lanes" : "Theme"} tooltip={mode === "lanes" ? "Lanes" : "Filter by theme"} aria-expanded={open} aria-pressed={open || !!value} onClick={() => setOpen(o => !o)}>
-        <Icon name="theme" size={15} weight={value ? "fill" : "regular"} />
+        <Icon name="funnel" size={16} weight={value ? "fill" : "regular"} />
       </TooltipButton>
       <AnimatePresence initial={false}>
         {value && mode === "filter" && (

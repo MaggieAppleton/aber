@@ -89,7 +89,7 @@ function Row({ e, api, binned }: { e: Entry; api: DumpLogApi; binned: boolean })
         <AnimatePresence initial={false} mode="popLayout">
           <motion.span key={e.status} className="dl-status-in" initial={{ opacity: 0, filter: "blur(2px)" }} animate={{ opacity: 1, filter: "blur(0px)" }} exit={{ opacity: 0, filter: "blur(2px)" }} transition={{ duration: 0.2 }}>
             {e.status === "processing" && (paused ? <span className="dl-paused ap-muted">{paused}</span> : <span className="dl-working">Processing</span>)}
-            {e.status === "failed" && <><span className="ap-mark" data-kind="challenge" aria-hidden /><span className="dl-error">{e.error ?? "Failed"}</span></>}
+            {e.status === "failed" && <><span className="dl-error">{e.error ?? "Failed"}</span></>}
             {e.status === "done" && e.made && <Made made={e.made} />}
           </motion.span>
         </AnimatePresence>

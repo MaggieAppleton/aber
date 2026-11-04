@@ -47,19 +47,19 @@ export function useDraftEdge(kind: DraftKind, id: string, draft: boolean): { dra
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
     if (!live || e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
     const key = e.key.toLowerCase();
-    if (key !== "a" && key !== "x") return;
-    // Ours, not the pane's: the app's own A and X act on the open object.
+    if (key !== "a") return;
+    // Ours, not the pane's: the app's own A acts on the open object. Discard has no key (DI-009).
     e.preventDefault(); e.stopPropagation();
-    (key === "a" ? accept : discard)(e.currentTarget);
+    accept(e.currentTarget);
   };
-  const actions = live ? <span className="ab-edge-acts">
-    <TooltipButton type="button" className="ab-mini" data-edge="no" aria-label="Discard draft (X)" tooltip="Discard draft (X)" aria-keyshortcuts="x"
-      onClick={e => { e.stopPropagation(); discard(e.currentTarget); }}><Icon name="x" size={14} /></TooltipButton>
-    <TooltipButton type="button" className="ab-mini" data-edge="yes" aria-label="Accept draft (A)" tooltip="Accept draft (A)" aria-keyshortcuts="a"
-      onClick={e => { e.stopPropagation(); accept(e.currentTarget); }}><Icon name="check" size={14} /></TooltipButton>
+  const actions = live ? <span className="ab-edge-acts ab-decide">
+    <button type="button" className="ab-btn secondary sm" data-edge="no" aria-label="Discard draft"
+      onClick={e => { e.stopPropagation(); discard(e.currentTarget); }}>Discard</button>
+    <button type="button" className="ab-btn primary sm" data-edge="yes" aria-label="Accept draft (A)" title="Accept draft (A)" aria-keyshortcuts="a"
+      onClick={e => { e.stopPropagation(); accept(e.currentTarget); }}>Accept</button>
   </span> : null;
   // Every card in a list with drafts keeps the same shape, so settling never remounts it (or drops its focus).
-  return { draft: live, hidden, edge: { actions, onKeyDown, settling, leaving, shortcuts: live ? "a x" : undefined } };
+  return { draft: live, hidden, edge: { actions, onKeyDown, settling, leaving, shortcuts: live ? "a" : undefined } };
 }
 
 /** The same, as a render prop, for lists that build their rows inline. */

@@ -41,7 +41,6 @@ function Count({ id }: { id: string }) {
   return (
     <span className="a2-count ap-num">
       <span>{c.n}</span>
-      {c.fresh > 0 && <span className="a2-count-new"><Mark kind="fresh" />{c.fresh}</span>}
     </span>
   );
 }
@@ -68,7 +67,7 @@ const showsCount = (signals?: SignalEncoding) => signals === "none" || signals =
 
 /** Signals: one element per signal in both structures, so a treatment styles them the same way. */
 function Dots({ dots }: { dots: { id: string; x: number; y: number; fresh: boolean }[] }) {
-  return dots.map(d => <i key={d.id} className="a2-dot" data-fresh={d.fresh ? "" : undefined} style={{ left: d.x, top: d.y }} />);
+  return dots.map(d => <i key={d.id} className="a2-dot" style={{ left: d.x, top: d.y }} />);
 }
 
 /* ── Circles: the baseline ── */

@@ -1,7 +1,7 @@
 import { ask, openObject } from "../app/dialogs";
 import { mutate, rowFor, world, type Row } from "../data/live";
 import { draftKind } from "../data/draft-object";
-import { TheoryCard, Icon, IconButton } from "../ui/atoms";
+import { Decide, TheoryCard, Icon, IconButton } from "../ui/atoms";
 import { retirementLabel } from "../ui/object-status";
 import type { Theory } from "../ui/data";
 
@@ -21,6 +21,6 @@ export function ObjectChatCard({data,draftPart=false}:{data:Row;draftPart?:boole
   return <div className="ab-chat-theory" data-chat-kind={kind} data-chat-id={data.id}>
     {kind==="theory"?<TheoryCard t={theory} onClick={missing?undefined:()=>openObject(kind,data.id)}/>:<button className="ap-card ab-chat-object" data-draft={pending?"":undefined} disabled={missing} onClick={()=>openObject(kind,data.id)}><span className="ap-card-claim ap-inline"><Icon name={kind} size={14}/>{title}</span>{object.body&&<span>{object.body}</span>}</button>}
     {status&&<span className="ap-muted ab-retired">{status}</span>}
-    {pending&&<div className="pn-chips"><button className="ap-btn" onClick={()=>void decide("acceptDraft")}>Accept</button><IconButton icon="edit" label="Rephrase and accept" onClick={()=>void rephrase()}/><IconButton icon="x" label="Discard" onClick={()=>void decide("discardDraft")}/></div>}
+    {pending&&<div className="pn-chips ab-decide-row"><IconButton icon="edit" label="Rephrase and accept" onClick={()=>void rephrase()}/><Decide dismiss="Discard" onDismiss={()=>void decide("discardDraft")} onAccept={()=>void decide("acceptDraft")}/></div>}
   </div>;
 }

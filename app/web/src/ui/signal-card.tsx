@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Icon } from "./atoms";
+import { Tile, Icon } from "./atoms";
 
 export type Stance = "supports" | "undermines";
 
@@ -13,7 +13,7 @@ export function SignalCard({ gist, source, stance, decided, children, aside, cla
   gist: ReactNode; source?: ReactNode; stance?: Stance; decided?: boolean; children?: ReactNode; aside?: ReactNode; className?: string;
 }) {
   return <span className={`ab-sigcard${className ? ` ${className}` : ""}`} data-decided={decided ? "" : undefined}>
-    <span className="ab-sigcard-well" aria-hidden><Icon name="signal" size={14} /></span>
+    <span className="ab-sigcard-well" aria-hidden><Tile kind="signal" /></span>
     <span className="ab-sigcard-text">
       <span className="ab-sigcard-gist">{gist}</span>
       {source && <span className="ab-sigcard-src">{source}</span>}
