@@ -291,3 +291,6 @@
    (Columns, Atlas, Timeline) keep the pane inset. An empty top bar takes no height, so the top margin reads the same as the sides. */
 .nv-main .ob-full { padding: var(--main-inset-block) var(--main-inset-inline) 96px; max-width: calc(720px + var(--main-inset-inline) * 2); }
 .ob-full > .ob-top:empty { display: none; }
+
+/* Suggestion and draft blocks: more room inside the dash (Maggie, 4 Nov: "padding on this is too small"). */
+.ob-block.sug { --inset-row: 12px; padding-top: 10px; padding-bottom: 10px; }
