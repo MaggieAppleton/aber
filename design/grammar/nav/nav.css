@@ -41,10 +41,13 @@
 /* The three views that stay as they are: the shared stage, at this window's size */
 .nv-stagehost .stg { --stg-w: 1280px; height: 760px; }
 
-/* Object glyph on its tile: 24 (glyph 16) in rows, headers, the rail and chips; 18 (glyph 14) in card meta */
+/* Object glyph on its tile (03 as amended by 06): 18 with a 12 glyph in the rail, rows, cards and peeks; a chip's tile is the chip's full
+   height (24) with a 14 glyph, flush; the full view's title tile is 32 with a 20 glyph (.nv-head). A glyph on a tile is one step smaller than bare. */
 .nv .g { flex: none; display: inline-grid; place-items: center; width: var(--tile); height: var(--tile); border-radius: var(--r-xs); background: var(--type-tile); color: var(--type-glyph); }
-.nv .g.sm { width: calc(var(--icon-label) + 4px); height: calc(var(--icon-label) + 4px); }
-.nv .g.sm i, .nv-chip .g i { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
+.nv .g i, .nv .g.sm i { width: var(--tile-glyph); height: var(--tile-glyph); font-size: var(--tile-glyph); }
+.nv .g.sm { width: var(--tile); height: var(--tile); }
+.nv-chip > .g { width: var(--chip-h); height: var(--chip-h); }
+.nv .nv-chip .g i { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
 .nv .g[data-type="briefing"] { background: var(--tile-bg); color: var(--ink-2); }
 .nv .g.draft { background: var(--draft-fill); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
 
@@ -57,9 +60,12 @@
 .nv-dot.neg { background: var(--neg-dot); box-shadow: 0 0 0 3px color-mix(in oklab, var(--neg-dot) 18%, transparent); }
 .nv-ring { width: 7px; height: 7px; border-radius: 50%; box-shadow: inset 0 0 0 1.25px var(--ink-2); flex: none; }
 .nv-conf { display: inline-flex; gap: 2px; }
-.nv-conf i { display: block; width: 9px; height: 3px; border-radius: 2px; background: var(--hairline-strong); }
-.nv-conf i[data-on] { background: var(--ink); }
-.nv-conf.lg i { width: 18px; height: 5px; border-radius: 3px; }
+/* On previews, confidence is the 06 meter: one 20 × 4 track with a proportional fill (the five steps join into one track). The full view's .lg is the setter. */
+.nv-conf:not(.lg) { gap: 0; width: 20px; height: 4px; border-radius: 2px; overflow: hidden; background: color-mix(in oklab, var(--ink) 15%, transparent); }
+.nv-conf:not(.lg) i { display: block; width: 4px; height: 4px; background: transparent; }
+.nv-conf:not(.lg) i[data-on] { background: var(--ink); }
+.nv-conf.lg i { display: block; width: 18px; height: 5px; border-radius: 3px; background: var(--hairline-strong); }
+.nv-conf.lg i[data-on] { background: var(--ink); }
 .nv-n { font-size: var(--fs-small); font-weight: 500; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .nv-meta { font-size: var(--fs-label); font-weight: 400; color: var(--ink-2); }
 .nv-mono { font: inherit; color: inherit; font-variant-numeric: tabular-nums; }   /* times: Geist tabular in the surrounding role; Geist Mono is for keys only */
@@ -249,3 +255,23 @@ button.nv-chip:hover, .nv-chip[aria-expanded="true"] { background: var(--hover);
 .nv-row[aria-current="true"] { color: var(--ink); }
 .nv-placeholder { margin: var(--inset-nav-block) var(--inset-nav-inline) 0; padding: 6px 8px; border-radius: var(--r-sm); outline: 1px dashed oklch(0.6 0.15 60); outline-offset: -1px;
   background: oklch(0.97 0.03 85); color: oklch(0.42 0.08 60); font: 500 var(--fs-label)/1.4 var(--font); }
+
+/* ── 4 Nov: the decided 06 anatomy for pages that build their full view from these classes (09, 10). Two left edges: the tile edge (the doc's
+   content edge) and the text edge (tile 18 + gap 8). The title starts on the text edge with its 32 tile hanging into the padding; below the
+   head, glyphless prose, notes, key lines, section labels and chip lists start on the tile edge; rows put their tile there and their name on the
+   text edge. Rows and dashed blocks bleed their hover layer and outline into the padding. ── */
+.nv-head { display: grid; grid-template-columns: var(--tile-title) minmax(0, 1fr); column-gap: var(--gap-tile-title); align-items: start; min-width: 0;
+  margin-left: calc(var(--tile) + var(--gap-tile) - var(--tile-title) - var(--gap-tile-title)); }
+.nv-head > .g { width: var(--tile-title); height: var(--tile-title); border-radius: var(--r-sm); margin-top: calc((var(--fs-title) * var(--lh-head) - var(--tile-title)) / 2); }
+.nv-head > .g i { width: var(--tile-title-glyph); height: var(--tile-title-glyph); font-size: var(--tile-title-glyph); }
+.nv-head > :not(.g) { display: grid; gap: var(--gap-tight); min-width: 0; }
+.nv-head .nv-sub { margin-top: 0; gap: var(--gap-key); min-height: var(--control-sm); }
+.nv-doc .nv-shead { gap: var(--gap-key); }
+.nv-doc .nv-shead .nv-meta { font-variant-numeric: tabular-nums; }
+.nv-doc .ob-rows > .ob-row, .nv-doc .ob-rows > .ob-block, .nv-doc .ob-slot { margin-left: calc(var(--inset-row) * -1); margin-right: calc(var(--inset-row) * -1); }
+.nv-doc .ob-rows .ob-block > .ob-row { margin: 0; }
+.nv-doc .ob-rows, .nv-doc .ob-cards { max-width: 560px; }
+.nv-doc .ob-cards { max-width: none; }
+/* A label/value list reads as a key line: no 96 label column; label in ink 2, value right after it, pairs 16 apart, on the tile edge */
+.nv-fields { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-tight) var(--gap-key); }
+.nv-fields dd { margin-right: calc(var(--gap-group) - var(--gap-key)); }

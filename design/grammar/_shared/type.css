@@ -1,15 +1,13 @@
 /* Aber grammar: type (DECIDED 4 Nov 2026, see RULES.md). Every piece of text on the stage takes exactly one role.
-   Scale B, four sizes: 11 (counts and badges only) / 12 (labels, meta, buttons, chips) / 13 (body) / 24 (pane title; 20 is in the scale but unused).
+   Scale: 11 (counts and badges only) / 12 (labels, meta, buttons, chips) / 13 (body), and 24 for the pane title alone. 20 was removed (4 Nov).
    Roles never name a px value directly. Loaded by every grammar page as the default. */
 
-/* ── Scale (decided: B 11/12/13/20, title 24) ────────────────────── */
+/* ── Scale (decided: 11/12/13, pane title 24; 20 removed 4 Nov) ───── */
 :root { --fs-small: 11px; --fs-label: 12px; --fs-body: 13px; --fs-read: 13px; --fs-title: 24px; }
 /* 02-type keeps its comparison scopes so the decided page still shows what was weighed */
 [data-scale="three"]   { --fs-small: 12px; }
 [data-scale="decided"] { --fs-small: 11px; }
 [data-scale="reading"] { --fs-small: 12px; --fs-read: 15px; }
-[data-title="20"] { --fs-title: 20px; }
-[data-title="24"] { --fs-title: 24px; }
 
 /* ── Section header ink (decided: ink 2) ───────────────── */
 :root, [data-sechead="quiet"] { --sechead-ink: var(--ink-2); }

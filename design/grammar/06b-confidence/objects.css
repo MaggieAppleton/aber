@@ -1,4 +1,4 @@
-/* Snapshot of 06-objects/objects.css (re-synced 4 Nov), copied so 06b is stable while 06 changes. No 06b overrides: no challenge dot on previews (decided 4 Nov). Grammar 06: objects. One anatomy at every rung; values only from _shared (tokens, spacing, type, icons, surfaces, controls).
+/* Snapshot of 06-objects/objects.css (re-synced 4 Nov, after 06 was decided), copied so 06b is stable while 06 changes. No 06b overrides. Grammar 06: objects. One anatomy at every rung; values only from _shared (tokens, spacing, type, icons, surfaces, controls).
    .ob-scope is any page area that shows objects outside a window (matrix, states, before/after); .ob-win is a window (nav frame). */
 
 .ob-scope { font: 400 var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; text-align: left; }
@@ -88,7 +88,8 @@
 /* Unseen activity: hidden unless the window's choice shows it (data-fresh) */
 .ob-fresh { display: none !important; }
 [data-fresh="text"] .ob-fresh { display: inline !important; }
-[data-fresh="weight"] .unseen > .nm { font-weight: 600; color: var(--ink); }
+/* Unread weight (decided): a row with unseen activity sets its name in ink at 600; cards and peeks are already 600 and don't change */
+[data-fresh="weight"] .ob-row.unseen:not([data-fresh="none"] *):not([data-fresh="text"] *) > .nm { font-weight: 600; color: var(--ink); }
 
 /* The card: the row, raised, with the name at card weight and up to three lines */
 :root { --card-inline: 10px; --card-block: calc(var(--card-inline) - 2px); }   /* card inset (proposed amendment to 01): block is always inline − 2 */
@@ -279,3 +280,25 @@
 .ob-peek > .ob-div { margin-top: var(--gap-tight); }
 .ob-peek.has-meta > .ob-div { margin-top: 0; }
 [data-align="b"] .ob-peek { padding-top: calc(12px - 2.37px); }   /* b drops the tile 2.37; keep the visual top at 12 */
+/* Briefing is the first rail item (Maggie, 4 Nov); a little space sets it apart from the types */
+.ob-win .nv-type.ob-brief { margin-bottom: var(--gap-item); }
+/* Two left edges only (Maggie, 4 Nov): labels, tiles, chip lists and cards start on the tile column; text after a tile starts on the text edge */
+.ob-sec > .ob-chips, .ob-sec > .ob-cards, .ob-reply > .ob-label { margin-left: calc(var(--hang) * -1); }
+.ob-block > .ob-why-t { margin-left: calc(var(--hang) + var(--inset-row)); }
+/* Confidence meter (previews): a 20 × 4 track, ink fill in fifths; right of the name's first line so the right edges form a column */
+.ob-meter { position: relative; display: block; width: 20px; height: 4px; border-radius: 2px; background: color-mix(in oklab, var(--ink) 15%, transparent); overflow: hidden; flex: none; }
+.ob-meter > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; background: var(--ink); }
+.ob-row.has-rk, .ob-card.has-rk { grid-template-columns: var(--tile) minmax(0, 1fr) auto; grid-template-areas: "g nm rk" ". kv kv"; }
+.ob-rk { grid-area: rk; display: flex; align-items: center; height: var(--name-lh); margin-left: var(--gap-item); }
+.ob-row.has-rk:not(:has(> .kv)), .ob-card.has-rk:not(:has(> .kv)) { row-gap: 0; }
+/* The full view's title tile scales with its 24 title: 32 tile, 20 glyph, 12 gap, centred on the title's first line.
+   It hangs out into the pane's padding so the title still starts on the body's text edge, the one text edge of the view. */
+.ob-full > .ob-head { grid-template-columns: 32px minmax(0, 1fr); column-gap: 12px; margin-left: calc(var(--hang) - 44px); }
+.ob-full > .ob-head > .g { width: 32px; height: 32px; border-radius: var(--r-sm); margin-top: calc((var(--fs-title) * var(--lh-head) - 32px) / 2); }
+.ob-full > .ob-head > .g i { width: 20px; height: 20px; font-size: 20px; }
+/* Below the head, anything without a leading glyph (prose, notes, reasons, the fields table) starts on the tile edge: no empty gutter.
+   Items with a leading tile keep the tile column + text edge. The head keeps its title on the text edge. */
+.ob-pk-body { margin-left: 0; }
+.ob-pk-body > .ob-attach { margin-left: 0; }
+.ob-body > .ob-prose, .ob-body > .ob-fields, .ob-reply > .ob-prose { margin-left: calc(var(--hang) * -1); }
+.ob-block > .ob-why-t { margin-left: var(--inset-row); }

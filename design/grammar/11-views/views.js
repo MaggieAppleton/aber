@@ -45,6 +45,7 @@
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
   const g = type => `<span class="v-g" data-type="${type}"><i class="ph ph-${GLYPH[type]}" aria-hidden="true"></i></span>`;
   const ib = (icon, label, key, attrs = "") => `<button type="button" class="ctl-icon" aria-label="${esc(label)}" data-tip="${esc(label)}"${key ? ` data-key="${key}"` : ""} ${attrs}><i class="ph ph-${icon}" aria-hidden="true"></i></button>`;
+  const meter = n => `<span class="v-rk"><span class="v-meter" role="img" aria-label="${n ? `Confidence ${n} of 5` : "No confidence yet"}"><i style="width:${(n || 0) * 20}%"></i></span></span>`;
   const conf = n => `<span class="v-conf" role="img" aria-label="Confidence ${n} of 5">${[1, 2, 3, 4, 5].map(i => `<i${i <= n ? " data-on" : ""}></i>`).join("")}</span>`;
 
   /* What relates to the open object: drives rail counts, dimming and the timeline's chain */
@@ -71,17 +72,22 @@
     return R;
   };
 
-  /* ── The pane: the docked surface is this page's; its contents are a placeholder for 06 Objects ── */
-  const paneHTML = sel => {
-    const k = kindOf(sel), t = theory(sel), th = theme(sel), p = PROTOS.find(x => x.id === sel);
-    const title = t ? t.claim : th ? th.name : p ? p.name : sel;
-    const chips = t ? t.themes.map(id => `<span class="v-pane-chip">${g("theme")}${esc(theme(id).name)}</span>`).join("") : `<span class="v-pane-chip">${g(k)}${NAMES[k].replace(/s$/, "")}</span>`;
-    return `<div class="v-pane-in" data-k="${sel}">
-      <div class="v-pane-head">${chips}<span class="ctl">${ib("arrows-out-simple", "Full width")}${ib("x", "Close", "Esc", "data-close")}</span></div>
-      <h2 class="v-title">${esc(title)}</h2>
-      <div class="v-ph"><b>Placeholder: what the pane holds is 06 Objects and 07 Rungs</b><span class="bar m"></span><span class="bar s"></span><span class="bar m"></span><span class="bar s"></span></div>
-    </div>`;
-  };
+  /* ── The pane: the docked surface is this page's; its contents are the decided 06 full view (_shared/objects.js), built from the same
+     components as the default view's main area, so the two are identical apart from width. This page's objects are matched to the shared
+     objects by name; any without a match are added to them from this page's seed. ── */
+  const A = window.AberObjects, AID = {};
+  if (A) {
+    const byName = (kind, name) => Object.values(A.O).find(o => o.kind === kind && o.name === name);
+    const put = (id, o) => { if (!A.O[id]) A.O[id] = o; return id; };
+    THEMES.forEach(t => { AID[t.id] = byName("theme", t.name)?.id ?? put(`v-${t.id}`, { id: `v-${t.id}`, kind: "theme", name: t.name, signals: t.signals }); });
+    THEORIES.forEach(t => { AID[t.id] = byName("theory", t.claim)?.id ?? put(`v-${t.id}`, { id: `v-${t.id}`, kind: "theory", name: t.claim, themes: t.themes.map(x => AID[x]), c: t.c, by: t.year, draft: t.draft }); });
+    THEORIES.forEach(t => { const o = A.O[AID[t.id]]; if (o.id.startsWith("v-")) { o.follows = t.follows.map(x => AID[x]); if (t.rivals[0]) o.rival = AID[t.rivals[0]]; } });
+    PROTOS.forEach(p => { AID[p.id] = byName("prototype", p.name)?.id ?? put(`v-${p.id}`, { id: `v-${p.id}`, kind: "prototype", name: p.name, status: "idea", tests: p.theories.map(x => AID[x]) }); });
+    DUMPS.forEach(d => { AID[d.id] = byName("dump", d.first)?.id ?? put(`v-${d.id}`, { id: `v-${d.id}`, kind: "dump", name: d.first, kw: "Links", time: /\d:/.test(d.when) ? d.when : "", day: /\d:/.test(d.when) ? 0 : 1, via: "Shortcut", made: [], text: d.first }); });
+    SIGNALS.forEach(x => { AID[x.id] = byName("signal", x.gist)?.id ?? put(`v-${x.id}`, { id: `v-${x.id}`, kind: "signal", name: x.gist, src: x.source, day: x.today ? 0 : 1, themes: x.themes.map(t => AID[t]), ev: x.theories.map(t => [AID[t], "+"]) });
+      const d = A.O[AID[x.dump]]; if (d?.id.startsWith("v-") && !d.made.includes(AID[x.id])) d.made.push(AID[x.id]); });
+  }
+  const paneHTML = sel => A && AID[sel] ? `<div class="v-pane-in v-pane-full ob-scope ctl" data-k="${sel}">${A.full(A.O[AID[sel]], { where: "pane" }).replace(/ data-id="[^"]*"/g, "")}</div>` : `<div class="v-pane-in" data-k="${sel}"></div>`;
 
   const switcher = view => `<nav class="v-float v-switch" aria-label="Views">${[["sections", "rows", "Theme sections", "⌘1"], ["columns", "columns", "Columns", "⌘2"], ["atlas", "map-trifold", "Atlas", "⌘3"], ["timeline", "chart-scatter", "Timeline", "⌘4"], ["briefing", "newspaper", "Briefing", "⌘5"]]
     .map(([v, i, l, key]) => {
@@ -101,11 +107,11 @@
           <div class="v-list">${columns.list(c.kind)}</div>
         </div>
       </section>`).join("")}<div class="v-col-pane"></div></div>`,
-    list: kind => kind === "theme" ? THEMES.map(t => `<button type="button" class="v-row" data-id="${t.id}"><span class="v-name">${esc(t.name)}</span></button>`).join("")
-      : kind === "theory" ? THEORIES.map(t => `<button type="button" class="v-card" data-id="${t.id}"${t.draft ? " data-draft" : ""}><span class="v-claim">${esc(t.claim)}</span><span class="v-meta">${t.draft ? "" : conf(t.c)}</span></button>`).join("")
+    list: kind => kind === "theme" ? THEMES.map(t => `<button type="button" class="v-row" data-id="${t.id}"${t.fresh ? " data-unseen" : ""}>${g("theme")}<span class="v-name">${esc(t.name)}</span><span class="v-n">${inTheme(t.id).filter(x => !x.draft).length || ""}</span></button>`).join("")
+      : kind === "theory" ? THEORIES.map(t => `<button type="button" class="v-card" data-id="${t.id}"${t.draft ? " data-draft" : ""}>${g("theory")}<span class="v-claim">${esc(t.claim)}</span>${meter(t.draft ? 0 : t.c)}</button>`).join("")
       : kind === "prototype" ? PROTOS.map(p => `<button type="button" class="v-proto" data-id="${p.id}">${g("prototype")}<span class="v-name">${esc(p.name)}</span></button>`).join("")
-      : kind === "signal" ? SIGNALS.map(s => `<button type="button" class="v-card" data-id="${s.id}" data-flowrow><span class="v-name">${esc(s.gist)}</span><span class="v-meta">${esc(s.source)}</span></button>`).join("")
-      : DUMPS.map(d => `<button type="button" class="v-card" data-id="${d.id}" data-flowrow><span class="v-name">${esc(d.first)}</span><span class="v-meta">${esc(d.when)}</span></button>`).join(""),
+      : kind === "signal" ? SIGNALS.map(s => `<button type="button" class="v-card" data-id="${s.id}" data-flowrow>${g("signal")}<span class="v-name">${esc(s.gist)}</span><span class="v-meta">${esc(s.source)}</span></button>`).join("")
+      : DUMPS.map(d => `<button type="button" class="v-card" data-id="${d.id}" data-flowrow>${g("dump")}<span class="v-name">${esc(d.first)}</span><span class="v-meta">${esc(d.when)}</span></button>`).join(""),
     init(S) { S.shown = new Set(["theme", "theory", "prototype"]); },
     update(S) {
       const R = related(S.sel), k = S.sel && kindOf(S.sel);
@@ -305,22 +311,60 @@
     },
     links(S, R) {
       const svg = S.root.querySelector(".v-links"), tl = S.root.querySelector(".v-tl");
+      const items = [...S.root.querySelectorAll(".v-tl-item")];
+      items.forEach(el => el.style.translate = "");
       if (!S.sel) { svg.innerHTML = ""; return; }
       const o = tl.getBoundingClientRect(), un = v => v / S.k;
-      const at = id => { const dot = S.root.querySelector(`.v-tl-item[data-id="${id}"] .dot`), r = dot.getBoundingClientRect(), c = dot.closest(".v-tl-cell").getBoundingClientRect();
-        return { x: un(r.left + r.width / 2 - o.left), y: un(r.top + r.height / 2 - o.top), top: un(c.top - o.top), bottom: un(c.bottom - o.top) }; };
-      // Route along the lane edge next to the target, never through a label: down (or up) from the source's dot,
-      // across on the target lane's edge, then into the target's dot from above (or below).
-      const route = (a, b) => { const down = b.y > a.y, yb = down ? b.top + 3 : b.bottom - 3, end = down ? b.y - 7 : b.y + 7;
-        return { d: `M${a.x} ${a.y + (down ? 6 : -6)} V${yb} H${b.x} V${end}`, head: down ? `M${b.x} ${b.y - 5} l-3.5 -5 h7 z` : `M${b.x} ${b.y + 5} l-3.5 5 h7 z` }; };
+      const dotOf = id => S.root.querySelector(`.v-tl-item[data-id="${id}"] .dot`);
+      const at = id => { const r = dotOf(id).getBoundingClientRect(); return { x: un(r.left + r.width / 2 - o.left), y: un(r.top + r.height / 2 - o.top) }; };
+      // Today's layout (app/web/src/ui/timeline2-fieldx.tsx): with a selection, each theory on screen gets its own line within its confidence
+      // row, 30 apart, left to right, so every link arrives along a clear line. Here: related items in a row stack onto lines in year order.
+      const VLINE = 30, GAP = 6, JOG = 19, APPROACH = 22, DOT = 10;
+      LANES.forEach(l => {
+        const row = items.filter(el => el.dataset.mode === "line" && laneOf(theory(el.dataset.id)) === l)
+          .sort((a, b) => theory(a.dataset.id).year - theory(b.dataset.id).year || (b.dataset.id === S.sel) - (a.dataset.id === S.sel));
+        if (!row.length) return;
+        const top0 = Math.min(...row.map(el => at(el.dataset.id).y));
+        row.forEach((el, k) => { const dy = top0 + k * VLINE - at(el.dataset.id).y; if (Math.abs(dy) > 0.5) el.style.translate = `0 ${dy}px`; });
+      });
+      // Today's routes: leave the cause's dot straight down (or up), GAP clear of what you see; turn once and arrive at the consequence from the
+      // left, GAP short of its dot. When another dot sits in the way (or the consequence shares the column), the cause steps out once, a short jog
+      // between lines, to a lane in the gutter to its left, chosen once for all its links. Corners round at 6; an open chevron at the end.
+      const rOf = id => un(dotOf(id).getBoundingClientRect().width) / 2 + (id === S.sel ? 1.5 : 0);
+      const roundPath = (pts, rad = 6) => {
+        const p = pts.filter((q, i) => i === 0 || Math.abs(q[0] - pts[i - 1][0]) + Math.abs(q[1] - pts[i - 1][1]) > 0.5);
+        let d = `M ${p[0][0]} ${p[0][1]}`;
+        for (let i = 1; i < p.length - 1; i++) {
+          const [ax, ay] = p[i - 1], [bx, by] = p[i], [cx, cy] = p[i + 1];
+          const l1 = Math.hypot(bx - ax, by - ay), l2 = Math.hypot(cx - bx, cy - by), rr = Math.min(rad, l1 / 2, l2 / 2);
+          d += ` L ${bx - ((bx - ax) / (l1 || 1)) * rr} ${by - ((by - ay) / (l1 || 1)) * rr} Q ${bx} ${by} ${bx + ((cx - bx) / (l2 || 1)) * rr} ${by + ((cy - by) / (l2 || 1)) * rr}`;
+        }
+        const last = p[p.length - 1]; return `${d} L ${last[0]} ${last[1]}`;
+      };
+      const edges = [];
+      for (const t of THEORIES) for (const f of t.follows)
+        if (R.theory.has(t.id) && R.theory.has(f) && (t.id === S.sel || f === S.sel || S.chain)) edges.push([f, t.id]);
+      const pts = items.filter(el => el.getBoundingClientRect().width).map(el => ({ id: el.dataset.id, ...at(el.dataset.id) }));
+      const clear = (x, lo, hi, s) => !pts.some(d => d.id !== s && Math.abs(d.x - x) < rOf(d.id) + GAP + 1 && d.y > lo && d.y < hi);
+      const lanes = new Map();
+      const laneFor = s => {
+        if (lanes.has(s)) return lanes.get(s);
+        const p = at(s), qs = edges.filter(([a]) => a === s).map(([, b]) => at(b)), lo = Math.min(p.y, ...qs.map(q => q.y)), hi = Math.max(p.y, ...qs.map(q => q.y));
+        const blocked = qs.some(q => Math.abs(q.x - p.x) < 4) || !clear(p.x, lo + 0.5, hi + 0.5, s);
+        const base = p.x - DOT / 2 - GAP - APPROACH - 4;
+        const lane = blocked ? (Array.from({ length: 17 }, (_, i) => base - i * 3).find(x => clear(x, lo, hi + 0.5, s)) ?? base) : p.x;
+        lanes.set(s, lane); return lane;
+      };
       let out = "";
-      for (const t of THEORIES) for (const f of t.follows) {
-        if (!R.theory.has(t.id) || !R.theory.has(f) || !(t.id === S.sel || f === S.sel || S.chain)) continue;
-        const r = route(at(f), at(t.id));
-        out += `<path d="${r.d}"/><path class="head" d="${r.head}"/>`;
+      for (const [a, b] of edges) {
+        const p = at(a), q = at(b), lx = laneFor(a), dir = q.y > p.y ? 1 : -1, end = [q.x - rOf(b) - GAP, q.y];
+        const path = q.x > p.x - 4 && Math.abs(lx - p.x) > 0.5 ? [[p.x, p.y + dir * (rOf(a) + GAP)], [p.x, p.y + dir * JOG], [lx, p.y + dir * JOG], [lx, q.y], end]
+          : q.x > p.x + 4 ? [[p.x, p.y + dir * (rOf(a) + GAP)], [p.x, q.y], end]
+          : [[p.x, p.y + dir * (rOf(a) + GAP)], [p.x, p.y + dir * JOG], [q.x - 40, p.y + dir * JOG], [q.x - 40, q.y], end];
+        const deep = a !== S.sel && b !== S.sel ? ' data-deep=""' : "", [ex, ey] = end;
+        out += `<path d="${roundPath(path)}"${deep}/><path class="head" d="M ${ex - 4.5} ${ey - 3.15} L ${ex} ${ey} L ${ex - 4.5} ${ey + 3.15}"${deep}/>`;
       }
-      const s = theory(S.sel);
-      for (const rv of s.rivals) out += `<path class="rival" d="${route(at(S.sel), at(rv)).d}"/>`;
+      // Rivals are not drawn as lines, as today.
       svg.innerHTML = out;
     },
     click(S, el) {

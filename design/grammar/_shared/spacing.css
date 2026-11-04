@@ -13,7 +13,12 @@
   --inset-chip: 8px;    /* chip and tag x padding */
   --inset-control: 10px;/* button and input x padding; inputs pad y so text centres in --control */
   --inset-row: 8px;     /* list rows and rail rows */
-  --inset-card: 12px;   /* cards and contained boxes */
+  --inset-card: 12px;   /* contained boxes (wells, modals' inner boxes) */
+  --card-inline: 10px; --card-block: 8px;   /* object cards (06): 10 inline, 8 block (block is always inline − 2) */
+  --inset-peek: 16px; --inset-peek-top: 12px;   /* peeks (06): 16 at the sides and bottom, 12 at the top for optical balance */
+  --gap-tile: 8px;      /* an 18 object tile to its text (06) */
+  --gap-tile-title: 12px; /* the full view's 32 title tile to its title (06) */
+  --gap-key: 6px;       /* between values on a key line, at every rung (06) */
   /* Region insets grow with focus: navigation < list < pane. The two browsing columns share a top line. */
   --inset-nav-block: 12px;  --inset-nav-inline: 8px;    /* rail */
   --inset-list-block: 12px; --inset-list-inline: 16px;  /* main column */

@@ -22,7 +22,18 @@
   const conf = n => `<span class="nv-conf lg" role="img" aria-label="Confidence ${n} of 5">${[1, 2, 3, 4, 5].map(i => `<i${i <= n ? " data-on" : ""}></i>`).join("")}</span>`;
   // No new dots on objects or rail tiles (decided 4 Nov).
   const nameOf = o => o.name || `Untitled ${TYPES[o.kind].one}`;
-  const chip = o => `<button type="button" class="nv-chip${o.draft ? " draft" : ""}" data-go-to="${o.id}">${g(o.kind, o.draft)}<span class="t">${esc(nameOf(o))}</span></button>`;
+  const chip = o => `<button type="button" class="ctl-chip ob-chip"${o.draft ? " data-draft" : ""} data-go-to="${o.id}">${g(o.kind, o.draft)}<span class="t">${esc(nameOf(o))}</span></button>`;
+  // 06 objects (decided): rows and cards from _shared/objects.css. Previews show a 20 × 4 confidence meter; the full view keeps the five-segment setter.
+  const meter = n => `<span class="ob-meter" role="img" aria-label="${n ? `Confidence ${n} of 5` : "No confidence yet"}"><i style="width:${(n || 0) * 20}%"></i></span>`;
+  const keyOf = (s, o) => o.kind === "theme" ? (o.draft ? "" : `<span class="kv"><span class="ob-n">${theoriesOf(s, o).length || ""}</span></span>`)
+    : o.kind === "signal" ? `<span class="kv"><span class="ob-src">${esc(o.src)}</span></span>`
+    : o.kind === "dump" ? `<span class="kv"><span class="nv-mono">${o.time}</span></span>` : "";
+  // A preview row: tile, name, key value. act: "sel" (the list) or "go" (a relation inside a full view)
+  const orow = (s, o, { cur, act = "go", kv = true, cls = "", attr = "" } = {}) => {
+    const label = o.kind === "theme" || o.kind === "prototype", k = kv ? keyOf(s, o) : "";
+    const rk = o.kind === "theory" ? `<span class="ob-rk">${meter(o.draft ? 0 : o.c)}</span>` : "";
+    return `<div class="ob-row${label ? " one label" : ""}${rk ? " has-rk" : ""}${!k && !rk ? " solo" : ""}${o.draft ? " draft" : ""}${o.fresh ? " unseen" : ""}${o.name ? "" : " untitled"}${cls ? ` ${cls}` : ""}"${o.id === cur ? ' aria-current="true"' : ""} ${attr}>${g(o.kind, o.draft)}<button type="button" class="nm" ${act === "sel" ? `data-sel="${o.id}"` : `data-go-to="${o.id}"`}>${esc(nameOf(o))}</button>${rk}${k}</div>`;
+  };
 
   /* ── Relations ─────────────────────────────────────── */
   const all = (s, k) => Object.values(s.O).filter(o => o.kind === k && !o.gone);
@@ -42,8 +53,8 @@
   /* ── List (rows are placeholders: 06 Objects designs them) ── */
   const list = s => {
     const t = s.type, cur = s.sel;
-    const row = o => `<button type="button" class="nv-row${o.draft ? " draft" : ""}${o.name ? "" : " untitled"}" data-sel="${o.id}" aria-current="${o.id === cur}"><span class="nm">${esc(nameOf(o))}</span></button>`;
-    const group = (label, rows) => rows.length ? `<div class="nv-group">${label ? `<div class="nv-glabel">${label}</div>` : ""}${rows.map(row).join("")}</div>` : "";
+    const row = o => orow(s, o, { cur, act: "sel", kv: !(o.kind === "prototype" || o.draft || o.kind === "signal" && false) });
+    const group = (label, rows) => rows.length ? `<div class="ob-group">${label ? `<div class="ob-glabel"><span>${label}</span></div>` : ""}${rows.map(row).join("")}</div>` : "";
     const xs = all(s, t);
     let body = "";
     if (t === "theme") body = group("", xs.filter(o => !o.draft)) + group("Drafts", xs.filter(o => o.draft));
@@ -51,18 +62,18 @@
     else if (t === "prototype") body = ["Building", "Idea", "Built"].map(k => group(k, xs.filter(o => o.status === k && !o.draft))).join("") + group("Drafts", xs.filter(o => o.draft));
     else body = DAYS.map((d, i) => group(d, xs.filter(o => o.day === i))).join("");
     const add = MAKE.includes(t) ? ib("plus", `New ${TYPES[t].one}`, "data-new", "N") : "";
-    return `<section class="nv-list" aria-label="${TYPES[t].name}">
+    return `<section class="nv-list ob-list" aria-label="${TYPES[t].name}">
         <div class="nv-lhead"><span class="h">${TYPES[t].name}</span><span class="nv-meta">${xs.length}</span>${add}</div>
-        <div class="nv-scroll">${body}</div></section>`;
+        <div class="nv-scroll ob-scroll">${body}</div></section>`;
   };
 
   /* ── Title: always an editable field, prose until clicked ── */
-  const title = (s, o) => {
+  const title = (s, o, key = "") => {
     const editable = o.kind !== "dump";
     const err = s.err === o.id;
-    return `<div class="mk-titlewrap">
+    return `<header class="nv-head">${g(o.kind, o.draft)}<div class="mk-titlewrap">
       <h3 class="nv-title mk-title${o.draft ? " draft" : ""}${s.focusCls === "title" ? " is-focus" : ""}" ${editable ? `contenteditable="plaintext-only" role="textbox" aria-label="${o.kind === "theory" ? "Claim" : "Name"}" data-title="${o.id}" data-placeholder="${PH[o.kind]}"${err ? ` aria-invalid="true" aria-describedby="mk-err-${o.id}"` : ""} spellcheck="false"` : ""}>${esc(o.name)}</h3>
-      <div class="mk-msg" data-msg="${o.id}" aria-live="polite">${err ? errLine(o) : dupLine(s, o)}</div></div>`;
+      <div class="mk-msg" data-msg="${o.id}" aria-live="polite">${err ? errLine(o) : dupLine(s, o)}</div>${key ? `<div class="nv-sub">${key}</div>` : ""}</div></header>`;
   };
   const errLine = o => `<p class="mk-err" id="mk-err-${o.id}">${ic("warning-circle")}<span>Name this ${TYPES[o.kind].one} to keep it</span><button type="button" class="nv-btn quiet mk-quiet" data-discard-new="${o.id}">Discard</button></p>`;
   const dupLine = (s, o) => {
@@ -74,61 +85,65 @@
   /* ── Draft bar: agent-made, not yet mine. Discard left of Accept. ── */
   // A draft (agent-made, not yet mine): Discard | Accept at the top right of its full view (06), "Draft" as a dashed tag with its dump in the key line
   const draftVerbs = o => o.draft ? `<span class="ctl nv-decide mk-verbs"><button type="button" class="nv-btn secondary" data-draft-no="${o.id}">Discard</button><button type="button" class="nv-btn primary" data-draft-yes="${o.id}">Accept</button></span>` : "";
-  const draftKey = (s, o) => o.draft ? `<div class="nv-sub mk-draftkey"><span class="mk-tag">Draft</span><span>from</span>${chip(s.O[o.from])}</div>` : "";
+  const draftKey = (s, o) => o.draft ? `<span class="mk-draftkey"><span class="mk-tag">Draft</span><span>from</span>${chip(s.O[o.from])}</span>` : "";
 
   /* ── Full views ────────────────────────────────────── */
   const evItem = (s, t, e) => {
     const x = s.O[e[0]], sug = e[2] === "suggested", just = s.just === `${t.id}:${x.id}`;
-    return `<div class="nv-item mk-ev${sug ? " mk-sug" : ""}${just ? " mk-just" : ""}" data-ev="${x.id}">${g("signal")}<span class="t"><span>${esc(x.name)}</span></span>
-      <span class="src"><span>${esc(x.src)}</span>${sug ? `<span>Suggested by agent</span>` : ""}</span>
-      ${sug ? `<span class="nv-decide mk-evdecide"><button type="button" class="nv-btn secondary" data-sug-no="${x.id}">Dismiss</button><button type="button" class="nv-btn primary" data-sug-yes="${x.id}">Accept</button></span>` : ""}</div>`;
+    const r = orow(s, x, { cls: `mk-ev${just ? " mk-just" : ""}`, attr: `data-ev="${x.id}"` });
+    return sug ? `<div class="ob-block sug mk-sug"><div class="ob-blabel">Suggested by agent</div>${r}
+      <div class="ob-decide"><button type="button" class="nv-btn secondary" data-sug-no="${x.id}">Dismiss</button><button type="button" class="nv-btn primary" data-sug-yes="${x.id}">Accept</button></div></div>` : r;
   };
   const evidence = (s, t) => {
     const two = s.opt.evAdd === "two";
-    const col = (st, label, icon) => {
-      const items = t.ev.filter(e => e[1] === st).sort((x, y) => !!x[2] - !!y[2]);   // suggestions sit after what's yours
-      return `<div class="nv-ev-col"><div class="nv-ev-head">${ic(icon)}<span>${label} ${items.filter(e => !e[2]).length}</span>${two ? `<span class="mk-evadd">${ib("plus", st === "+" ? "Add support" : "Add undermining", `data-ev-add="${st}"`)}</span>` : ""}</div>
-        ${items.map(e => evItem(s, t, e)).join("") || `<p class="mk-none">None yet</p>`}</div>`;
+    const col = (st, label) => {
+      const items = t.ev.filter(e => e[1] === st).sort((x, y) => !!y[2] - !!x[2]);   // a suggestion sits first in the group it would join (06)
+      const n = items.filter(e => !e[2]).length;
+      return `<section class="nv-section"><div class="nv-shead"><span>${label}</span>${n ? `<span class="nv-meta">${n}</span>` : ""}${two ? `<span class="mk-evadd">${ib("plus", st === "+" ? "Add support" : "Add undermining", `data-ev-add="${st}"`)}</span>` : ""}</div>
+        ${items.length ? `<div class="ob-rows">${items.map(e => evItem(s, t, e)).join("")}</div>` : `<p class="mk-none">None yet</p>`}</section>`;
     };
-    return `<section class="nv-section mk-evsec">${two ? "" : `<div class="nv-shead">${g("signal")}Evidence<span class="mk-evadd">${ib("plus", "Add evidence", 'data-ev-add="any"')}</span></div>`}
-      <div class="nv-ev">${col("+", "Supports", "arrow-up")}${col("-", "Undermines", "arrow-down")}</div></section>`;
+    return `${two ? "" : `<div class="nv-shead mk-evsec"><span>Evidence</span><span class="mk-evadd">${ib("plus", "Add evidence", 'data-ev-add="any"')}</span></div>`}${col("+", "Supports")}${col("-", "Undermines")}`;
   };
-  const card = (s, t) => `<button type="button" class="nv-card${t.draft ? " draft" : ""}" data-go-to="${t.id}"><span class="cn">${esc(nameOf(t))}</span><span class="cm">${t.c && !t.draft ? `<span class="nv-conf">${[1, 2, 3, 4, 5].map(i => `<i${i <= t.c ? " data-on" : ""}></i>`).join("")}</span>` : t.draft ? "<span>Draft</span>" : "<span>No confidence yet</span>"}<span>+${t.ev.filter(e => e[1] === "+" && !e[2]).length} −${t.ev.filter(e => e[1] === "-" && !e[2]).length}</span></span></button>`;
-  const newCard = (s, th) => s.cardFor === th.id ? `<div class="nv-card mk-newcard"><div class="cn mk-cardname${s.focusCls === "card" ? " is-focus" : ""}" contenteditable="plaintext-only" role="textbox" aria-label="Claim" data-card="${th.id}" data-placeholder="State the claim" spellcheck="false">${esc(s.cardText || "")}</div><span class="cm"><span>No confidence yet</span><span>+0 −0</span></span></div>` : "";
+  const card = (s, t) => `<div class="ob-card has-rk${t.draft ? " draft" : ""}">${g("theory", t.draft)}<button type="button" class="nm" data-go-to="${t.id}">${esc(nameOf(t))}</button><span class="ob-rk">${meter(t.draft ? 0 : t.c)}</span></div>`;
+  const newCard = (s, th) => s.cardFor === th.id ? `<div class="ob-card has-rk mk-newcard">${g("theory")}<div class="nm mk-cardname${s.focusCls === "card" ? " is-focus" : ""}" contenteditable="plaintext-only" role="textbox" aria-label="Claim" data-card="${th.id}" data-placeholder="State the claim" spellcheck="false">${esc(s.cardText || "")}</div><span class="ob-rk">${meter(0)}</span></div>` : "";
+  const cnt = (icon, n, label) => `<span class="ob-cnt" role="img" aria-label="${n} ${label}"><i class="ph ph-${icon}" aria-hidden="true"></i>${n}</span>`;
+  const themesSec = (s, o) => o.themes.length ? `<section class="nv-section"><div class="nv-shead"><span>Themes</span></div><div class="nv-chips">${o.themes.map(id => chip(s.O[id])).join("")}</div></section>` : "";
 
+  // Full view (06): verbs at the top right; the 32 title tile and the title, the key line under it (no labels); prose; then relation sections
   const doc = (s, o) => {
-    const top = o.kind === "theory" || o.kind === "signal" ? `<div class="nv-chips">${o.themes.map(id => chip(s.O[id])).join("") || `<span class="nv-chip plain">${g(o.kind)}<span class="t">${o.kind === "theory" ? "Not filed in a theme" : "Signal"}</span></span>`}</div>`
-      : `<div class="nv-chips"><span class="nv-chip plain">${g(o.kind, o.draft)}<span class="t">${o.draft ? "Draft " : ""}${o.kind === "prototype" ? o.status : TYPES[o.kind].one[0].toUpperCase() + TYPES[o.kind].one.slice(1)}</span></span></div>`;
     const ctl = o.kind === "dump" ? `<span class="ctl">${ib("trash", "Delete dump", `data-del="${o.id}"`)}</span>` : "";
-    let body = "";
+    let key = "", body = "";
     if (o.kind === "theme") {
       const ts = theoriesOf(s, o), sg = signalsOf(s, o);
-      body = `<div class="nv-sub"><span>${o.signals ?? sg.length} signals</span><span>${ts.length} theories</span></div>
-        <section class="nv-section"><div class="nv-shead">${g("theory")}Theories<span class="nv-meta">${ts.length}</span></div>
-          ${ts.length || s.cardFor === o.id ? `<div class="nv-cards">${ts.map(t => card(s, t)).join("")}${newCard(s, o)}</div>` : ""}
+      key = `${draftKey(s, o)}<span class="ob-cnts">${cnt("target", ts.length, "theories")}${cnt("pulse", o.signals ?? sg.length, "signals")}</span>`;
+      body = `<section class="nv-section"><div class="nv-shead"><span>Theories</span>${ts.length ? `<span class="nv-meta">${ts.length}</span>` : ""}</div>
+          ${ts.length || s.cardFor === o.id ? `<div class="ob-cards">${ts.map(t => card(s, t)).join("")}${newCard(s, o)}</div>` : ""}
           ${s.cardFor === o.id ? "" : `<button type="button" class="mk-add" data-add-theory="${o.id}">${ic("plus")}<span>Add theory</span></button>`}</section>
-        <section class="nv-section"><div class="nv-shead">${g("signal")}Signals<span class="nv-meta">${sg.length}</span></div>
-          ${sg.length ? `<div class="nv-box">${sg.map(x => `<button type="button" class="nv-item" data-go-to="${x.id}">${g("signal")}<span class="t"><span>${esc(x.name)}</span></span><span class="src"><span>${esc(x.src)}</span></span></button>`).join("")}</div>` : `<p class="nv-empty mk-empty">No signals yet</p>`}</section>`;
+        <section class="nv-section"><div class="nv-shead"><span>Signals</span>${sg.length ? `<span class="nv-meta">${sg.length}</span>` : ""}</div>
+          ${sg.length ? `<div class="ob-rows">${sg.map(x => orow(s, x)).join("")}</div>` : `<p class="nv-empty mk-empty">No signals yet</p>`}</section>`;
     } else if (o.kind === "theory") {
-      body = `<dl class="nv-fields">${o.draft ? "" : `<dt>Confidence</dt><dd>${o.c ? conf(o.c) : `<span class="mk-unset">Not set</span>`}</dd>`}<dt>Happens by</dt><dd>${o.by}</dd></dl>
-        <div class="mk-note${s.focusCls === "note" ? " is-focus" : ""}" contenteditable="plaintext-only" role="textbox" aria-multiline="true" aria-label="Note" data-note="${o.id}" data-placeholder="Add a note">${esc(o.note || "")}</div>
-        ${evidence(s, o)}`;
+      key = `${draftKey(s, o)}${o.draft ? "" : conf(o.c || 0)}<span>By ${o.by}</span>`;
+      body = `<div class="mk-note${s.focusCls === "note" ? " is-focus" : ""}" contenteditable="plaintext-only" role="textbox" aria-multiline="true" aria-label="Note" data-note="${o.id}" data-placeholder="Add a note">${esc(o.note || "")}</div>
+        ${evidence(s, o)}${themesSec(s, o)}`;
     } else if (o.kind === "prototype") {
+      key = `${draftKey(s, o)}<span>${o.status}</span>`;
       body = `<div class="mk-note" contenteditable="plaintext-only" role="textbox" aria-multiline="true" aria-label="Notes" data-note="${o.id}" data-placeholder="What it is and what you learned">${esc(o.note || "")}</div>
-        <section class="nv-section"><div class="nv-shead">${g("theory")}Tests<span class="nv-meta">${o.tests.length}</span></div><div class="nv-cards">${o.tests.map(id => card(s, s.O[id])).join("")}</div></section>`;
+        <section class="nv-section"><div class="nv-shead"><span>Tests</span><span class="nv-meta">${o.tests.length}</span></div><div class="ob-rows">${o.tests.map(id => orow(s, s.O[id])).join("")}</div></section>`;
     } else if (o.kind === "signal") {
       const ev = evFor(s, o), from = all(s, "dump").filter(d => d.made.includes(o.id));
-      body = `<div class="nv-sub"><span>${esc(o.src)}</span><span>${DAYS[o.day]}</span></div>
-        <dl class="nv-fields"><dt>Came from</dt><dd>${from.map(chip).join("") || "<span class='mk-unset'>Unknown</span>"}</dd></dl>
-        <section class="nv-section"><div class="nv-shead">${g("theory")}Evidence for<span class="nv-meta">${ev.length}</span></div>
-          ${ev.length ? `<div class="nv-box">${ev.map(([t, st]) => `<button type="button" class="nv-item" data-go-to="${t.id}">${g("theory", t.draft)}<span class="t"><span>${esc(nameOf(t))}</span></span><span class="src"><span>${st === "+" ? "Supports" : "Undermines"}</span></span></button>`).join("")}</div>` : `<p class="nv-empty mk-empty">Not evidence for a theory</p>`}</section>`;
+      key = `<span>${esc(o.src)}</span><span>${DAYS[o.day]}</span>`;
+      const evSec = (st, label) => { const xs = ev.filter(([, x]) => x === st); return xs.length ? `<section class="nv-section"><div class="nv-shead"><span>${label}</span><span class="nv-meta">${xs.length}</span></div><div class="ob-rows">${xs.map(([t]) => orow(s, t)).join("")}</div></section>` : ""; };
+      body = `${ev.length ? evSec("+", "Supports") + evSec("-", "Undermines") : `<section class="nv-section"><div class="nv-shead"><span>Supports</span></div><p class="nv-empty mk-empty">Not evidence for a theory</p></section>`}
+        ${themesSec(s, o)}
+        <section class="nv-section"><div class="nv-shead"><span>Came from</span></div>${from.length ? `<div class="ob-rows">${from.map(d => orow(s, d)).join("")}</div>` : "<p class='mk-none'>Unknown</p>"}</section>`;
     } else if (o.kind === "dump") {
-      body = `<div class="nv-sub"><span class="nv-mono">${o.time}</span><span>${DAYS[o.day]}</span><span>${esc(o.via)}</span>${o.len ? `<span class="nv-mono">${o.len}</span>` : ""}</div>
-        <p class="nv-note">${esc(o.text)}</p>
-        <section class="nv-section"><div class="nv-shead">Made<span class="nv-meta">${o.made.length}</span></div>
-          ${o.made.length ? `<div class="nv-box">${o.made.map(id => s.O[id]).filter(x => !x.gone).map(x => `<button type="button" class="nv-item" data-go-to="${x.id}">${g(x.kind, x.draft)}<span class="t"><span>${esc(nameOf(x))}</span></span></button>`).join("")}</div>` : `<p class="nv-empty mk-empty">${o.processing ? "Working on it" : "Nothing yet"}</p>`}</section>`;
+      key = `<span class="nv-mono">${o.time}</span><span>${DAYS[o.day]}</span><span>${esc(o.via)}</span>${o.len ? `<span class="nv-mono">${o.len}</span>` : ""}`;
+      const made = o.made.map(id => s.O[id]).filter(x => !x.gone);
+      body = `<p class="nv-note">${esc(o.text)}</p>
+        <section class="nv-section"><div class="nv-shead"><span>Made</span><span class="nv-meta">${made.length}</span></div>
+          ${made.length ? `<div class="ob-rows">${made.map(x => orow(s, x)).join("")}</div>` : `<p class="nv-empty mk-empty">${o.processing ? "Working on it" : "Nothing yet"}</p>`}</section>`;
     }
-    return `<article class="nv-doc${o.solid ? " mk-solidify" : ""}"><div class="nv-top">${top}${ctl}${draftVerbs(o)}</div>${title(s, o)}${draftKey(s, o)}${body}</article>`;
+    return `<article class="nv-doc nv-full${o.solid ? " mk-solidify" : ""}"><div class="nv-top">${ctl}${draftVerbs(o)}</div>${title(s, o, key)}${body}</article>`;
   };
 
   /* ── Composer: the dump-or-ask bar (05 anatomy) and its states ── */
@@ -259,7 +274,7 @@
     if (o.draft && text !== orig) o.edited = true;
     if (s.err === o.id && text) { s.err = null; render(host); }
   };
-  const syncRow = (host, o) => { const r = host.querySelector(`.nv-row[data-sel="${o.id}"]`); if (!r) return; r.classList.toggle("untitled", !o.name.trim()); r.querySelector(".nm").textContent = o.name.trim() || `Untitled ${TYPES[o.kind].one}`; };
+  const syncRow = (host, o) => { const r = host.querySelector(`[data-sel="${o.id}"]`)?.closest(".ob-row"); if (!r) return; r.classList.toggle("untitled", !o.name.trim()); r.querySelector(".nm").textContent = o.name.trim() || `Untitled ${TYPES[o.kind].one}`; };
   const accept = (host, o, text = `${TYPES[o.kind].one[0].toUpperCase()}${TYPES[o.kind].one.slice(1)} accepted`, revert) => {
     // Success is silent (10 States): the dashes going is the feedback, so no toast
     o.draft = false; o.solid = true; if (o.kind === "theory") o.c = 0; void text; void revert;
@@ -379,7 +394,7 @@
       else if ("recStop" in d) recStop(host, true);
       else if ("recNo" in d) recStop(host, false);
     });
-    host.addEventListener("dblclick", e => { const r = e.target.closest(".nv-row[data-sel]"); if (r) { const t = host.querySelector(`[data-title="${r.dataset.sel}"]`); t?.focus(); t && caretEnd(t); } });
+    host.addEventListener("dblclick", e => { const r = e.target.closest("[data-sel]"); if (r) { const t = host.querySelector(`[data-title="${r.dataset.sel}"]`); t?.focus(); t && caretEnd(t); } });
     host.addEventListener("focusin", e => { const t = e.target.closest("[data-title]"); if (t) t.dataset.orig = s.O[t.dataset.title]?.name ?? ""; });
     host.addEventListener("focusout", e => {
       const t = e.target.closest("[data-title]"); if (t && t.isConnected) { commitTitle(host, t); delete t.dataset.orig; }
@@ -415,7 +430,7 @@
         if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); s.pop.i = (s.pop.i + (e.key === "ArrowDown" ? 1 : -1) + n) % n; render(host, "[data-pq]"); host.querySelector(".mk-opt[aria-selected='true']")?.scrollIntoView({ block: "nearest" }); }
         else if (e.key === "Enter") { e.preventDefault(); const id = s.pop.opts[s.pop.i]; if (id) addEvidence(host, id, s.pop.st); }
         else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); const st = s.pop.any ? "any" : s.pop.st; s.pop = null; render(host, `[data-ev-add="${st}"]`); }
-      } else if (e.key === "F2" && t.matches(".nv-row")) { e.preventDefault(); const x = host.querySelector(`[data-title="${t.dataset.sel}"]`); x?.focus(); x && caretEnd(x); }
+      } else if (e.key === "F2" && t.matches("[data-sel]")) { e.preventDefault(); const x = host.querySelector(`[data-title="${t.dataset.sel}"]`); x?.focus(); x && caretEnd(x); }
     });
   };
   const cardDone = (host, el, keep, open) => {

@@ -54,10 +54,12 @@ h3.sub { margin: 20px 0 8px; font-size: 14px; font-weight: 650; }
 .st-empty { margin: 0; padding: 6px var(--inset-row); color: var(--ink-2); font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); }
 .st-empty-block { display: grid; justify-items: start; gap: var(--gap-item); }
 .st-empty-block .nv-btn { margin-left: calc(var(--inset-row) - var(--inset-control) + 2px); }
-/* The Add slot: where the first item would sit, at its height. The slot recipe is nav/'s (a placeholder until 06 Objects). */
-.nv .st-add, .stg .st-add { display: flex; align-items: center; gap: var(--gap-icon); width: 100%; min-height: var(--row); padding: 0 var(--inset-row); border-radius: var(--r-control);
-  outline: 1px dashed var(--hairline-strong); outline-offset: -1px; color: var(--ink-2); font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); cursor: pointer; background: none; border: 0; transition: var(--ctl-t); }
+/* The Add slot: where the first item would sit, at its height. The 06 slot: a quiet button (plus and a 12 / 500 label in ink 2), never dashed;
+   its plus sits in the tile column, so the label starts on the text edge. */
+.nv .st-add, .stg .st-add { display: flex; align-items: center; gap: var(--gap-tile); width: 100%; min-height: var(--row); padding: 0 var(--inset-row); border-radius: var(--r-control);
+  color: var(--ink-2); font: var(--w-medium) var(--fs-label)/var(--lh-ui) var(--font); cursor: pointer; background: none; border: 0; transition: var(--ctl-t); }
 .nv .st-add.big, .stg .st-add.big { min-height: 40px; padding: 0 var(--inset-card); }
+.nv .nv-doc .st-add { padding-inline: var(--inset-row); margin-inline: calc(var(--inset-row) * -1); width: calc(100% + var(--inset-row) * 2); gap: calc(var(--tile) + var(--gap-tile) - var(--icon-label)); }
 .nv .st-add:hover, .stg .st-add:hover { background: var(--hover); color: var(--ink); }
 .st-add i[class*="ph"] { width: var(--icon-label) !important; height: var(--icon-label) !important; font-size: var(--icon-label) !important; }
 .stg .st-add { width: auto; }
@@ -66,7 +68,7 @@ h3.sub { margin: 20px 0 8px; font-size: 14px; font-weight: 650; }
 /* ═══ Loading ═════════════════════════════════════════════════════════════════
    Nothing for 300ms. Then a skeleton with the content's own geometry, so nothing moves when it lands. Never a spinner for content. */
 .st-skel { display: block; height: 10px; border-radius: var(--r-xs); background: var(--tile-bg); position: relative; overflow: hidden; }
-.st-skel.t { height: 20px; }   /* the pane title's line */
+.st-skel.t { height: calc(var(--fs-title) * var(--lh-head)); }   /* the pane title's line */
 .st-wait { animation: st-in var(--t-float) var(--ease-out) 300ms both; }
 .st-skel::after { content: ""; position: absolute; inset: 0; translate: -100% 0; background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.55), transparent); animation: st-sweep 1.6s ease-in-out 300ms infinite; }
 @keyframes st-in { from { opacity: 0; } }
@@ -87,9 +89,8 @@ h3.sub { margin: 20px 0 8px; font-size: 14px; font-weight: 650; }
 .st-spin { display: inline-grid; place-items: center; width: var(--icon-label); height: var(--icon-label); color: var(--ink-2); flex: none; }
 .st-spin i[class*="ph"] { width: var(--icon-label) !important; height: var(--icon-label) !important; font-size: var(--icon-label) !important; animation: ctl-spin 700ms linear infinite; }
 @media (prefers-reduced-motion: reduce) { .st-spin i[class*="ph"] { animation: ctl-pulse 1.2s ease-in-out infinite; } }
-/* A row with a state: the mark trails the name, the words sit on a second line (rows are placeholders until 06) */
-.nv .nv-row.two > .mark { grid-column: 2; grid-row: 1; display: grid; place-items: center; width: var(--icon-label); height: var(--line-ui); }
-.nv .nv-row .sub .neg-t { color: var(--ink); }
+/* A row with a state (06 preview): the mark sits right of the name's first line, the words on the key line */
+.nv .ob-row .kv .neg-t { color: var(--ink); }
 .nv-type > .st-spin { margin-left: auto; }
 /* The dump's own page: one status line under its title */
 .nv .st-status { display: flex; align-items: center; gap: var(--gap-icon); min-height: var(--control); color: var(--ink-2); }
@@ -168,4 +169,8 @@ h3.sub { margin: 20px 0 8px; font-size: 14px; font-weight: 650; }
 .nv .nv-btn.quiet:hover { background: var(--hover); color: var(--ink); }
 .nv .nv-btn.danger { background: var(--danger); color: var(--on-danger); box-shadow: var(--btn-shadow); }
 .nv .nv-btn.danger:hover { background: var(--danger-hover); }
-.nv .nv-row[hidden] { display: none; }
+.nv .ob-row[hidden] { display: none; }
+/* Empty lines and status lines inside a full view start on the tile edge (two left edges) */
+.nv .nv-doc .st-empty { padding-inline: 0; }
+.nv .nv-doc .st-status > .st-spin { margin: 0 calc(var(--tile) + var(--gap-tile) - var(--icon-label) - var(--gap-icon)) 0 0; }
+.nv .nv-doc .st-status > .nv-ring { margin: 0 calc(var(--tile) + var(--gap-tile) - 7px - var(--gap-icon)) 0 0; }

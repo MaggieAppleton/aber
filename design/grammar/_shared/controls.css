@@ -32,7 +32,7 @@
 :is(.ctl, .stg, .nv) :is(button, a, input, textarea, select, [tabindex]):focus-visible, .ctl .is-focus { outline: 2px solid var(--focus); outline-offset: 2px; }
 :is(.ctl, .stg, .nv) :is(.ctl-item, .stg-menu-item, .ctl-seg > button, .nv-row, .nv-item, .stg-index a, .nv-type):is(:focus-visible, .is-focus) { outline-offset: -2px; }
 /* Text fields show the ring on the field, whenever the caret is in it */
-:is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search, .nv-filter):is(:focus-within, .is-focus) { outline: 2px solid var(--focus); outline-offset: 2px; }
+:is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search, .nv-filter):is(:has(:focus-visible), .is-focus, :has(.is-focus)) { outline: 2px solid var(--focus); outline-offset: 2px; }
 :is(.ctl, .stg, .nv) :is(.ctl-field, .nv-search, .nv-filter) :is(input, textarea, select):focus-visible { outline: 0; }
 /* Press: keep the hover tint and shrink to 0.98; never darken */
 :is(.ctl, .stg, .nv) :is(.ctl-btn, .ctl-icon, .ctl-chip, .stg-btn, .nv-btn, .nv-back, .stg-iconbtn, .nv-ib, .stg-chip, button.nv-chip, .ctl-seg > button, .stg-switch button, .nv-switch button):is(:active, .is-press):not([aria-disabled="true"], :disabled) { scale: var(--press-scale); }
@@ -126,7 +126,7 @@
 .ctl-composer > .ctl-icon { flex: none; }
 .ctl-composer textarea { all: unset; flex: 1; min-width: 0; align-self: center; padding: 0 var(--gap-icon); font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); white-space: pre-wrap; max-height: calc(var(--fs-body) * var(--lh-ui) * 6); overflow: auto; field-sizing: content; }
 .ctl-composer textarea::placeholder { color: var(--ink-2); opacity: 1; }
-.ctl-composer:is(:focus-within, .is-focus) { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ctl-composer:is(:has(:is(input, textarea):focus-visible), .is-focus, :has(:is(input, textarea).is-focus)) { outline: 2px solid var(--focus); outline-offset: 1px; }   /* a large pill: the same 2px ring at 1px, so it doesn't read heavy */
 .ctl-composer textarea:focus-visible { outline: 0; }
 .ctl-composer:is(:hover, .is-hover):not(:focus-within) { box-shadow: var(--sh-float), 0 0 0 0.5px var(--ink-3); }
 .stg .ctl-composer, .nv .ctl-composer { position: absolute; z-index: var(--z-chrome); right: var(--inset-float); bottom: var(--inset-float); width: 300px; }
@@ -233,3 +233,17 @@
 .stg .stg-pane { overflow-y: auto; scrollbar-width: none; padding-bottom: calc(var(--composer-h) + var(--inset-float) * 2); }
 .nv .nv-scroller { scroll-padding-bottom: calc(var(--composer-h) + var(--inset-float) * 2); }
 .nv .nv-scroller > .nv-doc { padding-bottom: calc(var(--composer-h) + var(--inset-float) * 2); }
+
+/* ═══ One ring per control (Maggie, 4 Nov) ═══════════════════════════════════
+   A compound control (composer, search field with its icon, stepper, segmented control) shows one ring, on the outer control, following its
+   radius. The input or button inside never draws its own. */
+:is(.ctl, .stg, .nv, body) :is(.ctl-composer, .ctl-field, .nv-search, .nv-filter) :is(input, textarea, select):is(:focus, :focus-visible, .is-focus),
+:is(.ctl, .stg, .nv, body) :is(.ctl-step, .ctl-seg) :is(button, [tabindex]):is(:focus, :focus-visible, .is-focus) { outline: none; }
+:is(.ctl, .stg, .nv) .ctl-seg:is(:has(:focus-visible), :has(.is-focus)) { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ═══ In-place editable text (Maggie, 4 Nov) ══════════════════════════════════
+   Titles, notes and field values that read as content and become editable: no ring, no hairline, no field surface. At rest, plain text.
+   Hover and editing: the 5% layer behind the text block, radius 7, padded 2/6 with a matching negative margin so the text never moves.
+   While editing, that layer and the caret are the focus indicator. The jade ring is for controls only. */
+.ctl-edit { margin: -2px -6px; padding: 2px 6px; border-radius: var(--r-control); outline: 0; box-shadow: none; background: transparent; cursor: text; transition: background-color var(--t-hover) var(--ease-out); }
+:is(.ctl, .stg, .nv, body) .ctl-edit:is(:hover, .is-hover, :focus, :focus-visible, .is-focus) { background: var(--hover); outline: 0; box-shadow: none; }

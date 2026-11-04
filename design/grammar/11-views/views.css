@@ -10,9 +10,12 @@
 .v11 button { font: inherit; color: inherit; }
 .v11 i[class*="ph"] { display: block; width: var(--icon); height: var(--icon); font-size: var(--icon); line-height: 1; flex: none; }
 
-/* ── Object glyph on its tile (03: a 24 tile everywhere) ── */
+/* ── Object glyph on its tile (03 as amended by 06): 18 with a 12 glyph in heads, rows and cards; 24 flush with a 14 glyph in chips and
+   chip-like labels; 32 with a 20 glyph for the pane title ── */
 .v-g { display: inline-grid; place-items: center; flex: none; width: var(--tile); height: var(--tile); border-radius: var(--r-xs); background: var(--type-tile); color: var(--type-glyph); }
-.v-g i[class*="ph"] { width: var(--icon); height: var(--icon); font-size: var(--icon); }
+.v-g i[class*="ph"] { width: var(--tile-glyph); height: var(--tile-glyph); font-size: var(--tile-glyph); }
+.v-alabel .v-g { width: var(--chip-h); height: var(--chip-h); }
+.v-alabel .v-g i[class*="ph"] { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
 
 /* ── Marks: the draft dot and confidence bars. No new dot, challenge dot or pending badge on objects (decided 4 Nov) ── */
 .v-draftdot { display: inline-block; }
@@ -37,16 +40,6 @@
   translate: 100% 0; visibility: hidden; transition: translate var(--t-dock), visibility 0s linear 380ms; overflow: auto; }
 .v11[data-open] .v-pane { translate: 0 0; visibility: visible; transition: translate var(--t-dock), visibility 0s; }
 .v-pane-in { padding: var(--inset-pane-block) var(--inset-pane-inline) 96px; animation: v-fade var(--t-float) var(--ease-out); }
-.v-pane-head { display: flex; align-items: center; gap: var(--gap-item); min-height: var(--control); margin-bottom: var(--gap-group); }
-.v-pane-head .ctl { margin-left: auto; margin-right: -6px; display: flex; gap: 2px; }
-.v-pane-chip { display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--chip-h); padding-right: var(--inset-chip); border-radius: var(--r-control); background: var(--surface); box-shadow: var(--edge);
-  font: var(--w-medium) var(--fs-label)/1 var(--font); color: var(--ink-2); white-space: nowrap; }
-.v-pane-chip .v-g { border-radius: var(--r-control) 0 0 var(--r-control); }
-.v-title { margin: 0 0 var(--gap-group); font-size: var(--fs-title); line-height: var(--lh-head); font-weight: var(--w-strong); letter-spacing: -0.01em; text-wrap: balance; max-width: 40ch; }
-.v-ph { display: grid; gap: var(--gap-item); padding: var(--inset-card); border-radius: var(--r-box); outline: 1px dashed var(--hairline-strong); outline-offset: -1px; color: var(--ink-2); max-width: 520px; }
-.v-ph b { font-weight: var(--w-medium); color: var(--ink-2); font-size: var(--fs-label); }
-.v-ph .bar { height: 8px; border-radius: 4px; background: var(--hairline); }
-.v-ph .bar.s { width: 60%; } .v-ph .bar.m { width: 85%; }
 @keyframes v-fade { from { opacity: 0; } }
 
 /* ── Selection and focus across views ──
@@ -89,15 +82,18 @@
 .v-rail:hover { background: var(--hover); }
 .v-rail .n { font: var(--w-medium) var(--fs-small)/18px var(--font); color: var(--ink-2); min-width: 18px; text-align: center; }
 .v11 .v-rail:focus-visible { outline-offset: -2px; }
-/* Theme rows: nav items, 32 high; current is a raised surface */
-.v-row { display: flex; align-items: center; gap: var(--gap-icon); height: var(--row); padding: 0 var(--inset-row); border: 0; border-radius: var(--r-control); background: transparent; color: var(--ink-2);
+/* Theme rows (06 short-label row): one line, 32 high: tile, name in ink 2 (ink and 500 when current), the bare theory count at the right;
+   unseen activity sets the name in ink at 600 (unread weight) */
+.v-row { display: flex; align-items: center; gap: var(--gap-tile); height: var(--row); padding: 0 var(--inset-row); border: 0; border-radius: var(--r-control); background: transparent; color: var(--ink-2);
   text-align: left; cursor: pointer; transition: background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out), box-shadow var(--t-float) var(--ease-out), opacity var(--t-float) var(--ease-out); }
 .v-row .v-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v-row .v-n, .v-proto .v-n { flex: none; font: var(--w-medium) var(--fs-small)/1 var(--font); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.v-row[data-unseen] .v-name { font-weight: var(--w-strong); color: var(--ink); }
 .v-row:hover { background: var(--hover); color: var(--ink); }
 .v-row[aria-current="true"] { background: var(--surface); color: var(--ink); font-weight: var(--w-medium); box-shadow: var(--sh-raised); }
 .v11 .v-row:focus-visible, .v11 .v-card:focus-visible, .v11 .v-proto:focus-visible { outline-offset: -2px; }
-/* Theory cards: raised objects, inset 12, gap 8 between, name 13 / 600 up to three lines; meta 12 */
-.v-card { display: grid; gap: var(--gap-item); width: 100%; padding: var(--inset-card); border: 0; border-radius: var(--r-control); background: var(--surface); box-shadow: var(--sh-raised); text-align: left; cursor: pointer;
+/* Cards (06): the row, raised. Inset 10 inline / 8 block; tile, name 13 / 600 up to three lines, the confidence meter right of its first line */
+.v-card { display: grid; grid-template-columns: var(--tile) minmax(0, 1fr) auto; column-gap: var(--gap-tile); row-gap: var(--gap-tight); align-items: start; width: 100%; padding: var(--card-block) var(--card-inline); border: 0; border-radius: var(--r-control); background: var(--surface); box-shadow: var(--sh-raised); text-align: left; cursor: pointer;
   transition: box-shadow var(--t-float) var(--ease-out), opacity var(--t-float) var(--ease-out), background-color var(--t-float) var(--ease-out); }
 .v-card:hover { box-shadow: var(--sh-raised), inset 0 0 0 100vmax var(--hover); }
 .v-card[aria-current="true"] { box-shadow: var(--sel); }
@@ -105,19 +101,24 @@
 .v-card[data-draft][aria-current="true"] { box-shadow: var(--sel); }
 .v-claim { font-weight: var(--w-strong); color: var(--ink); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-wrap: pretty; }
 .v-card[data-draft] .v-claim { color: var(--ink-2); }
-.v-meta { display: flex; align-items: center; gap: var(--gap-item); min-height: 18px; font-size: var(--fs-label); color: var(--ink-2); }
+.v-card > .v-g { margin-top: calc((var(--line-ui) - var(--tile)) / 2); }
+.v-card > :is(.v-claim, .v-name) { grid-column: 2; }
+.v-card > .v-rk { grid-column: 3; grid-row: 1; display: flex; align-items: center; height: var(--line-ui); margin-left: var(--gap-item); }
+.v-meta { grid-column: 2 / -1; display: flex; align-items: center; gap: var(--gap-key); min-height: 18px; font-size: var(--fs-label); color: var(--ink-2); }
 .v-meta:empty { display: none; }
-/* Prototype rows (placeholder until 06 Objects): a surface row with its tile */
-.v-proto { display: flex; align-items: center; gap: var(--gap-icon); width: 100%; height: var(--row); padding: 0 var(--inset-row) 0 4px; border: 0; border-radius: var(--r-control); background: var(--surface); box-shadow: var(--sh-raised);
+.v-meter { position: relative; display: block; width: 20px; height: 4px; border-radius: 2px; background: color-mix(in oklab, var(--ink) 15%, transparent); overflow: hidden; }
+.v-meter > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; background: var(--ink); }
+/* Prototype rows (06 short-label row): one line, tile, name in ink 2 */
+.v-proto { display: flex; align-items: center; gap: var(--gap-tile); width: 100%; height: var(--row); padding: 0 var(--inset-row); border: 0; border-radius: var(--r-control); background: transparent; color: var(--ink-2);
   text-align: left; cursor: pointer; transition: box-shadow var(--t-float) var(--ease-out), opacity var(--t-float) var(--ease-out), background-color var(--t-float) var(--ease-out); }
-.v-proto .v-g { width: 24px; height: 24px; }
+.v-proto:hover { background: var(--hover); color: var(--ink); }
 .v-proto .v-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.v-proto[aria-current="true"] { box-shadow: var(--sel); }
+.v-proto[aria-current="true"] { background: var(--surface); color: var(--ink); font-weight: var(--w-medium); box-shadow: var(--sh-raised); }
 .v-col-pane { flex: 1; min-width: 0; position: relative; }
 /* In Columns the pane takes what the rails leave; it enters from its edge the same way */
 .v-colpane-surface { position: absolute; inset: 0; overflow: auto; background: var(--surface); box-shadow: -0.5px 0 0 var(--hairline-strong); animation: v-enter 380ms var(--spring); }
 @keyframes v-enter { from { opacity: 0; translate: 24px 0; } }
-.v-card[data-flowrow] { gap: var(--gap-tight); padding: var(--inset-row) var(--inset-card); }
+.v-card[data-flowrow] { row-gap: 2px; }
 .v-card[data-flowrow] .v-name { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* ═══ Atlas ═════════════════════════════════════════════════════════════════
@@ -134,7 +135,7 @@
 .v-area[aria-current="true"] .disc { background: oklch(var(--shade) / 6%); box-shadow: inset 0 0 0 1px var(--ink-3); }
 .v11 .v-area .disc:focus-visible { outline-offset: -2px; }
 /* Territory label: the section-header role with its theme tile; selected = raised */
-.v-alabel { position: absolute; left: 0; top: 0; z-index: 2; translate: -50% 0; display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--tile); padding-right: var(--gap-tight);
+.v-alabel { position: absolute; left: 0; top: 0; z-index: 2; translate: -50% 0; display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--chip-h); padding-right: var(--gap-tight);
   border-radius: var(--r-control); font-weight: var(--w-strong); color: var(--sechead-ink); white-space: nowrap; pointer-events: none; transition: left var(--t-dock), top var(--t-dock), box-shadow var(--t-float) var(--ease-out); }
 .v-alabel[data-hide] { opacity: 0; }
 .v-alabel .n { font: var(--w-regular) var(--fs-label)/1 var(--font); color: var(--ink-2); }
@@ -182,9 +183,9 @@
 .v-tl-item[data-mode="dot"] .t { display: none; }
 .v-tl-cell:has([data-mode="dot"]) { flex-direction: row; flex-wrap: wrap; column-gap: var(--gap-item); }
 .v-links { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: visible; }
-.v-links path { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-linejoin: round; }
-.v-links path.rival { stroke: var(--ink-3); stroke-width: 1; }
-.v-links .head { fill: var(--ink-2); stroke: none; }
+.v-links path { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }   /* today's link: ink 1.5 */
+.v-links path[data-deep] { stroke: var(--ink-3); stroke-width: 1.25; }   /* a link further along the chain */
+.v-links .head { stroke-width: 1.6; }   /* today's open chevron */
 .v-tl-item, .v-tl-year, .v-tl-cell { z-index: 1; }
 /* Theme filter: a tethered menu (tier 4) under its button */
 .v-menu { position: absolute; z-index: var(--z-pop); top: calc(var(--inset-float) + var(--control) + 4px + 4px); left: var(--inset-float); width: 240px; padding: 4px; border-radius: var(--r-box); background: var(--surface); box-shadow: var(--sh-pop);
@@ -204,3 +205,7 @@
   .v11 .v-pane { transition: opacity var(--t-float) linear !important; translate: 0 0; opacity: 0; }
   .v11[data-open] .v-pane { opacity: 1; }
 }
+
+/* ── Pane contents: the 06 full view (_shared/objects.css) pads itself at pane level, so the pane adds no inset of its own ── */
+.v-pane-in.v-pane-full { padding: 0 0 96px; }
+.v-pane-full .ob-full { max-width: none; }

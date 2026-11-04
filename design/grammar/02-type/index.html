@@ -27,7 +27,7 @@
 
 <header class="jig-head">
   <h1>Grammar 02: Type</h1>
-  <p><b>Decided 4 Nov 2026:</b> scale B 11/12/13/20, pane title 24, section headers ink 2. When each size, weight and ink is used. Already decided: Geist (Geist Mono for keys and times), body 13, colour system D inks, Regular spacing. The stage keeps the app's layout; only type changes.</p>
+  <p><b>Decided 4 Nov 2026:</b> scale 11/12/13, pane title 24 (20 removed 4 Nov), section headers ink 2. When each size, weight and ink is used. Already decided: Geist (Geist Mono for keys and times), body 13, colour system D inks, Regular spacing. The stage keeps the app's layout; only type changes.</p>
 </header>
 
 <div class="decide">
@@ -35,7 +35,6 @@
     <h2>Decide on this page</h2>
     <ol>
       <li data-pick="scale"><a href="#scale">Scale: three sizes, the 1 Nov four, or four with a reading size</a> <span class="pick"></span></li>
-      <li data-pick="title"><a href="#title">Pane title: 20 or 24</a> <span class="pick"></span></li>
       <li data-pick="sechead"><a href="#sechead">Section headers: quiet ink 2, or ink</a> <span class="pick"></span></li>
     </ol>
   </div>
@@ -99,13 +98,12 @@
   <h2>The stage, built only from these rules</h2>
   <div class="viewer-bar">
     <span class="seg" data-seg="view"><span>View</span><span class="seg-group"><button type="button" value="sections" aria-pressed="true">Sections</button><button type="button" value="columns">Columns</button><button type="button" value="atlas">Atlas</button><button type="button" value="timeline">Timeline</button></span></span>
-    <span class="seg" data-seg="scale"><span>Scale</span><span class="seg-group"><button type="button" value="three">12/13/20</button><button type="button" value="decided" aria-pressed="true">11/12/13/20</button><button type="button" value="reading">12/13/15/20</button></span></span>
-    <span class="seg" data-seg="title"><span>Title</span><span class="seg-group"><button type="button" value="20">20</button><button type="button" value="24" aria-pressed="true">24</button></span></span>
+    <span class="seg" data-seg="scale"><span>Scale</span><span class="seg-group"><button type="button" value="three">12/13</button><button type="button" value="decided" aria-pressed="true">11/12/13</button><button type="button" value="reading">12/13/15</button></span></span>
     <span class="seg" data-seg="sechead"><span>Section header</span><span class="seg-group"><button type="button" value="quiet" aria-pressed="true">Ink 2</button><button type="button" value="ink">Ink</button></span></span>
     <span class="seg" data-seg="overlay"><span>Show type roles</span><span class="seg-group"><button type="button" value="off" aria-pressed="true">Off</button><button type="button" value="on">On</button></span></span>
   </div>
   <p class="stage-label">Stage: the app's current layout, unchanged. Show type roles labels one example of each role with its size, weight and ink.</p>
-  <div class="stg-host" id="viewer" data-stage='{"view":"sections","scale":"decided","title":"24","sechead":"quiet"}'></div>
+  <div class="stg-host" id="viewer" data-stage='{"view":"sections","scale":"decided","sechead":"quiet"}'></div>
 </section>
 
 <section class="jig-section" id="views">
@@ -120,19 +118,12 @@
 
 <section class="jig-section" id="scale" data-decision="scale" data-question="1. How many sizes?" data-default="B 1 Nov four">
   <div class="jig-compare" style="--jig-min:300px">
-    <div class="jig-option" data-option="A three sizes"><div class="jig-label"><b>A</b> Three: 12 / 13 / 20</div><p class="jig-note">Labels, meta and counts share 12; nothing smaller. Fewest sizes, and answers "some things are too small".</p><div class="stg-host" data-option-stage data-stage='{"scale":"three"}'></div></div>
-    <div class="jig-option" data-option="B 1 Nov four"><div class="jig-label"><b>B</b> Four: 11 / 12 / 13 / 20</div><p class="jig-note">The scale decided on 1 Nov: counts and badges drop to 11. One more step to tell apart.</p><div class="stg-host" data-option-stage data-stage='{"scale":"decided"}'></div></div>
-    <div class="jig-option" data-option="C reading size"><div class="jig-label"><b>C</b> Four: 12 / 13 / 15 / 20</div><p class="jig-note">Adds 15 for prose in the pane (the note), so reading feels different from scanning.</p><div class="stg-host" data-option-stage data-stage='{"scale":"reading"}'></div></div>
+    <div class="jig-option" data-option="A three sizes"><div class="jig-label"><b>A</b> Three: 12 / 13, title 24</div><p class="jig-note">Labels, meta and counts share 12; nothing smaller. Fewest sizes, and answers "some things are too small".</p><div class="stg-host" data-option-stage data-stage='{"scale":"three"}'></div></div>
+    <div class="jig-option" data-option="B 1 Nov four"><div class="jig-label"><b>B</b> 11 / 12 / 13, title 24</div><p class="jig-note">The scale decided on 1 Nov: counts and badges drop to 11. One more step to tell apart.</p><div class="stg-host" data-option-stage data-stage='{"scale":"decided"}'></div></div>
+    <div class="jig-option" data-option="C reading size"><div class="jig-label"><b>C</b> 12 / 13 / 15, title 24</div><p class="jig-note">Adds 15 for prose in the pane (the note), so reading feels different from scanning.</p><div class="stg-host" data-option-stage data-stage='{"scale":"reading"}'></div></div>
   </div>
 </section>
 
-<section class="jig-section" id="title" data-decision="title" data-question="2. How big is the pane title?" data-default="B 24">
-  <p>The real app uses 26 today (panes.css:19); the 1 Nov scale says 20.</p>
-  <div class="jig-compare" style="--jig-min:440px">
-    <div class="jig-option" data-option="A 20"><div class="jig-label"><b>A</b> 20</div><p class="jig-note">Leads without shouting; long claims stay on two lines.</p><div class="stg-host" data-option-stage data-stage='{"title":"20"}'></div></div>
-    <div class="jig-option" data-option="B 24"><div class="jig-label"><b>B</b> 24</div><p class="jig-note">More of a document heading; wraps sooner.</p><div class="stg-host" data-option-stage data-stage='{"title":"24"}'></div></div>
-  </div>
-</section>
 
 <section class="jig-section" id="sechead" data-decision="sechead" data-question="3. What ink are section headers?" data-default="A ink 2">
   <p>Both are 13 / 600. Look at the theme headers above their cards and the column heads.</p>

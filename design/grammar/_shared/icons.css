@@ -1,12 +1,17 @@
 /* Aber grammar: icons (DECIDED 4 Nov 2026, see RULES.md). Phosphor, Regular at rest, Fill only for the current or selected thing.
    Every stage is in icons mode (data-icons) unless it opts out with {"icons":0}.
    Decided: 16 beside 13 body, 14 beside 12px text; object glyphs on their tile everywhere.
+   Amended with 06 (4 Nov): a tile is 18 with a 12 glyph in rows, cards and peeks (centred on the name's first line); a chip's tile is the chip's
+   full height (24) with a 14 glyph, flush; the full view's title tile is 32 with a 20 glyph. A glyph on a tile is one step smaller than a bare glyph.
    03-icons keeps the weighed alternatives as scopes: data-iconsize="one" (16 everywhere); data-tile="lists" | "never". */
 
 :root {
   --icon: 16px;          /* the icon size, beside 13 body */
   --icon-label: 14px;    /* beside 12px labels, chips, buttons and meta */
-  --tile: 24px;          /* object glyph tile: icon + 4 each side */
+  --tile: 18px;          /* object glyph tile in rows, cards and peeks */
+  --tile-glyph: 12px;    /* the glyph on an 18 tile */
+  --tile-title: 32px;    /* the full view's title tile */
+  --tile-title-glyph: 20px;
   --line-ui: calc(var(--fs-body) * var(--lh-ui));      /* 18.2: one line of interface text */
   --line-prose: calc(var(--fs-read) * var(--lh-prose)); /* 20.15: one line of prose */
 }
@@ -25,6 +30,8 @@
    "always": also chips and inline meta. "never": colour alone carries the type. */
 .stg[data-icons]:is([data-tile="lists"], [data-tile="always"], :not([data-tile])) :is(.stg-sec-head, .stg-col-head, .stg-protos, .stg-strip, .stg-ev-item, .stg-trip, .stg-area-label, .stg-peek-head, .stg-menu-item) > .g,
 .stg[data-icons]:is([data-tile="always"], :not([data-tile])) :is(.stg-chip, .stg-inline) > .g { --slot: var(--tile); background: var(--type-tile); }
+.stg[data-icons]:is([data-tile="lists"], [data-tile="always"], :not([data-tile])) :is(.stg-sec-head, .stg-col-head, .stg-protos, .stg-strip, .stg-ev-item, .stg-trip, .stg-area-label, .stg-peek-head, .stg-menu-item) > .g { --isz: var(--tile-glyph); }
+.stg[data-icons]:is([data-tile="always"], :not([data-tile])) .stg-chip > .g { --slot: var(--chip-h); --isz: var(--icon-label); }
 .stg[data-icons]:is([data-tile="lists"], [data-tile="always"], :not([data-tile])) .g[data-type="suggestion"]:is(.stg-ev-item > *),
 .stg[data-icons]:is([data-tile="always"], :not([data-tile])) .stg-chip > .g[data-type="suggestion"] { outline: 1px dashed var(--hairline-strong); outline-offset: -1px; }
 .stg[data-icons] .g i { width: var(--isz, var(--icon)); height: var(--isz, var(--icon)); }
@@ -45,7 +52,7 @@
 .stg[data-icons] .stg-chip { padding-left: calc(var(--inset-chip) - 2px); }
 .stg[data-icons]:is([data-tile="always"], :not([data-tile])) .stg-chip { padding-left: 0; }
 .stg[data-icons]:is([data-tile="always"], :not([data-tile])) .stg-chip > .g { border-radius: var(--r-icon) 0 0 var(--r-icon); }
-.stg[data-icons]:is([data-tile="always"], :not([data-tile])) .stg-inline > .g { --slot: calc(var(--icon-label) + 4px); }
+.stg[data-icons]:is([data-tile="always"], :not([data-tile])) .stg-inline > .g { --slot: var(--tile); --isz: var(--tile-glyph); }
 
 /* ── Icon-only buttons: a control-sized square (28), 24 inside dense rows; every one has a 40 hit area ── */
 .stg[data-icons] :is(.stg-iconbtn, .stg-switch button) { position: relative; width: var(--control); height: var(--control); color: var(--ink-2); }

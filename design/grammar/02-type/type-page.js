@@ -17,7 +17,7 @@
   };
 
   const viewer = document.getElementById("viewer");
-  const state = { view: "sections", scale: "decided", title: "24", sechead: "quiet" };
+  const state = { view: "sections", scale: "decided", sechead: "quiet" };
   const rerender = () => { viewer.dataset.stage = JSON.stringify(state); window.AberStage.render(viewer); fillSpecs(viewer); };
   for (const seg of document.querySelectorAll("[data-seg]")) {
     seg.addEventListener("click", e => {

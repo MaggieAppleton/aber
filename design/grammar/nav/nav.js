@@ -98,6 +98,9 @@
     { id: "d7", name: "Weekend reading list", day: 3, time: "10:30", via: "Web app", made: ["s13", "s14", "s15"], text: "simonwillison.net/… github.com/… ft.com/…" },
   ]);
   const BRIEF = [["Challenges", ["t4"]], ["Drafts", ["t11", "t12", "voice", "p8"]], ["Suggestions", ["t1", "t2"]], ["New signals", ["s1", "s2", "s3", "s4"]]];
+  // The decided objects (06): when _shared/objects.js is loaded, rows, peeks, full views and Briefing come from it, on its data (same ids).
+  const A = window.AberObjects;
+  if (A) { Object.keys(O).forEach(k => delete O[k]); Object.assign(O, A.O); }
 
   /* ── Relations ─────────────────────────────────────── */
   const theoriesOf = th => all("theory").filter(t => t.themes.includes(th.id) && !t.retired);
@@ -194,9 +197,11 @@
   const list = s => {
     const t = s.type, cur = s.sel[t], q = s.q.toLowerCase();
     const hit = o => (!q || o.name.toLowerCase().includes(q)) && (!s.tf || (o.themes || []).includes(s.tf));
-    const row = (o, inner, cls = "", status = null) => `<button type="button" class="nv-row ${cls}${o.draft ? " draft" : ""}" data-sel="${o.id}" aria-current="${o.id === cur}" title="${o.name}">${status !== null ? `<span class="slot">${status}</span>` : ""}${inner}</button>`;
-    const group = (label, rows, opts = {}) => rows.length ? `<div class="nv-group">${label ? `<div class="nv-glabel">${label}${opts.n != null ? `<span class="nv-n">${opts.n}</span>` : ""}${opts.act || ""}</div>` : ""}${rows.join("")}</div>` : "";
-    const fold = (key, label, n, rows) => `<div class="nv-group"><button type="button" class="nv-glabel" data-toggle="${key}" aria-expanded="${!!s.open[key]}"><i class="ph ph-caret-down${s.open[key] ? "" : " shut"}" aria-hidden="true"></i>${label}<span class="nv-n">${n}</span></button>${s.open[key] ? rows.join("") : ""}</div>`;
+    const row = A ? (o, inner, cls = "", omit = "") => A.row(o, { act: "sel", cur, omit }) : (o, inner, cls = "", status = null) => `<button type="button" class="nv-row ${cls}${o.draft ? " draft" : ""}" data-sel="${o.id}" aria-current="${o.id === cur}" title="${o.name}">${status !== null ? `<span class="slot">${status}</span>` : ""}${inner}</button>`;
+    const group = A ? (label, rows, opts = {}) => rows.length ? `<div class="ob-group">${label ? `<div class="ob-glabel"><span>${label}</span>${opts.n != null ? `<span class="ob-n">${opts.n}</span>` : ""}${opts.act || ""}</div>` : ""}${rows.join("")}</div>` : ""
+      : (label, rows, opts = {}) => rows.length ? `<div class="nv-group">${label ? `<div class="nv-glabel">${label}${opts.n != null ? `<span class="nv-n">${opts.n}</span>` : ""}${opts.act || ""}</div>` : ""}${rows.join("")}</div>` : "";
+    const fold = A ? (key, label, n, rows) => `<div class="ob-group"><button type="button" class="ob-glabel fold" data-toggle="${key}" aria-expanded="${!!s.open[key]}"><i class="ph ph-caret-down${s.open[key] ? "" : " shut"}" aria-hidden="true"></i><span>${label}</span><span class="ob-n">${n}</span></button>${s.open[key] ? rows.join("") : ""}</div>`
+      : (key, label, n, rows) => `<div class="nv-group"><button type="button" class="nv-glabel" data-toggle="${key}" aria-expanded="${!!s.open[key]}"><i class="ph ph-caret-down${s.open[key] ? "" : " shut"}" aria-hidden="true"></i>${label}<span class="nv-n">${n}</span></button>${s.open[key] ? rows.join("") : ""}</div>`;
     const search = ph => `<label class="nv-search"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input data-q type="search" placeholder="${ph}" value="${s.q}" aria-label="${ph}"></label>`;
     const filter = () => s.opt.tf === "yes" ? `<label class="nv-filter"><i class="ph ph-funnel" aria-hidden="true"></i><select data-tf aria-label="Filter by theme"><option value="">All themes</option>${all("theme").filter(o => !o.draft).map(o => `<option value="${o.id}"${s.tf === o.id ? " selected" : ""}>${o.name}</option>`).join("")}</select></label>` : "";
     let tools = "", body = "", add = true, meta = countOf(t);
@@ -205,45 +210,47 @@
       add = false; meta = "";
       body = BRIEF.map(([label, ids]) => group(label, ids.map(id => O[id]).map(o => row(o, `<span class="nm">${o.name}</span>`)))).join("");
     } else if (t === "theme") {
-      const r = o => row(o, `<span class="nm">${o.name}</span>${theoriesOf(o).length ? `<span class="nv-n">${theoriesOf(o).length}</span>` : ""}`);
+      const r = (o, omit = "") => row(o, `<span class="nm">${o.name}</span>${theoriesOf(o).length ? `<span class="nv-n">${theoriesOf(o).length}</span>` : ""}`, "", omit);
       const mine = all("theme").filter(o => !o.draft).sort((a, b) => (b.fresh || 0) - (a.fresh || 0));
-      body = group("", mine.map(r)) + group("Drafts", all("theme").filter(o => o.draft).map(r));
+      body = group("", mine.map(o => r(o))) + group("Drafts", all("theme").filter(o => o.draft).map(o => r(o, "key")));
     } else if (t === "theory") {
       tools = search("Find a theory") + filter();
       const r = o => row(o, `<span class="nm">${o.name}</span>`);
       const ts = all("theory").filter(hit);
-      body = group("Held", ts.filter(o => !o.draft && !o.retired).map(r)) + group("Drafts", ts.filter(o => o.draft).map(r))
+      body = group("Held", ts.filter(o => !o.draft && !o.retired).map(r)) + group("Drafts", ts.filter(o => o.draft).map(o => row(o, `<span class="nm">${o.name}</span>`, "", "key")))
         + (ts.some(o => o.retired) ? fold("retired", "Retired", ts.filter(o => o.retired).length, ts.filter(o => o.retired).map(r)) : "");
     } else if (t === "prototype") {
-      const r = o => row(o, `<span class="nm">${o.name}</span>${statusIcon(o)}`);
+      const r = o => row(o, `<span class="nm">${o.name}</span>${statusIcon(o)}`, "", "key");   // the group says the status
       body = Object.entries(STATUS).map(([k, [label]]) => group(label, all("prototype").filter(o => o.status === k && !o.draft).map(r))).join("")
         + group("Drafts", all("prototype").filter(o => o.draft).map(r));
     } else if (t === "signal") {
       add = false;
       tools = search("Find a signal") + filter();
-      const r = o => row(o, `<span class="nm">${o.name}</span>`);
+      const r = o => row(o, `<span class="nm">${o.name}</span>`, "", "when");
       const unseen = s.opt.unseen === "yes", sigs = all("signal").filter(hit);
       body = (unseen ? group("Unseen", sigs.filter(o => o.fresh).map(r), { n: sigs.filter(o => o.fresh).length, act: ib("check", "Mark all seen", 'class="nv-ib sm"', "A") }) : "")
         + DAYS.map((d, i) => group(d, sigs.filter(o => o.day === i && !(unseen && o.fresh)).map(r))).join("") + OLDER.signal.map(([m, n]) => fold(m, m, n, [])).join("");
     } else if (t === "dump") {
       add = false;
       tools = search("Find a dump");
-      const r = o => row(o, `<span class="nm">${o.name}</span>`);
+      const r = o => row(o, `<span class="nm">${o.name}</span>`, "", "when");
       body = DAYS.map((d, i) => group(d, all("dump").filter(o => o.day === i && hit(o)).map(r))).join("") + OLDER.dump.map(([m, n]) => fold(m, m, n, [])).join("");
     }
-    if (!body.replace(/<[^>]+>/g, "").trim()) body = `<p class="nv-empty">Nothing matches</p>`;
+    if (!body.replace(/<[^>]+>/g, "").trim()) body = `<p class="${A ? "ob-empty" : "nv-empty"}">Nothing matches</p>`;
     return `
-      <section class="nv-list" aria-label="${TYPES[t].name}">
-        <p class="nv-placeholder">Row designs are placeholders, not proposals. They'll be designed in 06 Objects.</p>
+      <section class="nv-list${A ? " ob-list" : ""}" aria-label="${TYPES[t].name}">
+        ${A ? "" : `<p class="nv-placeholder">Row designs are placeholders, not proposals. They'll be designed in 06 Objects.</p>`}
         <div class="nv-lhead"><span class="h">${t === "briefing" ? "Since yesterday" : TYPES[t].name}</span>${meta !== "" ? `<span class="nv-meta">${meta}</span>` : ""}${add ? ib("plus", `New ${TYPES[t].one.toLowerCase()}`) : ""}</div>
         ${tools ? `<div class="nv-tools">${tools}</div>` : ""}
-        <div class="nv-scroll">${body}</div>
+        <div class="nv-scroll${A ? " ob-scroll" : ""}">${body}</div>
       </section>`;
   };
 
   /* ── Full: one object as the main area's page ──────── */
   const backLabel = ([t, id]) => t === "home" || !id ? "Since yesterday" : O[id].name;
   const doc = (o, s, where) => {
+    if (A) { const back = where === "main" && s.v === "A" && s.back.length ? `<button type="button" class="nv-back" data-back><i class="ph ph-arrow-left" aria-hidden="true"></i><span>${backLabel(s.back.at(-1))}</span></button>` : "";
+      return A.full(o, { back, where, cur: where === "main" ? s.pane : null }); }
     const cur = where === "main" ? s.pane : null;
     const back = where === "main" && s.v === "A" && s.back.length ? `<div class="nv-top"><button type="button" class="nv-back" data-back><i class="ph ph-arrow-left" aria-hidden="true"></i><span>${backLabel(s.back.at(-1))}</span></button></div>` : "";
     const ctl = where === "pane" ? `<span class="ctl">${ib("arrows-out-simple", "Open in the main area", "data-promote")}${ib("x", "Close", "data-close", "Esc")}</span>` : "";
@@ -292,7 +299,7 @@
   };
 
   /* ── Briefing as the home of the main area (option) ── */
-  const digest = () => `<article class="nv-doc nv-digest">
+  const digest = () => A ? A.digest() : `<article class="nv-doc nv-digest">
       <div class="nv-top"><span class="nv-chip plain">${g("briefing")}<span class="t">Briefing</span></span></div>
       <h3 class="nv-title">Since yesterday</h3><div class="nv-sub"><span>${countOf("briefing")} changes</span><span>Last looked 18:40</span></div>
       ${BRIEF.map(([label, ids]) => `<section class="nv-section"><div class="nv-shead">${label}<span class="nv-meta">${ids.length}</span></div><div class="nv-box">${ids.map(id => item(O[id], null)).join("")}</div></section>`).join("")}
@@ -323,7 +330,7 @@
     prototype: () => `${o.body ? `<p class="nv-pk-prose">${o.body}</p>` : ""}${more(o.tests.map(id => O[id]))}`,
     dump: () => `<p class="nv-pk-prose">${o.text}</p>${more(o.made.map(id => O[id]))}`,
   })[o.kind]();
-  const peekHTML = (o, mode) => `<div class="nv-peek ${mode}" role="dialog" aria-label="${o.name}">
+  const peekHTML = (o, mode) => A && mode === "card" ? A.peek(o, { cls: "live" }) : `<div class="nv-peek ${mode}" role="dialog" aria-label="${o.name}">
       <div class="nv-pk-head"><span class="nv-chip plain">${g(o.kind, o.draft)}<span class="t">${typeLabel(o)}</span></span>${mode === "panel" ? ib("x", "Close", "data-peek-close", "Esc") : ""}</div>
       <div class="nv-pk-name${o.draft ? " draft" : ""}">${o.name}</div><div class="nv-pk-sub">${subOf(o)}</div>
       ${peekBody(o)}
@@ -332,8 +339,9 @@
   // Position of el inside base, in base's own (unzoomed) pixels
   const local = (base, el) => { const br = base.getBoundingClientRect(), k = br.width / base.offsetWidth || 1, r = el.getBoundingClientRect();
     return { x: (r.left - br.left) / k, y: (r.top - br.top) / k, w: r.width / k, h: r.height / k }; };
-  const closePeek = host => { host.querySelectorAll(".nv-peek").forEach(p => p.remove()); host.querySelectorAll("[data-open][aria-expanded]").forEach(a => a.removeAttribute("aria-expanded")); host._s.peek = null; };
-  const showPeek = (host, id, anchor, pinned) => {
+  const closePeek = host => { host.querySelectorAll(".nv-peek, .ob-peek.live").forEach(p => p.remove()); host.querySelectorAll("[data-open][aria-expanded]").forEach(a => a.removeAttribute("aria-expanded")); host._s.peek = null; };
+  const showPeek = (host, id, trigger, pinned) => {
+    const anchor = (A && trigger.closest(".ob-row, .ob-card")) || trigger;
     const s = host._s, o = O[id], main = host.querySelector(".nv-main"), scroller = main.querySelector(".nv-scroller");
     const at = s.opt.peek === "card" ? local(scroller, anchor) : null;
     closePeek(host);
@@ -342,6 +350,7 @@
     if (s.opt.peek === "panel") { main.insertAdjacentHTML("beforeend", peekHTML(o, "panel")); return; }
     scroller.insertAdjacentHTML("beforeend", peekHTML(o, "card"));
     const el = scroller.lastElementChild, W = scroller.clientWidth, top = at.y + scroller.scrollTop;
+    if (A) A.markFades(el);
     const left = Math.max(12, Math.min(W - el.offsetWidth - 12, at.x));
     let y = top + at.h + 6;
     if (y + el.offsetHeight > scroller.scrollTop + scroller.clientHeight - 12 && top - el.offsetHeight - 6 > scroller.scrollTop + 12) { y = top - el.offsetHeight - 6; el.classList.add("up"); }
@@ -356,7 +365,7 @@
     const cols = [rw, home ? null : `${lw}px`, "minmax(0, 1fr)", pane ? `${pw}px` : null].filter(Boolean).join(" ");
     const none = !s.sel[s.type];
     const content = home || none ? digest() : s.v === "B" ? boxes(O[s.sel[s.type]], s) : doc(O[s.sel[s.type]], s, "main");
-    return `<div class="nv" data-v="${s.v}" data-switch="${s.opt.switchAt}" data-at-home="${home}" style="grid-template-columns:${cols}">${rail(s)}${home ? "" : list(s)}<main class="nv-main"><div class="nv-scroller">${content}</div>${s.opt.switchAt === "main" ? switcher() : ""}</main>${pane ? `<aside class="nv-pane" aria-label="Open object">${doc(pane, s, "pane")}</aside>` : ""}</div>`;
+    return `<div class="nv${A ? " ctl ob-win" : ""}" data-v="${s.v}" data-switch="${s.opt.switchAt}" data-at-home="${home}" style="grid-template-columns:${cols}">${rail(s)}${home ? "" : list(s)}<main class="nv-main"><div class="nv-scroller">${content}</div>${s.opt.switchAt === "main" ? switcher() : ""}</main>${pane ? `<aside class="nv-pane" aria-label="Open object">${doc(pane, s, "pane")}</aside>` : ""}</div>`;
   };
 
   /* ── Tooltips: name, then key; after 500ms ─────────── */
@@ -405,7 +414,7 @@
     let hoverT, leaveT;
     host.addEventListener("pointerover", e => {
       const s = host._s; if (s.v !== "A" || s.opt.peek !== "card") return;
-      if (e.target.closest(".nv-peek")) { clearTimeout(leaveT); return; }
+      if (e.target.closest(".nv-peek, .ob-peek")) { clearTimeout(leaveT); return; }
       const a = e.target.closest(".nv-scroller [data-open]"); if (!a) return;
       clearTimeout(leaveT); clearTimeout(hoverT);
       if (s.peek?.pinned) return;
@@ -415,7 +424,7 @@
       const s = host._s; clearTimeout(hoverT);
       if (!s.peek || s.peek.pinned) return;
       const to = e.relatedTarget;
-      if (to && (to.closest?.(".nv-peek") || to.closest?.("[aria-expanded='true']"))) return;
+      if (to && (to.closest?.(".nv-peek, .ob-peek") || to.closest?.("[aria-expanded='true']"))) return;
       leaveT = setTimeout(() => { if (host._s.peek && !host._s.peek.pinned) closePeek(host); }, 250);
     });
     // Views: the type-first default and the three views that stay as they are. Capture, so the stage's own handler doesn't run.
@@ -427,7 +436,7 @@
     host.addEventListener("click", e => {
       const s = host._s;
       const el = e.target.closest("[data-go],[data-sel],[data-open],[data-full],[data-home],[data-back],[data-close],[data-promote],[data-toggle],[data-peek-close]");
-      const inPeek = e.target.closest(".nv-peek");
+      const inPeek = e.target.closest(".nv-peek, .ob-peek");
       if (s.peek && !inPeek && !(el && "open" in el.dataset)) closePeek(host);
       if (!el || !host.contains(el)) return;
       const d = el.dataset;

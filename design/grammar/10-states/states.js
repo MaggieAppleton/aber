@@ -34,8 +34,8 @@
   const offlineTag = () => `<span class="st-offline" role="status"><span class="st-ring" aria-hidden="true"></span>Offline</span>`;
   const rail = (cur, o, ch) => `
     <aside class="nv-rail">
-      <div class="nv-brand"><button type="button" class="nv-home" aria-current="${cur === "home"}">Aber</button>${ib("magnifying-glass", "Find", "⌘K")}</div>
-      <nav class="nv-types" aria-label="Types">${RAIL.map(t => {
+      <div class="nv-brand"><span>Aber</span>${ib("magnifying-glass", "Find", "⌘K")}</div>
+      <nav class="nv-types" aria-label="Types"><button type="button" class="nv-type brief" aria-current="${cur === "home"}"><span class="gw">${g("briefing")}</span><span class="nm">Briefing</span></button>${RAIL.map(t => {
         const work = t === "dump" && ch.work === "rail" ? o.work : null;
         const n = o.counts === "none" ? "" : o.counts === "skel" ? sk("16px", "st-wait st-skel-n") : work === "busy" ? spin("1 dump processing") : `<span class="nv-n">${COUNT[t]}</span>`;
         const marks = work === "failed" ? dot("neg", "A dump failed") : "";
@@ -44,24 +44,30 @@
       ${o.offline && ch.offline === "switcher" ? offlineTag() : ""}
       ${switcher()}
     </aside>`;
+  // The list's rows are 06 previews; a row's tile takes the list's type (rows are written before they know it, so the list fills it in)
   const list = (t, body, { tools = "", plus = true, meta = COUNT[t] } = {}) => `
-    <section class="nv-list" aria-label="${TY[t][0]}">
-      <p class="nv-placeholder">Rows are placeholders until 06 Objects.</p>
+    <section class="nv-list ob-list" aria-label="${TY[t][0]}">
       <div class="nv-lhead"><span class="h">${TY[t][0]}</span>${meta !== "" && meta != null ? `<span class="nv-meta">${meta}</span>` : ""}${plus ? ib("plus", `New ${TY[t][1].toLowerCase()}`) : ""}</div>
       ${tools ? `<div class="nv-tools">${tools}</div>` : ""}
-      <div class="nv-scroll">${body}</div>
+      <div class="nv-scroll ob-scroll">${body.replaceAll("__T__", t).replaceAll("__I__", TY[t][2])}</div>
     </section>`;
-  const group = (label, rows) => `<div class="nv-group">${label ? `<div class="nv-glabel">${label}</div>` : ""}${rows.join("")}</div>`;
-  // A row: name; when it has a state, a trailing mark and the words on a second line
-  const row = (name, { cur, draft, mark, sub, id } = {}) => `<button type="button" class="nv-row${sub ? " two" : ""}${draft ? " draft" : ""}" aria-current="${!!cur}"${id ? ` data-id="${id}"` : ""}><span class="nm">${name}</span>${mark ? `<span class="mark">${mark}</span>` : ""}${sub ? `<span class="sub"><span>${sub}</span></span>` : ""}</button>`;
+  const group = (label, rows) => `<div class="ob-group">${label ? `<div class="ob-glabel"><span>${label}</span></div>` : ""}${rows.join("")}</div>`;
+  // A row (06 preview): tile, name; when it has a state, a trailing mark right of the first line and the words on the key line
+  const row = (name, { cur, draft, mark, sub, id } = {}) => `<div class="ob-row${sub ? "" : " solo"}${mark ? " has-rk" : ""}${draft ? " draft" : ""}"${cur ? ' aria-current="true"' : ""}${id ? ` data-id="${id}"` : ""}><span class="g${draft ? " draft" : ""}" data-type="__T__"><i class="ph ph-__I__" aria-hidden="true"></i></span><button type="button" class="nm">${name}</button>${mark ? `<span class="ob-rk">${mark}</span>` : ""}${sub ? `<span class="kv"><span>${sub}</span></span>` : ""}</div>`;
   const search = (ph, v = "") => `<label class="nv-search">${I("magnifying-glass")}<input type="search" placeholder="${ph}" value="${v}" aria-label="${ph}"></label>`;
   const filter = (label = "All themes") => `<label class="nv-filter">${I("funnel")}<select aria-label="Filter by theme"><option>${label}</option><option>All themes</option></select></label>`;
-  const doc = ({ lead = "", ctl = "", title = "", draft = false, sub = "", body = "" }) => `<article class="nv-doc">
-      <div class="nv-top"><div class="nv-chips">${lead}</div>${ctl ? `<span class="ctl">${ctl}</span>` : ""}</div>
-      ${title ? `<h3 class="nv-title${draft ? " draft" : ""}">${title}</h3>` : ""}${sub ? `<div class="nv-sub">${sub}</div>` : ""}${body}</article>`;
-  const section = (t, label, n, inner) => `<section class="nv-section"><div class="nv-shead">${t ? g(t) : ""}${label}${n !== "" ? `<span class="nv-meta">${n}</span>` : ""}</div>${inner}</section>`;
-  const item = (t, name, src, extra = "") => `<button type="button" class="nv-item">${g(t)}<span class="t"><span>${name}</span>${extra}</span>${src ? `<span class="src">${src}</span>` : ""}</button>`;
-  const box = items => `<div class="nv-box">${items.join("")}</div>`;
+  // Full view (06): verbs top right; the 32 title tile and the title, the key line under it; then prose and relation sections. Theme chips
+  // (lead) become a Themes section; a plain type-label chip is dropped (no type words), its type gives the title tile.
+  const doc = ({ t, lead = "", ctl = "", title = "", draft = false, sub = "", body = "" }) => {
+    const type = t || (lead.match(/data-type="(\w+)"/) || [])[1] || "theory", chips = lead.includes("nv-chip plain") ? "" : lead;
+    return `<article class="nv-doc">
+      <div class="nv-top">${ctl ? `<span class="ctl">${ctl}</span>` : ""}</div>
+      ${title ? `<header class="nv-head">${g(type, draft)}<div><h3 class="nv-title${draft ? " draft" : ""}">${title}</h3>${sub ? `<div class="nv-sub">${sub}</div>` : ""}</div></header>` : ""}${body}
+      ${chips ? section("", "Themes", "", `<div class="nv-chips">${chips}</div>`) : ""}</article>`;
+  };
+  const section = (t, label, n, inner) => `<section class="nv-section"><div class="nv-shead"><span>${label}</span>${n !== "" ? `<span class="nv-meta">${n}</span>` : ""}</div>${inner}</section>`;
+  const item = (t, name, src, extra = "") => `<div class="ob-row${src ? "" : " solo"}">${g(t)}<button type="button" class="nm">${name}${extra}</button>${src ? `<span class="kv"><span>${src}</span></span>` : ""}</div>`;
+  const box = items => `<div class="ob-rows">${items.join("")}</div>`;
 
   // Global work and offline marks follow the picks (choice 1 work, choice 3 offline)
   const cbtn = (icon, label, key, extra = "") => `<button type="button" class="ctl-icon" aria-label="${label}" data-st-tip="${label}"${key ? ` data-key="${key}"` : ""} ${extra}>${I(icon)}</button>`;
@@ -83,11 +89,12 @@
   /* ── Pieces shared by scenes ───────────────────────── */
   const heldRows = (cur = 0) => group("Held", HELD.slice(0, 8).map((n, i) => row(n, { cur: i === cur })));
   const theoryDoc = (name = HELD[0], { draft, note = "Small models keep getting cheaper faster than demand grows. Routine agent work stops being metered in any way I notice.", noteHTML, extraEv = "" } = {}) => doc({
-    lead: chip("theme", "Cost of intelligence"), ctl: ib("archive", "Retire"), title: name, draft,
-    body: `<dl class="nv-fields">${draft ? `<dt>Draft</dt><dd><span class="nv-decide">${btn("secondary", "Discard", "data-act=discard-draft")}${btn("primary", "Accept", "data-act=accept")}</span></dd>` : `<dt>Confidence</dt><dd><span class="nv-conf lg" role="img" aria-label="Confidence 3 of 5">${[1, 2, 3, 4, 5].map(i => `<i${i <= 3 ? " data-on" : ""}></i>`).join("")}</span></dd>`}<dt>Happens by</dt><dd>2028</dd></dl>
-      ${noteHTML ?? `<p class="nv-note">${note}</p>`}
-      <div class="nv-ev"><div class="nv-ev-col"><div class="nv-ev-head">${I("arrow-up")}Supports 2</div>${item("signal", SIGNALS[0][0], SIGNALS[0][1])}${item("signal", SIGNALS[1][0], SIGNALS[1][1])}${extraEv}</div>
-        <div class="nv-ev-col"><div class="nv-ev-head">${I("arrow-down")}Undermines 1</div>${item("signal", SIGNALS[4][0], SIGNALS[4][1])}</div></div>` });
+    t: "theory", lead: chip("theme", "Cost of intelligence"), title: name, draft,
+    ctl: draft ? `<span class="nv-decide">${btn("secondary", "Discard", "data-act=discard-draft")}${btn("primary", "Accept", "data-act=accept")}</span>` : ib("archive", "Retire"),
+    sub: `${draft ? `<span class="st-key">Draft</span>` : `<span class="nv-conf lg st-key" role="img" aria-label="Confidence 3 of 5">${[1, 2, 3, 4, 5].map(i => `<i${i <= 3 ? " data-on" : ""}></i>`).join("")}</span>`}<span>By 2028</span>`,
+    body: `${noteHTML ?? `<p class="nv-note">${note}</p>`}
+      ${section("", "Supports", 2, `<div class="ob-rows">${extraEv}${item("signal", SIGNALS[0][0], SIGNALS[0][1])}${item("signal", SIGNALS[1][0], SIGNALS[1][1])}</div>`)}
+      ${section("", "Undermines", 1, box([item("signal", SIGNALS[4][0], SIGNALS[4][1])]))}` });
   const dumpRows = (top = null) => group("Today", [top, ...DUMPS.slice(0, 2).map(([n]) => row(n))].filter(Boolean)) + group("Yesterday", DUMPS.slice(2, 4).map(([n]) => row(n))) + group("Monday 2 Nov", DUMPS.slice(4, 6).map(([n]) => row(n)));
   const dumpDoc = ({ status = "", made = "", ctl = ib("trash", "Delete dump") } = {}) => doc({
     lead: plain("dump", "Link dump"), ctl, title: NEW_DUMP,
@@ -149,7 +156,7 @@
     suggestion: { g: "Working", label: "Suggestion arrives", views: ["default"],
       note: "<b>A suggestion has no in-progress state.</b> When the agent finishes it appears where it applies, dashed (not yet mine), and Briefing lists it. No badge on the theory's row or card: suggestions show only in the peek, the full view and Briefing. Nothing spins while it's being prepared.",
       o: () => ({ cur: "theory", list: list("theory", heldRows(0)),
-        main: theoryDoc(HELD[0], { extraEv: `<div class="nv-item" style="background:var(--draft-fill);outline:1px dashed var(--hairline-strong);outline-offset:-1px">${g("suggestion")}<span class="t"><span style="color:var(--ink-2)">${SIGNALS[3][0]}</span></span><span class="src"><span>Suggested</span><span class="nv-decide">${btn("secondary", "Dismiss")}${btn("primary", "Accept")}</span></span></div>` }) }) },
+        main: theoryDoc(HELD[0], { extraEv: `<div class="ob-block sug"><div class="ob-blabel">Suggested</div>${item("signal", SIGNALS[3][0], SIGNALS[3][1])}<div class="ob-decide">${btn("secondary", "Dismiss")}${btn("primary", "Accept")}</div></div>` }) }) },
 
     failed: { g: "Error", label: "Dump failed", views: ALL, work: "failed",
       note: "<b>A failed dump stays where it was, with the reason in words and Retry beside it.</b> Words beside the object, in ink; no red dot on the row or page. The one red dot left is the composer's global mark (choice 1 A), where there's no room for words. What you sent is never lost. Try Retry.",
@@ -195,7 +202,7 @@
   function signalDoc(i) {
     const [n, src] = SIGNALS[i];
     return doc({ lead: chip("theme", "Cost of intelligence"), ctl: ib("arrows-merge", "Merge") + ib("trash", "Discard signal", "", `data-act="discard" data-i="${i}"`), title: n, sub: `<span>${src}</span><span>Today</span>`,
-      body: `<dl class="nv-fields"><dt>Source</dt><dd>${src}</dd><dt>Came from</dt><dd>${chip("dump", DUMPS[0][0])}</dd></dl>` + section("theory", "Evidence for", 1, box([item("theory", HELD[0], "Supports")])) });
+      body: section("", "Supports", 1, box([item("theory", HELD[0])])) + section("", "Came from", "", box([item("dump", DUMPS[0][0], DUMPS[0][1])])) });
   }
 
   /* ── Stage helpers: the other three views, unchanged except for the state ── */
@@ -293,21 +300,21 @@
     const act = a.dataset.act;
     if (act === "undo") { const t = a.closest(".st-toast"); if (t?._undo) t._undo(); else t?.remove(); }
     if (act === "discard") {
-      const i = +a.dataset.i, r = base.querySelector(`.nv-row[data-id="s${i}"]`);
-      const rows = [...base.querySelectorAll(".nv-row[data-id]")], next = rows[rows.indexOf(r) + 1] || rows[rows.indexOf(r) - 1];
+      const i = +a.dataset.i, r = base.querySelector(`.ob-row[data-id="s${i}"]`);
+      const rows = [...base.querySelectorAll(".ob-row[data-id]")], next = rows[rows.indexOf(r) + 1] || rows[rows.indexOf(r) - 1];
       const scroller = base.querySelector(".nv-scroller"), before = scroller.innerHTML;
       r.hidden = true; r.setAttribute("aria-current", "false");
       if (next) { next.setAttribute("aria-current", "true"); scroller.innerHTML = signalDoc(+next.dataset.id.slice(1)); }
-      toast(base, "Discarded", SIGNALS[i][0], () => { r.hidden = false; base.querySelectorAll(".nv-row[data-id]").forEach(x => x.setAttribute("aria-current", String(x === r))); scroller.innerHTML = before; });
+      toast(base, "Discarded", SIGNALS[i][0], () => { r.hidden = false; base.querySelectorAll(".ob-row[data-id]").forEach(x => x.setAttribute("aria-current", String(x === r))); scroller.innerHTML = before; });
     }
     if (act === "accept") {
-      const title = base.querySelector(".nv-title"), cur = base.querySelector(".nv-row.draft[aria-current='true']");
-      title.classList.remove("draft"); cur?.classList.remove("draft");
-      a.closest("dd").innerHTML = `<span class="nv-conf lg" role="img" aria-label="Confidence 0 of 5">${[1, 2, 3, 4, 5].map(() => "<i></i>").join("")}</span>`;
-      a.closest("dl")?.querySelector("dt")?.replaceChildren("Confidence");
+      const title = base.querySelector(".nv-title"), cur = base.querySelector(".ob-row.draft[aria-current='true']");
+      title.classList.remove("draft"); cur?.classList.remove("draft"); cur?.querySelector(".g")?.classList.remove("draft"); base.querySelector(".nv-head > .g")?.classList.remove("draft");
+      base.querySelector(".nv-head .st-key").outerHTML = `<span class="nv-conf lg st-key" role="img" aria-label="Confidence 0 of 5">${[1, 2, 3, 4, 5].map(() => "<i></i>").join("")}</span>`;
+      a.closest(".ctl").innerHTML = ib("archive", "Retire");
     }
     if (act === "discard-draft") {
-      const cur = base.querySelector(".nv-row.draft[aria-current='true']"), scroller = base.querySelector(".nv-scroller"), before = scroller.innerHTML;
+      const cur = base.querySelector(".ob-row.draft[aria-current='true']"), scroller = base.querySelector(".nv-scroller"), before = scroller.innerHTML;
       cur.hidden = true; scroller.innerHTML = briefing(box([item("theory", HELD[3], "Challenge")]));
       toast(base, "Discarded", "Local models absorb most everyday agent work", () => { cur.hidden = false; scroller.innerHTML = before; });
     }
@@ -315,7 +322,7 @@
     if (act === "ask-delete") base.insertAdjacentHTML("beforeend", modalHTML(base.classList.contains("nv") ? "nv" : "stg"));
     if (act === "delete") {
       base.querySelectorAll(".st-scrim, .st-modal").forEach(x => x.remove());
-      const r = base.querySelector(".nv-row[aria-current='true']"); if (r) r.hidden = true;
+      const r = base.querySelector(".ob-row[aria-current='true']"); if (r) r.hidden = true;
       const sc = base.querySelector(".nv-scroller"); if (sc) sc.innerHTML = briefing(box([item("theory", HELD[3], "Challenge")]));
     }
     if (act === "retry") {
