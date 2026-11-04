@@ -383,3 +383,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 4 Nov 2026 (Maggie, nav): peeks are tethered cards; Briefing is the home of the default view's main area (shown when no item is selected), not a rail entry; rail order refined → raw (Themes, Theories, Prototypes, Signals, Dumps); Theories and Signals can be filtered by theme; no Unseen group in Signals; the view switcher sits at the rail foot.
 
 4 Nov 2026 (Maggie, 05-controls): the secondary button is white with a hairline (surface, the chip's hairline, the button shadow); text fields are filled (a sunk well, no edge; surface + hairline and the ring on focus); the one destructive confirmation (Delete dump) is ink like every primary, red stays for challenge and down. The anatomy, seven-state matrix, motion and label rules in RULES.md section 05 are the default on every grammar page.
+
+4 Nov 2026 (Maggie): signals always show the signal glyph (Pulse) on their tile, never a kind glyph; kind, if shown, is text in the key value. Supersedes the DI-010 "kind glyph in the header" rule. Within one peek or full view every tile is the same size (24).

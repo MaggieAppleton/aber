@@ -310,7 +310,7 @@ Every object follows one anatomy and appears at three rungs: a **preview** where
 
 | Slot | What | Row | Card | Chip | Peek | Full |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 Tile | Type glyph on its 24 tile; a signal shows its kind glyph on the signal tile. No type word. | ● | ● | ● (flush) | ● | ● |
+| 1 Tile | Type glyph on its 24 tile, the same size for every row, line and header within one peek or full view; a signal is always Pulse (kind, if shown, is text in the key value). No type word. | ● | ● | ● (flush) | ● | ● |
 | 2 Name | List name 13/400; card and peek 13/600; title 24/600 | 2 lines | 3 lines | 1 line | In full | In full |
 | 3 Key value | The one attribute that tells it from its neighbours; "Draft" for drafts | ● | ● | – | ● | ● (editable) |
 | 4 Status | One mark, directly after the key value: challenge (red dot) > pending suggestion (dashed count) > new (jade dot) | ● | ● | – | ● | ● |
@@ -329,7 +329,7 @@ Every object follows one anatomy and appears at three rungs: a **preview** where
 | Theme | Theory count ("No theories yet") | Tile, name, theory count, new | – | Signal count, new count, top 3 theories | Theories as cards, signals by day |
 | Theory | Confidence | Tile, claim, confidence, one status mark | By year | Evidence balance, horizon, note (3 lines), tripwire or suggestion line, top 3 supports | Confidence setter, year stepper, note, tripwire, suggestions, themes, supports, undermines, rival, follows from, leads to, prototypes |
 | Prototype | Status (glyph and word) | Tile, name, status | – | Body (3 lines), theories it tests | Body, tests |
-| Signal | Source | Kind tile, gist, source, new | Captured day | Day, note, theories it bears on | Note, supports, undermines, themes, came from |
+| Signal | Source | Tile, gist, source, new | Captured day | Day, note, theories it bears on | Note, supports, undermines, themes, came from |
 | Dump | Kind and time | Tile, first line, kind and time, failed | Day | Day, length, text (3 lines), signals made | Via, text, reply, signals, drafts |
 | Tripwire | Its sentence | Red dot on the host when tripped | – | One line (red when tripped) | Sentence, tripping signal, Dismiss \| Accept |
 | Suggestion | What it proposes | Dashed count on the host | – | One line | Dashed block: stance, signal row, why, Dismiss \| Accept |

@@ -115,8 +115,9 @@
 .ob-more { padding-top: 2px; font-size: var(--fs-label); color: var(--ink-2); }
 .ob-pk-foot { display: flex; justify-content: flex-end; }
 /* Attached objects, one line in a peek */
-.ob-attach { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: var(--gap-icon); font-size: var(--fs-label); line-height: var(--lh-ui); color: var(--ink-2); }
-.ob-attach > .g { margin-top: calc((var(--fs-label) * var(--lh-ui) - var(--icon-label) - 4px) / 2); }
+/* Same 24 tile as every other row in the peek; text at body size beside it */
+.ob-attach { display: grid; grid-template-columns: var(--tile) minmax(0, 1fr); align-items: start; gap: var(--gap-icon); font-size: var(--fs-body); line-height: var(--lh-ui); color: var(--ink-2); }
+.ob-attach > .g { margin-top: calc((var(--line-ui) - var(--tile)) / 2); }
 .ob-attach > span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .ob-attach b { font-weight: 500; color: var(--ink); }
 .ob-attach.tripped > span { color: var(--neg); }

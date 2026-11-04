@@ -48,7 +48,7 @@
   <h2>The object grammar</h2>
   <p>One anatomy, the same slots in the same order at every rung. The tile hangs in its own column; everything else shares the name's left edge (the two guides below).</p>
   <ol class="rules">
-    <li><b>1 Tile:</b> the type's glyph on its tile. A signal shows its kind (link, voice, note) on the signal tile. No type word is ever written.</li>
+    <li><b>1 Tile:</b> the type's glyph on its tile, the same 24 tile at every level. A signal is always Pulse; its kind, if shown, is text in the key value. No type word is ever written.</li>
     <li><b>2 Name:</b> wraps (two lines in rows, three in cards, in full in a peek or full view).</li>
     <li><b>3 One key value:</b> the attribute that tells this object apart from its neighbours. A draft shows "Draft" here until accepted.</li>
     <li><b>4 Status:</b> one mark, always directly after the key value: challenge (red) beats a pending suggestion (dashed count) beats new (jade). The peek and full view say what the mark means.</li>
@@ -67,7 +67,7 @@
       <tr><td>Theme</td><td>Theory count, or "No theories yet"</td><td>Tile, name, theory count, new</td><td>–</td><td>Signal count, new count, top 3 theories</td><td>Theories as cards, signals by day</td><td>Signal count from rows and section headers</td></tr>
       <tr><td>Theory</td><td>Confidence</td><td>Tile, claim, confidence, one status mark</td><td>Horizon (By 2028)</td><td>Evidence balance, horizon, note (3 lines), tripwire or suggestion line, top 3 supporting signals</td><td>Confidence setter, year stepper, note, tripwire, suggestions, themes, supports, undermines, rival, follows from, leads to, prototypes</td><td>Evidence balance and prototype count from cards; pending badge and challenge dot side by side (now one slot)</td></tr>
       <tr><td>Prototype</td><td>Status (glyph and word)</td><td>Tile, name, status</td><td>–</td><td>Body (3 lines), theories it tests</td><td>Body, tests</td><td>"Tests N"; the type-word chip; status inside status groups</td></tr>
-      <tr><td>Signal</td><td>Source</td><td>Kind tile, gist, source, new</td><td>Captured day</td><td>Day, note, theories it bears on</td><td>Note (or Add a note), supports, undermines, Add theory, themes, File in theme, came from</td><td>Day at rest, theme chips on rows, the word "Signal", the Source/Came from table</td></tr>
+      <tr><td>Signal</td><td>Source</td><td>Tile, gist, source, new</td><td>Captured day</td><td>Day, note, theories it bears on</td><td>Note (or Add a note), supports, undermines, Add theory, themes, File in theme, came from</td><td>Day at rest, theme chips on rows, the word "Signal", the Source/Came from table</td></tr>
       <tr><td>Dump</td><td>Kind and time</td><td>Tile, first line, kind and time, failed</td><td>Day</td><td>Day, length, text (3 lines), signals made</td><td>Via, full text, reply, signals, drafts</td><td>"Made N"; via from everything but full; the date inside day groups</td></tr>
       <tr><td>Tripwire</td><td>Its sentence</td><td>Red dot on the host when tripped</td><td>–</td><td>One line: the sentence, or "Tripped by" the signal</td><td>The sentence, the tripping signal, Dismiss | Accept</td><td>–</td></tr>
       <tr><td>Suggestion</td><td>What it proposes</td><td>Dashed count on the host</td><td>–</td><td>One line: the proposal</td><td>Dashed block: stance, the signal as a row, why, Dismiss | Accept</td><td>Agent and model (rare, history only)</td></tr>

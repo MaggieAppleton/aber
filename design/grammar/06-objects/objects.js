@@ -5,7 +5,6 @@
   /* ═══ Content (from nav/nav.js, plus kinds, notes, suggestions) ═══════════════════ */
   const ICON = { briefing: "newspaper", theme: "binoculars", theory: "target", prototype: "pencil-ruler", signal: "pulse", dump: "tray-arrow-down", tripwire: "signpost", suggestion: "sparkle" };
   const NAME = { briefing: ["Briefing"], theme: ["Themes", "Theme"], theory: ["Theories", "Theory"], prototype: ["Prototypes", "Prototype"], signal: ["Signals", "Signal"], dump: ["Dumps", "Dump"] };
-  const SK = { link: "link", voice: "waveform", note: "text-align-left" };   // a signal's kind glyph replaces Pulse (DI-010)
   const RAIL = ["theme", "theory", "prototype", "signal", "dump"];
   const DAYS = ["Today", "Yesterday", "Monday 2 Nov", "Sunday 1 Nov"];
   const OLDER = { signal: [["October", 288], ["September", 109]], dump: [["October", 201], ["September", 78]] };
@@ -113,7 +112,8 @@
 
   /* ═══ Atoms ═══════════════════════════════════════════════════════════════════ */
   const esc = s => String(s).replace(/"/g, "&quot;");
-  const glyphOf = o => o.kind === "signal" ? SK[o.k || "link"] : ICON[o.kind];
+  // Every object shows its type glyph on its tile; a signal is always Pulse (Maggie, 4 Nov). Kind, if shown, is text in the key value.
+  const glyphOf = o => ICON[o.kind];
   const tile = (type, icon, cls = "") => `<span class="g${cls ? ` ${cls}` : ""}" data-type="${type}"><i class="ph ph-${icon}" aria-hidden="true"></i></span>`;
   const tileOf = (o, cls = "") => tile(o.kind, glyphOf(o), `${o.draft ? "draft" : ""} ${cls}`.trim());
   const dot = (kind, label) => `<span class="ob-dot ${kind}" role="img" aria-label="${label}" title="${label}"></span>`;
@@ -182,7 +182,7 @@
   const tripLine = (o, rung) => {
     if (!o.trip) return "";
     const by = o.challenge && O[o.challenge];
-    if (rung === "peek") return `<div class="ob-attach${by ? " tripped" : ""}">${tile("tripwire", ICON.tripwire, "sm")}<span>${by ? `Tripped by <b>${by.name}</b>` : o.trip}</span></div>`;
+    if (rung === "peek") return `<div class="ob-attach${by ? " tripped" : ""}">${tile("tripwire", ICON.tripwire)}<span>${by ? `Tripped by <b>${by.name}</b>` : o.trip}</span></div>`;
     return `<div class="ob-trip${by ? " tripped" : ""}"><div class="ob-hang">${tile("tripwire", ICON.tripwire)}<div class="ob-col">
         <p class="ob-prose">${o.trip}</p>
         ${by ? `<div class="ob-decide-box"><div class="ob-why">${dot("neg", "Tripped")}<span>Tripped by a new signal. Accepting lowers confidence by one step.</span></div>${row(by, { omit: "when" })}
@@ -191,7 +191,7 @@
   };
   const sugBlock = (o, rung) => {
     const list = SUG[o.id] || []; if (!list.length) return "";
-    if (rung === "peek") return `<div class="ob-attach sug">${tile("suggestion", ICON.suggestion, "sm draft")}<span>${list.length === 1 ? `Suggested ${list[0].st === "+" ? "support" : "undermining"}: <b>${O[list[0].s].name}</b>` : `${list.length} suggestions`}</span></div>`;
+    if (rung === "peek") return `<div class="ob-attach sug">${tile("suggestion", ICON.suggestion, "draft")}<span>${list.length === 1 ? `Suggested ${list[0].st === "+" ? "support" : "undermining"}: <b>${O[list[0].s].name}</b>` : `${list.length} suggestions`}</span></div>`;
     return list.map(x => `<div class="ob-sug"><div class="ob-hang">${tile("suggestion", ICON.suggestion, "draft")}<div class="ob-col">
         <div class="ob-sug-head"><span class="ob-stance"><i class="ph ph-arrow-${x.st === "+" ? "up" : "down"}" aria-hidden="true"></i>Suggested ${x.st === "+" ? "support" : "undermining"}</span></div>
         ${row(O[x.s], { omit: "when" })}
