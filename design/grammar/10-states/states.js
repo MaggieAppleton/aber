@@ -38,7 +38,7 @@
       <nav class="nv-types" aria-label="Types">${RAIL.map(t => {
         const work = t === "dump" && ch.work === "rail" ? o.work : null;
         const n = o.counts === "none" ? "" : o.counts === "skel" ? sk("16px", "st-wait st-skel-n") : work === "busy" ? spin("1 dump processing") : `<span class="nv-n">${COUNT[t]}</span>`;
-        const marks = `${(o.fresh || []).includes(t) ? dot("new", "New") : ""}${work === "failed" ? dot("neg", "A dump failed") : ""}`;
+        const marks = work === "failed" ? dot("neg", "A dump failed") : "";
         return `<button type="button" class="nv-type" aria-current="${cur === t}"><span class="gw">${g(t)}${marks}</span><span class="nm">${TY[t][0]}</span>${n}</button>`;
       }).join("")}</nav>
       ${o.offline && ch.offline === "switcher" ? offlineTag() : ""}
@@ -93,7 +93,7 @@
     lead: plain("dump", "Link dump"), ctl, title: NEW_DUMP,
     sub: `<span class="nv-mono">09:31</span><span>Today</span><span>Shortcut</span>`,
     body: `${status}<p class="nv-note">stratechery.com/2026/agents-and-the-price-of-a-seat. Worth reading against the per-outcome pricing theory.</p>${made}` });
-  const madeDone = section("", "Signals", 3, box([item("signal", "Seat pricing breaks once agents do the work", "stratechery.com", dot("new", "New")), item("signal", "Vendors test per-task pricing for agents", "stratechery.com", dot("new", "New")), item("signal", "Buyers resist variable software bills", "stratechery.com", dot("new", "New"))]));
+  const madeDone = section("", "Signals", 3, box([item("signal", "Seat pricing breaks once agents do the work", "stratechery.com"), item("signal", "Vendors test per-task pricing for agents", "stratechery.com"), item("signal", "Buyers resist variable software bills", "stratechery.com")]));
   const briefing = (body, sub = `<span>7 changes</span><span>Last looked 18:40</span>`) => doc({ lead: plain("briefing", "Briefing"), title: "Since yesterday", sub, body });
   const toastHTML = (verb, name) => `<div class="st-toast" role="status"><span class="t">${verb}&nbsp;“<span class="q">${name}</span>”</span><button type="button" class="st-undo" data-act="undo">Undo<kbd>⌘Z</kbd></button></div>`;
   const modalHTML = (cls = "nv") => `<div class="st-scrim" data-act="cancel"></div><div class="st-modal" role="dialog" aria-modal="true" aria-labelledby="st-dd-t">
@@ -110,7 +110,7 @@
       stg: { columns: s => { pane(s); slot(s, ".stg-col-nav .stg-index", "New theme"); slot(s, ".stg-col:not(.stg-col-nav) .stg-cards", "New theory"); }, atlas: s => { pane(s); canvasSlot(s, "New theme"); }, timeline: s => { pane(s); tlEmpty(s); } } },
     "empty-type": { g: "Empty", label: "Empty type", views: ["default"],
       note: "<b>One type is empty.</b> Where I make the thing, the list shows an Add slot exactly where the first row would sit. Where the agent makes it (Signals, Dumps), one line says so, since the action (the composer) is already on screen.",
-      o: () => ({ cur: "prototype", list: list("prototype", add("New prototype"), { meta: "" }), main: briefing(box([item("theory", HELD[3], "Challenge", dot("neg", "Challenge")), item("theory", "Local models absorb most everyday agent work", "Draft")])) }) },
+      o: () => ({ cur: "prototype", list: list("prototype", add("New prototype"), { meta: "" }), main: briefing(box([item("theory", HELD[3], "Challenge"), item("theory", "Local models absorb most everyday agent work", "Draft")])) }) },
     filtered: { g: "Empty", label: "Filtered to nothing", views: ["default"],
       note: "<b>Filtered-empty is not empty.</b> The search and filter stay put and say what's narrowing the list; the line names the query, and Clear removes both. Esc clears the search.",
       o: () => ({ cur: "theory", list: list("theory", `<div class="st-empty-block">${empty("No theories match “pricing” in Agent identity")}${btn("quiet", "Clear filters", "")}</div>`, { tools: search("Find a theory", "pricing") + filter("Agent identity") }), main: theoryDoc() }) },
@@ -134,7 +134,7 @@
         body: `<div class="st-media">${I("play")}<span class="st-wave st-wait">${Array.from({ length: 40 }, () => "<i></i>").join("")}</span><span class="nv-mono">2:14</span></div><div class="st-skel-lines st-wait">${sk("94%")}${sk("90%")}${sk("97%")}${sk("62%")}</div>` + section("", "Signals", 3, box([item("signal", SIGNALS[4][0], SIGNALS[4][1]), item("signal", SIGNALS[6][0], SIGNALS[6][1]), item("signal", "Lab pauses memory feature after privacy complaints", "theverge.com")])) }) }) },
 
     processing: { g: "Working", label: "Dump processing", views: ALL, work: "busy",
-      note: "<b>The dump exists the moment it's sent.</b> It sits at the top of Today, says Processing in words, and its page shows the text you sent. Where else the work shows is choice 1. Agent work you didn't start (evidence linking, tripwire checks) shows nothing until it produces something.",
+      note: "<b>The dump exists the moment it's sent.</b> It sits at the top of Today, says Processing in words, and its page shows the text you sent. Where else the work shows is choice 1. Agent work you didn't start (evidence linking, tripwire checks) shows nothing until it produces something; then Briefing lists it.",
       o: () => ({ cur: "dump", work: "busy", list: list("dump", dumpRows(row(NEW_DUMP, { cur: true, mark: spin("Processing"), sub: "Processing" })), { plus: false }),
         main: dumpDoc({ status: `<div class="st-status">${spin("")}<span>Processing</span></div>` }) }),
       stg: { columns: s => strip(s, spin("1 dump processing")) } },
@@ -143,33 +143,33 @@
       o: () => ({ cur: "dump", list: list("dump", dumpRows(row(NEW_DUMP, { cur: true, mark: ring("Paused"), sub: "Spend limit, resumes tomorrow" })), { plus: false }),
         main: dumpDoc({ status: `<div class="st-status">${ring("")}<span>Spend limit, resumes tomorrow</span></div>` }) }) },
     done: { g: "Working", label: "Dump finished", views: ["default"], done: true,
-      note: "<b>The result is the feedback:</b> the status line goes, and what it made appears in place with new dots. Whether a toast also reports it is choice 2.",
-      o: ch => ({ cur: "dump", fresh: ch.done === "silent" ? ["signal"] : [], list: list("dump", dumpRows(row(NEW_DUMP, { cur: true })), { plus: false }), main: dumpDoc({ made: madeDone }),
+      note: "<b>The result is the feedback:</b> the status line goes and what it made appears in place. No new dots, no badges: unseen results are listed in Briefing. Whether a toast also reports it is choice 2.",
+      o: ch => ({ cur: "dump", list: list("dump", dumpRows(row(NEW_DUMP, { cur: true })), { plus: false }), main: dumpDoc({ made: madeDone }),
         layer: ch.done === "toast" ? `<div class="st-toast" role="status"><span class="t">Made 3 signals</span><button type="button" class="st-undo" data-act="undo">Undo<kbd>⌘Z</kbd></button></div>` : "" }) },
     suggestion: { g: "Working", label: "Suggestion arrives", views: ["default"],
-      note: "<b>A suggestion has no in-progress state.</b> When the agent finishes it appears where it applies, dashed (not yet mine) with a new dot, and Briefing counts it. Nothing spins while it's being prepared.",
-      o: () => ({ cur: "theory", fresh: ["theory"], list: list("theory", heldRows(0)),
-        main: theoryDoc(HELD[0], { extraEv: `<div class="nv-item" style="background:var(--draft-fill);outline:1px dashed var(--hairline-strong);outline-offset:-1px">${g("suggestion")}<span class="t"><span style="color:var(--ink-2)">${SIGNALS[3][0]}</span>${dot("new", "New")}</span><span class="src"><span>Suggested</span><span class="nv-decide">${btn("secondary", "Dismiss")}${btn("primary", "Accept")}</span></span></div>` }) }) },
+      note: "<b>A suggestion has no in-progress state.</b> When the agent finishes it appears where it applies, dashed (not yet mine), and Briefing lists it. No badge on the theory's row or card: suggestions show only in the peek, the full view and Briefing. Nothing spins while it's being prepared.",
+      o: () => ({ cur: "theory", list: list("theory", heldRows(0)),
+        main: theoryDoc(HELD[0], { extraEv: `<div class="nv-item" style="background:var(--draft-fill);outline:1px dashed var(--hairline-strong);outline-offset:-1px">${g("suggestion")}<span class="t"><span style="color:var(--ink-2)">${SIGNALS[3][0]}</span></span><span class="src"><span>Suggested</span><span class="nv-decide">${btn("secondary", "Dismiss")}${btn("primary", "Accept")}</span></span></div>` }) }) },
 
     failed: { g: "Error", label: "Dump failed", views: ALL, work: "failed",
-      note: "<b>A failed dump stays where it was, with the reason in words and Retry beside it.</b> The red dot is the only colour; the message is ink. What you sent is never lost. Try Retry.",
-      o: () => ({ cur: "dump", work: "failed", list: list("dump", dumpRows(row(NEW_DUMP, { cur: true, mark: dot("neg", "Failed"), sub: "Couldn't read the page" })), { plus: false }),
-        main: dumpDoc({ status: `<div class="st-status">${dot("neg", "")}<span class="msg">Couldn't read stratechery.com. The page needs a login.</span>${btn("secondary", "Retry", 'data-act="retry"')}</div>` }) }),
+      note: "<b>A failed dump stays where it was, with the reason in words and Retry beside it.</b> Words beside the object, in ink; no red dot on the row or page. The one red dot left is the composer's global mark (choice 1 A), where there's no room for words. What you sent is never lost. Try Retry.",
+      o: () => ({ cur: "dump", work: "failed", list: list("dump", dumpRows(row(NEW_DUMP, { cur: true, sub: `<span class="neg-t">Couldn't read the page</span>` })), { plus: false }),
+        main: dumpDoc({ status: `<div class="st-status"><span class="msg">Couldn't read stratechery.com. The page needs a login.</span>${btn("secondary", "Retry", 'data-act="retry"')}</div>` }) }),
       stg: { columns: s => strip(s, `<span class="stg-dot neg" role="img" aria-label="A dump failed"></span>`) } },
     unsupported: { g: "Error", label: "Can't process", views: ["default"], work: "failed",
       note: "<b>Not recoverable: say why, offer what's left, no Retry.</b> The file stays; the remaining actions are the dump's own (delete it, or dump the text another way).",
-      o: () => ({ cur: "dump", work: "failed", list: list("dump", dumpRows(row("Pricing deck.key", { cur: true, mark: dot("neg", "Failed"), sub: "Can't read Keynote files" })), { plus: false }),
+      o: () => ({ cur: "dump", work: "failed", list: list("dump", dumpRows(row("Pricing deck.key", { cur: true, sub: `<span class="neg-t">Can't read Keynote files</span>` })), { plus: false }),
         main: doc({ lead: plain("dump", "File dump"), ctl: ib("trash", "Delete dump"), title: "Pricing deck.key", sub: `<span class="nv-mono">09:40</span><span>Today</span><span>Shortcut</span>`,
-          body: `<div class="st-status">${dot("neg", "")}<span class="msg">Can't read Keynote files. Export it as a PDF and dump that.</span></div><div class="st-media">${I("file")}<span>Pricing deck.key</span><span class="nv-meta">4.2 MB</span></div>` }) }) },
+          body: `<div class="st-status"><span class="msg">Can't read Keynote files. Export it as a PDF and dump that.</span></div><div class="st-media">${I("file")}<span>Pricing deck.key</span><span class="nv-meta">4.2 MB</span></div>` }) }) },
     unsaved: { g: "Error", label: "Edit not saved", views: ALL,
       note: "<b>A save that fails shows beside the field, never only in a banner or tooltip.</b> Your text stays in the field, the line says it isn't saved, and Retry tries again. Saves that succeed show nothing.",
       o: () => ({ cur: "theory", list: list("theory", heldRows(0)),
-        main: theoryDoc(HELD[0], { noteHTML: `<div style="display:grid;gap:var(--gap-tight)"><p class="nv-note st-unsaved">Small models keep getting cheaper faster than demand grows. Routine agent work stops being metered in any way I notice, and most of it moves on-device.</p><div class="st-err">${dot("neg", "")}<span>Not saved</span>${btn("quiet", "Retry")}</div></div>` }) }),
+        main: theoryDoc(HELD[0], { noteHTML: `<div style="display:grid;gap:var(--gap-tight)"><p class="nv-note st-unsaved">Small models keep getting cheaper faster than demand grows. Routine agent work stops being metered in any way I notice, and most of it moves on-device.</p><div class="st-err"><span>Not saved</span>${btn("quiet", "Retry")}</div></div>` }) }),
       stg: { columns: unsavedStg, atlas: unsavedStg, timeline: unsavedStg } },
     "load-failed": { g: "Error", label: "List didn't load", views: ["default", "columns"],
       note: "<b>When data doesn't arrive, the error sits where the data would have been</b>, in the list, with Retry. The rest of the window keeps working.",
-      o: () => ({ cur: "theory", list: list("theory", `<div class="st-empty-block"><div class="st-err" style="padding:6px var(--inset-row)">${dot("neg", "")}<span>Couldn't load theories</span></div>${btn("secondary", "Retry")}</div>`, { meta: "" }), main: briefing(box([item("theory", HELD[3], "Challenge", dot("neg", "Challenge"))])) }),
-      stg: { columns: s => { pane(s); const c = s.querySelector(".stg-col:not(.stg-col-nav) .stg-cards"); c.innerHTML = `<div class="st-err" style="margin:0"><span class="stg-dot neg"></span>Couldn't load theories<button type="button" class="stg-btn">Retry</button></div>`; } } },
+      o: () => ({ cur: "theory", list: list("theory", `<div class="st-empty-block"><div class="st-err" style="padding:6px var(--inset-row)"><span>Couldn't load theories</span></div>${btn("secondary", "Retry")}</div>`, { meta: "" }), main: briefing(box([item("theory", HELD[3], "Challenge")])) }),
+      stg: { columns: s => { pane(s); const c = s.querySelector(".stg-col:not(.stg-col-nav) .stg-cards"); c.innerHTML = `<div class="st-err" style="margin:0">Couldn't load theories<button type="button" class="stg-btn">Retry</button></div>`; } } },
 
     offline: { g: "Offline", label: "Offline", views: ALL, offline: true,
       note: "<b>Offline shows once, in one place, for as long as it lasts</b> (where is choice 3). Everything keeps working: edits save locally and sync when you're back, and a dump sent offline waits with a hollow ring. Coming back online shows nothing.",
@@ -210,14 +210,14 @@
   }
   function strip(s, mark) { const st = s.querySelector(".stg-strip"); if (st) st.insertAdjacentHTML("beforeend", `<span class="st-strip-mark">${mark}</span>`); }
   function unsavedStg(s) { const n = s.querySelector(".stg-note"); if (!n) return; n.textContent += " Most of it moves on-device."; n.style.boxShadow = "inset 0 0 0 0.5px var(--hairline-strong)";
-    n.insertAdjacentHTML("afterend", `<div class="st-err"><span class="stg-dot neg"></span>Not saved<button type="button" class="stg-btn">Retry</button></div>`); }
+    n.insertAdjacentHTML("afterend", `<div class="st-err">Not saved<button type="button" class="stg-btn">Retry</button></div>`); }
   function toastStg(s) { s.insertAdjacentHTML("beforeend", toastHTML("Discarded", SIGNALS[0][0])); }
   function modalStg(s) { s.insertAdjacentHTML("beforeend", modalHTML("stg")); }
 
   /* ── Choices (from the page's picks; option stages force their own) ── */
   const page = document.body.dataset.jig;
   const PICK = { work: ["work", { "A In the composer": "composer", "B On the Dumps type": "rail", "C Only on the dump": "row" }],
-    done: ["done", { "A Toast with Undo": "toast", "B Silent: new dots": "silent" }], offline: ["offline", { "A Beside the view switcher": "switcher", "B In the composer": "composer" }] };
+    done: ["done", { "A Toast with Undo": "toast", "B Silent: it appears in Briefing": "silent" }], offline: ["offline", { "A Beside the view switcher": "switcher", "B In the composer": "composer" }] };
   const DEF = { work: "composer", done: "silent", offline: "switcher" };
   const picks = () => {
     const out = { ...DEF };
@@ -243,6 +243,7 @@
       const sh = host.firstElementChild; window.AberStage.render(sh);
       const s = sh.firstElementChild;
       const vb = s.querySelector('.stg-switch button[data-view="sections"]'); if (vb) { vb.dataset.tip = "Default"; vb.setAttribute("aria-label", "Default"); vb.dataset.view = "default"; }
+      s.querySelectorAll(".stg-dot.new, .stg-pending").forEach(x => x.replaceWith(document.createElement("span")));   // 4 Nov: no new dots or pending badges on previews
       sc.stg?.[view]?.(s);
       s.insertAdjacentHTML("beforeend", composer({ work: sc.work, offline: sc.offline }, ch));
       if (sc.offline && ch.offline === "switcher") s.insertAdjacentHTML("beforeend", offlineTag());
@@ -308,7 +309,7 @@
     }
     if (act === "discard-draft") {
       const cur = base.querySelector(".nv-row.draft[aria-current='true']"), scroller = base.querySelector(".nv-scroller"), before = scroller.innerHTML;
-      cur.hidden = true; scroller.innerHTML = briefing(box([item("theory", HELD[3], "Challenge", dot("neg", "Challenge"))]));
+      cur.hidden = true; scroller.innerHTML = briefing(box([item("theory", HELD[3], "Challenge")]));
       toast(base, "Discarded", "Local models absorb most everyday agent work", () => { cur.hidden = false; scroller.innerHTML = before; });
     }
     if (act === "cancel") base.querySelectorAll(".st-scrim, .st-modal").forEach(x => x.remove());
@@ -316,7 +317,7 @@
     if (act === "delete") {
       base.querySelectorAll(".st-scrim, .st-modal").forEach(x => x.remove());
       const r = base.querySelector(".nv-row[aria-current='true']"); if (r) r.hidden = true;
-      const sc = base.querySelector(".nv-scroller"); if (sc) sc.innerHTML = briefing(box([item("theory", HELD[3], "Challenge", dot("neg", "Challenge"))]));
+      const sc = base.querySelector(".nv-scroller"); if (sc) sc.innerHTML = briefing(box([item("theory", HELD[3], "Challenge")]));
     }
     if (act === "retry") {
       // Retry: the button keeps its width and spins, then the dump is processing again, then it lands

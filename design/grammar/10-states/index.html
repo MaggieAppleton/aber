@@ -36,7 +36,7 @@
     <h2>Decide on this page</h2>
     <ol>
       <li data-pick="work"><a href="#work">Where agent work in progress shows: the composer, the Dumps type, or only the dump</a> <span class="pick"></span></li>
-      <li data-pick="done"><a href="#done">When a dump finishes: a toast, or silent new dots</a> <span class="pick"></span></li>
+      <li data-pick="done"><a href="#done">When a dump finishes: a toast, or silent (it appears in Briefing)</a> <span class="pick"></span></li>
       <li data-pick="offline"><a href="#offline">Where offline shows: beside the view switcher, or in the composer</a> <span class="pick"></span></li>
     </ol>
   </div>
@@ -80,11 +80,11 @@
     <li><b>Background work: only work I started shows progress.</b>
       <ul>
         <li>A dump appears the moment it's sent, at the top of Today, saying Processing in words with the Working spinner; its page shows what I sent.</li>
-        <li>It resolves in place: the status line goes and what it made appears there with new dots. Paused (spend limit) is a hollow ring and the reason, and resumes by itself.</li>
-        <li>Agent work I didn't start (evidence linking, tripwires, suggestions) shows nothing until it produces something; then it appears dashed with a new dot, and Briefing counts it.</li>
+        <li>It resolves in place: the status line goes and what it made appears there; Briefing lists what's new. Paused (spend limit) is a hollow ring and the reason, and resumes by itself.</li>
+        <li>Agent work I didn't start (evidence linking, tripwires, suggestions) shows nothing until it produces something; then it appears dashed where it applies, and Briefing lists it. No new dots and no pending-suggestion badges on rows or cards: suggestions show only in the peek, the full view and Briefing.</li>
         <li>Where in-progress work also shows outside the dump is choice 1.</li>
       </ul></li>
-    <li><b>Errors sit beside their object, in words, with the way out.</b> Never only in a tooltip, never in a global banner. A red dot is the only colour; the message is ink.
+    <li><b>Errors sit beside their object, in words, with the way out.</b> Never only in a tooltip, never in a global banner. Words do the work, in ink: no red dot on the row, page or field. The only red dot left is the global mark for a failed dump (composer, Dumps type or Columns strip), where there's no room for words and it leads to the dump that says why.
       <ul>
         <li><b>Recoverable</b> (a page needs a login, a save failed): the reason and Retry, side by side.</li>
         <li><b>Not recoverable</b> (a file type it can't read): the reason and what's still possible, no Retry.</li>
@@ -117,17 +117,17 @@
 <section class="jig-section" id="work" data-decision="work" data-question="1. Where does agent work in progress show, beyond the dump itself?" data-default="A In the composer">
   <p>A link dump is processing. The dump's own row and page always say so; this is about the one mark you'd see from anywhere else.</p>
   <div class="jig-compare">
-    <div class="jig-option" data-option="A In the composer"><div class="jig-label"><b>A</b> In the composer</div><p class="jig-note">A Working spinner at the composer's left while anything you sent is processing; a red dot if one failed. Opens Dumps. Same place in all four views, right where you dumped. What the spec'd pill dot was meant to be.</p><div class="st-mount" data-scene="processing" data-ch='{"work":"composer"}'></div></div>
+    <div class="jig-option" data-option="A In the composer"><div class="jig-label"><b>A</b> In the composer</div><p class="jig-note">A Working spinner at the composer's left while anything you sent is processing; a red dot if one failed (the one red dot errors keep: no room for words there, and it opens the dump that says why). Same place in all four views, right where you dumped. What the spec'd pill dot was meant to be.</p><div class="st-mount" data-scene="processing" data-ch='{"work":"composer"}'></div></div>
     <div class="jig-option" data-option="B On the Dumps type"><div class="jig-label"><b>B</b> On the Dumps type</div><p class="jig-note">The spinner takes the Dumps count's place in the rail; a failure is a red dot on its tile. Reads as part of navigation. Columns, Atlas and Timeline have no rail, so they show nothing.</p><div class="st-mount" data-scene="processing" data-ch='{"work":"rail"}'></div></div>
-    <div class="jig-option" data-option="C Only on the dump"><div class="jig-label"><b>C</b> Only on the dump</div><p class="jig-note">No global mark. You see work only in Dumps (and Columns' Dumps strip); the result arrives as new dots. Quietest; a failure waits until you look.</p><div class="st-mount" data-scene="processing" data-ch='{"work":"row"}'></div></div>
+    <div class="jig-option" data-option="C Only on the dump"><div class="jig-label"><b>C</b> Only on the dump</div><p class="jig-note">No global mark. You see work only in Dumps (and Columns' Dumps strip); the result appears in Briefing. Quietest; a failure waits until you look.</p><div class="st-mount" data-scene="processing" data-ch='{"work":"row"}'></div></div>
   </div>
 </section>
 
-<section class="jig-section" id="done" data-decision="done" data-question="2. When a dump finishes, does a toast report it?" data-default="B Silent: new dots">
+<section class="jig-section" id="done" data-decision="done" data-question="2. When a dump finishes, does a toast report it?" data-default="B Silent: it appears in Briefing">
   <p>The dump made three signals. Today the app shows a toast with the counts and Undo (which deletes the dump).</p>
   <div class="jig-compare">
     <div class="jig-option" data-option="A Toast with Undo"><div class="jig-label"><b>A</b> Toast with Undo</div><p class="jig-note">"Made 3 signals" above the composer for 5 seconds, wherever you are. Undo removes the dump and what it made. A success toast: the one exception to rule 8.</p><div class="st-mount" data-scene="done" data-ch='{"done":"toast"}'></div></div>
-    <div class="jig-option" data-option="B Silent: new dots"><div class="jig-label"><b>B</b> Silent: new dots</div><p class="jig-note">The status line goes, the signals appear in place, and Signals gets its new dot. No toast; undoing is deleting the dump. Keeps toasts meaning Undo only.</p><div class="st-mount" data-scene="done" data-ch='{"done":"silent"}'></div></div>
+    <div class="jig-option" data-option="B Silent: it appears in Briefing"><div class="jig-label"><b>B</b> Silent: it appears in Briefing</div><p class="jig-note">The status line goes and the signals appear in place; Briefing lists them as new. No toast and no dots; undoing is deleting the dump. Keeps toasts meaning Undo only.</p><div class="st-mount" data-scene="done" data-ch='{"done":"silent"}'></div></div>
   </div>
 </section>
 
