@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aber interface grammar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="_shared/tokens.css">
+<link rel="stylesheet" href="_shared/spacing.css">
+<link rel="stylesheet" href="_shared/type.css">
+<link rel="stylesheet" href="_shared/icons.css">
+<link rel="stylesheet" href="_shared/surfaces.css">
+<script type="module" src="_shared/agentation.js" data-app-name="Grammar index"></script>
+<style>
+  /* Built only from the decided grammar: colour D, Regular spacing, type 11/12/13/24, icons 16 and 14 on tiles, surfaces. */
+  * { box-sizing: border-box; }
+  html { background: var(--ground); }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font);
+    -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+  }
+  a { color: inherit; text-decoration: none; }
+  i[class^="ph"] { display: inline-grid; place-items: center; width: var(--isz, var(--icon)); height: var(--isz, var(--icon)); font-size: var(--isz, var(--icon)); line-height: 1; }
+
+  /* A full view filling the main area: 48 all round, at most 720, left-aligned; the title tile hangs left of the title edge */
+  main { --hang: calc(var(--tile-title) + var(--gap-tile-title));
+    max-width: calc(720px + var(--main-inset-inline) * 2 + var(--hang));
+    padding: var(--main-inset-block) var(--main-inset-inline) 96px calc(var(--main-inset-inline) + var(--hang)); }
+
+  .head { display: grid; grid-template-columns: var(--tile-title) minmax(0, 1fr); column-gap: var(--gap-tile-title); margin-left: calc(var(--hang) * -1); }
+  .tile { display: grid; place-items: center; background: var(--tile-bg); color: var(--ink-2); border-radius: var(--r-xs); }
+  .head .tile { width: var(--tile-title); height: var(--tile-title); border-radius: var(--r-sm); --isz: var(--tile-title-glyph);
+    margin-top: calc((var(--fs-title) * var(--lh-head) - var(--tile-title)) / 2); color: var(--ink); }
+  h1 { margin: 0; font-size: var(--fs-title); line-height: var(--lh-head); font-weight: 600; letter-spacing: -0.01em; }
+  .key { margin-top: var(--gap-tight); font-size: var(--fs-label); color: var(--ink-2); }
+  .key b { font-weight: 500; color: var(--ink); }
+  .sum { margin: var(--gap-group) 0 0; max-width: 60ch; line-height: var(--lh-prose); }
+  .sum span { color: var(--ink-2); }
+
+  .docs { display: flex; flex-wrap: wrap; gap: var(--gap-item); margin-top: var(--gap-group); }
+  .btn { display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--control); padding: 0 var(--inset-control);
+    border-radius: var(--r-control); background: var(--surface); box-shadow: var(--ring), var(--btn-shadow);
+    font-size: var(--fs-label); font-weight: 500; color: var(--ink); transition: background 90ms var(--ease-out), scale 90ms var(--ease-out); }
+  .btn i { --isz: var(--icon-label); color: var(--ink-2); }
+  .btn:hover { background: color-mix(in oklch, var(--surface), var(--ink) 4%); }
+  .btn:active { scale: var(--press-scale); }
+
+  hr { height: 0; margin: var(--gap-section) 0 0; border: 0; border-top: 0.5px solid var(--hairline-strong); }
+
+  /* Sections: header role (13 / 600, ink 2) on the tile edge, rows below */
+  section { margin-top: var(--gap-section); }
+  hr + section { margin-top: var(--s-5); }
+  .sec { display: flex; align-items: baseline; gap: var(--gap-item); margin: 0 0 var(--gap-tight); font-size: var(--fs-body); font-weight: 600; color: var(--sechead-ink); }
+  .sec .n { font-size: var(--fs-label); font-weight: 400; }
+
+  ol { list-style: none; margin: 0 calc(var(--inset-row) * -1); padding: 0; display: grid; gap: var(--rail-row-gap); }
+  .row { display: grid; align-items: center; column-gap: var(--gap-tile);
+    grid-template-columns: 28px var(--tile) 168px minmax(0, 1fr) auto; grid-template-areas: "num g nm desc st";
+    min-height: var(--row); padding: var(--gap-icon) var(--inset-row); border-radius: var(--r-control);
+    transition: background 90ms var(--ease-out); }
+  .row:hover { background: var(--hover); }
+  .row:active { scale: 0.995; }
+  .row:focus-visible { outline: 2px solid var(--focus); outline-offset: 0; }
+  .num { grid-area: num; font: var(--w-medium) var(--fs-label)/1 var(--font-mono); color: var(--ink-2); }
+  .row .tile { grid-area: g; width: var(--tile); height: var(--tile); --isz: var(--tile-glyph); }
+  .nm { grid-area: nm; font-weight: 500; color: var(--ink); }
+  .desc { grid-area: desc; color: var(--ink-2); min-width: 0; }
+  .st { grid-area: st; justify-self: end; font-size: var(--fs-label); color: var(--ink-2); white-space: nowrap; }
+  .st.open { color: var(--ink); font-weight: 500; }
+  .row:hover .tile { color: var(--ink); }
+
+  footer { margin-top: var(--gap-section); padding-top: var(--gap-group); box-shadow: inset 0 0.5px 0 var(--hairline); font-size: var(--fs-label); color: var(--ink-2); }
+  footer a { text-decoration: underline; text-decoration-color: var(--hairline-strong); text-underline-offset: 3px; }
+  footer a:hover { color: var(--ink); text-decoration-color: currentColor; }
+
+  /* Narrow: the tile stops hanging; a row wraps its description under its name */
+  @media (max-width: 760px) {
+    main { --hang: 0px; padding: var(--s-6) var(--s-4) 64px; }
+    .head { margin-left: 0; }
+    .row { grid-template-columns: 28px var(--tile) minmax(0, 1fr) auto; row-gap: 2px;
+      grid-template-areas: "num g nm st" ". . desc desc"; align-items: start; }
+    .row .tile, .num, .st { margin-top: 1px; }
+    .num { line-height: var(--line-ui); margin-top: 0; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="head">
+      <span class="tile" aria-hidden="true"><i class="ph ph-book-open-text"></i></span>
+      <div>
+        <h1>Aber interface grammar</h1>
+        <div class="key"><b>10 decided</b>, 4 waiting on 13 choices, last decision 5 Nov</div>
+      </div>
+    </div>
+    <p class="sum">Aber's interface, built from the ground up: colour, then spacing, type, icons, surfaces and controls, then the objects and screens made only from them. <span>Every choice is made on a jig that shows it in the app's own layout, then written into the rules.</span></p>
+    <div class="docs">
+      <a class="btn" href="RULES.md"><i class="ph ph-scroll"></i>Rules</a>
+      <a class="btn" href="PRIOR-DECISIONS.md"><i class="ph ph-clock-counter-clockwise"></i>Prior decisions</a>
+    </div>
+  </header>
+
+  <hr>
+
+  <section aria-labelledby="s-found">
+    <h2 class="sec" id="s-found">Foundations <span class="n">6</span></h2>
+    <ol>
+      <li><a class="row" href="00-colour/"><span class="num">00</span><span class="tile"><i class="ph ph-palette"></i></span><span class="nm">Colour</span><span class="desc">System D: linen neutrals, ink primary, bright type tiles</span><span class="st">Decided 4 Nov</span></a></li>
+      <li><a class="row" href="01-spacing/"><span class="num">01</span><span class="tile"><i class="ph ph-ruler"></i></span><span class="nm">Spacing</span><span class="desc">Regular density; five gaps and the insets they set</span><span class="st">Decided 4 Nov</span></a></li>
+      <li><a class="row" href="02-type/"><span class="num">02</span><span class="tile"><i class="ph ph-text-aa"></i></span><span class="nm">Type</span><span class="desc">Geist at 11, 12 and 13, and 24 for the title</span><span class="st">Decided 4 Nov</span></a></li>
+      <li><a class="row" href="03-icons/"><span class="num">03</span><span class="tile"><i class="ph ph-shapes"></i></span><span class="nm">Icons</span><span class="desc">Phosphor at 16 and 14; object glyphs on their tile</span><span class="st">Decided 4 Nov</span></a></li>
+      <li><a class="row" href="04-surfaces/"><span class="num">04</span><span class="tile"><i class="ph ph-stack"></i></span><span class="nm">Surfaces and layers</span><span class="desc">Seven tiers, each with its own shadow and radius</span><span class="st">Decided 4 Nov</span></a></li>
+      <li><a class="row" href="05-controls/"><span class="num">05</span><span class="tile"><i class="ph ph-toggle-left"></i></span><span class="nm">Controls</span><span class="desc">Buttons, fields and menus from the foundations alone</span><span class="st">Decided 4 Nov</span></a></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="s-nav">
+    <h2 class="sec" id="s-nav">Navigation <span class="n">1</span></h2>
+    <ol>
+      <li><a class="row" href="nav/"><span class="num">Nav</span><span class="tile"><i class="ph ph-sidebar-simple"></i></span><span class="nm">Type-first default</span><span class="desc">A rail of types, a list, the item in the main area</span><span class="st">Decided 4 Nov</span></a></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="s-obj">
+    <h2 class="sec" id="s-obj">Objects <span class="n">2</span></h2>
+    <ol>
+      <li><a class="row" href="06-objects/"><span class="num">06</span><span class="tile"><i class="ph ph-cube"></i></span><span class="nm">Objects</span><span class="desc">One anatomy at three rungs: preview, peek, full</span><span class="st">Decided 4 Nov</span></a></li>
+      <li><a class="row" href="06b-confidence/"><span class="num">06b</span><span class="tile"><i class="ph ph-gauge"></i></span><span class="nm">Confidence</span><span class="desc">How a theory's 1 to 5 stance is drawn, small and large</span><span class="st open">3 choices open</span></a></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="s-beh">
+    <h2 class="sec" id="s-beh">Behaviour <span class="n">1</span></h2>
+    <ol>
+      <li><a class="row" href="07-rungs/"><span class="num">07</span><span class="tile"><i class="ph ph-arrows-out-simple"></i></span><span class="nm">Moving between levels</span><span class="desc">Peeks grow from their trigger; Open carries the title</span><span class="st">Decided 5 Nov</span></a></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="s-scr">
+    <h2 class="sec" id="s-scr">Screens and flows <span class="n">4</span></h2>
+    <ol>
+      <li><a class="row" href="08-briefing/"><span class="num">08</span><span class="tile"><i class="ph ph-newspaper"></i></span><span class="nm">Briefing</span><span class="desc">What changed since you last looked, ordered by need</span><span class="st open">6 choices open</span></a></li>
+      <li><a class="row" href="09-making/"><span class="num">09</span><span class="tile"><i class="ph ph-plus-circle"></i></span><span class="nm">Making things</span><span class="desc">Capture, making in place, linking and renaming</span><span class="st open">1 choice open</span></a></li>
+      <li><a class="row" href="10-states/"><span class="num">10</span><span class="tile"><i class="ph ph-circle-dashed"></i></span><span class="nm">States</span><span class="desc">Empty, loading, work, errors, offline and toasts</span><span class="st">Decided 4 Nov</span></a></li>
+      <li><a class="row" href="11-views/"><span class="num">11</span><span class="tile"><i class="ph ph-columns"></i></span><span class="nm">Views</span><span class="desc">Columns, Atlas and Timeline restyled, not re-laid out</span><span class="st open">3 choices open</span></a></li>
+    </ol>
+  </section>
+
+  <footer>Earlier rounds live in <a href="_retired/">retired jigs</a>.</footer>
+</main>
+</body>
+</html>
