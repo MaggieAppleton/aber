@@ -70,6 +70,7 @@
     const s = host._s, w = winOf(host);
     s.peek = null; s.leaving?.remove(); s.leaving = null; s.still = true;   // no hover peek under a pointer that hasn't moved since the view changed
     w.querySelector(".r7-frame").innerHTML = s.view === "columns" ? colFrame(s) : appFrame(s);
+    window.AberRail?.apply(host);   // the shared rail: it collapses to icons like every other window (nav rule 6)
     A.markFades(w);
     // Roving tab stops: one in the rail, one in the list (the current item); arrows move between them
     const rove = (sel, cur) => { const items = [...w.querySelectorAll(sel)]; const c = items.find(cur) || items[0]; items.forEach(b => b.tabIndex = b === c ? 0 : -1); };

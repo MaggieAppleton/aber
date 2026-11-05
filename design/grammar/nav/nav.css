@@ -89,6 +89,8 @@
 .nv-type[aria-current="true"] { background: var(--surface); color: var(--ink); font-weight: 500; box-shadow: var(--elev-2); }
 .nv-type .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .nv-type .gw { position: relative; display: inline-grid; }
+/* A mark on a rail tile (10: a failed dump) sits centred on the tile's top-right corner, ringed in the rail's ground so it separates from the tile */
+.nv-type .gw > .nv-dot { position: absolute; z-index: 1; top: 0; right: 0; width: 7px; height: 7px; translate: 50% -50%; box-shadow: 0 0 0 1.5px var(--ground-2); }
 .nv[data-v="C"] .nv-rail { align-items: center; padding-inline: 8px; }
 .nv[data-v="C"] .nv-brand { padding: 0; justify-content: center; }
 .nv[data-v="C"] .nv-type { width: 40px; justify-content: center; padding: 0; }
@@ -282,3 +284,14 @@ button.nv-chip:hover, .nv-chip[aria-expanded="true"] { background: var(--hover);
 /* A full view filling the main area: 48 all round, content at most 720, left-aligned (4 Nov, from 08); an empty top bar takes no height */
 .nv-main .nv-doc { padding: var(--main-inset-block) var(--main-inset-inline) 96px; max-width: calc(720px + var(--main-inset-inline) * 2); }
 .nv-doc > .nv-top:empty { display: none; }
+
+/* One left edge at the title, every full view (06 rule 2; Maggie, 5 Nov). L is the title's left; the doc keeps its padding. In a pane the 32 title
+   tile stays inside and the content moves right to L; in the main area the tile hangs left into the 88 inset and L is the padding edge.
+   Below the head everything (notes, key lines, section labels, row tiles, block edges, status lines, chips) starts on L. */
+.nv-doc { --lead: calc(var(--tile-title) + var(--gap-tile-title)); }
+.nv-doc > .nv-head { margin-left: 0; }
+.nv-doc > :not(.nv-top, .nv-head) { margin-left: var(--lead); }
+.nv:not(.narrow) > .nv-main .nv-doc > .nv-head { margin-left: calc(var(--lead) * -1); }
+.nv:not(.narrow) > .nv-main .nv-doc > :not(.nv-top, .nv-head) { margin-left: 0; }
+/* A proposal block's border sits on L, its contents on its 12 inset (06 rule 9) */
+.nv-doc .ob-rows > .ob-block.sug { margin-left: 0; margin-right: 0; }

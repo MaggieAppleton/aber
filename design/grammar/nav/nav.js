@@ -264,7 +264,7 @@
       const rel = [...protosOf(o), ...followers(o)];
       body = `
         <dl class="nv-fields">
-          ${o.draft ? `<dt>Draft</dt><dd><span class="nv-decide"><button type="button" class="nv-btn secondary">Dismiss</button><button type="button" class="nv-btn primary">Accept</button></span></dd>`
+          ${o.draft ? `<dt>Draft</dt><dd><span class="nv-decide"><button type="button" class="nv-btn secondary">Discard</button><button type="button" class="nv-btn primary">Keep</button></span></dd>`
             : o.retired ? `<dt>Retired</dt><dd>${o.retired}</dd>` : `<dt>Confidence</dt><dd>${conf(o.c, true)}</dd>`}
           <dt>Happens by</dt><dd>${o.by}</dd>
           ${o.rival ? `<dt>Rival</dt><dd>${chip(O[o.rival])}</dd>` : ""}

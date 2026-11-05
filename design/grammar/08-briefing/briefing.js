@@ -188,6 +188,7 @@
     host.innerHTML = frame(st, st.full ? A.full(O[st.full.at(-1)], { back: `<button type="button" class="nv-back" data-back><i class="ph ph-arrow-left" aria-hidden="true"></i><span>${st.full.length > 1 ? O[st.full.at(-2)].name : "Since yesterday"}</span></button>` }) : doc(st));
     if (toast) host.querySelector(".br8-win").append(toast);
     host.querySelector(".nv-scroller").scrollTop = sc; fit(host);
+    if (!st.narrow) window.AberRail?.apply(host);   // the shared rail collapses to icons (nav rule 6); narrow windows keep the rail as a sheet
   };
 
   /* ═══ Leaving Briefing: 06's window takes over (Open, a rail type, Columns). Back or Briefing returns here ═══ */

@@ -1,4 +1,4 @@
-/* Grammar nav: the type rail's icon state (PROPOSED 5 Nov, Maggie). Loaded by rail.js. The state lives on .nv as data-rail="full" | "icons".
+/* Grammar nav: the type rail's icon state (DECIDED 5 Nov, Maggie). Loaded by rail.js. The state lives on .nv as data-rail="full" | "icons".
    Icons: 48 wide; Find on top, then Briefing and the types on their tiles, the toggle and the view switcher (a vertical stack) at the foot.
    Width moves at --t-float, ease-out (07); reduced motion is instant. Tiles stay where they are (3 px of drift); labels and counts fade. */
 

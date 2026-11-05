@@ -1,4 +1,4 @@
-// Grammar nav: the type rail collapses to an icon bar (PROPOSED 5 Nov, Maggie). Shared by nav/, 06 and 09; each page renders its own rail
+// Grammar nav: the type rail collapses to an icon bar (DECIDED 5 Nov, Maggie: A, auto-collapse while the chat is open). Shared by nav/, 06, 07, 08, 09 and 10; each page renders its rail markup
 // and calls AberRail.apply(host, { chat }) after every render. Load this before the page's own script.
 //   Host attributes: data-rail-start="icons" (start collapsed), data-rail-persist (the toggle is remembered, and the narrow-window rule applies:
 //   these windows stand for the app), data-rail-auto="on" | "off" (overrides the nav page's Choose).
