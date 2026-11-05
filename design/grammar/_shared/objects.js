@@ -38,7 +38,7 @@
       note: "The best models keep needing more compute than anyone can amortise. The top tier stays a premium product.", trip: "I'd change my mind if a frontier model ships at small-model prices" },
     { id: "t3", name: "Agents run continuously in the background by default", themes: ["coi", "mem"], c: 3, by: 2029, follows: ["t1"],
       note: "Once routine work is free, nobody waits to be asked. Agents keep working on standing goals." },
-    { id: "t4", name: "Agents keep context across months, not sessions", themes: ["mem"], c: 4, by: 2027, challenge: "s8",
+    { id: "t4", name: "Agents keep context across months, not sessions", themes: ["mem"], c: 4, by: 2027, challenge: "s8", chwhy: "A major lab paused long-term memory, which is the rollback your tripwire names.",
       note: "Memory stops being a feature and becomes the default. Starting from zero each session will feel broken.", trip: "I'd change my mind if a major lab rolls back long-term memory" },
     { id: "t5", name: "Memory becomes the main lock-in for agent products", themes: ["mem"], c: 3, by: 2028, follows: ["t4"] },
     { id: "t6", name: "Code review becomes the bottleneck of shipping", themes: ["rev"], c: 4, by: 2027,
@@ -202,15 +202,19 @@
     if (rung === "peek") return `<div class="ob-attach${by ? " tripped" : ""}">${tile("tripwire", ICON.tripwire)}<span>${by ? `Tripped by <b>${by.name}</b>` : o.trip}</span></div>`;   // text in ink; only the glyph is red
     // One glyph column: the signpost hangs where the title's tile hangs; the sentence starts on the body's text edge
     return `<div class="ob-trip${by ? " tripped" : ""}"><div class="ob-attach lg">${tile("tripwire", ICON.tripwire)}<p class="ob-prose">${o.trip}</p></div>
-        ${by ? `<div class="ob-block"><div class="ob-blabel">Tripped by a new signal</div>${row(by, { omit: "when" })}<p class="ob-why-t">Accepting lowers confidence by one step.</p>
-          <div class="ob-decide"><button type="button" class="nv-btn secondary">Dismiss</button><button type="button" class="nv-btn primary">Accept</button></div></div>` : ""}</div>`;
+        ${by ? `<div class="ob-block sug"><div class="ob-blabel">Tripped by a new signal</div>${o.chwhy ? `<p class="ob-reason">${o.chwhy}</p>` : ""}${row(by, { omit: "when" })}
+          <div class="ob-dfoot">${changeLine(o.c, Math.max(1, o.c - 1))}${decide("Keep confidence", `Lower to ${Math.max(1, o.c - 1)}`)}</div></div>` : ""}</div>`;
   };
+  // Decision buttons say what happens (05 rule 6, decided 5 Nov): the reject verb left, the accept verb right
+  const decide = (no, yes) => `<div class="ob-decide"><button type="button" class="nv-btn secondary">${no}</button><button type="button" class="nv-btn primary">${yes}</button></div>`;
+  // A challenge's consequence as a picture (08, decided): a confidence mark with the step that would go in the "down" red at 40%, then the words
+  const changeLine = (from, to) => `<p class="ob-change" aria-label="I suggest lowering confidence from ${from} to ${to}"><span class="ob-lose" aria-hidden="true">${[1, 2, 3, 4, 5].map(i => `<i${i <= to ? " data-on" : i <= from ? " data-gone" : ""}></i>`).join("")}</span><span>I suggest lowering confidence from ${from} to ${to}</span></p>`;
   // A suggested relation sits inside the group it would join (a suggested support first in Supports), dashed = not yet mine.
-  // Peek: a dashed row whose key line says "Suggested". Full: a dashed block with that row, why, and Dismiss | Accept. No Sparkle inside.
+  // Peek: a dashed row whose key line says "Suggested". Full: a dashed block with its label, why, that row and its verbs. No Sparkle inside.
   const sugsFor = (o, st) => (SUG[o.id] || []).filter(x => x.st === st);
   const sugRow = x => row(O[x.s], { omit: "when", cls: "suggested" });
-  const sugBlock = x => `<div class="ob-block sug"><div class="ob-blabel">Suggested</div>${row(O[x.s], { omit: "when" })}<p class="ob-why-t">${x.why}</p>
-        <div class="ob-decide"><button type="button" class="nv-btn secondary">Dismiss</button><button type="button" class="nv-btn primary">Accept</button></div></div>`;
+  // Proposal block (06 rule 9, decided 5 Nov): label, reason, the object row, the verbs
+  const sugBlock = x => `<div class="ob-block sug"><div class="ob-blabel">${x.st === "-" ? "Suggested counter-evidence" : "Suggested support"}</div><p class="ob-reason">${x.why}</p>${row(O[x.s], { omit: "when" })}${decide("Dismiss", "Add evidence")}</div>`;
   const stanceOf = label => label === "Supports" ? "+" : label === "Undermines" ? "-" : null;
 
   /* ═══ 7. Relations, in order of importance per type ═══════════════════════════ */
@@ -268,7 +272,7 @@
   };
   const full = (o, { layout = "prose", back = "", cur = null, where = "main" } = {}) => {
     const attrs = attrsOf(o, "full"), p = proseOf(o);
-    const acts = o.draft ? `<span class="ob-decide"><button type="button" class="nv-btn secondary">Discard</button><button type="button" class="nv-btn primary">Accept</button></span>`
+    const acts = o.draft ? `<span class="ob-decide"><button type="button" class="nv-btn secondary">Discard</button><button type="button" class="nv-btn primary">Keep</button></span>`
       : where === "pane" ? `<span class="ob-tools">${ib("arrows-out-simple", "Pane full width")}${ib("x", "Close", "data-close", "Esc")}</span>`
       : o.kind === "dump" ? `<span class="ob-tools">${ib("trash", "Delete dump")}</span>` : o.kind === "signal" ? `<span class="ob-tools">${ib("arrows-merge", "Merge")}${ib("trash", "Discard signal")}</span>`
       : `<span class="ob-tools">${ib("archive", "Retire")}</span>`;

@@ -308,3 +308,52 @@
 
 /* Suggestion and draft blocks: more room inside the dash (Maggie, 4 Nov: "padding on this is too small"). */
 .ob-block.sug { --inset-row: 12px; padding-top: 10px; padding-bottom: 10px; }
+
+/* ═══ One left edge at the title (06 rule 2, decided 5 Nov from 08; every full view, Maggie 5 Nov) ═══
+   L is the title's left. Everything below the head starts on L: key line, prose, hairline, section labels, row tiles, block edges, chips,
+   cards; a row's text sits at L + 26. The container keeps its padding. In the main area the 32 title tile and its 12 gap hang left into the
+   88 inset, so L is the padding edge; in a docked pane (24 inset) the tile stays inside and the content moves right to L instead. */
+.ob-full { --lead: calc(var(--tile-title) + var(--gap-tile-title)); }
+.ob-full > .ob-head { margin-left: 0; }
+.ob-full > .ob-body { margin-left: calc(var(--lead) + var(--hang)); }
+.nv:not(.narrow) > .nv-main .ob-full > .ob-head { margin-left: calc(var(--lead) * -1); }
+.nv:not(.narrow) > .nv-main .ob-full > .ob-body { margin-left: var(--hang); }
+.nv-main .ob-full { max-width: calc(720px + var(--main-inset-inline) * 2); }
+
+/* ═══ Proposal blocks (06 rule 9, decided 5 Nov from 08) ═══
+   Dashed, border on L, 10 padding with contents on a 12 inset; a row's hover layer 2 inside the dash. Reads: label → reason (12 ink 2, 2 lines)
+   → the object row → the verbs (with the change line, for a challenge, on one line). Label → reason 2; reason → row text ~8; row → buttons 8. */
+.ob-full .ob-block.sug { margin-left: calc(var(--hang) * -1); padding: 10px; gap: 0; max-width: calc(560px + var(--hang)); }
+.ob-full .ob-block.sug > :not(.ob-row) { margin-inline: 2px; }
+.ob-full .ob-block.sug > .ob-row { margin: 0 -8px; padding-inline: 10px; }
+.ob-full .ob-block.sug > .ob-blabel + .ob-reason { margin-top: 2px; }
+.ob-full .ob-block.sug > .ob-blabel + .ob-row { margin-top: var(--gap-tight); }
+.ob-full .ob-block.sug > .ob-reason + .ob-row { margin-top: 1px; }
+.ob-full .ob-block.sug > .ob-row:has(+ .ob-decide) { padding-bottom: 4px; }
+.ob-full .ob-block.sug > .ob-row + .ob-decide { margin-top: 4px; justify-content: flex-end; }
+.ob-full .ob-block.sug > .ob-row:has(+ .ob-dfoot) { padding-bottom: 2px; }
+.ob-full .ob-block.sug > .ob-row + .ob-dfoot { margin-top: 2px; }
+.ob-reason { margin: 0; font-size: var(--fs-label); line-height: var(--lh-ui); color: var(--ink-2); max-width: var(--measure); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-wrap: pretty; }
+.ob-dfoot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--gap-item) var(--gap-group); }
+.ob-dfoot > .ob-decide { margin-left: auto; }
+.ob-change { display: flex; align-items: center; gap: var(--gap-icon); margin: 0; font-size: var(--fs-label); line-height: var(--lh-ui); color: var(--ink-2); }
+.ob-lose { display: inline-flex; gap: 2px; }
+.ob-lose i { display: block; width: 12px; height: 4px; border-radius: 2px; background: color-mix(in oklab, var(--ink) 15%, transparent); }
+.ob-lose i[data-on] { background: var(--ink); }
+.ob-lose i[data-gone] { background: color-mix(in oklab, var(--st-neg-dot) 40%, transparent); }
+/* Subject → its block 6: the tripwire line is the subject of a challenge */
+.ob-trip > .ob-attach + .ob-block { margin-top: -2px; }
+/* A block first in its group, then the held rows: 8 apart */
+.ob-full .ob-rows > .ob-block + .ob-row, .ob-full .ob-rows > .ob-block + .ob-block { margin-top: var(--gap-item); }
+/* New wording: the current claim struck through in a quiet box, the proposed one in a solid box below; both body size, the block's width */
+.ob-words { display: grid; gap: var(--gap-item); margin: 0; }
+.ob-was, .ob-now { margin: 0; padding: 8px 10px; border-radius: var(--r-control); font-size: var(--fs-body); line-height: var(--lh-ui); text-wrap: pretty; }
+.ob-was { box-shadow: inset 0 0 0 0.5px var(--hairline); color: var(--ink-2); text-decoration: line-through; text-decoration-color: color-mix(in oklab, var(--ink-2) 70%, transparent); }
+.ob-now { background: var(--surface); box-shadow: inset 0 0 0 0.5px var(--hairline-strong); color: var(--ink); }
+
+/* Main-area section headers (02, decided 5 Nov): Briefing's sections open at 16 / 600 ink with a hairline above; the count a bare 13 ink 2 number */
+.nv-main .ob-digest:not(.br8-doc) .ob-rels { gap: 0; }
+.nv-main .ob-digest:not(.br8-doc) .ob-sec > .ob-sh { min-height: 0; font-size: var(--fs-section); line-height: 1.25; color: var(--ink); gap: var(--gap-item); }
+.nv-main .ob-digest:not(.br8-doc) .ob-sec > .ob-sh .ob-n { font-size: var(--fs-body); font-weight: 400; color: var(--ink-2); }
+.nv-main .ob-digest:not(.br8-doc) .ob-sec > .ob-sh + * { margin-top: var(--gap-group); }
+.nv-main .ob-digest:not(.br8-doc) .ob-sec + .ob-sec { margin-top: 40px; margin-left: calc(var(--hang) * -1); padding: var(--gap-group) 0 0 var(--hang); max-width: calc(560px + var(--hang)); border-top: 0.5px solid var(--hairline-strong); }

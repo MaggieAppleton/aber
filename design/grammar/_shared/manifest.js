@@ -50,7 +50,7 @@ window.GRAMMAR = {
       desc: "One anatomy at three rungs: preview, peek, full",
       sum: "One anatomy for every object, shown at three rungs: preview, peek and full.",
       decisions: [{ id: "align", q: "Tile and text alignment", pick: "c Smaller tile, centred" }, { id: "challenge", q: "Challenged theory on previews", pick: "c Not on previews" },
-        { id: "fresh", q: "Unseen activity", pick: "b Unread weight" }, { id: "peek", q: "Peek contents", pick: "a Essentials and relations" }, { id: "full", q: "Full view attributes", pick: "a Prose first" }], revised: [] },
+        { id: "fresh", q: "Unseen activity", pick: "b Unread weight" }, { id: "peek", q: "Peek contents", pick: "a Essentials and relations" }, { id: "full", q: "Full view attributes", pick: "a Prose first" }], revised: [{ target: "hero", at: "2026-11-05T12:37", what: "One left edge at the title in every full view; proposal blocks: label, reason, row, verb buttons" }] },
     { key: "grammar-06b-confidence", dir: "06b-confidence", num: "06b", title: "Confidence", icon: "gauge", group: "obj", decided: "2026-11-04",
       desc: "A small meter on previews, the five-segment setter in full",
       sum: "How a theory's 1 to 5 confidence shows beside its name and is set in its full view.",
