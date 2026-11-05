@@ -188,6 +188,8 @@ Evidence: 159 icons at six sizes (11, 12, 13, 14, 15, 16; 83 are 12, smaller tha
 | Attach media | paperclip |
 | Voice dump | microphone |
 | Undo, history | arrow-counter-clockwise, clock-counter-clockwise |
+| Paused, waiting (work that will resume) | pause (14, ink 2, in the Working spinner's slot; DECIDED 5 Nov) |
+| Error (in place, beside its object) | warning-circle (16, the down red; DECIDED 5 Nov) |
 | Earlier, later (stepper) | caret-left, caret-right |
 | Show or hide children | caret-down (turned −90° when closed) |
 | Go to, back | arrow-right, arrow-left |
@@ -342,7 +344,7 @@ Every object follows one anatomy and appears at three rungs: a **preview** where
 | 7 Relations | As preview rows; chips for themes | – | – | – | As many as fit, then a fade | All |
 
 2. **Two left edges.** Everything in a peek or full view starts on the tile column or on the text edge. The head's title and key line sit on the text edge, after the title tile. Below the head, anything with a leading tile (rows, tripwire lines) puts its tile on the tile column and its text on the text edge; anything without one (prose, notes, reasons, section labels, chip lists, cards, the fields table) starts on the tile column, with no empty gutter. No decorative icons are added to fill the gutter. Relation and attached rows hang their tiles in the title's tile column; hover layers and dashed outlines bleed 8 into the padding. The full view's 32 title tile hangs further out so the title starts on the text edge.
-   - **One left edge at the title in main-area full views (DECIDED 5 Nov, from 08).** In a full view that fills the main area, the 32 title tile and its 12 gap hang left of the title into the 88 main-area inset, so the title starts on the tile column (L). Everything below starts on L: key line, prose, the hairline, section labels, row tiles, dashed block edges, chip lists, cards; text after a row's tile sits at L + 26. Docked panes (24 inset) and narrow windows keep the title tile on L and the title on the text edge.
+   - **One left edge at the title in every full view (DECIDED 5 Nov, from 08; panes too, Maggie 5 Nov).** L is the title's left. The container keeps its padding. Everything below the head starts on L: key line, prose, the hairline, section labels, row tiles, dashed block edges, chip lists, cards, status lines; text after a row's tile sits at L + 26. In a full view that fills the main area the 32 title tile and its 12 gap hang left of the title into the 88 inset, so L is the padding edge; in a docked pane (Columns, Atlas, Timeline; 24 inset) the tile stays inside and the content moves right to L. A phone-width window (below 640) keeps 08's narrow layout, its tile on the 24 inset, to keep the width. This replaces "title on the text edge" above.
 3. **Rows.** Short labels (themes, prototypes) are one line, 32 high: tile, name in ink 2 (ink and 500 when current), a bare count or status glyph at the right. Sentences (theories, signals, dumps) wrap to two lines with the key value under them; a theory's confidence meter sits right of its first line. A row never repeats what its group says.
 4. **Cards** are the row, raised: surface, `--sh-raised`, inset 10 inline / 8 block, name at 600. Hover is the surface hover fill; selected `--sel`; drafts dashed.
 5. **Unread weight.** A row with unseen activity (a signal you haven't seen, a theme with unseen signals) sets its name in ink at 600; seen rows keep their weight. Cards and peeks don't change: their names are already 600, and only signals and themes have unseen activity. No other mark.
@@ -398,9 +400,9 @@ Evidence: six loading treatments and no skeleton ("Loading Aber…" hides the wh
    - Filtered to nothing: search and filter stay; the line names query and scope; Clear filters; Esc clears search.
    - First run: no counts; the composer has the caret (pending 09's chat-sidebar rebuild); Briefing says "Nothing yet". Caught up: "Nothing new since 18:40".
 2. **Loading: nothing under 300ms, then a skeleton in the content's own geometry; never a layout shift.** Chrome that needs no data renders at once and the composer works before data arrives (pending 09's chat-sidebar rebuild). Canvases draw their frame and fade marks in. Media of known size keeps its box. Opening an object has no loading state. Spinners only inside the control you just pressed (05 Loading).
-3. **Background work: only work I started shows progress.** A dump appears at once at the top of Today, "Processing" in words with the Working spinner, and resolves in place (status goes, results appear; Briefing lists them). Paused is a hollow ring and the reason. Agent jobs I didn't start show nothing until they produce something, which arrives dashed; Briefing lists it. No new dots and no pending-suggestion badges on rows or cards (Maggie, 4 Nov); suggestions show only in the peek, the full view and Briefing.
-4. **Errors sit beside their object, in words, with the way out.** Never only a tooltip, never a global banner. Words in ink do the work; no red dot on the row, page or field. One red dot stays: the global mark for a failed dump (the Dumps rail entry, or Columns' Dumps strip), where there is no room for words and it leads to the dump that says why. Recoverable: reason + Retry. Not recoverable: reason + what's still possible. A failed dump stays visible with everything I sent; a failed save keeps my text with "Not saved" + Retry; a list that didn't load says so in its place. No raw error messages.
-5. **Offline is shown once, for as long as it lasts, and changes nothing else.** Edits save locally and sync; an offline dump waits ("Waiting to send", hollow ring); reconnecting shows nothing.
+3. **Background work: only work I started shows progress.** A dump appears at once at the top of Today, "Processing" in words with the Working spinner, and resolves in place (status goes, results appear; Briefing lists them). Paused shows the pause glyph and the reason (DECIDED 5 Nov; was a hollow ring). Agent jobs I didn't start show nothing until they produce something, which arrives dashed; Briefing lists it. No new dots and no pending-suggestion badges on rows or cards (Maggie, 4 Nov); suggestions show only in the peek, the full view and Briefing.
+4. **Errors sit beside their object, in words, with the way out.** Never only a tooltip, never a global banner. In a full view an error reads as one: a red `warning-circle` on the left, the message in ink, the way out on the right (Retry, a secondary button); how it sits (callout box on a faint red wash, a red hairline, or inline) is **PROPOSED, Choose on `10-states/`** (5 Nov; reverses "words in ink, no red mark" for the in-place error). Red text only ever means an error. No red dot on the row, page or field. One red dot stays: the global mark for a failed dump (the Dumps rail entry, or Columns' Dumps strip), where there is no room for words and it leads to the dump that says why. Recoverable: reason + Retry. Not recoverable: reason + what's still possible. A failed dump stays visible with everything I sent; a failed save keeps my text with "Not saved" + Retry; a list that didn't load says so in its place. No raw error messages.
+5. **Offline is shown once, for as long as it lasts, and changes nothing else.** Edits save locally and sync; an offline dump waits ("Waiting to send", the pause glyph); reconnecting shows nothing.
 6. **Toasts (tier 6) carry Undo.** Ink, one line, 44 high, radius 10, only the name truncates; just above the composer, right edges aligned, in every view (position pending 09's chat-sidebar rebuild); 5s, held while hovered or focused; ⌘Z while shown; one at a time, a new one commits and replaces the last; never stacks, never takes focus, never carries an error.
 7. **Only Delete dump asks first:** a modal with the real counts, Cancel and an ink "Delete dump"; Esc and X close; no toast after. Discard, remove, unfile, retire, merge, move to the bin: at once, with Undo.
 8. **Success is mostly silent; the object appearing is the feedback.** Accept solidifies in place; saves show nothing; creating opens the object. A toast appears only when something leaves the screen.
@@ -538,7 +540,7 @@ How you move between 06's three rungs, preview → peek → full, and back; and 
 
 07 rungs.
 
-## 11 Columns, Atlas, Timeline — PROPOSED (4 Nov 2026)
+## 11 Columns, Atlas, Timeline — DECIDED (5 Nov 2026: unrelated fade to 40%; territory area by signals; theory names on hover, open and zoom)
 
 A restyle, not a re-layout: each view keeps today's layout, navigation and docked pane. Jig: `11-views/`, with today's views beside live rebuilds. Values live in `11-views/views.css`. Pane contents, object cards and rows, and the Dump or ask pill are placeholders there.
 
@@ -580,7 +582,8 @@ Evidence: each view draws its floating controls differently. The view switcher i
 10. **Vocabulary:** Fold a column uses `sidebar-simple`.
 11. **Marks on previews (Maggie, 4 Nov):** no new dot, open ring or pending-suggestion badge on cards, rows, rails, map labels, pins or timeline items; signals use the Pulse tile. The red challenge mark stays on theory cards, pins and timeline dots, pending 06.
 
-**Open (jig `11-views/`):**
-- With something open, unrelated objects: A fade to 40% (default), or B flatten (no surface, ink 2).
-- Atlas disc size: A as placed today, or B area ∝ the theme's signals (recommended).
-- Atlas theory names: A on hover, on open and when zoomed in (today, default), or B always, wherever they fit.
+**Decided (Maggie, 5 Nov):**
+- With something open, unrelated objects **A fade to 40%**.
+- Atlas territory size: **B area matches the theme's signal count**.
+- Atlas theory names: **A on hover, on open and when zoomed in**.
+- The docked pane follows 06 rule 2: the title tile stays inside the 24 inset and the content moves right to the title's edge.

@@ -11,7 +11,10 @@
   const g = (t, draft) => `<span class="g${draft ? " draft" : ""}" data-type="${t}">${I(TY[t][2])}</span>`;
   const ib = (icon, label, key = "", attr = "") => `<button type="button" class="nv-ib" aria-label="${label}" data-tip="${label}"${key ? ` data-key="${key}"` : ""} ${attr}>${I(icon)}</button>`;
   const dot = (k, label) => `<span class="nv-dot ${k}" role="img" aria-label="${label}"></span>`;
-  const ring = label => `<span class="nv-ring" role="img" aria-label="${label}"></span>`;
+  // Paused or waiting work (Maggie, 5 Nov): the pause glyph, 14 ink 2, in the spinner's slot (was a hollow ring)
+  const pause = label => `<span class="st-spin st-pause" role="img"${label ? ` aria-label="${label}"` : ' aria-hidden="true"'}>${I("pause")}</span>`;
+  // An error in place (open choice "err"): a red warning-circle, the message in ink, the way out on the right
+  const errLine = (msg, act = "") => `<div class="st-status st-error" role="alert">${I("warning-circle")}<span class="msg">${msg}</span>${act}</div>`;
   const spin = label => `<span class="st-spin" role="img" aria-label="${label}">${I("circle-notch")}</span>`;
   const chip = (t, name, draft) => `<button type="button" class="nv-chip${draft ? " draft" : ""}">${g(t, draft)}<span class="t">${name}</span></button>`;
   const plain = (t, name) => `<span class="nv-chip plain">${g(t)}<span class="t">${name}</span></span>`;
@@ -35,7 +38,7 @@
   const rail = (cur, o, ch) => `
     <aside class="nv-rail">
       <div class="nv-brand"><span>Aber</span>${ib("magnifying-glass", "Find", "⌘K")}</div>
-      <nav class="nv-types" aria-label="Types"><button type="button" class="nv-type brief" aria-current="${cur === "home"}"><span class="gw">${g("briefing")}</span><span class="nm">Briefing</span></button>${RAIL.map(t => {
+      <nav class="nv-types" aria-label="Types"><button type="button" class="nv-type brief" data-home aria-current="${cur === "home"}"><span class="gw">${g("briefing")}</span><span class="nm">Briefing</span></button>${RAIL.map(t => {
         const work = t === "dump" && ch.work === "rail" ? o.work : null;
         const n = o.counts === "none" ? "" : o.counts === "skel" ? sk("16px", "st-wait st-skel-n") : work === "busy" ? spin("1 dump processing") : `<span class="nv-n">${COUNT[t]}</span>`;
         const marks = work === "failed" ? dot("neg", "A dump failed") : "";
@@ -82,7 +85,7 @@
   const frame = (o, ch) => {
     const home = !o.list;
     const cols = `var(--nv-rail-w) ${home ? "" : "280px "}minmax(0, 1fr)`;
-    return `<div class="nv" data-v="A" data-switch="rail" style="grid-template-columns:${cols}">${rail(o.cur, o, ch)}${home ? "" : o.list}
+    return `<div class="nv" data-v="A" data-switch="rail" data-err="${ch.err || "box"}" style="grid-template-columns:${cols}">${rail(o.cur, o, ch)}${home ? "" : o.list}
       <main class="nv-main"><div class="nv-scroller">${o.main}</div></main>${composer(o, ch)}${o.layer || ""}</div>`;
   };
 
@@ -90,7 +93,7 @@
   const heldRows = (cur = 0) => group("Held", HELD.slice(0, 8).map((n, i) => row(n, { cur: i === cur })));
   const theoryDoc = (name = HELD[0], { draft, note = "Small models keep getting cheaper faster than demand grows. Routine agent work stops being metered in any way I notice.", noteHTML, extraEv = "" } = {}) => doc({
     t: "theory", lead: chip("theme", "Cost of intelligence"), title: name, draft,
-    ctl: draft ? `<span class="nv-decide">${btn("secondary", "Discard", "data-act=discard-draft")}${btn("primary", "Accept", "data-act=accept")}</span>` : ib("archive", "Retire"),
+    ctl: draft ? `<span class="nv-decide">${btn("secondary", "Discard", "data-act=discard-draft")}${btn("primary", "Keep", "data-act=accept")}</span>` : ib("archive", "Retire"),
     sub: `${draft ? `<span class="st-key">Draft</span>` : `<span class="nv-conf lg st-key" role="img" aria-label="Confidence 3 of 5">${[1, 2, 3, 4, 5].map(i => `<i${i <= 3 ? " data-on" : ""}></i>`).join("")}</span>`}<span>By 2028</span>`,
     body: `${noteHTML ?? `<p class="nv-note">${note}</p>`}
       ${section("", "Supports", 2, `<div class="ob-rows">${extraEv}${item("signal", SIGNALS[0][0], SIGNALS[0][1])}${item("signal", SIGNALS[1][0], SIGNALS[1][1])}</div>`)}
@@ -146,9 +149,9 @@
         main: dumpDoc({ status: `<div class="st-status">${spin("")}<span>Processing</span></div>` }) }),
       stg: { columns: s => strip(s, spin("1 dump processing")) } },
     paused: { g: "Working", label: "Paused", views: ["default"],
-      note: "<b>Paused is not failed.</b> At the spend limit, processing waits and resumes on its own: a hollow ring and the reason, no Retry.",
-      o: () => ({ cur: "dump", list: list("dump", dumpRows(row(NEW_DUMP, { cur: true, mark: ring("Paused"), sub: "Spend limit, resumes tomorrow" })), { plus: false }),
-        main: dumpDoc({ status: `<div class="st-status">${ring("")}<span>Spend limit, resumes tomorrow</span></div>` }) }) },
+      note: "<b>Paused is not failed.</b> At the spend limit, processing waits and resumes on its own: the pause glyph and the reason, no Retry.",
+      o: () => ({ cur: "dump", list: list("dump", dumpRows(row(NEW_DUMP, { cur: true, mark: pause("Paused"), sub: "Spend limit, resumes tomorrow" })), { plus: false }),
+        main: dumpDoc({ status: `<div class="st-status">${pause("")}<span>Spend limit, resumes tomorrow</span></div>` }) }) },
     done: { g: "Working", label: "Dump finished", views: ["default"], done: true,
       note: "<b>The result is the feedback:</b> the status line goes and what it made appears in place. No new dots, no badges: unseen results are listed in Briefing. Whether a toast also reports it is choice 2.",
       o: ch => ({ cur: "dump", list: list("dump", dumpRows(row(NEW_DUMP, { cur: true })), { plus: false }), main: dumpDoc({ made: madeDone }),
@@ -156,18 +159,18 @@
     suggestion: { g: "Working", label: "Suggestion arrives", views: ["default"],
       note: "<b>A suggestion has no in-progress state.</b> When the agent finishes it appears where it applies, dashed (not yet mine), and Briefing lists it. No badge on the theory's row or card: suggestions show only in the peek, the full view and Briefing. Nothing spins while it's being prepared.",
       o: () => ({ cur: "theory", list: list("theory", heldRows(0)),
-        main: theoryDoc(HELD[0], { extraEv: `<div class="ob-block sug"><div class="ob-blabel">Suggested</div>${item("signal", SIGNALS[3][0], SIGNALS[3][1])}<div class="ob-decide">${btn("secondary", "Dismiss")}${btn("primary", "Accept")}</div></div>` }) }) },
+        main: theoryDoc(HELD[0], { extraEv: `<div class="ob-block sug"><div class="ob-blabel">Suggested support</div><p class="ob-reason">Investors funding agent tooling is the demand this theory expects.</p>${item("signal", SIGNALS[3][0], SIGNALS[3][1])}<div class="ob-decide">${btn("secondary", "Dismiss")}${btn("primary", "Add evidence")}</div></div>` }) }) },
 
     failed: { g: "Error", label: "Dump failed", views: ALL, work: "failed",
-      note: "<b>A failed dump stays where it was, with the reason in words and Retry beside it.</b> Words beside the object, in ink; no red dot on the row or page. The one red dot left is the global mark on the Dumps rail entry (decided), where there's no room for words. What you sent is never lost. Try Retry.",
+      note: "<b>A failed dump stays where it was, with the reason in words and Retry beside it.</b> In place, as an error: a red warning-circle and the reason in ink (how it sits is the open choice). The row says so in words; the one red dot is the global mark on the Dumps rail entry (decided). What you sent is never lost. Try Retry.",
       o: () => ({ cur: "dump", work: "failed", list: list("dump", dumpRows(row(NEW_DUMP, { cur: true, sub: `<span class="neg-t">Couldn't read the page</span>` })), { plus: false }),
-        main: dumpDoc({ status: `<div class="st-status"><span class="msg">Couldn't read stratechery.com. The page needs a login.</span>${btn("secondary", "Retry", 'data-act="retry"')}</div>` }) }),
+        main: dumpDoc({ status: errLine("Couldn't read stratechery.com. The page needs a login.", btn("secondary", "Retry", 'data-act="retry"')) }) }),
       stg: { columns: s => strip(s, `<span class="stg-dot neg" role="img" aria-label="A dump failed"></span>`) } },
     unsupported: { g: "Error", label: "Can't process", views: ["default"], work: "failed",
       note: "<b>Not recoverable: say why, offer what's left, no Retry.</b> The file stays; the remaining actions are the dump's own (delete it, or dump the text another way).",
       o: () => ({ cur: "dump", work: "failed", list: list("dump", dumpRows(row("Pricing deck.key", { cur: true, sub: `<span class="neg-t">Can't read Keynote files</span>` })), { plus: false }),
         main: doc({ lead: plain("dump", "File dump"), ctl: ib("trash", "Delete dump"), title: "Pricing deck.key", sub: `<span class="nv-mono">09:40</span><span>Today</span><span>Shortcut</span>`,
-          body: `<div class="st-status"><span class="msg">Can't read Keynote files. Export it as a PDF and dump that.</span></div><div class="st-media">${I("file")}<span>Pricing deck.key</span><span class="nv-meta">4.2 MB</span></div>` }) }) },
+          body: `${errLine("Can't read Keynote files. Export it as a PDF and dump that.")}<div class="st-media">${I("file")}<span>Pricing deck.key</span><span class="nv-meta">4.2 MB</span></div>` }) }) },
     unsaved: { g: "Error", label: "Edit not saved", views: ALL,
       note: "<b>A save that fails shows beside the field, never only in a banner or tooltip.</b> Your text stays in the field, the line says it isn't saved, and Retry tries again. Saves that succeed show nothing.",
       o: () => ({ cur: "theory", list: list("theory", heldRows(0)),
@@ -179,9 +182,9 @@
       stg: { columns: s => { pane(s); const c = s.querySelector(".stg-col:not(.stg-col-nav) .stg-cards"); c.innerHTML = `<div class="st-err" style="margin:0">Couldn't load theories<button type="button" class="stg-btn">Retry</button></div>`; } } },
 
     offline: { g: "Offline", label: "Offline", views: ALL, offline: true,
-      note: "<b>Offline shows once, in one place, for as long as it lasts</b> (where is choice 3). Everything keeps working: edits save locally and sync when you're back, and a dump sent offline waits with a hollow ring. Coming back online shows nothing.",
-      o: () => ({ cur: "dump", offline: true, list: list("dump", dumpRows(row(NEW_DUMP, { cur: true, mark: ring("Waiting"), sub: "Waiting to send" })), { plus: false }),
-        main: dumpDoc({ status: `<div class="st-status">${ring("")}<span>Waiting to send</span></div>` }) }) },
+      note: "<b>Offline shows once, in one place, for as long as it lasts</b> (where is choice 3). Everything keeps working: edits save locally and sync when you're back, and a dump sent offline waits with the pause glyph. Coming back online shows nothing.",
+      o: () => ({ cur: "dump", offline: true, list: list("dump", dumpRows(row(NEW_DUMP, { cur: true, mark: pause("Waiting"), sub: "Waiting to send" })), { plus: false }),
+        main: dumpDoc({ status: `<div class="st-status">${pause("")}<span>Waiting to send</span></div>` }) }) },
 
     toast: { g: "Toast", label: "Undo", views: ALL,
       note: "<b>Remove, discard, retire, merge: done at once, with an Undo toast just above the composer.</b> Ink, one line, 44 high; only the name truncates. 5 seconds, held while hovered or focused; ⌘Z works while it shows. One at a time: a second action replaces it and commits the first. Try the trash button: discard twice, then Undo.",
@@ -224,8 +227,9 @@
   /* ── Choices (from the page's picks; option stages force their own) ── */
   const page = document.body.dataset.jig;
   const PICK = { work: ["work", { "A In the composer": "composer", "B On the Dumps type": "rail", "C Only on the dump": "row" }],
-    done: ["done", { "A Toast with Undo": "toast", "B Silent: it appears in Briefing": "silent" }], offline: ["offline", { "A Beside the view switcher": "switcher", "B In the composer": "composer" }] };
-  const DEF = { work: "rail", done: "toast", offline: "switcher" };   // decided 4 Nov 2026
+    done: ["done", { "A Toast with Undo": "toast", "B Silent: it appears in Briefing": "silent" }], offline: ["offline", { "A Beside the view switcher": "switcher", "B In the composer": "composer" }],
+    err: ["err", { "a Callout box": "box", "b Red hairline": "line", "c Inline, no box": "inline" }] };
+  const DEF = { work: "rail", done: "toast", offline: "switcher", err: "box" };   // decided 4 Nov 2026; err is open (5 Nov)   // decided 4 Nov 2026
   const picks = () => {
     const out = { ...DEF };
     for (const [id, [key, vals]] of Object.entries(PICK)) {
@@ -245,7 +249,7 @@
     const ch = { ...picks(), ...JSON.parse(host.dataset.ch || "{}") };
     const o = sc.o(ch);
     if (view === "default" || !window.AberStage) {
-      host.innerHTML = frame(o, ch); fitNv(host); ro.observe(host);
+      host.innerHTML = frame(o, ch); fitNv(host); window.AberRail?.apply(host); ro.observe(host);   // the shared rail (nav rule 6)
     } else {
       host.innerHTML = `<div class="stg-host st-stagehost" data-stage='{"view":"${view}"}'></div>`;
       const sh = host.firstElementChild; window.AberStage.render(sh);

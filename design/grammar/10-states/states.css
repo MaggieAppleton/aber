@@ -96,7 +96,8 @@
 
 /* ═══ Offline: once, beside the view switcher; or in the composer (choice 3) ═══ */
 .st-offline { position: absolute; z-index: var(--z-chrome); display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--control); padding: 0 var(--inset-row); font: var(--w-medium) var(--fs-label)/1 var(--font); color: var(--ink-2); white-space: nowrap; }
-.nv .st-offline { left: var(--inset-float); bottom: calc(var(--inset-float) + 32px + var(--gap-tight)); }
+.nv .st-offline { left: var(--inset-float); bottom: calc(var(--inset-float) + var(--control) * 2 + 8px + var(--gap-tight)); }   /* above the rail toggle, which sits above the switcher */
+.nv[data-rail="icons"] .st-offline { left: 50%; translate: -50% 0; padding: 0; font-size: 0; bottom: calc(var(--inset-float) + var(--control) * 5 + 18px); }   /* icons: the ring alone, above the toggle */
 .stg .st-offline { left: calc(var(--inset-float) + 142px); bottom: calc(var(--inset-float) + 2px); border-radius: var(--r-bar); background: var(--surface); box-shadow: var(--sh-float); padding: 0 var(--inset-control); }
 .st-offline .nv-ring, .st-offline .st-ring { width: 7px; height: 7px; border-radius: 50%; box-shadow: inset 0 0 0 1.25px var(--ink-2); flex: none; }
 
@@ -158,3 +159,16 @@
 .nv .nv-doc .st-empty { padding-inline: 0; }
 .nv .nv-doc .st-status > .st-spin { margin: 0 calc(var(--tile) + var(--gap-tile) - var(--icon-label) - var(--gap-icon)) 0 0; }
 .nv .nv-doc .st-status > .nv-ring { margin: 0 calc(var(--tile) + var(--gap-tile) - 7px - var(--gap-icon)) 0 0; }
+.nv .st-pause i[class*="ph"] { animation: none; }
+
+/* An error in place (open choice "err", Maggie 5 Nov: "this doesn't look like an error"). A red warning-circle in an 18 slot, the message in ink,
+   the way out (Retry) at the right. Red text stays for errors alone. a: a callout box on a 7% wash of the down red; b: a 25% red hairline, no fill;
+   c: no box, the message itself in red ink. In a box the contents sit on its 12 inset, like a proposal block. */
+.nv .st-status.st-error { align-items: center; gap: 8px; color: var(--ink); max-width: 560px; }
+.nv .nv-doc .st-status.st-error > i.ph { flex: none; width: var(--tile); height: var(--icon); font-size: var(--icon); text-align: center; color: var(--neg-dot); }
+.nv .st-status.st-error .msg { flex: 1; min-width: 0; color: var(--ink); text-wrap: pretty; }
+.nv .st-status.st-error .nv-btn { margin-left: auto; height: var(--control-sm); }
+.nv[data-err="box"] .st-status.st-error, .nv[data-err="line"] .st-status.st-error { padding: 10px 12px; border-radius: var(--r-box); min-height: 0; }
+.nv[data-err="box"] .st-status.st-error { background: color-mix(in oklab, var(--neg-dot) 7%, transparent); }
+.nv[data-err="line"] .st-status.st-error { box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--neg-dot) 25%, transparent); }
+.nv[data-err="inline"] .st-status.st-error .msg { color: var(--neg); }

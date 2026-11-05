@@ -25,12 +25,26 @@
 <script src="../_shared/manifest.js" defer></script>
 <script src="../_shared/page.js" defer></script>
 <script src="../_shared/stage.js" defer></script>
+<script src="../nav/rail.js" defer></script>
 <script src="states.js" defer></script>
 <script type="module" src="../_shared/agentation.js" data-app-name="Grammar 10: States"></script>
 </head>
 <body class="jig" data-jig="grammar-10-states">
 
 <header class="pg-head"></header>
+
+<section class="jig-section wide" id="c-err" data-decision="err" data-question="How does an error sit in its place?" data-default="a Callout box">
+  <p class="jig-why"><b>Recommended a.</b> The wash reads as an error at a glance without shouting, and keeps the message in ink; b is quieter but looks like any box, c only colours the words.</p>
+  <p class="lede">Each option shows a dump that couldn't be read (with Retry) and one that can't be (no Retry). A red warning-circle on the left in all three; red text only for errors.</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="a Callout box"><div class="jig-label"><b>a</b> A callout box on a faint red wash</div><p class="jig-note">Radius 10, padding 10 / 12, the down red at 7%; the message in ink; Retry a secondary button on the right.</p>
+      <div class="st-mount" data-option-stage data-scene="failed" data-ch='{"err":"box"}'></div><div class="st-mount" data-scene="unsupported" data-ch='{"err":"box"}'></div></div>
+    <div class="jig-option" data-option="b Red hairline"><div class="jig-label"><b>b</b> The same box with a red hairline and no fill</div><p class="jig-note">A 1px edge in the down red at 25%.</p>
+      <div class="st-mount" data-option-stage data-scene="failed" data-ch='{"err":"line"}'></div><div class="st-mount" data-scene="unsupported" data-ch='{"err":"line"}'></div></div>
+    <div class="jig-option" data-option="c Inline, no box"><div class="jig-label"><b>c</b> No box: the red icon, the message in red ink, Retry inline</div><p class="jig-note">The lightest; the words carry the colour.</p>
+      <div class="st-mount" data-option-stage data-scene="failed" data-ch='{"err":"inline"}'></div><div class="st-mount" data-scene="unsupported" data-ch='{"err":"inline"}'></div></div>
+  </div>
+</section>
 
 <section class="jig-section" id="board">
   <h2>States board</h2>
