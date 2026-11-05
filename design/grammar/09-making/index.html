@@ -35,17 +35,17 @@
 
 <header class="pg-head"></header>
 
-<section class="jig-section" id="log" data-decision="log" data-question="Where does ⌘⇧L take you?" data-default="A the Dumps sheet">
+<section class="jig-section" id="log" data-decision="log" data-question="Where does ⌘⇧L take you?" data-default="B Dumps in the rail">
   <p class="lede">Live, ⌘⇧L raises a Dumps sheet above the pill. The rail's Dumps type already lists the same dumps.</p>
   <div class="jig-compare">
-    <div class="jig-option" data-option="A the Dumps sheet"><div class="jig-label"><b>A</b> Keep the live Dumps sheet</div><p class="jig-note">As today: a sheet over whatever you're doing that closes back to where you were. A second list of the same dumps.</p><div class="mk-host" data-option-stage data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"log","opt":{"log":"sheet"}}'></div></div>
+    <div class="jig-option" data-option="A the Dumps sheet"><div class="jig-label"><b>A</b> Keep the live Dumps sheet</div><p class="jig-note">As today: a sheet over whatever you're doing that closes back to where you were. A second list of the same dumps.</p><img src="screenshots/live/09-log.png" alt="Live: the Dumps sheet above the pill" style="width:100%;border-radius:10px"></div>
     <div class="jig-option" data-option="B Dumps in the rail"><div class="jig-label"><b>B</b> Go to Dumps in the rail</div><p class="jig-note">One list of dumps. ⌘⇧L selects Dumps and its newest dump; Back returns. Press ⌘⇧L in this window.</p><div class="mk-host" data-option-stage data-crop="right" data-mk='{"type":"dump","sel":"d1","opt":{"log":"rail"}}'></div></div>
   </div>
 </section>
 
 <section class="jig-section" id="try">
   <h2>Try it</h2>
-  <p>Type in the composer and press Return; "will" or "theory" also gets you a draft. Accept or discard drafts, click a row to peek it, or press the crosshair and click a card.</p>  <div class="mk-host" data-live="1" data-rail-persist data-mk='{"type":"theme","sel":"coi","chat":1}'></div>
+  <p>Type in the composer and press Return; "will" or "theory" also gets you a draft. Keep or discard drafts, click a row to peek it, or press the crosshair and click a card.</p>  <div class="mk-host" data-live="1" data-rail-persist data-mk='{"type":"theme","sel":"coi","chat":1}'></div>
 </section>
 
 <section class="pg-decided">
@@ -55,6 +55,7 @@
     <li><b>Editing a draft's wording</b>Accepts it</li>
     <li><b>Adding evidence</b>A + on each stance, Supports and Undermines</li>
     <li><b>Dump or ask</b>A floating window over its surface, with the sheet shadow (5 Nov)</li>
+    <li><b>⌘⇧L</b>Dumps in the rail; the pill's Dumps sheet is dropped (5 Nov)</li>
   </ul>
 </section>
 
@@ -75,7 +76,7 @@
           <ul>
             <li>a filed token: the theme chip and a count, which unfolds to signal rows;</li>
             <li>a theory with its Supports / Undermines split;</li>
-            <li>drafts as dashed rows with Rephrase, Discard and Accept.</li>
+            <li>drafts as dashed rows with Rephrase, Discard and Keep.</li>
           </ul></li>
         <li><b>Previews peek:</b> click or hover 500ms. Open shows the object in the main area while the column stays open.</li>
       </ul></li>
@@ -86,7 +87,7 @@
         <li><b>Discarding a take</b> offers Undo.</li>
       </ul></li>
     <li><b>A dump reports once</b> (10, decided). While it's read, the Dumps rail entry spins. When it's done, the thread is the report if the column is open. If the column is closed, a toast says what it made, with Undo.</li>
-    <li><b>History:</b> ⌘⇧L raises the Dumps sheet above the pill (tier 3). Each dump shows what it made, or "Nothing filed". Open choice below.</li>
+    <li><b>History:</b> ⌘⇧L goes to Dumps in the rail and selects the newest dump; Back returns. The pill's separate Dumps sheet is dropped: one list of dumps (decided 5 Nov).</li>
     <li><b>Asking and making are one act, owned differently.</b> What the agent makes from a message is a draft, dashed in the thread and in its list. What you make with + is yours at once. Accepting in either place solidifies the same object.</li>
     <li><b>Make it where it will live.</b> + at a list's head (or N) makes one, in its list and filling the main area, with the caret in its name. Add theory in a theme makes a card in place. No modal.</li>
     <li><b>The name is the title, edited in place.</b> Plain at rest. The 5% layer behind the text on hover and while editing, and the text never moves. No ring. An unnamed object's placeholder is in ink 2. Esc restores the old name, and a blank rename keeps it.</li>
@@ -97,7 +98,7 @@
   <dl class="mk-keys">
     <dt>⌘J</dt><dd>Open the column, with the caret in the composer; again from the composer, close it</dd>
     <dt>⌘⇧J</dt><dd>Record a voice dump, from anywhere</dd>
-    <dt>⌘⇧L</dt><dd>History</dd>
+    <dt>⌘⇧L</dt><dd>Dumps in the rail</dd>
     <dt>⏎ / ⇧⏎</dt><dd>Send / new line</dd>
     <dt>Esc</dt><dd>Stop picking, discard the take (with Undo), close a picker, peek, sheet or modal, then close the column</dd>
     <dt>N, F2, ⌘Z</dt><dd>New in this list, rename the focused row, Undo from the toast</dd>
@@ -114,7 +115,7 @@
     <p>The right edge of the window at full size. Each one is live.</p>
     <div class="mk-board">
       <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"chat-working"}'></div><figcaption><b>Sent.</b> The message is in the thread at once; "Reading" holds the reply's place.</figcaption></figure>
-      <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"chat-reply"}'></div><figcaption><b>The reply.</b> The filed token; a draft with Rephrase, Discard and Accept.</figcaption></figure>
+      <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"chat-reply"}'></div><figcaption><b>The reply.</b> The filed token; a draft with Rephrase, Discard and Keep.</figcaption></figure>
       <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"chat-pick"}'></div><figcaption><b>Picking what it sees.</b> The crosshair is on; the card under the cursor gets the ring.</figcaption></figure>
       <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"chat-rec"}'></div><figcaption><b>Recording in the column.</b> Discard, the take, Stop and dump.</figcaption></figure>
       <figure><div class="mk-host" data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"toast"}'></div><figcaption><b>Done, with the column closed.</b> The one success toast (10): what it made, with Undo.</figcaption></figure>
@@ -149,7 +150,7 @@
     <h3>5. Rename, drafts and Untitled</h3>
     <div class="mk-steps">
       <figure><div class="mk-host" data-mk='{"type":"theory","sel":"t1","scene":"rename"}'></div><figcaption><b>Renaming.</b> The 5% layer behind the title and the caret; nothing moves.</figcaption></figure>
-      <figure><div class="mk-host" data-mk='{"type":"theory","sel":"t11"}'></div><figcaption><b>A draft.</b> "Draft from" and its dump in the eyebrow, Discard | Accept on the same line. Editing the claim accepts it.</figcaption></figure>
+      <figure><div class="mk-host" data-mk='{"type":"theory","sel":"t11"}'></div><figcaption><b>A draft.</b> "Draft from" and its dump in the eyebrow, Discard | Keep on the same line. Editing the claim accepts it.</figcaption></figure>
       <figure><div class="mk-host" data-mk='{"type":"theory","scene":"untitled"}'></div><figcaption><b>Kept as Untitled</b> (decided). You left an unnamed theory with a note in it; it stays in the list, with Undo.</figcaption></figure>
     </div>
   </div>
@@ -180,7 +181,7 @@
     <figure><img src="screenshots/live/08-pill-voice.png" alt="Live: recording from the pill"><figcaption><b>Live, voice from the pill.</b></figcaption></figure>
     <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","scene":"pill-rec"}'></div><figcaption><b>Redesign, voice from the pill.</b></figcaption></figure>
     <figure><img src="screenshots/live/09-log.png" alt="Live: the Dumps sheet above the pill"><figcaption><b>Live, history</b> (⌘⇧L).</figcaption></figure>
-    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","scene":"log"}'></div><figcaption><b>Redesign, history.</b></figcaption></figure>
+    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","scene":"log"}'></div><figcaption><b>Redesign, history.</b> Dumps in the rail, the one list of dumps.</figcaption></figure>
   </div>
 
   <h3 class="sub">Every difference</h3>
@@ -200,7 +201,7 @@
       <tr><td>Voice dump in the thread</td><td>A playable bubble (play, wave, length), its transcript under it</td><td>The same, with an icon button and the wave in ink 2</td><td>Restyled</td></tr>
       <tr><td>Agent prose</td><td>Plain text on the left, with bold and italic</td><td>The same (13 / 1.55)</td><td>Kept</td></tr>
       <tr><td>Filed token</td><td>Theme glyph, name, a count badge; unfolds to the gists</td><td>The 06 theme chip, a bare count and a caret; unfolds to 06 signal rows that peek</td><td>Restyled; peek <b>improved</b></td></tr>
-      <tr><td>Draft in a reply</td><td>Dashed card; pencil, Discard, Accept under it</td><td>06 draft row, dashed; Rephrase (pencil-simple) opens it with the claim editable, then Discard | Accept</td><td>Restyled</td></tr>
+      <tr><td>Draft in a reply</td><td>Dashed card; pencil, Discard, Accept under it</td><td>06 draft row, dashed; Rephrase (pencil-simple) opens it with the claim editable, then Discard | Keep</td><td>Restyled</td></tr>
       <tr><td>Theory with its evidence</td><td>A card, then a Supports / Undermines split</td><td>06 theory row and a ringed split of 06 signal rows</td><td>Restyled</td></tr>
       <tr><td>Objects in replies</td><td>Click opens the object</td><td>Click grows the 06 peek; Open shows it in the main area, the column stays</td><td><b>Improved</b> (06 rungs)</td></tr>
       <tr><td>While working</td><td>(Streaming text)</td><td>"Reading" with the Working spinner; the Dumps rail entry spins (10)</td><td><b>Improved</b> (10, decided)</td></tr>
@@ -211,7 +212,7 @@
       <tr><td>Recording</td><td>Pill or composer becomes the take; discard is a dot or an X; Stop and dump</td><td>The same; discard is a labelled trash button</td><td>Discard <b>improved</b> (DI-009)</td></tr>
       <tr><td>Discarding a take</td><td>Gone, no Undo</td><td>A toast with Undo, which brings the take back as a voice chip</td><td><b>Improved</b> (05 rule 7)</td></tr>
       <tr><td>A finished dump with the column closed</td><td>A toast with what it made</td><td>"Made 1 signal" with Undo, just above the pill</td><td>Kept (10)</td></tr>
-      <tr><td>History</td><td>⌘⇧L raises a Dumps sheet above the pill: day groups, kind, first line, time, what it made, the bin, X</td><td>The same sheet, with 06 dump rows and bare counts; open choice below</td><td>Restyled</td></tr>
+      <tr><td>History</td><td>⌘⇧L raises a Dumps sheet above the pill: day groups, kind, first line, time, what it made, the bin, X</td><td>⌘⇧L goes to Dumps in the rail; the sheet is dropped</td><td><b>Improved</b>: one list of dumps</td></tr>
     </tbody>
   </table>
   </div>

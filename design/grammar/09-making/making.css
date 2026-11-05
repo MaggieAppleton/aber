@@ -27,11 +27,11 @@ body[data-jig="grammar-09-making"] { --jig-min: 1200px; }
 /* ── Window ── */
 .mk { --chat-w: 360px; }
 .mk .mk-empty { margin: 0; padding: 0; }
+.mk .ob-body > .mk-empty { margin-left: calc(var(--hang) * -1); }   /* glyphless text starts on L (06 rule 2) */
 .mk .mk-nothing { padding: var(--main-inset-block) var(--main-inset-inline); }
 .mk .nm.untitled { color: var(--ink-2); }
 
-/* ── Full view: the main-area inset (08: 48, top equal, a 720 column, left-aligned); an empty top bar takes no height ── */
-:root { --main-inset-inline: 48px; --main-inset-block: var(--main-inset-inline); }
+/* ── Full view: the main-area inset (01: 88 inline, 48 top, a 720 column, left-aligned; from spacing.css); an empty top bar takes no height ── */
 .mk .nv-main .ob-full { padding: var(--main-inset-block) var(--main-inset-inline) 96px; max-width: calc(720px + var(--main-inset-inline) * 2); }
 .mk .ob-full > .ob-top:empty, .mk .ob-full > .ob-top:has(> .mk-eyebrow:only-child:empty) { display: none; }
 /* The eyebrow: notes about the whole object (where a draft came from, a name that's taken), 12 ink 2 with a chip to the related object.
@@ -92,7 +92,7 @@ body[data-jig="grammar-09-making"] { --jig-min: 1200px; }
   border-radius: var(--r-bar); background: var(--surface); box-shadow: var(--sh-sheet); overflow: hidden; }
 /* The column floats over whatever surface it opens on (Maggie, 5 Nov): the main area runs on under it and around it, so the room it
    reserves is the main area's own white, with no strip, seam or border. The scroller stops short of it, so nothing hides beneath. */
-.mk:has(> .mk-chat) > .nv-main { grid-column: 3 / -1; grid-row: 1; }
+.mk:has(> .mk-chat) > .nv-main { grid-column: -3 / -1; grid-row: 1; }   /* from after the list (or the rail, on Briefing) to the edge */
 .mk:has(> .mk-chat) > .nv-main > .nv-scroller { margin-right: calc(var(--chat-w) + var(--inset-float)); }
 .mk .mk-grab { position: absolute; z-index: 2; top: 4px; left: 50%; translate: -50% 0; display: grid; place-items: center; width: 64px; height: 18px; border-radius: var(--r-control); }
 .mk .mk-grab i { display: block; width: 32px; height: 4px; border-radius: 2px; background: var(--hairline-strong); transition: background-color var(--t-hover) var(--ease-out); }
@@ -149,14 +149,6 @@ body[data-jig="grammar-09-making"] { --jig-min: 1200px; }
 .mk .mk-comp textarea { all: unset; flex: 1; min-width: 0; align-self: center; padding: 5px 0; font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); white-space: pre-wrap; max-height: calc(var(--fs-body) * var(--lh-ui) * 6); overflow: auto; field-sizing: content; }
 .mk .mk-comp textarea::placeholder { color: var(--ink-2); opacity: 1; }
 .mk .mk-comp .mk-take { flex: 1; }
-/* History (live): ⌘⇧L raises a Dumps sheet just above the pill (tier 3), 360 wide */
-.mk .mk-log { position: absolute; z-index: var(--z-sheet); right: var(--inset-float); bottom: calc(var(--inset-float) + var(--composer-h) + var(--gap-item)); width: var(--chat-w); max-height: 480px; display: grid; grid-template-rows: auto minmax(0, 1fr);
-  border-radius: var(--r-bar); background: var(--surface); box-shadow: var(--sh-modal); animation: mk-rise var(--t-float) var(--spring); }
-.mk .mk-log-head { display: flex; align-items: center; justify-content: space-between; min-height: var(--control); padding: var(--inset-card) var(--inset-list-inline) var(--gap-tight); }
-.mk .mk-log-head .h { font-weight: 600; color: var(--sechead-ink); }
-.mk .mk-log-body { overflow: auto; display: grid; align-content: start; gap: var(--gap-group); padding: 0 var(--inset-row) var(--inset-card); }
-.mk .mk-logrow { display: grid; }
-.mk .mk-made { display: flex; align-items: center; gap: var(--gap-item); padding: 0 var(--inset-row) var(--gap-tight) calc(var(--inset-row) + var(--hang)); margin-top: -4px; font-size: var(--fs-label); color: var(--ink-2); }
 .mk .mk-comp.has-atts { flex-wrap: wrap; }
 .mk .mk-atts { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: var(--gap-tight); padding: 2px 2px var(--gap-tight); min-width: 0; }
 .mk .mk-att { display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--chip-h); max-width: 100%; min-width: 0; padding: 0 2px 0 var(--gap-icon); border-radius: var(--r-control);

@@ -13,7 +13,7 @@
   const RAIL = ["theme", "theory", "prototype", "signal", "dump"];
   const MAKE = ["theme", "theory", "prototype"];
   const DAYS = ["Today", "Yesterday", "Monday 2 Nov", "Sunday 1 Nov"];
-  const OPT = { log: "sheet" };
+  const OPT = { log: "rail" };   // ⌘⇧L goes to Dumps in the rail (decided 5 Nov); the pill's separate Dumps sheet is dropped
   const PH = { theme: "Name this theme", theory: "State the claim", prototype: "Name this prototype", signal: "Say what you saw" };
   const esc = t => String(t ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const cap = t => t[0].toUpperCase() + t.slice(1);
@@ -51,7 +51,7 @@
   /* ── Rail and list ─────────────────────────────────── */
   const rail = s => `<aside class="nv-rail">
       <div class="nv-brand"><span>Aber</span>${ib("magnifying-glass", "Find", "", "⌘K")}</div>
-      <nav class="nv-types" aria-label="Types">${RAIL.map(t => `<button type="button" class="nv-type" data-go="${t}" aria-current="${s.type === t}"><span class="gw">${g(t)}</span><span class="nm">${TYPES[t].name}</span>${t === "dump" && all(s, "dump").some(d => d.processing) ? `<span class="nv-n mk-spin" role="img" aria-label="Working">${ic("circle-notch")}</span>` : `<span class="nv-n">${all(s, t).length}</span>`}</button>`).join("")}</nav>
+      <nav class="nv-types" aria-label="Types"><button type="button" class="nv-type" data-home aria-current="${s.type === "briefing"}"><span class="gw">${g("briefing")}</span><span class="nm">Briefing</span></button>${RAIL.map(t => `<button type="button" class="nv-type" data-go="${t}" aria-current="${s.type === t}"><span class="gw">${g(t)}</span><span class="nm">${TYPES[t].name}</span>${t === "dump" && all(s, "dump").some(d => d.processing) ? `<span class="nv-n mk-spin" role="img" aria-label="Working">${ic("circle-notch")}</span>` : `<span class="nv-n">${all(s, t).length}</span>`}</button>`).join("")}</nav>
       <div class="nv-switch" role="group" aria-label="Views">${[["rows", "Default", "⌘1"], ["columns", "Columns", "⌘2"], ["map-trifold", "Atlas", "⌘3"], ["chart-scatter", "Timeline", "⌘4"]].map(([i, l, k], n) =>
         `<button type="button" aria-pressed="${n === 0}" aria-label="${l}" data-tip="${l}" data-key="${k}">${ic(i, n === 0)}</button>`).join("")}</div>
     </aside>`;
@@ -70,7 +70,7 @@
 
   /* ── Full view (06, with the main-area inset from 08) ─ */
   // Notes about the object as a whole sit in the eyebrow, the top bar's left: where a draft came from, a name that already exists.
-  // Its right holds the object's verbs (drafts: Discard | Accept). One line; an empty top bar takes no height.
+  // Its right holds the object's verbs (drafts: Discard | Keep). One line; an empty top bar takes no height.
   const eyebrow = (s, o) => {
     const notes = [];
     if (o.draft && o.from) notes.push(`<span class="mk-eb">Draft from</span>${chip(s.O[o.from])}`);
@@ -80,14 +80,14 @@
     }
     return notes.length ? `<div class="mk-eyebrow" data-eyebrow="${o.id}" aria-live="polite">${notes.join('<span class="mk-ebgap"></span>')}</div>` : `<div class="mk-eyebrow" data-eyebrow="${o.id}" aria-live="polite"></div>`;
   };
-  const verbs = o => o.draft ? `<span class="ob-decide"><button type="button" class="nv-btn secondary" data-draft-no="${o.id}">Discard</button><button type="button" class="nv-btn primary" data-draft-yes="${o.id}">Accept</button></span>`
+  const verbs = o => o.draft ? `<span class="ob-decide"><button type="button" class="nv-btn secondary" data-draft-no="${o.id}">Discard</button><button type="button" class="nv-btn primary" data-draft-yes="${o.id}">Keep</button></span>`
     : o.kind === "dump" ? `<span class="ob-tools">${ib("trash", "Delete dump", `data-del="${o.id}"`)}</span>` : "";
   const sec = (label, n, body, add = "") => `<section class="ob-sec"><div class="ob-sh"><span>${label}</span>${n ? `<span class="ob-n">${n}</span>` : ""}${add}</div>${body}</section>`;
   const slot = (label, attr) => `<button type="button" class="ob-slot" ${attr}>${ic("plus")}<span>${label}</span></button>`;
   const evItem = (s, t, e) => {
     const x = s.O[e[0]], just = s.just === `${t.id}:${x.id}`;
-    if (e[2] === "suggested") return `<div class="ob-block sug mk-sug"><div class="ob-blabel">Suggested by agent</div>${orow(s, x)}<p class="ob-why-t">${esc(e[3] || "The agent read this as support.")}</p>
-      <div class="ob-decide"><button type="button" class="nv-btn secondary" data-sug-no="${x.id}">Dismiss</button><button type="button" class="nv-btn primary" data-sug-yes="${x.id}">Accept</button></div></div>`;
+    // A proposal block (06 rule 9): label, reason, the object row, the verbs (05 rule 6)
+    if (e[2] === "suggested") return `<div class="ob-block sug mk-sug"><div class="ob-blabel">${e[1] === "-" ? "Suggested counter-evidence" : "Suggested support"}</div><p class="ob-reason">${esc(e[3] || (e[1] === "-" ? "The agent read this as counter-evidence." : "The agent read this as support."))}</p>${orow(s, x)}<div class="ob-decide"><button type="button" class="nv-btn secondary" data-sug-no="${x.id}">Dismiss</button><button type="button" class="nv-btn primary" data-sug-yes="${x.id}">Add evidence</button></div></div>`;
     return orow(s, x, { cls: just ? "mk-just" : "", rm: `Remove ${x.name} from this theory` });
   };
   const evSec = (s, t, st, label) => {
@@ -182,9 +182,9 @@
           ${open ? `<div class="ob-rows">${sigs.map(x => orow(s, x)).join("")}</div>` : ""}</div>`; }
       if (p.theory) { const t = s.O[p.theory]; const ev = st => t.ev.filter(e => e[1] === st && !e[2]).map(e => s.O[e[0]]);
         return `<div class="mk-split">${orow(s, t)}<div class="mk-split-cols">${[["Supports", "+"], ["Undermines", "-"]].map(([l, st]) => `<div><div class="ob-label">${l}<span class="ob-n">${ev(st).length}</span></div><div class="ob-rows">${ev(st).map(x => orow(s, x)).join("")}</div></div>`).join("")}</div></div>`; }
-      // Live: a dashed draft card with Rephrase, Discard and Accept under it. Restyled: the 06 draft row; Rephrase opens it with the claim editable.
+      // Live: a dashed draft card with Rephrase, Discard and Accept under it (Discard | Keep here, 05 rule 6). Restyled: the 06 draft row; Rephrase opens it with the claim editable.
       if (p.draft) { const o = s.O[p.draft]; if (!o || o.gone) return `<p class="mk-say mk-gone">Draft discarded</p>`;
-        return `<div class="mk-draft">${orow(s, o)}${o.draft ? `<div class="ob-decide">${ib("pencil-simple", "Rephrase", `data-rephrase="${o.id}"`, "", "sm")}<button type="button" class="nv-btn secondary" data-draft-no="${o.id}">Discard</button><button type="button" class="nv-btn primary" data-draft-yes="${o.id}">Accept</button></div>` : ""}</div>`; }
+        return `<div class="mk-draft">${orow(s, o)}${o.draft ? `<div class="ob-decide">${ib("pencil-simple", "Rephrase", `data-rephrase="${o.id}"`, "", "sm")}<button type="button" class="nv-btn secondary" data-draft-no="${o.id}">Discard</button><button type="button" class="nv-btn primary" data-draft-yes="${o.id}">Keep</button></div>` : ""}</div>`; }
       return "";
     }).join("")}</div>`;
   };
@@ -208,13 +208,6 @@
       <button type="button" class="mk-grab" aria-label="Close" data-tip="Close" data-key="Esc" data-chat-close><i aria-hidden="true"></i></button>
       <div class="mk-thread" data-thread>${s.thread.map((m, i) => msg(s, m, i)).join("")}</div>
       ${ctxRow(s)}${composer(s)}</aside>` : "";
-  // History (live): ⌘⇧L raises a "Dumps" sheet just above the pill (tier 3): day groups, each dump with what it made, the bin.
-  const logSheet = s => s.log ? `<div class="mk-log" role="dialog" aria-label="Dumps">
-      <div class="mk-log-head"><span class="h">Dumps</span><span class="ob-tools">${ib("trash", "Bin")}${ib("x", "Close", "data-log-close", "Esc")}</span></div>
-      <div class="mk-log-body">${DAYS.map((d, i) => { const ds = all(s, "dump").filter(x => x.day === i); return ds.length ? `<div class="ob-group"><div class="ob-glabel"><span>${d}</span></div>${ds.map(x => {
-        const n = x.made.filter(id => s.O[id]?.kind === "signal" && !s.O[id].gone).length, dr = x.made.length - n;
-        return `<div class="mk-logrow">${orow(s, x)}<div class="mk-made">${x.processing ? `<span class="mk-spin">${ic("circle-notch")}</span><span>Reading</span>` : x.made.length ? `${n ? cnt("pulse", n, "signals") : ""}${dr ? cnt("target", dr, "drafts") : ""}` : "<span>Nothing filed</span>"}</div></div>`; }).join("")}</div>` : ""; }).join("")}</div></div>` : "";
-
   /* ── Transient layers: one at a time (picker, peek, modal, toast) ── */
   const toast = s => s.toast ? `<div class="mk-toast" role="status"><span class="t">${esc(s.toast.text)}</span>${s.toast.undo ? `<button type="button" class="mk-undo" data-undo>Undo<kbd>⌘Z</kbd></button>` : ""}</div>` : "";
   const modal = s => {
@@ -238,12 +231,16 @@
         <div class="mk-olist" id="mk-olist-${s.uid}" role="listbox">${grp(t.themes.length ? `In ${esc(s.O[t.themes[0]].name)}` : "Signals", near)}${grp("Other signals", rest)}${pool.length ? "" : `<p class="ob-empty">No signals match</p>`}</div></div>`;
   };
 
+  // Briefing (08, decided) is the first rail item, with no second sidebar. Here it is caught up: 08 holds the full design.
+  const briefing = () => `<article class="ob-full ob-digest"><header class="ob-hang ob-head">${g("briefing")}<div class="ob-col"><h3 class="ob-title">Since yesterday</h3></div></header>
+      <div class="ob-body"><p class="ob-empty mk-empty">Nothing new since 18:40</p></div></article>`;
+
   /* ── Frame ─────────────────────────────────────────── */
   const frame = s => {
-    const o = s.O[s.sel];
-    return `<div class="nv mk ob-win" data-v="A"${s.picking ? " data-picking" : ""} style="grid-template-columns:var(--nv-rail-w) 280px minmax(0,1fr)${s.chat ? " calc(var(--chat-w) + var(--inset-float))" : ""}">${rail(s)}${list(s)}
-      <main class="nv-main"><div class="nv-scroller">${o && !o.gone ? full(s, o) : `<p class="ob-empty mk-nothing">Nothing selected</p>`}</div></main>
-      ${chat(s)}${pill(s)}${logSheet(s)}${picker(s)}${toast(s)}${modal(s)}</div>`;
+    const home = s.type === "briefing", o = home ? null : s.O[s.sel];
+    return `<div class="nv mk ob-win" data-v="A"${s.picking ? " data-picking" : ""} style="grid-template-columns:var(--nv-rail-w)${home ? "" : " 280px"} minmax(0,1fr)${s.chat ? " calc(var(--chat-w) + var(--inset-float))" : ""}">${rail(s)}${home ? "" : list(s)}
+      <main class="nv-main"><div class="nv-scroller">${home ? briefing() : o && !o.gone ? full(s, o) : `<p class="ob-empty mk-nothing">Nothing selected</p>`}</div></main>
+      ${chat(s)}${pill(s)}${picker(s)}${toast(s)}${modal(s)}</div>`;
   };
 
   /* ── Render and placement ─────────────────────────── */
@@ -447,7 +444,7 @@
       "toast": () => { s.toast = { text: "Made 1 signal", undo: () => {} }; },
       "chat-top": () => { s.chat = true; s.comp.ctx = ["coi"]; s.scrollThread = false; },
       "chat-filed": () => { s.chat = true; s.comp.ctx = ["coi"]; s.unfold.add("8:0"); },
-      "log": () => { s.log = true; },
+      "log": () => { s.type = "dump"; s.sel = all(s, "dump")[0]?.id; },
       "new-theme": () => { const id = "n0"; s.O = { [id]: { id, kind: "theme", name: "Robots in the home", themes: [], ev: [] }, ...s.O }; s.type = "theme"; s.sel = id; s.newId = id; s.focusCls = "title"; },
       "dup-theme": () => { const id = "n0"; s.O = { [id]: { id, kind: "theme", name: "Agent memory", themes: [], ev: [] }, ...s.O }; s.type = "theme"; s.sel = id; s.newId = id; },
       "new-card": () => { s.cardFor = s.sel; s.cardText = "Inference becomes a utility line item"; s.focusCls = "card"; },
@@ -466,7 +463,7 @@
   const init = host => {
     const o = JSON.parse(host.dataset.mk || "{}");
     const s = host._s = { uid: ++uid, O: window.MkSeed(), type: o.type || "theme", sel: o.sel || "coi", opt: { ...OPT, ...(o.opt || {}) }, chat: !!o.chat, thread: seedThread(),
-      comp: { text: "", atts: [], rec: null, ctx: o.chat ? [o.sel || "coi"] : [] }, toast: null, pop: null, modal: null, peek: null, newId: null, cardFor: null, picking: false, log: false, unfold: new Set() };
+      comp: { text: "", atts: [], rec: null, ctx: o.chat ? [o.sel || "coi"] : [] }, toast: null, pop: null, modal: null, peek: null, newId: null, cardFor: null, picking: false, unfold: new Set() };
     if (host.dataset.crop) host.classList.add("mk-crop");
     render(host); ro.observe(host);
     if (o.scene) document.fonts.ready.then(() => scene(host, o.scene));
@@ -509,7 +506,8 @@
       if (s.focusCls) s.focusCls = "";
       if (d.peek) { if (s.peek?.id === d.peek && s.peek.pinned) { closePeek(host); return; } showPeek(host, d.peek, el, true); return; }
       if (d.open) { go(host, d.open); return; }
-      if (d.go) { leave(host); s.type = d.go; s.sel = all(s, d.go)[0]?.id; s.cardFor = null; render(host); }
+      if ("home" in d) { leave(host); s.type = "briefing"; s.sel = null; s.cardFor = null; render(host); }
+      else if (d.go) { leave(host); s.type = d.go; s.sel = all(s, d.go)[0]?.id; s.cardFor = null; render(host); }
       else if (d.sel) go(host, d.sel);
       else if ("new" in d) newObject(host, s.type);
       else if (d.addTheory) { s.cardFor = d.addTheory; s.cardText = ""; render(host, `[data-card="${d.addTheory}"]`); }
@@ -525,10 +523,9 @@
       else if (d.delYes) { const o = s.O[d.delYes]; o.gone = true; o.made.forEach(id => { if (s.O[id]) s.O[id].gone = true; }); s.thread = s.thread.filter((m, i, a) => m.dump !== o.id && !(a[i - 1]?.dump === o.id && m.who === "agent"));
         s.modal = null; if (s.sel === o.id || s.O[s.sel]?.gone) s.sel = all(s, s.type)[0]?.id; render(host); }   // confirmed, so no toast after (10 States rule 7)
       else if ("undo" in d) undo(host);
-      else if ("chatOpen" in d) { s.log = false; openChat(host); }
+      else if ("chatOpen" in d) { openChat(host); }
       else if (d.unfold) { s.unfold.has(d.unfold) ? s.unfold.delete(d.unfold) : s.unfold.add(d.unfold); s.scrollThread = false; render(host); s.scrollThread = true; }
       else if (d.rephrase) { go(host, d.rephrase); const t = host.querySelector(`[data-title="${d.rephrase}"]`); t?.focus(); t && caretEnd(t); }
-      else if ("logClose" in d) { s.log = false; render(host); }
       else if ("chatClose" in d) { s.chat = false; s.picking = false; render(host, "[data-chat-open]"); }
       else if ("send" in d) send(host);
       else if ("attach" in d) { s.comp.atts.push({ id: `a${++nid}`, kind: "image", title: "Screenshot 09.41.png" }); render(host, "[data-comp]"); }
@@ -584,7 +581,7 @@
     const s = host._s, mod = e.metaKey || e.ctrlKey, typing = e.target.closest?.("input, textarea, [contenteditable]");
     if (mod && e.key.toLowerCase() === "j") { e.preventDefault(); if (e.shiftKey) { if (!s.comp.rec) recStart(host); } else if (s.chat && host.contains(document.activeElement) && document.activeElement.matches("[data-comp]")) { s.chat = false; render(host, "[data-chat-open]"); } else openChat(host); return; }
     if (mod && e.key.toLowerCase() === "z" && !typing && s.toast?.undo) { e.preventDefault(); undo(host); return; }
-    if (mod && e.shiftKey && e.key.toLowerCase() === "l") { e.preventDefault(); if (s.opt.log === "rail") { s.chat = false; s.type = "dump"; s.sel = all(s, "dump")[0]?.id; render(host); return; } s.log = !s.log; if (s.log) s.chat = false; render(host); return; }
+    if (mod && e.shiftKey && e.key.toLowerCase() === "l") { e.preventDefault(); s.chat = false; s.type = "dump"; s.sel = all(s, "dump")[0]?.id; render(host); return; }   // Dumps in the rail (decided 5 Nov)
     if (e.key === "Escape") {
       if (e.target.closest?.("[data-title], [data-card]")) return;
       e.preventDefault();
@@ -593,7 +590,6 @@
       if (s.modal) { const id = s.modal; s.modal = null; render(host, `[data-del="${id}"]`); return; }
       if (s.pop) { const st = s.pop.st; s.pop = null; render(host, `[data-ev-add="${st}"]`); return; }
       if (s.peek) { closePeek(host); return; }
-      if (s.log) { s.log = false; render(host); return; }
       if (s.chat) { s.chat = false; render(host, "[data-chat-open]"); return; }
     }
     if (!typing && !mod && !e.altKey && e.key.toLowerCase() === "n" && MAKE.includes(s.type) && host.contains(document.activeElement)) { e.preventDefault(); newObject(host, s.type); }
