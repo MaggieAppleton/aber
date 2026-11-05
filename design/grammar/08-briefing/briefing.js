@@ -76,10 +76,14 @@
     const t = O[d.theory], s = O[d.signal];
     if (st.decided.has(d.id)) return `<div class="ob-rows br8-g">${row(t, { omit: "when", cls: "br8-subject" })}${settled(st, d, s.name)}</div>`;
     // The subject (the theory and its tripwire) sits above; the dashed block holds only what's decided: the signal, the consequence, the buttons
-    const why = st.opt.labels === "verb" ? `Lowering takes confidence from ${t.c} to ${Math.max(1, t.c - 1)}.` : `Accepting lowers confidence from ${t.c} to ${Math.max(1, t.c - 1)}.`;
+    const why = changeLine(st, t.c, Math.max(1, t.c - 1));
     return `<div class="ob-rows br8-g br8-ch">${row(t, { omit: "when", cls: "br8-subject" })}<div class="ob-attach lg">${tile("tripwire", ICON.tripwire)}<p class="ob-prose">${t.trip}</p></div>
-      <div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-blabel">Tripped by a new signal</div>${row(s, { omit: "when" })}<p class="ob-why-t">${why}</p>${decide(st, d)}</div></div>`;
+      <div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-blabel">Tripped by a new signal</div>${row(s, { omit: "when" })}<div class="br8-cfoot">${why}${decide(st, d)}</div></div></div>`;
   };
+  // The consequence as a picture of the value it changes (choice 6): a confidence mark with the step that would go striped (a), or now → proposed (b)
+  const confMark = (n, gone = 0) => `<span class="br8-conf" aria-hidden="true">${[1, 2, 3, 4, 5].map(i => `<i${i <= n - gone ? " data-on" : i <= n ? " data-gone" : ""}></i>`).join("")}</span>`;
+  const changeLine = (st, from, to) => `<p class="br8-change" aria-label="I suggest lowering confidence from ${from} to ${to}">${st.opt.change === "arrow"
+    ? `${confMark(from)}<i class="ph ph-arrow-right" aria-hidden="true"></i>${confMark(to)}` : confMark(from, from - to)}<span>I suggest lowering confidence from ${from} to ${to}</span></p>`;
   // A proposal is labelled as one, so it can't be mistaken for something you already hold
   const LABEL = { Supports: "Suggested support", Undermines: "Suggested counter-evidence", "New wording": "Suggested new wording", "Merge with": "Suggested merge with" };
   const sugBlock = (st, d) => {
@@ -255,7 +259,7 @@
   /* ═══ Init ═══ */
   const init = host => {
     const o = JSON.parse(host.dataset.br || "{}");
-    const st = host._st = { _host: host, day: o.day || "quiet", h: o.h, opt: { group: "theme", settle: "leave", seen: "shown", labels: "verb", sections: "rule", ...(o.opt || {}) }, decided: new Map(), seen: new Set(), open: {}, unmerged: new Set(), dumps: {}, mode: "brief", narrow: false, railOpen: false, full: null, peek: null };
+    const st = host._st = { _host: host, day: o.day || "quiet", h: o.h, opt: { group: "theme", settle: "leave", seen: "shown", labels: "verb", sections: "rule", change: "stripe", ...(o.opt || {}) }, decided: new Map(), seen: new Set(), open: {}, unmerged: new Set(), dumps: {}, mode: "brief", narrow: false, railOpen: false, full: null, peek: null };
     const measure = () => { const n = host.clientWidth < NARROW; if (n !== st.narrow) { st.narrow = n; st.railOpen = false; if (st.mode === "brief") render(host); } fit(host); };
     st.narrow = host.clientWidth > 0 && host.clientWidth < NARROW; render(host); new ResizeObserver(measure).observe(host);
     // A choice window can open at the section it's about

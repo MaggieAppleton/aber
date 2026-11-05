@@ -196,3 +196,43 @@
 [data-sections="rule"] .br8-sec + .br8-sec { margin-left: calc(var(--hang) * -1); padding-left: var(--hang); max-width: calc(560px + var(--hang)); }
 /* Bold means subject: inside a proposal, the signal keeps regular weight even if unseen (its unread weight shows in New signals) */
 .br8-win[data-fresh] .br8-doc .ob-block .ob-row.unseen > .nm { font-weight: 400; }
+
+/* ═══ The decision block, refined (Maggie, 5 Nov) ═══
+   A row's hover layer sits 2 inside the dash on every side; the row keeps its tile on the block's 12 inset.
+   Tripwire line to its block 6, so subject and decision read as one unit; successive challenges stay 16 apart.
+   Inside: the signal, 8, then the change line with the buttons on the same line, right-aligned (wraps under it when narrow). */
+.br8-doc .ob-block { padding-inline: 10px; padding-block: 10px; }
+.br8-doc .ob-block > :not(.ob-row) { margin-inline: 2px; }
+.br8-doc .ob-block > .ob-row { margin-inline: 0; padding-inline: calc(var(--blk) - 2px); }
+.br8-ch > .ob-attach + .ob-block { margin-top: 6px; }
+.br8-doc .ob-block > :is(.ob-row, .br8-words) + * { margin-top: var(--gap-item); }
+.br8-doc .ob-block > .ob-why-t + .ob-decide { margin-top: var(--gap-item); }
+.br8-cfoot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--gap-item) var(--gap-group); }
+.br8-cfoot > .ob-decide { margin-left: auto; }
+.br8-change { display: flex; align-items: center; gap: var(--gap-icon); margin: 0; font-size: var(--fs-label); line-height: var(--lh-ui); color: var(--ink-2); }
+.br8-change > i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); color: var(--ink-2); }
+.br8-conf { display: inline-flex; gap: 2px; }
+.br8-conf i { display: block; width: 12px; height: 4px; border-radius: 2px; background: color-mix(in oklab, var(--ink) 15%, transparent); }
+.br8-conf i[data-on] { background: var(--ink); }
+.br8-conf i[data-gone] { background: repeating-linear-gradient(-45deg, var(--ink) 0 1.5px, transparent 1.5px 3px); box-shadow: inset 0 0 0 0.5px var(--ink); }
+.br8-doc .ob-block > .ob-row { margin-inline: -8px; padding-inline: 10px; }   /* hover layer 2 inside the dash (10 pad − 8); tile still on the 12 inset */
+.br8-doc .ob-block > .ob-row + :is(.br8-cfoot, .ob-why-t) { margin-top: 2px; }   /* 8 from the signal's text: the row's own 7 of padding, then 1–2 */
+.br8-doc .ob-block > .ob-row:has(+ .br8-cfoot) { padding-bottom: 4px; }   /* the hover layer ends 4 under the source; the buttons start 2 under that, the change text ~11 under the source */
+
+/* Hover layers are never clipped (Maggie, 5 Nov): a folded group fades and clips only on the block axis, so its rows' hover layers (which bleed 8 left
+   into the tile column) keep their edges and corners. */
+.br8-under.faded { overflow: visible; overflow-y: clip; overflow-clip-margin: 0; }
+
+/* Proposal spacing, every block (Maggie, 5 Nov; proposed amendment for 06, 09 and the app):
+   subject → its block 6 · inside: label → row 4 · row → sentence 6 (measured from the row's text) · sentence → buttons 8, or the buttons on the
+   sentence's line when it's short (the challenge's change line) · successive subject + block units 16. */
+.br8-g > .ob-row + .ob-block, .br8-ch > .ob-attach + .ob-block { margin-top: 6px; }
+.br8-doc .ob-block > .ob-row:has(+ .ob-why-t) { padding-bottom: 4px; }
+.br8-doc .ob-block > .ob-row + .ob-why-t { margin-top: 2px; }
+.br8-doc .ob-block > .br8-words + .ob-why-t { margin-top: 6px; }
+.br8-doc .ob-block > .ob-why-t + .ob-decide { margin-top: var(--gap-item); }
+.br8-doc .ob-block > .ob-row:has(+ .br8-cfoot) { padding-bottom: 2px; }
+.br8-doc .ob-block > .ob-row + .br8-cfoot { margin-top: 0; }   /* the change text, centred on the 28 buttons, lands ~8 under the source */
+.br8-g > .ob-row.br8-subject:has(+ .ob-block) { padding-bottom: 3px; }
+.br8-g > .ob-row.br8-subject + .ob-block { margin-top: 3px; }   /* 6 from the subject's text to the dash */
+.br8-doc .ob-block > .ob-row + .br8-cfoot { margin-top: 2px; }   /* 2 clear of the row's hover layer; the change text sits ~10 under the source */

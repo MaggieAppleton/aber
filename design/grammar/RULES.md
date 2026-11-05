@@ -458,7 +458,11 @@ Evidence (`app/web/src/ui/briefing-app.tsx`, `.css`): every item is a raised car
 
 **Open (choices on the jig):** new signals grouped A by theme (recommended) or B by the theory they bear on; a decided item A leaves with an Undo toast (recommended) or B settles to one line in place until you leave; a signal counts as seen A once Briefing has shown it (recommended) or B only when peeked, opened or marked seen; buttons read A Dismiss | Accept, or B what they do (recommended: Keep confidence | Lower to 3, Dismiss | Add evidence, Dismiss | Use wording, Keep apart | Merge, Discard | Keep), which would amend DI-009; sections open with A a 16 / 600 header role and a hairline (recommended; adds 16 to the type scale), B a surface per section on the sunk ground, or C a sticky sunk band.
 
-**Proposed with it:** the object a change touches is the subject, a solid row with its name at 600; its proposals hang one step in, dashed, labelled "Suggested support", "Suggested counter-evidence", "Suggested new wording", "Suggested merge with", and their rows keep regular weight. One left edge at the title; the 32 title tile hangs left of it in a 56 main-area inset.
+**Proposed with it:** the object a change touches is the subject, a solid row with its name at 600; its proposals hang one step in, dashed, labelled "Suggested support", "Suggested counter-evidence", "Suggested new wording", "Suggested merge with", and their rows keep regular weight. One left edge at the title; the 32 title tile hangs left of it in an 88 main-area inset (top 48).
+
+**Proposal spacing (every proposal block; proposed amendment for 06, 09 and the app):** subject → its block 6 (from the subject's text, or the tripwire line, to the dash); inside the block (10 padding, contents on a 12 inset): label → row 4, row text → sentence 6–8, sentence → buttons 8, or the buttons on the sentence's line when it's short; successive subject + block units 16 or more. A row's hover layer sits 2 inside the dash on every side and is never clipped: a container that fades or clips does so on the block axis only.
+
+**Consequence as a picture:** a challenge's block ends on a change line, "I suggest lowering confidence from 4 to 3" (12, ink 2) after a confidence mark, with the buttons on the same line. Open: A one mark with the step that would go striped (recommended), or B now → proposed as two marks.
 
 ## 07 Moving between levels — DECIDED (5 Nov 2026: shared tile and title on Open; peeks beside their trigger; Back lands on the preview)
 
