@@ -110,7 +110,7 @@
       const lines = [`# ${document.title}`, ""];
       for (const g of groups) {
         const s = live.get(g), d = g.dataset.decided;
-        lines.push(`- ${g.dataset.decision}: ${g.dataset.question}: ${d ? `decided, ${d}` : s.choice || "(no choice)"}${s.note ? `; note: ${s.note}` : ""}`);
+        lines.push(`- ${g.dataset.decision} — ${g.dataset.question}: ${d ? `decided, ${d}` : s.choice || "(no choice)"}${s.note ? `; note: ${s.note}` : ""}`);
       }
       const text = lines.join("\n");
       let msg; try { await navigator.clipboard.writeText(text); msg = "Copied"; } catch { console.log(text); msg = "Logged to console"; }
