@@ -1,3 +1,5 @@
+// Load the input-modality tracker on every page (focus rings only for keyboard interaction).
+if (!document.querySelector('script[src$="modality.js"]')) { const m = document.createElement("script"); m.src = new URL("modality.js", document.currentScript ? document.currentScript.src : location.href).href; document.head.appendChild(m); }
 // The grammar page template's behaviour. Load after manifest.js, both deferred, before the shell's jig.js runs its init
 // (jig.js waits for DOMContentLoaded, so any deferred order works).
 // - Fills <header class="pg-head"> from the manifest: back link, number and title, one sentence, a live status line.
