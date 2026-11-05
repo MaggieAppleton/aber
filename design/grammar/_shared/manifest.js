@@ -84,6 +84,10 @@ window.GRAMMAR = {
       desc: "Columns, Atlas and Timeline restyled, not re-laid out",
       sum: "Columns, Atlas and Timeline keep today's layout; only their values change to the decided foundations.",
       decisions: [{ id: "dim", q: "How unrelated objects recede", pick: "A fade" }, { id: "size", q: "What a territory's size means", pick: "B area" }, { id: "labels", q: "When theory names show on the Atlas", pick: "A on hover and zoom" }], revised: [{ target: "dim", at: "2026-11-05T13:00", what: "The pane's content moves right to the title's edge (one left edge); verb buttons" }] },
+    { key: "grammar-14-menus", dir: "14-menus", num: "14", title: "Menus, pickers and popovers", icon: "list-dashes", group: "beh",
+      desc: "One tier-4 surface for verbs, objects and small editors",
+      sum: "Menus for verbs and values, pickers for objects, popovers for small editors: one anatomy, one motion, one set of keys.",
+      decisions: [{ id: "mh", q: "Menu item height" }, { id: "tiles", q: "Picker rows: tile or bare glyph" }, { id: "current", q: "How the current item is marked" }], revised: [{ target: "live", at: "2026-11-05T13:01", what: "Inline triggers pad 4 above and below; focus rings only for keyboard, never on click or hover" }] },
   ],
 };
 

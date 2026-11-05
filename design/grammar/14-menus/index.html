@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grammar 14: Menus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="../../explorations/_shell/jig.css">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/stage.css">
+<link rel="stylesheet" href="../_shared/spacing.css">
+<link rel="stylesheet" href="../_shared/type.css">
+<link rel="stylesheet" href="../_shared/icons.css">
+<link rel="stylesheet" href="../_shared/surfaces.css">
+<link rel="stylesheet" href="../nav/nav.css">
+<link rel="stylesheet" href="../_shared/controls.css">
+<link rel="stylesheet" href="../06-objects/objects.css">
+<link rel="stylesheet" href="menus.css">
+<link rel="stylesheet" href="page.css">
+<link rel="stylesheet" href="../_shared/page.css">
+<script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/modality.js" defer></script>
+<script src="../_shared/manifest.js" defer></script>
+<script src="../_shared/page.js" defer></script>
+<script src="../06-objects/objects.js" defer></script>
+<script src="../nav/rail.js" defer></script>
+<script src="menus.js" defer></script>
+<script src="page.js" defer></script>
+<script type="module" src="../_shared/agentation.js" data-app-name="Grammar 14: Menus, pickers and popovers"></script>
+</head>
+<body class="jig" data-jig="grammar-14-menus" data-align="c" data-fresh="weight">
+
+<header class="pg-head"></header>
+
+<section class="jig-section wide" id="c-mh" data-decision="mh" data-question="1. How tall is a menu item?" data-default="A 32">
+  <p class="jig-why"><b>Recommended A.</b> 05 already set menu items at 32, and picker rows are 06 rows at 32, so menus and pickers read as one family. 28 matches the rail you condensed, but a menu has no neighbours to line up with.</p>
+  <p class="lede">The prototype's status menu is open. Use ↑ ↓ and Return, or point at an item.</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="A 32"><div class="jig-label"><b>A</b> 32, the row height (05)</div>
+      <div class="mn-host" data-option-stage data-mn='{"sel":"p1","h":360,"open":"status","ch":{"mh":"32"}}'></div></div>
+    <div class="jig-option" data-option="B 28"><div class="jig-label"><b>B</b> 28, the rail's row and the control height</div>
+      <div class="mn-host" data-option-stage data-mn='{"sel":"p1","h":360,"open":"status","ch":{"mh":"28"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="c-tiles" data-decision="tiles" data-question="2. Do picker rows show the type tile or a bare glyph?" data-default="A Tiles">
+  <p class="jig-why"><b>Recommended A.</b> 03 put object glyphs on their tile everywhere, and a picker is a list of objects. Bare glyphs are lighter in a long list of one type.</p>
+  <p class="lede">Show the agent something: the crosshair's picker mixes types, which is where the tile works hardest. Type to filter.</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="A Tiles"><div class="jig-label"><b>A</b> The 18 tile, as in every 06 row</div>
+      <div class="mn-host" data-option-stage data-mn='{"sel":"t1","h":520,"chat":1,"open":"context","ch":{"pt":"tile"}}'></div></div>
+    <div class="jig-option" data-option="B Bare glyphs"><div class="jig-label"><b>B</b> The 16 glyph in its type colour, no tile</div>
+      <div class="mn-host" data-option-stage data-mn='{"sel":"t1","h":520,"chat":1,"open":"context","ch":{"pt":"glyph"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="c-current" data-decision="current" data-question="3. How is the current or chosen item marked?" data-default="B Fill and weight">
+  <p class="jig-why"><b>Recommended B.</b> 03 says Fill marks the current thing, and check already means Accept. A is the clearest for several chosen at once; C reuses the selected raise.</p>
+  <p class="lede">File in theme is a multi-select picker: this signal is filed in two themes. Click or press Space or Return to toggle; the chips behind it change at once.</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="A Check"><div class="jig-label"><b>A</b> A check at the right end</div>
+      <div class="mn-host" data-option-stage data-mn='{"sel":"s2","h":520,"open":"file","scroll":"file","ch":{"cur":"check"}}'></div></div>
+    <div class="jig-option" data-option="B Fill and weight"><div class="jig-label"><b>B</b> The glyph fills and the name goes to 500</div>
+      <div class="mn-host" data-option-stage data-mn='{"sel":"s2","h":520,"open":"file","scroll":"file","ch":{"cur":"fill"}}'></div></div>
+    <div class="jig-option" data-option="C Raised"><div class="jig-label"><b>C</b> The item sits raised, like the current rail row</div>
+      <div class="mn-host" data-option-stage data-mn='{"sel":"s2","h":520,"open":"file","scroll":"file","ch":{"cur":"sel"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="live">
+  <h2>Every menu, rebuilt</h2>
+  <p class="lede">Each one in its place in the default view, following your picks above (or the recommendations). Open it by click or by keyboard (Tab to the trigger, then Return or ↓); Esc returns focus to the trigger.</p>
+  <div class="mn-demos">
+    <div class="mn-demo"><p class="mn-dt"><b>Retire</b><span>A menu of reasons from the archive button, top right. It retires at once, with Undo.</span></p>
+      <div class="mn-host" data-mn='{"sel":"t1","h":440}'></div></div>
+    <div class="mn-demo"><p class="mn-dt"><b>Prototype status</b><span>The status on the key line opens a menu of the four values, the current one marked and focused.</span></p>
+      <div class="mn-host" data-mn='{"sel":"p1","h":440}'></div></div>
+    <div class="mn-demo"><p class="mn-dt"><b>Theme filter</b><span>The funnel beside Find a theory. Once set, it becomes a labelled, raised button; All themes clears it. Signals and Timeline use the same picker.</span></p>
+      <div class="mn-host" data-mn='{"sel":"t1","h":440}'></div></div>
+    <div class="mn-demo"><p class="mn-dt"><b>Add support</b><span>The + on Supports or Undermines. Signals in the theory's own theme first; linked ones left out. The row lands with one accent flash.</span></p>
+      <div class="mn-host" data-mn='{"sel":"t1","h":480,"scroll":"evidence"}'></div></div>
+    <div class="mn-demo"><p class="mn-dt"><b>File in theme</b><span>Multi-select. Filed themes first; type a new name for a Create row.</span></p>
+      <div class="mn-host" data-mn='{"sel":"s2","h":480,"scroll":"file"}'></div></div>
+    <div class="mn-demo"><p class="mn-dt"><b>Merge with</b><span>The merge button on a signal. The same theme first, itself left out; merges at once, with Undo (no second modal).</span></p>
+      <div class="mn-host" data-mn='{"sel":"s1","h":440}'></div></div>
+    <div class="mn-demo"><p class="mn-dt"><b>Show the agent</b><span>The crosshair at the chat's foot opens above: what's on screen first, then recent. Clicking on screen to pick stays as well.</span></p>
+      <div class="mn-host" data-mn='{"sel":"t1","h":520,"chat":1}'></div></div>
+    <div class="mn-demo"><p class="mn-dt"><b>View switcher</b><span>Not a menu: four always-visible choices stay a segmented control (05 rule 10). Shown so the boundary is clear.</span></p>
+      <div class="mn-host" data-mn='{"sel":"t1","h":360}'></div></div>
+    <div class="mn-demo"><p class="mn-dt"><b>On a phone</b><span>Every tethered surface becomes a bottom sheet, items 44 high (04 rule 10). The narrow layout itself is <a href="../12-narrow/">12 Narrow</a>.</span></p>
+      <div class="mn-phone" id="phone">
+        <div class="ph-top"><button type="button" class="ph-btn" aria-label="Back"><i class="ph ph-arrow-left" aria-hidden="true"></i></button><span class="h">Theory</span>
+          <button type="button" class="ph-btn" id="ph-retire" aria-label="Retire" aria-haspopup="menu" aria-expanded="false"><i class="ph ph-archive" aria-hidden="true"></i></button></div>
+        <div class="ph-body"><h3 class="ph-title">Tokens become nearly free for routine work</h3><p style="margin:0;color:var(--ink-2)">Tap the archive button.</p></div>
+      </div></div>
+  </div>
+</section>
+
+<section class="pg-decided">
+  <h2>Decided</h2>
+  <ul class="pg-list">
+    <li><b>Tier</b>Tethered, tier 4: surface, the crisp pop shadow, radius 10, z 40 (04)</li>
+    <li><b>One at a time</b>Opening a menu closes any other transient; only a tooltip may sit over it (04 rule 7)</li>
+    <li><b>Motion</b>Grows from its trigger in 160ms on the spring, leaves in 90ms (05, 07)</li>
+    <li><b>Keys</b>Geist Mono 12 / 500, ink 2 (02)</li>
+    <li><b>Retire</b>A menu of reasons, at once, with Undo (05 rule 7)</li>
+    <li><b>Linking</b>A popover picker from a + on each stance, Find focused (09 rule 12)</li>
+    <li><b>Theme filter</b>The funnel opens a tethered menu; once set it's a labelled button (11 rule 9)</li>
+  </ul>
+</section>
+
+<details class="pg-details" id="d-rules">
+  <summary><span class="pg-dt">Rules</span><span class="pg-ds">Proposed: three kinds on one tier-4 surface; Find first in pickers; focus returns to the trigger</span></summary>
+<section class="jig-section" id="rules">
+  <div class="mn-specs ob-scope" data-align="c" data-cur="fill" data-pt="tile">
+    <figure class="mn-spec"><div class="mn-pop mn-menu" role="presentation" style="width:232px">
+      <div class="mn-item" style="background:var(--hover)"><span class="mn-ic"><i class="ph ph-pencil-simple" aria-hidden="true"></i></span><span class="t">Rephrase</span><kbd>E</kbd></div>
+      <div class="mn-item"><span class="mn-ic"><i class="ph ph-arrows-merge" aria-hidden="true"></i></span><span class="t">Merge with</span><kbd>M</kbd></div>
+      <div class="mn-sep"></div>
+      <div class="mn-item"><span class="mn-ic"><i class="ph ph-trash" aria-hidden="true"></i></span><span class="t">Discard signal</span><kbd>⌫</kbd></div></div>
+      <figcaption>Menu: inset 4, items 32, icon 16, 6, label, key in mono. The destructive verb last, alone, in ink.</figcaption></figure>
+    <figure class="mn-spec"><div class="mn-pop mn-picker" role="presentation" style="width:320px">
+      <div class="mn-find"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><span style="color:var(--ink-2)">Find a theme</span></div>
+      <div class="mn-list"><div class="mn-label">Themes</div>
+        <div class="mn-opt is-active"><span class="mn-lead"><span class="g" data-type="theme"><i class="ph ph-binoculars" aria-hidden="true"></i></span></span><span class="t">Cost of intelligence</span><span class="mn-meta">4</span></div>
+        <div class="mn-opt"><span class="mn-lead"><span class="g" data-type="theme"><i class="ph ph-binoculars" aria-hidden="true"></i></span></span><span class="t">Agent memory</span><span class="mn-meta">2</span></div>
+        <div class="mn-opt" data-create><span class="mn-lead"><span class="mn-ic"><i class="ph ph-plus" aria-hidden="true"></i></span></span><span class="t">Create theme “Agent pricing”</span></div></div></div>
+      <figcaption>Picker: Find focused at the top, 06 rows with tiles, related first, a Create row when nothing matches exactly.</figcaption></figure>
+    <figure class="mn-spec"><div class="mn-pop mn-info" role="presentation"><span class="h">Happens by</span><p>The year you expect it. Arrows step one, Page steps five.</p></div>
+      <figcaption>Popover: a small editor or note, inset 12; the peek (07) is the main one.</figcaption></figure>
+  </div>
+  <ol class="rules" style="margin-top:24px">
+    <li><b>Three kinds, one surface.</b> A menu lists verbs, or the values of one attribute. A picker chooses objects. A popover is a small editor or note anchored to its trigger (07's peek is the main one). All three are tier 4: surface, <code>--sh-pop</code>, radius 10, z 40.</li>
+    <li><b>Menu anatomy.</b> Inset 4. Items 32 (choice 1), padding 0 8, radius 6 (10 − 4). A 16 icon in ink 2, only if some item in the menu has one; 6; the label 13 / 400 ink, verb first; the key at the right in Geist Mono 12 / 500 ink 2. Group labels 12 / 500 ink 2, 24 high. A full-bleed hairline separates groups, never items. Width fits the longest item, 200 to 280.</li>
+    <li><b>Destructive last.</b> Alone in the last group, verb and object ("Discard signal"), its vocabulary icon, in ink: red only means an error (10). Reversible verbs act at once with Undo; Delete dump opens its one modal.</li>
+    <li><b>Picker anatomy.</b> Inset 4. Find first: 28, the filled well, focused on open, named for its type ("Find a signal"). Then 06 rows at 32: the 18 tile (choice 2), 8, the name on one line, a short key value at the right in 12 ink 2. Groups: related first (the object's themes, what's on screen), then recent, then the rest; already-linked objects are left out. Width 320, or 360 when rows are sentences. The list stops at 296 and scrolls inside.</li>
+    <li><b>Picker states.</b> Empty says why ("Every signal is already linked"). No results: "No signals match “query”". For types I make (themes, theories, prototypes), a last row "Create theme “query”" when no name matches exactly. Signals and dumps have no Create row.</li>
+    <li><b>Single and multi.</b> A single picker commits on Return or click and closes. A multi picker (File in theme) lists what's chosen first, keeps its order while open, toggles on Return, Space or click, applies each toggle at once and stays open until Esc or a click away.</li>
+    <li><b>The current value</b> is marked (choice 3) and has focus when its menu opens.</li>
+    <li><b>Placement.</b> Below the trigger, start edges aligned, 4 apart; at the window's end edge, end edges align. A picker shrinks its list before it flips; it flips above only when there's more room there. Triggers at the window's foot (the chat's crosshair) open above. It never covers its trigger.</li>
+    <li><b>Motion.</b> Grows from the trigger (origin at the trigger's centre on the near edge) from 0.96 and transparent, 160ms on the spring; leaves in 90ms ease-out to 0.98, including after a pick. Reduced motion: a 90ms fade in, gone at once.</li>
+    <li><b>One transient at a time.</b> Opening one closes any peek, menu or popover. The trigger keeps its hover fill while open; its tooltip doesn't show. An inline trigger on a key line (a prototype's status) pads 4 above and below and 6 at the sides, cancelled by an equal negative margin: the hover layer grows, the text stays on the key line's baseline and the line never moves.</li>
+    <li><b>Keyboard and focus.</b> Return, Space or ↓ on the trigger opens on the current or first item; ↑ on the last. Menus: ↑ ↓ wrap, Home, End, a letter jumps, Return or Space acts; the pointer moves focus with it; opened by a pointer, nothing is marked until you move. Pickers keep focus in Find: ↑ ↓ move the active row, Return picks. Esc, a pick or Tab closes and returns focus to the trigger; a click elsewhere leaves focus where you clicked. <b>Focus rings only for keyboard interaction</b> (proposed amendment to 05; <code>_shared/modality.js</code>): opened by a click, a menu takes focus on itself and the pointer moves only the hover layer; opened by Return, Space or ↓, the first or current item takes focus with the ring. Roles: <code>menu</code> with <code>menuitem</code> or <code>menuitemradio</code>; a picker is a <code>dialog</code> holding a <code>combobox</code> and a <code>listbox</code>; the trigger has <code>aria-haspopup</code>, <code>aria-expanded</code> and <code>aria-controls</code>.</li>
+    <li><b>When not to use one.</b> Two to four always-visible choices stay a segmented control (the view switcher). What must block is a modal (Delete dump; ⌘K Find, whose list uses picker rows). Never a native <code>&lt;select&gt;</code>.</li>
+    <li><b>Touch (below 640): bottom sheets.</b> Grab handle, items 44, the same groups and order; a picker's sheet rises to full height with Find at its top. See 12 Narrow.</li>
+  </ol>
+</section>
+</details>
+
+<details class="pg-details" id="d-today">
+  <summary><span class="pg-dt">Today, measured</span><span class="pg-ds">The app has no menu: seven choosers are the ask() modal, one is a native select, and the one popover sits on the wrong tier</span></summary>
+<section class="jig-section" id="today">
+  <p>Every menu, picker and popover in <code>app/web/src/ui/</code> and the grammar jigs. The <code>ask()</code> modal (<code>app/dialogs.tsx:16–48</code>) is 400 wide, radius 14, <code>--sh-modal</code>, z 51, rows 32, no animation; its Find is focused, but it has no arrow keys, Return in Find does nothing, and nothing marks the current item.</p>
+  <div class="table-wrap">
+  <table class="audit">
+    <thead><tr><th>Where</th><th>What</th><th>Opens as</th><th>Measured</th><th>Keys</th><th>Breaks</th></tr></thead>
+    <tbody>
+      <tr><td>dialogs.tsx:80</td><td>Retire reasons</td><td>ask() modal</td><td>400, rows 32, r 14, sh-modal</td><td>Tab only</td><td>Decided as a tethered menu with Undo (05 rule 7); no Undo</td></tr>
+      <tr><td>dialogs.tsx:67</td><td>Add evidence</td><td>ask() modal</td><td>as ask()</td><td>Tab only</td><td>Linked signals still listed; 09 rule 12</td></tr>
+      <tr><td>panes.tsx:187</td><td>Add a relationship</td><td>ask(), then a second ask()</td><td>as ask()</td><td>Tab only</td><td>Two modals in a row</td></tr>
+      <tr><td>type-first.tsx:312</td><td>File in theme, Unfile</td><td>ask() modal</td><td>as ask()</td><td>Tab only</td><td>Lists themes it's already in; unfile has no Undo</td></tr>
+      <tr><td>panes.tsx:345</td><td>Prototype tests</td><td>ask() modal</td><td>as ask()</td><td>Tab only</td><td>A picker shown as a modal</td></tr>
+      <tr><td>signal-merge.tsx:15</td><td>Merge target</td><td>ask(), then a reason modal</td><td>as ask()</td><td>Tab only</td><td>Decided at once with Undo (10 rule 7)</td></tr>
+      <tr><td>dialogs.tsx:50</td><td>⌘K Find</td><td>ask() modal</td><td>as ask(), server search</td><td>⌘K; no arrows</td><td>Stays a modal (09 rule 13); needs picker keys</td></tr>
+      <tr><td>type-first.tsx:253</td><td>Theme filter (Theories, Signals)</td><td>native select</td><td>trigger 112, r 7; OS popup</td><td>native</td><td>Decided as a tethered menu (11 rule 9); also native in nav, 06, 10 jigs</td></tr>
+      <tr><td>timeline2-shared.tsx:78</td><td>Timeline theme filter</td><td>popover picker</td><td>260, rows 30, inset 4, r 10, <code>--sh-raised</code>, z 9</td><td>↑ ↓ clamped, Return; Esc only in Find; no focus return</td><td>Tier 1 shadow and z on a tier 4 surface; the only real picker in the app</td></tr>
+      <tr><td>panes.tsx:338</td><td>Prototype status</td><td>inline segmented</td><td>items 24, r 8 / 6</td><td>Tab per item; no arrow roving</td><td>role=radio without radio keys</td></tr>
+      <tr><td>confidence-spark.tsx:63</td><td>Confidence history</td><td>hover popover</td><td>280, padding 7 / 9, r 8, <code>--sh-float</code>, z 4</td><td>no Esc</td><td>Off-scale padding and radius</td></tr>
+      <tr><td>pill-study.tsx:181</td><td>Chat context crosshair</td><td>pick mode on screen</td><td>button r 13, literal shadow</td><td>Esc stops; no keyboard way to pick</td><td>Pointer only</td></tr>
+      <tr><td>type-first.tsx:426</td><td>Peek</td><td>tethered popover</td><td>340, r 10, <code>--sh-pop</code>, z 40, 160ms</td><td>Esc returns focus</td><td>The one on the right tier; eases instead of the spring</td></tr>
+      <tr><td>app-shell.tsx:289</td><td>View switcher</td><td>segmented bar</td><td>32 squares, r 20 / 16</td><td>⌘1–4</td><td>Off-scale radius (11 restyles it)</td></tr>
+      <tr><td>atlas2.tsx:280</td><td>Atlas zoom</td><td>button stack</td><td>r 8, <code>--sh-raised</code>, z 3</td><td>+ − 0</td><td>11 restyles it as a float bar</td></tr>
+      <tr><td>11-views/views.js:291</td><td>Jig Timeline filter</td><td>menu (radio)</td><td>240, rows 32, inset 4, <code>--sh-pop</code></td><td>Esc; no arrows, no focus return</td><td>Weight and a check</td></tr>
+      <tr><td>09-making/making.js:221</td><td>Jig evidence picker</td><td>popover picker</td><td>360, inset 4, r 10, <code>--sh-pop</code></td><td>↑ ↓ wrap, Return, Esc returns focus</td><td>The model for these rules</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <ul class="rules" style="margin-top:16px">
+    <li><b>Widths:</b> nine (200, 232, 240, 260, 280, 320, 340, 360, 400); no token.</li>
+    <li><b>Radii:</b> six (6, 7, 8, 10, 14, 20). <b>Shadows on tethered surfaces:</b> four (<code>--sh-pop</code>, <code>--sh-raised</code>, <code>--sh-modal</code>, literals). <b>z-index:</b> 3, 4, 6, 7, 9, 10, 12 outside the scale.</li>
+    <li><b>Row heights:</b> 32 and 30 (plus a dead 40 in production.css).</li>
+    <li><b>Arrow keys:</b> two instances (the Timeline filter and 09's picker). <b>Focus returns to the trigger:</b> the peek and 09's picker only.</li>
+    <li><b>The current item:</b> unmarked (every ask()), weight and Fill (Timeline filter), weight and a check (11 jig), a check alone (05 spec).</li>
+    <li><b>Opening motion:</b> none, 160ms spring, 160ms ease-out, 150ms, 90ms.</li>
+  </ul>
+</section>
+</details>
+
+<details class="pg-details" id="d-spec">
+  <summary><span class="pg-dt">For RULES.md</span><span class="pg-ds">The spec text, as added under "14 Menus, pickers and popovers — PROPOSED"</span></summary>
+<section class="jig-section" id="spec">
+  <p>See RULES.md, section 14. The rules above are the same text.</p>
+</section>
+</details>
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+/* Grammar 14 page chrome (not the app): demo labels and the audit's first column. The template is _shared/page.css. */
+.audit td:first-child { white-space: nowrap; font: 500 12px/1.5 var(--font-mono); color: var(--ink-2); }
+.mn-demos { display: grid; gap: 40px; }
+.mn-demo { display: grid; gap: 8px; min-width: 0; }
+body.jig p.mn-dt { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0; max-width: 100ch; }
+.mn-dt b { font-weight: 500; color: var(--ink); }
+.mn-dt span { color: var(--ink-2); }
+.mn-dt a { color: inherit; }
+.mn-demos, .mn-demo { grid-template-columns: minmax(0, 1fr); }
+.mn-dt span { min-width: 0; }
+@media (max-width: 640px) { .mn-specs { padding: 16px; gap: 24px; } .mn-spec { min-width: 0; max-width: 100%; } .mn-spec .mn-pop { max-width: 100%; } }

@@ -1,0 +1,150 @@
+/* Grammar 14: menus, pickers and popovers. One anatomy, three kinds. Values only from _shared tokens and 00–07.
+   Tier 4 (tethered): surface, --sh-pop, radius 10, z 40; grows from its trigger in 160ms on the spring, leaves in 90ms. */
+
+.mn-host { min-width: 0; }
+.mn-win .nv-main { background: var(--surface); }
+
+/* ── The surface (shared by all three kinds) ── */
+.mn-pop { position: absolute; z-index: var(--z-pop); box-sizing: border-box; padding: var(--gap-tight); background: var(--surface); border-radius: var(--r-box); box-shadow: var(--sh-pop);
+  font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); text-align: left; animation: mn-in var(--t-float) var(--spring) both; }
+.mn-pop:focus { outline: none; }
+.mn-pop.out { animation: mn-out var(--t-hover) var(--ease-out) forwards; pointer-events: none; }
+@keyframes mn-in { from { opacity: 0; scale: 0.96; } }
+@keyframes mn-out { to { opacity: 0; scale: 0.98; } }
+@media (prefers-reduced-motion: reduce) { .mn-pop { animation: mn-fade var(--t-hover) linear both; } .mn-pop.out { animation: none; opacity: 0; } }
+@keyframes mn-fade { from { opacity: 0; } }
+
+/* ── Menu: verbs or a value. Items --mn-h (choice 1), inset 8, radius 10 − 4; icon 16, label, key in mono ── */
+.mn-win, .mn-spec { --mn-h: var(--row); --mn-r: calc(var(--r-box) - var(--gap-tight)); }
+[data-mh="28"] { --mn-h: var(--control); }
+.mn-menu { display: grid; min-width: 200px; max-width: 280px; width: max-content; }
+.mn-item { display: flex; align-items: center; gap: var(--gap-icon); width: 100%; height: var(--mn-h); padding: 0 var(--inset-row); border: 0; border-radius: var(--mn-r);
+  background: transparent; color: var(--ink); font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); text-align: left; cursor: default; transition: background-color var(--t-hover) var(--ease-out); }
+.mn-item:focus { outline: none; background: var(--hover); }
+.mn-item:focus-visible { outline: none; }
+html[data-input="keyboard"] .mn-item:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }   /* the ring only for keyboard interaction */
+.mn-item .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mn-item kbd, .mn-opt kbd { margin-left: auto; padding-left: var(--gap-group); font: var(--w-medium) var(--fs-label)/1 var(--font-mono); color: var(--ink-2); }
+.mn-ic { position: relative; flex: none; display: grid; place-items: center; width: var(--icon); height: var(--icon); color: var(--ink-2); }
+.mn-ic i { grid-area: 1 / 1; width: var(--icon); height: var(--icon); font-size: var(--icon); }
+.mn-item:focus .mn-ic { color: var(--ink); }
+/* Group label and separator: the separator only between groups, full bleed */
+.mn-label { display: flex; align-items: center; height: var(--control-sm); padding: 0 var(--inset-row); font: var(--w-medium) var(--fs-label)/1 var(--font); color: var(--ink-2); white-space: nowrap; }
+.mn-sep { height: 0.5px; margin: var(--gap-tight) calc(var(--gap-tight) * -1); background: var(--hairline-strong); }
+
+/* ── Picker: choose objects. Find focused at top (filled well), 06 rows with tiles, groups, empty and no-results lines ── */
+.mn-picker { display: grid; gap: var(--gap-tight); max-width: calc(100% - 16px); }
+.mn-find { display: flex; align-items: center; gap: var(--gap-icon); height: var(--control); padding: 0 var(--inset-control) 0 calc(var(--inset-row) + 1px); border-radius: var(--mn-r); background: var(--ground-2); color: var(--ink-2); }
+.mn-find i { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
+.mn-find input { all: unset; flex: 1; min-width: 0; font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); }
+.mn-find input::placeholder { color: var(--ink-2); }
+.mn-list { display: grid; align-content: start; max-height: 296px; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.mn-list > [role="group"] + [role="group"] { margin-top: var(--gap-tight); }
+.mn-opt { display: flex; align-items: center; gap: var(--gap-tile, 8px); height: var(--row); padding: 0 var(--inset-row) 0 calc(var(--gap-tight) + 3px); border-radius: var(--mn-r); cursor: default; }
+.mn-opt.is-active { background: var(--hover); }
+.mn-opt .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mn-opt .mn-meta { flex: none; max-width: 40%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-label); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.mn-lead { flex: none; display: grid; place-items: center; width: var(--tile, 18px); height: var(--tile, 18px); }
+.mn-lead .g { --tile-y: 0px; margin: 0; translate: none; }
+.mn-lead .g i { grid-area: 1 / 1; }
+.mn-opt[data-create] .t { color: var(--ink); font-weight: var(--w-medium); }
+.mn-empty { margin: 0; padding: var(--gap-item) var(--inset-row); color: var(--ink-2); }
+
+/* Picker rows show tiles (06) or bare type glyphs in type colour (choice 2) */
+[data-pt="glyph"] .mn-lead .g { background: none; width: var(--icon); height: var(--icon); }
+[data-pt="glyph"] .mn-lead .g i { width: var(--icon); height: var(--icon); font-size: var(--icon); }
+
+/* ── The current item (choice 3). Every variant marks aria-checked (menus) and aria-selected (pickers) ── */
+.mn-check { display: none; flex: none; margin-left: auto; padding-left: var(--gap-item); color: var(--ink); }
+.mn-check i { width: var(--icon); height: var(--icon); font-size: var(--icon); }
+.mn-meta + .mn-check { padding-left: var(--gap-item); margin-left: 0; }
+:is(.mn-ic, .mn-lead) i.on { display: none; }
+/* A: a check at the right end */
+[data-cur="check"] :is([aria-checked="true"], [aria-selected="true"]) > .mn-check { display: block; }
+/* B: the glyph fills and the label takes 500 ink (03 rule 1: Fill marks the current thing) */
+[data-cur="fill"] :is([aria-checked="true"], [aria-selected="true"]) :is(.mn-ic, .mn-lead) i.off { display: none; }
+[data-cur="fill"] :is([aria-checked="true"], [aria-selected="true"]) :is(.mn-ic, .mn-lead) i.on { display: block; }
+[data-cur="fill"] :is([aria-checked="true"], [aria-selected="true"]) .mn-ic { color: var(--ink); }
+[data-cur="fill"] :is([aria-checked="true"], [aria-selected="true"]) > .t { font-weight: var(--w-medium); color: var(--ink); }
+/* An item with no glyph (a reason, "All themes" has one) still needs a mark under fill: weight alone, plus the check */
+[data-cur="fill"] :is([aria-checked="true"], [aria-selected="true"]):not(:has(.mn-ic, .mn-lead)) > .mn-check { display: block; }
+/* C: the item rests raised, like the current rail row */
+[data-cur="sel"] :is([aria-checked="true"], [aria-selected="true"]) { background: var(--surface); box-shadow: var(--sel); }
+[data-cur="sel"] :is([aria-checked="true"], [aria-selected="true"]) > .t { color: var(--ink); }
+[data-cur="sel"] :is([aria-checked="true"], [aria-selected="true"]):is(:focus, .is-active) { background: color-mix(in oklab, var(--surface), var(--ink) 5%); }
+
+/* ── Triggers: open is the hover fill held (05 Selected, open) ── */
+.mn-win [data-mn][aria-expanded="true"] { background: var(--hover); color: var(--ink); }
+.mn-win .mn-filter { flex: none; display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--control); min-width: var(--control); max-width: 132px; padding: 0 var(--inset-row);
+  justify-content: center; border-radius: var(--r-control); color: var(--ink-2); font: var(--w-medium) var(--fs-label)/1 var(--font); }
+.mn-win .mn-filter:hover { background: var(--hover); color: var(--ink); }
+.mn-win .mn-filter.set { color: var(--ink); background: var(--surface); box-shadow: var(--sh-raised); }
+.mn-win .mn-filter i { flex: none; width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
+.mn-win .mn-filter span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* An inline trigger on a key line (status, and any value that opens a menu): 4 above and below, 6 at the sides, cancelled by an equal negative margin so the hover layer grows and the line never moves (Maggie, 5 Nov) */
+.mn-win .mn-valuebtn { display: inline-flex; align-items: center; gap: var(--gap-tight); margin: -4px -6px; padding: 4px 6px; border-radius: var(--r-control); color: inherit; font: inherit; }
+.mn-win .mn-valuebtn:hover { background: var(--hover); }
+.mn-win .mn-valuebtn .cv { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); color: var(--ink-2); }
+.mn-win .ob-sh .mn-add { margin-left: auto; margin-block: -4px; }
+.mn-win .ob-sh:has(.mn-add) { display: flex; align-items: center; }
+.mn-win .ob-row.mn-just { animation: mn-just 900ms var(--ease-out); border-radius: var(--r-control); }
+@keyframes mn-just { from { background: var(--accent-wash); } }
+@media (prefers-reduced-motion: reduce) { .mn-win .ob-row.mn-just { animation: none; } }
+
+/* ── The chat column (09, decided), only as far as its context row needs ── */
+.mn-chat { position: relative; z-index: var(--z-sheet); min-width: 0; min-height: 0; margin: var(--inset-float) var(--inset-float) var(--inset-float) 0; display: grid; grid-template-rows: minmax(0, 1fr) auto auto;
+  background: var(--surface); border-radius: var(--r-bar); box-shadow: var(--sh-sheet); }
+.mn-thread { display: grid; align-content: end; gap: var(--gap-group); padding: var(--inset-list-block) var(--inset-list-inline); overflow: hidden; }
+.mn-me { justify-self: end; max-width: 80%; padding: var(--gap-item) var(--inset-card); border-radius: var(--r-box); background: var(--ground-2); line-height: var(--lh-prose); }
+.mn-agent { margin: 0; line-height: var(--lh-prose); }
+.mn-ctx { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-tight); padding: 0 var(--inset-row) var(--gap-item) var(--inset-list-inline); }
+.mn-ctxchip { padding-right: 2px; }
+.mn-ctxchip .rm { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-left: -2px; border-radius: calc(var(--r-control) - 2px); color: var(--ink-2); }
+.mn-ctxchip .rm:hover { background: var(--hover); color: var(--ink); }
+.mn-ctxchip .rm i { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
+.mn-composer { display: flex; align-items: center; gap: 2px; padding: var(--gap-item) var(--gap-item) var(--gap-item) var(--inset-list-inline); box-shadow: inset 0 0.5px 0 var(--hairline); }
+.mn-composer .ph-t { flex: 1; color: var(--ink-2); }
+.mn-composer .mn-send { width: var(--control); height: var(--control); padding: 0; justify-content: center; }
+
+/* ── Toast (10, decided): ink, 44 high, radius 10, bottom right of the main area ── */
+.mn-toast { position: absolute; z-index: var(--z-toast); right: var(--inset-float); bottom: var(--inset-float); display: flex; align-items: center; gap: var(--inset-card); height: 44px; max-width: 420px;
+  padding: 0 var(--gap-tight) 0 var(--inset-card); border-radius: var(--r-box); background: var(--ink); color: var(--on-primary); box-shadow: var(--sh-toast); font-weight: 500; animation: mn-fade var(--t-float) var(--ease-out); }
+.mn-toast .t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mn-undo { flex: none; display: inline-flex; align-items: center; gap: var(--gap-item); height: var(--control); padding: 0 var(--inset-control); border-radius: calc(var(--r-box) - 6px); color: var(--on-primary); font: 600 var(--fs-label)/1 var(--font); }
+.mn-undo:hover { background: oklch(1 0 0 / 12%); }
+.mn-undo kbd { font: 500 var(--fs-label)/1 var(--font-mono); opacity: 0.65; }
+
+/* ── Specimens (rules): the three kinds at rest, outside a window ── */
+.mn-specs { display: flex; flex-wrap: wrap; gap: var(--gap-section); align-items: flex-start; padding: var(--gap-section); border-radius: var(--r-box); background: var(--ground-2); }
+.mn-spec { display: grid; gap: var(--gap-item); justify-items: start; }
+.mn-spec .mn-pop { position: relative; animation: none; }
+.mn-spec figcaption { font-size: var(--fs-label); color: var(--ink-2); max-width: 34ch; line-height: 1.5; }
+.mn-pop.mn-info { width: 260px; display: grid; gap: var(--gap-item); padding: var(--inset-card); }
+.mn-info .h { font-weight: 600; }
+.mn-info p { margin: 0; color: var(--ink-2); line-height: var(--lh-prose); }
+.mn-info .row { display: flex; justify-content: flex-end; gap: var(--gap-item); }
+
+/* ── Touch: tethered surfaces become bottom sheets (04 rule 10; 12 Narrow) ── */
+.mn-phone { position: relative; width: 390px; max-width: 100%; height: 640px; overflow: hidden; border-radius: 24px; background: var(--surface); box-shadow: 0 0 0 0.5px var(--hairline-strong), var(--sh-raised);
+  font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink); }
+.mn-phone .ph-top { display: flex; align-items: center; gap: var(--gap-item); height: 52px; padding: 0 var(--inset-list-inline); box-shadow: inset 0 -0.5px 0 var(--hairline); }
+.mn-phone .ph-top .h { flex: 1; font-weight: 600; }
+.mn-phone .ph-body { padding: var(--inset-pane-block) var(--inset-list-inline); display: grid; gap: var(--gap-item); }
+.mn-phone .ph-title { font-size: var(--fs-title); line-height: var(--lh-head); font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+.mn-phone .ph-btn { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: var(--r-control); color: var(--ink-2); }
+.mn-phone .ph-btn:hover, .mn-phone .ph-btn[aria-expanded="true"] { background: var(--hover); color: var(--ink); }
+.mn-phone .ph-btn i { width: var(--icon); height: var(--icon); font-size: var(--icon); }
+.mn-scrim { position: absolute; inset: 0; z-index: var(--z-sheet); background: var(--scrim); animation: mn-fade var(--t-float) var(--ease-out); }
+.mn-scrim.out { opacity: 0; transition: opacity var(--t-hover) var(--ease-out); }
+.mn-sheet { position: absolute; z-index: var(--z-sheet); left: 0; right: 0; bottom: 0; padding: 0 var(--gap-item) calc(var(--gap-item) + env(safe-area-inset-bottom)); background: var(--surface);
+  border-radius: var(--r-bar) var(--r-bar) 0 0; box-shadow: var(--sh-sheet); animation: mn-up 260ms var(--spring); }
+.mn-sheet.out { translate: 0 100%; transition: translate 160ms var(--ease-out); }
+@keyframes mn-up { from { translate: 0 100%; } }
+@media (prefers-reduced-motion: reduce) { .mn-sheet { animation: mn-fade var(--t-hover) linear; } .mn-sheet.out { transition: none; } }
+.mn-sheet .grab { display: block; width: 36px; height: 4px; margin: var(--gap-item) auto var(--gap-tight); border-radius: 2px; background: var(--hairline-strong); }
+.mn-sheet .mn-label { height: 32px; padding-inline: var(--inset-card); }
+.mn-sheet .mn-item { height: 44px; padding: 0 var(--inset-card); border-radius: var(--r-control); }
+/* Find keeps the caret but no ring: the whole surface is the focus, and the active row shows where Return goes */
+.mn-find input:focus, .mn-find input:focus-visible { outline: none; box-shadow: none; }
+.mn-list { grid-template-columns: minmax(0, 1fr); }
+.mn-list > [role="group"] { min-width: 0; }

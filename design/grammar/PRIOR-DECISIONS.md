@@ -433,3 +433,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 5 Nov 2026 (Maggie, 10 and every full view): paused or waiting work shows the pause glyph, not a hollow ring; the failed-dump dot sits on its rail tile's top-right corner; every full view, docked panes included, puts its content on the title's left edge (the tile stays inside a pane).
 
 5 Nov 2026 (Maggie, 10): errors in place are a callout box on a faint red wash with a red warning-circle, the message in ink and Retry on the right.
+
+5 Nov 2026 (Maggie, 14): an inline trigger on a key line (the prototype status) gets 4 vertical padding, its hover layer growing without moving the line; focus rings show only for keyboard interaction, never on click or hover (`_shared/modality.js`; proposed amendment to 05). 14 Menus, pickers and popovers is proposed with three open choices: menu item height, tiles or bare glyphs in pickers, and how the current item is marked.
