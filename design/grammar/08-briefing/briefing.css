@@ -136,7 +136,7 @@
 /* Main-area inset (proposed role, 4 Nov): a full view that fills the main area (the focus region) pads more than a docked pane.
    Inline 48, top equal to it (the head starts at the inset, its 32 tile is the visual top edge); the content keeps its 720 measure, left-aligned. Docked panes (Columns, Atlas, Timeline) keep --inset-pane (20 / 24).
    Applies to Briefing and to object full views opened from it; the "Main-area inset" dial sets --main-inset-inline (24–72). */
-:root { --main-inset-inline: 48px; --main-inset-block: var(--main-inset-inline); }   /* top = sides, so the margins read even once the empty top bar collapses */
+:root { --main-inset-inline: 56px; --main-inset-block: var(--main-inset-inline); }   /* top = sides, so the margins read even once the empty top bar collapses */
 .br8-host .nv:not(.narrow) .nv-main .ob-full { padding: var(--main-inset-block) var(--main-inset-inline) 96px; max-width: calc(720px + var(--main-inset-inline) * 2); }
 /* An empty top bar (Back, verbs, Discard | Accept) collapses: no reserved height. Briefing's is always empty on wide screens */
 .br8-host .ob-full > .ob-top:empty { display: none; }
@@ -153,3 +153,8 @@
 .br8-more { align-self: start; justify-self: start; margin: var(--gap-tight) 0 0 calc(var(--hang) - var(--inset-control)); }
 .br8-stance { display: inline-flex !important; flex: none; }
 .br8-stance i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); color: var(--ink-2); }
+
+/* One left edge, L, at the title (Maggie, 5 Nov). The 32 title tile and its 12 gap hang left of L into the main-area inset (48 ≥ 44);
+   the title and key line start at L, and so does everything below: summary, hairline, section labels, row tiles, block borders, group headers.
+   Row text sits at L + 26 (18 tile + 8); a block's contents at its 12 inset; a group's signals one step in. Narrow screens keep the tile on L (24 inset is too small to hang it). */
+.br8-host .nv:not(.narrow) .br8-doc > .ob-head { margin-left: calc((32px + 12px) * -1); }
