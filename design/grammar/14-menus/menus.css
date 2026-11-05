@@ -59,6 +59,14 @@ html[data-input="keyboard"] .mn-item:focus-visible { outline: 2px solid var(--fo
 .mn-check i { width: var(--icon); height: var(--icon); font-size: var(--icon); }
 .mn-meta + .mn-check { padding-left: var(--gap-item); margin-left: 0; }
 :is(.mn-ic, .mn-lead) i.on { display: none; }
+/* A+B (DECIDED 5 Nov): a 14 ink-2 check in the right slot, before any key, and the glyph fills with the label at 500 */
+[data-cur="ab"] :is([aria-checked="true"], [aria-selected="true"]) > .mn-check { display: block; color: var(--ink-2); }
+[data-cur="ab"] .mn-check i { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); }
+[data-cur="ab"] .mn-check + kbd { padding-left: var(--gap-item); margin-left: 0; }
+[data-cur="ab"] :is([aria-checked="true"], [aria-selected="true"]) :is(.mn-ic, .mn-lead) i.off { display: none; }
+[data-cur="ab"] :is([aria-checked="true"], [aria-selected="true"]) :is(.mn-ic, .mn-lead) i.on { display: block; }
+[data-cur="ab"] :is([aria-checked="true"], [aria-selected="true"]) .mn-ic { color: var(--ink); }
+[data-cur="ab"] :is([aria-checked="true"], [aria-selected="true"]) > .t { font-weight: var(--w-medium); color: var(--ink); }
 /* A: a check at the right end */
 [data-cur="check"] :is([aria-checked="true"], [aria-selected="true"]) > .mn-check { display: block; }
 /* B: the glyph fills and the label takes 500 ink (03 rule 1: Fill marks the current thing) */

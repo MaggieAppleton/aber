@@ -302,6 +302,8 @@ Evidence: about 14 text-button recipes at seven heights (24 to 40) and 16 contro
 | Confidence | 28 hit; bars 5 | – | 3 | – | Bars 18 × 5 | 2 | Hairline; set bars ink; a slider 0–5 |
 | Tooltip | 26 | 4 / 8 | 7 | 12 / 500 on ink; key mono | – | 8 | Ink; after 500ms, then instant for 300ms |
 
+**Focus rings only for keyboard interaction — DECIDED (5 Nov, Maggie, from 14).** A ring shows on `:focus-visible` only while the input is the keyboard (`_shared/modality.js`, loaded on every page via `page.js`); a click, a hover or focus moved in code after a click never shows one. Text fields keep their caret state.
+
 **Decided (Maggie, 4 Nov):**
 - Secondary button: **A white with a hairline**, the surface with the chip's hairline and the button shadow.
 - Text fields: **A filled**, a sunk well with no edge; on focus a surface with a hairline and the ring.
@@ -588,19 +590,19 @@ Evidence: each view draws its floating controls differently. The view switcher i
 - Atlas theory names: **A on hover, on open and when zoomed in**.
 - The docked pane follows 06 rule 2: the title tile stays inside the 24 inset and the content moves right to the title's edge.
 
-## 14 Menus, pickers and popovers — PROPOSED
+## 14 Menus, pickers and popovers — DECIDED (5 Nov 2026: items 32; picker rows show the tile; the current item has a check and a filled glyph)
 
 Jig: `14-menus/`. Values live in `14-menus/menus.css`; the input-modality tracker is `_shared/modality.js`.
 
 Evidence: the app has no tethered menu. Seven choosers (Retire, Add evidence, Add a relationship, File in theme, Prototype tests, Merge, ⌘K Find) are the one `ask()` modal (`app/dialogs.tsx:16`): 400 wide, radius 14, the modal shadow, no arrow keys, Return in Find does nothing, nothing marks the current item; Add a relationship and Merge chain two modals. The theme filter is a native `<select>` (`type-first.tsx:253`; also in the nav, 06 and 10 jigs). The one real popover picker, Timeline's theme filter (`timeline2-shared.tsx:78`), is 260 wide with 30 rows, the tier-1 shadow and z 9. Nine widths, six radii, four shadows on tethered surfaces, z-indexes 3–12 off the scale; arrow keys in two instances; focus returns to the trigger in two; the current item is marked four ways.
 
 1. **Three kinds, one surface.** A menu lists verbs, or the values of one attribute. A picker chooses objects. A popover is a small editor or note anchored to its trigger (07's peek is the main one). All three are tier 4: surface, `--sh-pop`, radius 10, z 40.
-2. **Menu anatomy.** Inset 4. Items 32 (choice 1), padding 0 8, radius 6 (10 − 4). A 16 icon in ink 2, only if some item in the menu has one; 6; the label 13 / 400 ink, verb first; the key at the right in Geist Mono 12 / 500 ink 2. Group labels 12 / 500 ink 2, 24 high. A full-bleed hairline separates groups, never items. Width fits the longest item, 200 to 280.
+2. **Menu anatomy.** Inset 4. Items 32, padding 0 8, radius 6 (10 − 4). A 16 icon in ink 2, only if some item in the menu has one; 6; the label 13 / 400 ink, verb first; the key at the right in Geist Mono 12 / 500 ink 2. Group labels 12 / 500 ink 2, 24 high. A full-bleed hairline separates groups, never items. Width fits the longest item, 200 to 280.
 3. **Destructive last.** Alone in the last group, verb and object ("Discard signal"), its vocabulary icon, in ink: red only means an error (10). Reversible verbs act at once with Undo; Delete dump opens its one modal.
-4. **Picker anatomy.** Inset 4. Find first: 28, the filled well, focused on open, no ring (the active row shows where Return goes), named for its type ("Find a signal"). Then 06 rows at 32: the 18 tile (choice 2), 8, the name on one line, a short key value at the right in 12 ink 2. Groups: related first (the object's themes, what's on screen), then recent, then the rest; already-linked objects are left out. Width 320, or 360 when rows are sentences. The list stops at 296 and scrolls inside.
+4. **Picker anatomy.** Inset 4. Find first: 28, the filled well, focused on open, no ring (the active row shows where Return goes), named for its type ("Find a signal"). Then 06 rows at 32: the 18 tile, 8, the name on one line, a short key value at the right in 12 ink 2. Groups: related first (the object's themes, what's on screen), then recent, then the rest; already-linked objects are left out. Width 320, or 360 when rows are sentences. The list stops at 296 and scrolls inside.
 5. **Picker states.** Empty says why ("Every signal is already linked"). No results: "No signals match “query”". For types I make (themes, theories, prototypes), a last row "Create theme “query”" when no name matches exactly. Signals and dumps have no Create row.
 6. **Single and multi.** A single picker commits on Return or click and closes. A multi picker (File in theme) lists what's chosen first, keeps its order while open, toggles on Return, Space or click, applies each toggle at once and stays open until Esc or a click away.
-7. **The current value** is marked (choice 3) and has focus when its menu opens from the keyboard.
+7. **The current value** shows a 14 ink-2 check in the right slot (before any key), and its glyph fills with the label at 500 (DECIDED 5 Nov, Maggie: A+B). It has focus when its menu opens from the keyboard.
 8. **Placement.** Below the trigger, start edges aligned, 4 apart; at the window's end edge, end edges align. A picker shrinks its list before it flips; it flips above only when there's more room there. Triggers at the window's foot (the chat's crosshair) open above. It never covers its trigger.
 9. **Motion.** Grows from the trigger (origin at the trigger's centre on the near edge) from 0.96 and transparent, 160ms on the spring; leaves in 90ms ease-out to 0.98, including after a pick. Reduced motion: a 90ms fade in, gone at once.
 10. **One transient at a time.** Opening one closes any peek, menu or popover. The trigger keeps its hover fill while open; its tooltip doesn't show.
@@ -610,7 +612,7 @@ Evidence: the app has no tethered menu. Seven choosers (Retire, Add evidence, Ad
     - Menus: ↑ ↓ wrap, Home, End, a letter jumps, Return or Space acts; the pointer moves focus with it.
     - Pickers keep focus in Find: ↑ ↓ move the active row (`aria-activedescendant`), Return picks.
     - Esc, a pick or Tab closes and returns focus to the trigger; a click elsewhere leaves focus where you clicked.
-    - **Focus rings only for keyboard interaction** (Maggie, 5 Nov; proposed amendment to 05's Focus state). `_shared/modality.js` sets `html[data-input]` to keyboard on a key press and pointer on a pointer press or move; rings show only on `:focus-visible` while it is keyboard. Opened by a click, a menu takes focus on itself and the pointer moves only the hover layer; opened from the keyboard, the first or current item takes focus with the ring. Text fields keep their caret state. Every page should load `modality.js`.
+    - **Focus rings only for keyboard interaction** (DECIDED 5 Nov, Maggie; now in 05). `_shared/modality.js` sets `html[data-input]` to keyboard on a key press and pointer on a pointer press or move; rings show only on `:focus-visible` while it is keyboard. Opened by a click, a menu takes focus on itself and the pointer moves only the hover layer; opened from the keyboard, the first or current item takes focus with the ring. Text fields keep their caret state. Every page loads it via `page.js`.
     - Roles: `menu` with `menuitem` or `menuitemradio`; a picker is a `dialog` holding a `combobox` and a `listbox` (`aria-multiselectable` when multi); the trigger has `aria-haspopup`, `aria-expanded` and `aria-controls`.
 12. **When not to use one.** Two to four always-visible choices stay a segmented control (the view switcher). What must block is a modal (Delete dump; ⌘K Find, whose list uses picker rows). Never a native `<select>`.
 13. **Touch (below 640): bottom sheets** (04 rule 10). Grab handle, items 44, the same groups and order; a picker's sheet rises to full height with Find at its top. See 12 Narrow.
@@ -626,4 +628,4 @@ Evidence: the app has no tethered menu. Seven choosers (Retire, Add evidence, Ad
 | Show the agent | Picker, opens above | The crosshair at the chat's foot | On screen, then Recent; clicking on screen still works |
 | View switcher | Not a menu | – | Segmented (05 rule 10) |
 
-**Open choices:** menu item height **A 32** (recommended) or B 28; picker rows **A tiles** (recommended) or B bare glyphs; the current item **B Fill and weight** (recommended), A a check, or C raised.
+**Decided (Maggie, 5 Nov):** menu items **A 32**; picker rows **A show the type tile**; the current item **A+B: a check on the right and the glyph filled, label at 500**.

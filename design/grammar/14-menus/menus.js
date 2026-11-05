@@ -15,7 +15,7 @@
   let uid = 0;
 
   /* ── Choices: each window follows the page's pick (or the recommendation) unless its stage fixes one ── */
-  const PICKS = { mh: ["mh", { "A 32": "32", "B 28": "28" }, "32"], pt: ["tiles", { "A Tiles": "tile", "B Bare glyphs": "glyph" }, "tile"], cur: ["current", { "A Check": "check", "B Fill and weight": "fill", "C Raised": "sel" }, "fill"] };
+  const PICKS = { mh: ["mh", { "A 32": "32", "B 28": "28" }, "32"], pt: ["tiles", { "A Tiles": "tile", "B Bare glyphs": "glyph" }, "tile"], cur: ["current", { "A Check": "check", "B Fill and weight": "fill", "C Raised": "sel", "A+B: check and filled glyph": "ab" }, "ab"] };
   const picked = k => { const [id, map, rec] = PICKS[k]; let v; try { v = JSON.parse(localStorage.getItem(`jig:grammar-14-menus:${id}`))?.choice; } catch {} return map[v] || rec; };
 
   /* ── The window ── */
@@ -166,7 +166,7 @@
   const menuHtml = (spec, s, id) => {
     const gs = spec.groups(s);
     return `<div class="mn-pop mn-menu" role="menu" id="${id}" aria-label="${esc(spec.label)}">${gs.map((g, gi) => `${gi ? '<div class="mn-sep" role="separator"></div>' : ""}<div role="group"${g.label ? ` aria-label="${esc(g.label)}"` : ""}>${g.label ? `<div class="mn-label" aria-hidden="true">${esc(g.label)}</div>` : ""}${g.items.map(it =>
-      `<button type="button" class="mn-item${it.danger ? " danger" : ""}" role="${spec.radio ? "menuitemradio" : "menuitem"}"${spec.radio ? ` aria-checked="${!!it.on}"` : ""} tabindex="-1" data-id="${it.id}">${it.icon ? glyph(it.icon) : ""}<span class="t">${esc(it.label)}</span>${it.key ? `<kbd>${it.key}</kbd>` : ""}${spec.radio ? curMark : ""}</button>`).join("")}</div>`).join("")}</div>`;
+      `<button type="button" class="mn-item${it.danger ? " danger" : ""}" role="${spec.radio ? "menuitemradio" : "menuitem"}"${spec.radio ? ` aria-checked="${!!it.on}"` : ""} tabindex="-1" data-id="${it.id}">${it.icon ? glyph(it.icon) : ""}<span class="t">${esc(it.label)}</span>${spec.radio ? curMark : ""}${it.key ? `<kbd>${it.key}</kbd>` : ""}</button>`).join("")}</div>`).join("")}</div>`;
   };
   const pickerHtml = (spec, s, id, label) => `<div class="mn-pop mn-picker" role="dialog" id="${id}" aria-label="${esc(label)}" style="width:${spec.width}px">
       <label class="mn-find">${ic("magnifying-glass")}<input type="text" placeholder="${esc(spec.find)}" aria-label="${esc(spec.find)}" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-controls="${id}-l" autocomplete="off" spellcheck="false"></label>
