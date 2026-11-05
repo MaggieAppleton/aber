@@ -6,9 +6,10 @@
 
 /* Object pane: a docked peer, a hairline seam on its left, no shadow */
 .as-pane { position: absolute; top: 0; bottom: 0; z-index: 3; background: var(--ap-surface); box-shadow: var(--size-px-neg-0-5) 0 0 var(--ap-line); }
-/* The floating chat card and open object rest on one continuous backing. */
-.as[data-dump]:has(> .as-pane) { background: var(--ap-surface); }
-.as[data-dump] .as-pane { box-shadow: var(--size-px-neg-0-5) 0 0 var(--ap-line), var(--size-px-0-5) 0 0 var(--ap-line); }
+/* The dump column is a floating window over whatever surface it opens on. The room it reserves on the right takes the colour of
+   the rightmost surface it extends: the white pane or the default view's white main area; otherwise the view's own ground or canvas.
+   No strip, seam or border behind it. */
+.as[data-dump]:is(:has(> .as-pane), [data-view="default"]) { background: var(--ap-surface); }
 .as-pane-scroll { position: absolute; inset: 0; }
 .as-pane-close { position: absolute; top: var(--size-px-10); right: var(--size-px-10); z-index: 2; display: flex; gap: var(--size-px-2); }
 

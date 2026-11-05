@@ -227,7 +227,15 @@
 .ap .tw-tc-icon[data-tripped] .ab-tile { background: var(--type-tile); color: var(--neg-dot); }
 .ap .tw-tc-phrase[data-tripped] { text-decoration: underline dotted var(--ink-3); text-underline-offset: 4px; }
 /* Times use Geist with tabular figures in the surrounding role; Geist Mono is for keys only */
-.ap .ps-rec-time { font-family: var(--font); font-variant-numeric: tabular-nums; }
+.ap .ps-rec-time { font-family: var(--font); font-size: var(--fs-body); font-variant-numeric: tabular-nums; }
+/* Recording (09): Discard, the wave, the time and Stop on one centre line. The wave fills everything between Discard and the time;
+   Stop is a 28 control like Discard; the bar is inset the same on both sides. */
+.ap .ps-composer:has(> .ps-rec) { padding-left: var(--size-px-8); }
+.ap .ps-rec { gap: var(--gap-item); min-height: var(--size-px-32); }
+.ap .ps-rec > .ps-wave { flex: 1; min-width: 0; justify-content: space-between; overflow: hidden; }
+.ap .ps-rec .ps-stop, .ap .ps-rec > .ps-ib { width: var(--control) !important; height: var(--control) !important; border-radius: 50%; }
+.ap .ps-micseg[data-rec] { padding-right: var(--gap-icon); }
+.ap .ps-micseg[data-rec] .ps-micseg-in { width: var(--control); height: var(--control); }
 .ap .ab-full .ab-head .pn-title[data-draft] { outline: 0; }
 .ap .pn-doc.ab-full > .pn-body.pn-edit { min-height: 0; }
 /* Theme full view: signals by day; the day is a label on the tile column, rows hang their tile there */

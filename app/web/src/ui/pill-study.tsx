@@ -92,18 +92,30 @@ export function useNow(on: boolean, ms = 250) {
 }
 export const mmss = (secs: number) => `${Math.floor(secs / 60)}:${String(Math.floor(secs % 60)).padStart(2, "0")}`;
 
-/** A live, scrolling waveform: new samples enter at the right. */
-export function LiveWave({ bars = 28, height = 18, live = true, seed = 1 }: { bars?: number; height?: number; live?: boolean; seed?: number }) {
+/** A live, scrolling waveform: new samples enter at the right. With `fill`, it spans its box: as many bars as fit, spread edge to edge. */
+const WAVE_PITCH = 4.5; // a 2.5 bar and a 2 gap
+export function LiveWave({ bars = 28, height = 18, live = true, fill = false }: { bars?: number; height?: number; live?: boolean; seed?: number; fill?: boolean }) {
   const reduced = useReducedMotion();
+  const ref = useRef<HTMLSpanElement>(null);
+  const [n, setN] = useState(bars);
+  const nRef = useRef(bars); nRef.current = n;
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!fill || !el) return;
+    const ro = new ResizeObserver(() => setN(Math.max(4, Math.floor((el.clientWidth + 2) / WAVE_PITCH))));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [fill]);
   const [levels,setLevels]=useState(()=>Array.from({length:bars},()=>.12));
   useEffect(()=>{
     if(!live||reduced)return;
-    const update=(event:Event)=>{const {level}=(event as CustomEvent<{level:number}>).detail;setLevels(values=>[...values.slice(1),Math.max(.12,level)]);};
+    const update=(event:Event)=>{const {level}=(event as CustomEvent<{level:number}>).detail;setLevels(values=>[...values,Math.max(.12,level)].slice(-Math.max(nRef.current,bars)));};
     window.addEventListener("aber:audio-level",update);return()=>window.removeEventListener("aber:audio-level",update);
-  },[live,reduced]);
+  },[live,reduced,bars]);
+  const shown = levels.length >= n ? levels.slice(-n) : [...Array.from({ length: n - levels.length }, () => .12), ...levels];
   return (
-    <span className="ps-wave" style={{ height }} aria-hidden>
-      {levels.map((v, i) => <i key={i} style={{ height: Math.max(3, v * height), opacity: 0.35 + 0.65 * (i / bars) }} />)}
+    <span ref={ref} className="ps-wave" data-fill={fill ? "" : undefined} style={{ height }} aria-hidden>
+      {shown.map((v, i) => <i key={i} style={{ height: Math.max(3, v * height), opacity: 0.35 + 0.65 * (i / n) }} />)}
     </span>
   );
 }
@@ -387,8 +399,8 @@ export function Recorder({ s, api, onStop, time }: { s: DumpState; api: DumpApi;
   const now = useNow(s.rec != null && !time);
   return (
     <div className="ps-rec">
-      <IconBtn n="trash" label="Discard recording" onClick={api.cancelRec} />
-      <LiveWave bars={40} height={20} />
+      <IconBtn n="trash" label="Discard recording" className="ps-composer-action" onClick={api.cancelRec} />
+      <LiveWave bars={40} height={20} fill />
       <span className="ps-rec-time ap-num">{time ?? mmss(s.rec ? (now - s.rec) / 1000 : 0)}</span>
       <TooltipButton type="button" className="ps-stop" aria-label="Stop and dump" tooltip="Stop and dump" onClick={onStop}><StopGlyph /></TooltipButton>
     </div>
@@ -465,10 +477,12 @@ export type Variant = "B2" | "P";
 export type Force = { approach?: boolean; hover?: boolean; pressed?: boolean; focus?: boolean; midflight?: boolean; time?: string; noScreen?: boolean };
 const OPEN_T: Transition = { type: "spring", duration: 0.5, bounce: 0.12 };
 const CLOSE_T: Transition = { type: "spring", duration: 0.38, bounce: 0 };
+/* Three layers each, so the pill and the open column interpolate. Open, the column is a tier-3 sheet (04): the --sh-sheet ring and
+   two drops, in rgba so motion can tween it. It reads more lifted than the pre-redesign 0 8 24 shadow at every sample. */
 const SHADOW = {
-  pill: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 4px 14px 0px rgba(0, 0, 0, 0.1)",
-  lift: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 6px 18px 0px rgba(0, 0, 0, 0.12)",
-  sheet: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 8px 24px 0px rgba(0, 0, 0, 0.14)",
+  pill: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 4px 14px 0px rgba(0, 0, 0, 0.1), 0px 0px 0px 0px rgba(0, 0, 0, 0)",
+  lift: "0px 0px 0px 0.5px rgba(0, 0, 0, 0.1), 0px 6px 18px 0px rgba(0, 0, 0, 0.12), 0px 0px 0px 0px rgba(0, 0, 0, 0)",
+  sheet: "0px 0px 0px 0.5px rgba(28, 24, 16, 0.12), 0px 8px 16px -4px rgba(28, 24, 16, 0.08), 0px 20px 44px -10px rgba(28, 24, 16, 0.18)",
 };
 let activeStage: string | null = null;
 /** Whether the last input was the keyboard, so closing by key hands focus back to the pill (and by pointer doesn't). */
