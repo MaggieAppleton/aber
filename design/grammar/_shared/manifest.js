@@ -41,7 +41,7 @@ window.GRAMMAR = {
     { key: "grammar-nav", dir: "nav", num: "Nav", title: "Type-first default", icon: "sidebar-simple", group: "nav", decided: "2026-11-04",
       desc: "A rail of types, a list, the item in the main area",
       sum: "The default view: a rail of types, a list of that type's items, the selected item in the main area.",
-      decisions: [{ id: "peek", q: "Peek", pick: "a Tethered card" }, { id: "briefing", q: "Briefing", pick: "b Home of the main area" }, { id: "order", q: "Rail order", pick: "a Refined to raw" },
+      decisions: [{ id: "peek", q: "Peek", pick: "a Tethered card" }, { id: "briefing", q: "Briefing", pick: "First rail item, default on open (revised 4 Nov)" }, { id: "order", q: "Rail order", pick: "a Refined to raw" },
         { id: "themefilter", q: "Theme filter", pick: "a Yes" }, { id: "unseen", q: "Unseen group in Signals", pick: "b No" }, { id: "switcher", q: "View switcher", pick: "a Rail foot" },
         { id: "railauto", q: "Rail collapses when the chat opens" }],
       revised: [{ target: "try", at: "2026-11-05T11:54", what: "Type rail condensed: rows 28, 2 apart, Briefing in the same list" },
