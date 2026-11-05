@@ -421,3 +421,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 5 Nov 2026 (Maggie): the type rail is condensed: Briefing in the same list as the types, rows closer together, and closer to the Aber/Find header.
 
 5 Nov 2026 (Maggie): the type rail can collapse to an icon bar (search first, then the type icons); proposed: auto-collapse when the chat opens.
+
+5 Nov 2026 (Maggie, 08-briefing): Briefing decided. New signals grouped by theme; a decided item leaves with an Undo toast; a signal is seen only when read (peeked, opened or marked seen); decision buttons use verbs (Keep confidence | Lower to 3, Dismiss | Add evidence, Dismiss | Use wording, Keep apart | Merge, Discard | Keep); sections open with a 16/600 ink header and a hairline above; a challenge shows the lost confidence step in the down red at 40%. Implies two proposed amendments: 02 Type gains a 16/600 section-header role; DI-009 / 05 Controls: decision buttons say what happens, reject verb left, accept verb right.

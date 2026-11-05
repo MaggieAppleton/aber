@@ -441,7 +441,7 @@ Evidence: the live app (127.0.0.1:5174, read-only) captures through a pill that 
 
 **Open (choice on the jig):** where ⌘⇧L goes: A keep the live Dumps sheet, or B go to Dumps in the rail, the one list of dumps in the default view.
 
-## 08 Briefing — PROPOSED (jig `08-briefing/`)
+## 08 Briefing — DECIDED (5 Nov 2026: by theme; leaves with Undo; seen when read; verb labels; 16/600 section headers with a hairline; the lost confidence step in red)
 
 Evidence (`app/web/src/ui/briefing-app.tsx`, `.css`): every item is a raised card whose Accept and X sit at opacity 0 until hovered (css:50); reject is an X right of Accept labelled "Discard (X)" even on suggestions (tsx:90); on New signals the X discards a whole theme's signals (tsx:39); nothing can be undone and failures are swallowed (tsx:36–43); red challenge and jade new dots (tsx:93, :107); bare ink 3 glyphs with no tile (css:25); failed dumps aren't listed and processing is only a tooltip (tsx:28, :70–79); "New signals" is every unseen signal ever (tsx:20).
 
@@ -457,7 +457,17 @@ Evidence (`app/web/src/ui/briefing-app.tsx`, `.css`): every item is a raised car
 10. **Handled is quiet.** An empty section goes. With no decisions left the sentence reads "Nothing needs you." and the news stays; with nothing new, "Nothing new since 18:40" and no key line. No celebration.
 11. **Narrow:** Briefing alone; the rail is a sheet from the left; the composer spans the window.
 
-**Open (choices on the jig):** new signals grouped A by theme (recommended) or B by the theory they bear on; a decided item A leaves with an Undo toast (recommended) or B settles to one line in place until you leave; a signal counts as seen A once Briefing has shown it (recommended) or B only when peeked, opened or marked seen; buttons read A Dismiss | Accept, or B what they do (recommended: Keep confidence | Lower to 3, Dismiss | Add evidence, Dismiss | Use wording, Keep apart | Merge, Discard | Keep), which would amend DI-009; sections open with A a 16 / 600 header role and a hairline (recommended; adds 16 to the type scale), B a surface per section on the sunk ground, or C a sticky sunk band.
+**Decided (Maggie, 5 Nov):**
+- New signals are grouped **by theme** (A): the theme row with its new-signal count, its signals one step in.
+- A decided item **leaves, with an Undo toast** (A); ⌘Z while it shows.
+- A signal counts as seen **when read** (B): peeked, opened, or its group's Mark seen. Briefing showing it isn't enough.
+- Decision buttons use **verbs** (B): Keep confidence | Lower to 3 (challenge), Dismiss | Add evidence, Dismiss | Use wording, Keep apart | Merge, Discard | Keep (draft). A presses the right-hand verb.
+- Sections open with a **16 / 600 ink header and a hairline above** (A): 40 above the hairline, 16 to the header, 16 to the first item; the count a bare number in ink 2.
+- A challenge shows the confidence it would lose as **one mark with the lost step in the "down" red at 40%** (A), then "I suggest lowering confidence from 4 to 3" with the buttons on that line.
+
+**Proposed amendments to other sections (not yet applied there):**
+- **02 Type:** a section-header role at 16 / 600 ink (Briefing sections), a fifth size beside 11 / 12 / 13 / 24.
+- **DI-009 / 05 Controls rule 6:** decision buttons use verb labels that say what happens; the reject verb stays on the left, the accept verb on the right (Dismiss | Accept becomes the fallback where no clearer verb exists).
 
 **Proposed with it:** the object a change touches is the subject, a solid row with its name at 600; its proposals hang one step in, dashed, labelled "Suggested support", "Suggested counter-evidence", "Suggested new wording", "Suggested merge with", and their rows keep regular weight. One left edge at the title; the 32 title tile hangs left of it in an 88 main-area inset (top 48).
 

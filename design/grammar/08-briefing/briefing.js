@@ -259,7 +259,7 @@
   /* ═══ Init ═══ */
   const init = host => {
     const o = JSON.parse(host.dataset.br || "{}");
-    const st = host._st = { _host: host, day: o.day || "quiet", h: o.h, opt: { group: "theme", settle: "leave", seen: "shown", labels: "verb", sections: "rule", change: "fill", ...(o.opt || {}) }, decided: new Map(), seen: new Set(), open: {}, unmerged: new Set(), dumps: {}, mode: "brief", narrow: false, railOpen: false, full: null, peek: null };
+    const st = host._st = { _host: host, day: o.day || "quiet", h: o.h, opt: { group: "theme", settle: "leave", seen: "read", labels: "verb", sections: "rule", change: "fill", ...(o.opt || {}) }, decided: new Map(), seen: new Set(), open: {}, unmerged: new Set(), dumps: {}, mode: "brief", narrow: false, railOpen: false, full: null, peek: null };
     const measure = () => { const n = host.clientWidth < NARROW; if (n !== st.narrow) { st.narrow = n; st.railOpen = false; if (st.mode === "brief") render(host); } fit(host); };
     st.narrow = host.clientWidth > 0 && host.clientWidth < NARROW; render(host); new ResizeObserver(measure).observe(host);
     // A choice window can open at the section it's about
