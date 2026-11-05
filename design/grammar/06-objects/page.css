@@ -1,33 +1,13 @@
-/* Grammar 06 page chrome: decide box, tables, the matrix, states board, before/after, anatomy, full-size viewer. */
-.jig-head .jig-dock { position: static; display: inline-flex; margin-top: 12px; box-shadow: none; }
-.jig-head .jig-dock output:empty { display: none; }
-.jig .jig-option { border-radius: 20px; transition: background-color 160ms, box-shadow 160ms; }
-.jig .jig-option.is-chosen { background: rgb(255 255 255 / 0.55); box-shadow: 0 0 0 10px rgb(255 255 255 / 0.55); }
-.jig .jig-option.is-chosen > [data-option-stage] { outline: 0; }
-.decide { max-width: 1180px; margin: 0 auto 8px; padding: 16px 32px 0; }
-.decide-box { background: #fff; border-radius: 14px; padding: 14px 18px; box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.05); }
-.decide-box h2 { margin: 0 0 8px; font-size: 15px; }
-.decide-box ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
-.decide-box a { color: #2b2925; font-weight: 600; }
-.decide-box .pick { color: #5d5850; }
-.decide-box .pick b { color: #2b2925; }
-.decide-box .why { display: block; color: #5d5850; font-size: 13px; }
-.rules { margin: 0 0 20px; padding-left: 20px; display: grid; gap: 6px; max-width: 86ch; color: #2b2925; }
-h3.sub { margin: 28px 0 8px; font-size: 14px; font-weight: 650; }
-.lede { margin: 0 0 12px; max-width: 72ch; color: #5d5850; }
-.table-wrap { overflow-x: auto; border-radius: 10px; }
-.audit { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08); }
-.audit th, .audit td { text-align: left; padding: 8px 12px; border-bottom: 0.5px solid #e7e3dc; vertical-align: top; }
-.audit th { background: #f6f4f0; font-weight: 600; white-space: nowrap; }
-.audit td:first-child { font-weight: 600; white-space: nowrap; }
+/* Grammar 06 page chrome (template is _shared/page.css): tables, the matrix, states board, before/after, anatomy, full-size viewer. */
+h3.sub { margin: 24px 0 8px; font-size: var(--fs-body); font-weight: 600; }
+.audit td:first-child { font-weight: 500; white-space: nowrap; }
 .audit.rank { min-width: 980px; }
-.jig-section.wide { max-width: 1440px; }
-.mx-note { margin: 0 0 6px; font-size: 12px; color: #5d5850; }
+.mx-note { margin: 0 0 6px; font-size: 12px; color: var(--ink-2); }
 
 /* ── Anatomy: four rungs on one left edge ── */
 .anatomy { position: relative; display: grid; gap: 20px; padding: 24px 24px 24px 120px; border-radius: 14px; background: var(--surface); box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08); overflow: hidden; }
 .an-item { position: relative; display: grid; }
-.an-k { position: absolute; left: -100px; top: 4px; width: 84px; font-size: 12px; font-weight: 600; color: #5d5850; }
+.an-k { position: absolute; left: -100px; top: 4px; width: 84px; font-size: 12px; font-weight: 600; color: var(--ink-2); }
 .an-row { width: 296px; margin-left: calc(var(--inset-row) * -1); }
 .an-card { width: 280px; margin-left: calc(var(--inset-card) * -1); }
 .an-peek { margin-left: calc(var(--inset-peek) * -1); min-width: 0; }
@@ -42,11 +22,11 @@ h3.sub { margin: 28px 0 8px; font-size: 14px; font-weight: 650; }
 
 /* ── The matrix ── */
 .mx { display: grid; grid-template-columns: 296px 248px 340px minmax(0, 1fr); column-gap: 20px; align-items: start; }
-.mx-h { position: sticky; top: 0; z-index: 2; padding: 8px 0; background: #e9e6e1; font-size: 13px; font-weight: 650; }
+.mx-h { position: sticky; top: 0; z-index: 2; padding: 8px 0; background: var(--ground); font-size: 13px; font-weight: 600; }
 .mx-h:first-child { display: none; }
-.mx-type { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin: 24px 0 10px; padding-top: 16px; border-top: 1px solid #d6d1c9; font-size: 13px; color: #5d5850; }
+.mx-type { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin: 24px 0 10px; padding-top: 16px; border-top: 0.5px solid var(--hairline-strong); font-size: 13px; color: var(--ink-2); }
 .mx-type:nth-child(6) { margin-top: 4px; }
-.mx-type b { color: #2b2925; font-size: 14px; }
+.mx-type b { color: var(--ink); font-size: 14px; }
 .mx-c { min-width: 0; }
 .ob-cell-list { width: 100%; max-width: 296px; padding: var(--gap-item) var(--inset-nav-inline); border-radius: 10px; background: var(--ground); box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08); }
 .ob-cell-list .ob-row + .ob-row { margin-top: 2px; }
@@ -76,13 +56,13 @@ h3.sub { margin: 28px 0 8px; font-size: 14px; font-weight: 650; }
 
 /* ── Before and after ── */
 .ba-grid { display: grid; gap: 28px; }
-.ba h3 { margin: 0 0 8px; font-size: 14px; font-weight: 650; }
+.ba h3 { margin: 0 0 8px; font-size: 14px; font-weight: 600; }
 .ba-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 20px; align-items: start; }
 .ba-col { display: grid; gap: 10px; min-width: 0; justify-items: start; }
-.ba-k { font-size: 12px; font-weight: 600; color: #5d5850; }
+.ba-k { font-size: 12px; font-weight: 600; color: var(--ink-2); }
 .ba figure { margin: 0; display: grid; gap: 4px; max-width: 100%; }
 .ba img { display: block; max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.1); background: #fff; }
-.ba figcaption { font-size: 12px; color: #5d5850; }
+.ba figcaption { font-size: 12px; color: var(--ink-2); }
 .ba .mx-stack { width: 100%; max-width: 296px; }
 
 /* ── Full-size viewer (transient: X and Esc) ── */
@@ -98,11 +78,10 @@ h3.sub { margin: 28px 0 8px; font-size: 14px; font-weight: 650; }
 @media (max-width: 1100px) {
   .mx { grid-template-columns: minmax(0, 1fr); row-gap: 12px; }
   .mx-h { display: none; }
-  .mx-c::before { content: attr(data-rung); display: block; margin-bottom: 6px; font-size: 12px; font-weight: 650; color: #5d5850; }
+  .mx-c::before { content: attr(data-rung); display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; color: var(--ink-2); }
   .mx-type { margin-bottom: 0; }
 }
 @media (max-width: 640px) {
-  .jig-section { padding: 24px 16px; } .decide { padding: 16px 16px 0; } .jig-head { padding: 32px 16px 8px; }
   .anatomy { padding: 40px 12px 20px 36px; }
   .an-k { position: static; width: auto; margin-bottom: 6px; }
   .an-item { padding-left: 0; }
@@ -110,8 +89,6 @@ h3.sub { margin: 28px 0 8px; font-size: 14px; font-weight: 650; }
   .an-row, .an-card { width: auto; max-width: calc(100% + 12px); }
   .ob-peek.static { width: 100%; }
 }
-.decide-box .decided-h { margin-top: 14px; }
-.decide-box .decided { margin: 0; padding-left: 20px; display: grid; gap: 4px; color: #3d3a34; font-size: 13px; }
 .st-c .ob-peek { width: 100%; }
 .anatomy { grid-template-columns: minmax(0, 1fr); }
 .an-item { min-width: 0; }

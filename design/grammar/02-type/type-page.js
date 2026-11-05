@@ -1,6 +1,6 @@
-// Grammar 02 type: viewer switches, the type-roles overlay (fills each label with its computed spec), decide box picks.
+// Grammar 02 type: viewer switches, the type-roles overlay (fills each label with its computed spec).
 (() => {
-  addEventListener("load", () => { const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d); paintPicks(); fillSpecs(); });
+  addEventListener("load", () => { fillSpecs(); });
 
   // Each labelled text shows "size/weight ink" from its computed style
   const inkName = (el, color) => {
@@ -36,14 +36,4 @@
     requestAnimationFrame(() => fillSpecs(viewer)); });
   document.addEventListener("click", e => { if (e.target.closest(".views-grid .stg-switch")) requestAnimationFrame(() => fillSpecs()); });
 
-  const page = document.body.dataset.jig;
-  const paintPicks = () => {
-    for (const li of document.querySelectorAll("[data-pick]")) {
-      const id = li.dataset.pick, sec = document.querySelector(`[data-decision="${id}"]`);
-      let v = null; try { v = JSON.parse(localStorage.getItem(`jig:${page}:${id}`))?.choice; } catch {}
-      v = v ?? sec?.dataset.default;
-      li.querySelector(".pick").innerHTML = v ? `Current pick: <b>${v}</b>` : "No pick yet";
-    }
-  };
-  document.addEventListener("click", e => { if (e.target.closest(".jig-choose")) setTimeout(paintPicks, 0); });
 })();

@@ -1,0 +1,9 @@
+/* Nav page chrome (not the app). The template is _shared/page.css; nav.css still carries older chrome, overridden here. */
+body.jig .jig-option { border-radius: 2px; }
+body.jig .jig-option.is-chosen { background: var(--surface); box-shadow: 0 0 0 8px var(--surface), 0 0 0 8.5px rgb(0 0 0 / 0.08), 0 2px 10px 8px rgb(0 0 0 / 0.035); }
+body.jig .audit td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+body.jig .audit td:first-child { font-weight: 500; white-space: nowrap; }
+body.jig .narrow { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 2px; font-size: var(--fs-body); line-height: var(--lh-prose); color: var(--ink-2); }
+body.jig .narrow-h { margin: 12px 0 0; font-weight: 500; color: var(--ink); }
+body.jig .pg-details .ref-opt { margin-top: 24px; }
+body.jig .pg-body > .jig-section { max-width: none; margin: 0 0 32px; padding: 0; border: 0; }

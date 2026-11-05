@@ -46,16 +46,14 @@
     try { await PLAYS[b.dataset.play](host); } finally { playing.delete(host); b.removeAttribute("aria-busy"); }
   });
 
-  /* ── The demo windows follow the picks; the decide box shows them ── */
+  /* ── The demo windows follow the picks (decided, so the shell's pick() returns the decided value) ── */
   const MAP = { open: ["open", { "a Shared tile and title": "morph", "b Cross-fade and slide": "fade" }], pos: ["pos", { "a Beside the trigger": "beside", "b Below the trigger": "below" }], back: ["back", { "a The preview": "preview", "b The peek": "peek" }] };
   addEventListener("load", () => {
-    const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d);
-    const pick = id => { let v; try { v = JSON.parse(localStorage.getItem(`jig:grammar-07-rungs:${id}`))?.choice; } catch {} return v === undefined ? document.querySelector(`[data-decision="${id}"]`)?.dataset.default : v; };
+    const pick = id => window.Jig?.pick(id);
     const paint = () => {
-      $$("[data-pick]").forEach(li => { const v = pick(li.dataset.pick); li.querySelector(".pick").innerHTML = v ? `Current pick: <b>${v}</b>` : "No pick yet"; });
       const patch = {}; for (const [id, [key, vals]] of Object.entries(MAP)) { const v = vals[pick(id)]; if (v) patch[key] = v; }
       $$("[data-follows-picks]").forEach(h => h._s && R7.set(h, patch));
     };
-    paint(); document.addEventListener("click", e => { if (e.target.closest(".jig-choose")) setTimeout(paint, 0); });
+    paint(); document.addEventListener("jig:change", paint);
   });
 })();

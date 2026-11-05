@@ -1,6 +1,6 @@
-// Grammar 03 icons: viewer switches, the icon-specs overlay (tags every icon with role, size, weight and slot), a pinned tooltip, decide box picks.
+// Grammar 03 icons: viewer switches, the icon-specs overlay (tags every icon with role, size, weight and slot), a pinned tooltip.
 (() => {
-  addEventListener("load", () => { const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d); paintPicks(); document.fonts.ready.then(tagAll); });
+  addEventListener("load", () => { document.fonts.ready.then(tagAll); });
 
   // Each icon's spec, read from its computed style: role, glyph size, weight, slot
   const spec = el => {
@@ -71,14 +71,4 @@
   addEventListener("DOMContentLoaded", pin);
   addEventListener("resize", () => requestAnimationFrame(tagAll));
 
-  const page = document.body.dataset.jig;
-  const paintPicks = () => {
-    for (const li of document.querySelectorAll("[data-pick]")) {
-      const id = li.dataset.pick, sec = document.querySelector(`[data-decision="${id}"]`);
-      let v = null; try { v = JSON.parse(localStorage.getItem(`jig:${page}:${id}`))?.choice; } catch {}
-      v = v ?? sec?.dataset.default;
-      li.querySelector(".pick").innerHTML = v ? `Current pick: <b>${v}</b>` : "No pick yet";
-    }
-  };
-  document.addEventListener("click", e => { if (e.target.closest(".jig-choose")) setTimeout(paintPicks, 0); });
 })();

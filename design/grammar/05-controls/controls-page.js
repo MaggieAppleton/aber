@@ -154,20 +154,12 @@
   document.addEventListener("focusout", e => { if (e.target.closest?.(".ctl-board")) hideTip(); });
   addEventListener("scroll", hideTip, { passive: true });
 
-  /* ── Start: enhance the stages, mount the viewer, paint picks ── */
+  /* ── Start: enhance the stages, mount the viewer ── */
   const start = () => {
     document.querySelectorAll(".stg-host, .nv-host").forEach(h => { watch(h); enhance(h); });
     mount();
   };
   addEventListener("load", () => {
     start();
-    const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h && !h.contains(d)) h.append(d);
-    const page = document.body.dataset.jig;
-    const paint = () => document.querySelectorAll("[data-pick]").forEach(li => {
-      let v = null; try { v = JSON.parse(localStorage.getItem(`jig:${page}:${li.dataset.pick}`))?.choice; } catch {}
-      v = v === undefined ? document.querySelector(`[data-decision="${li.dataset.pick}"]`)?.dataset.default : v;
-      li.querySelector(".pick").innerHTML = v ? `Current pick: <b>${v}</b>` : "No pick yet";
-    });
-    paint(); document.addEventListener("click", e => { if (e.target.closest(".jig-choose")) setTimeout(paint, 0); });
   });
 })();

@@ -19,7 +19,10 @@
 <link rel="stylesheet" href="../_shared/surfaces.css">
 <link rel="stylesheet" href="../_shared/controls.css">
 <link rel="stylesheet" href="spacing-page.css">
+<link rel="stylesheet" href="../_shared/page.css">
 <script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/manifest.js" defer></script>
+<script src="../_shared/page.js" defer></script>
 <script src="../_shared/stage.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/dialkit@2.1.0/dist/vanilla/browser.global.js" defer></script>
 <script src="../_shared/list-dial.js" defer></script>
@@ -28,43 +31,32 @@
 </head>
 <body class="jig" data-jig="grammar-01-spacing">
 
-<header class="jig-head">
-  <h1>Grammar 01: Density and spacing</h1>
-  <p>How compact Aber is, and the few rules that decide every padding, gap and height. Colour is system D from Grammar 00. The stage keeps the app's layout; only spacing changes.</p>
-</header>
+<header class="pg-head"></header>
 
-<div class="decide">
-  <div class="decide-box">
-    <h2>Decide on this page</h2>
-    <ol>
-      <li data-pick="density"><a href="#density">Density: Compact, Regular or Comfortable</a> <span class="pick"></span></li>
-      <li data-pick="list"><a href="#list">Middle column: separate cards, or one container with dividers</a> <span class="pick"></span></li>
-    </ol>
+
+<section class="jig-section" id="stage">
+  <h2>Stage</h2>
+  <div class="viewer-bar">
+    <span class="seg" data-seg="view"><span>View</span><span class="seg-group"><button type="button" value="sections" aria-pressed="true">Sections</button><button type="button" value="columns">Columns</button><button type="button" value="atlas">Atlas</button><button type="button" value="timeline">Timeline</button></span></span>
+    <span class="seg" data-seg="density"><span>Density</span><span class="seg-group"><button type="button" value="compact">Compact</button><button type="button" value="regular" aria-pressed="true">Regular</button><button type="button" value="comfortable">Comfortable</button></span></span>
+    <span class="seg" data-seg="list"><span>Middle column</span><span class="seg-group"><button type="button" value="cards" aria-pressed="true">Cards</button><button type="button" value="rows">One container</button></span></span>
+    <span class="seg" data-seg="overlay"><span>Show spacing</span><span class="seg-group"><button type="button" value="off" aria-pressed="true">Off</button><button type="button" value="on">On</button></span></span>
   </div>
-</div>
+  <p class="stage-label">The app's layout; only spacing changes. Show spacing tints padding pink and gaps green.</p>
+  <div class="stg-host" id="viewer" data-stage='{"density":"regular"}'></div>
+</section>
 
-<section class="jig-section" id="today">
-  <h2>Today, measured</h2>
-  <p>Every px value in the canonical CSS (27 files in <code>jig/src/homes/</code> and <code>app/web/src/ui/</code>), zero and negative values left out.</p>
-  <table class="audit">
-    <thead><tr><th>Property</th><th>Distinct</th><th>Uses</th><th>Values in use (count)</th></tr></thead>
-    <tbody>
-      <tr><td>Padding</td><td class="n">36</td><td class="n">450</td><td>1(6) 2(37) <em>3</em>(10) 4(42) <em>5</em>(9) 6(44) <em>7</em>(15) 8(73) <em>9</em>(5) 10(56) 12(34) 14(21) <em>15</em>(1) 16(15) 18(2) 20(12) 22(1) 24(8) 26(1) 28(9) 30(3) 32(7) 36(2) 40(8) 46(2) 48(4) 56 60 64 80 90 96 100 110 120 140</td></tr>
-      <tr><td>Gap</td><td class="n">18</td><td class="n">336</td><td>1(5) 2(39) <em>3</em>(15) 4(55) <em>5</em>(11) 6(78) <em>7</em>(2) 8(56) 10(28) 12(17) 14(8) 16(9) 20(5) 24(4) 28 32 48 64</td></tr>
-      <tr><td>Margin</td><td class="n">18</td><td class="n">79</td><td>1 <em>1.5</em> 2(15) <em>3</em>(7) 4(10) 6(12) <em>7</em>(2) 8(9) 10 12(2) 16(3) 18 22 24(9) 32(2) 40 56 64</td></tr>
-      <tr><td>Row and control heights</td><td class="n">19</td><td class="n">138</td><td>16 18 20 22 24 26 28 30 32 34 <em>35</em> 36 40 44 46 48 52 54 56. Nine different heights between 24 and 40 for things that are all "a row" or "a control".</td></tr>
-    </tbody>
-  </table>
-  <ul class="offenders">
-    <li>Odd values beside even ones for the same job: <code>gap: 5px</code> (briefing-app.css:9), <code>gap: 7px</code> (briefing-app.css:26), <code>gap: 3px</code> (atlas2.css:48), all icon-to-text gaps that are 6px elsewhere.</li>
-    <li>One-off paddings: <code>padding: 5px 8px</code> (briefing-app.css:34), <code>padding: 2px 5px</code> (atlas2.css:38), <code>padding: 3px 8px</code> (homes.css:81), <code>padding: 15px</code> (homes.css:221).</li>
-    <li>Heights that match nothing: <code>35px</code> (pill-study.css:163), <code>34px</code> (pill-study.css:197), <code>46px</code> (pill-study.css:284).</li>
-    <li>The most-used values (8, 10, 6 for padding; 6, 4, 8 for gaps) are close to a system already. The rules below keep those and drop the rest.</li>
+<section class="pg-decided">
+  <h2>Decided</h2>
+  <ul class="pg-list">
+    <li><b>Base unit</b>4px; every value is a step on 2 4 6 8 10 12 16 20 24 32 40</li>
+    <li><b>Separate with space first</b>gaps between objects, hairlines only between uniform rows</li>
   </ul>
 </section>
 
+<details class="pg-details" id="d-rules">
+  <summary><span class="pg-dt">Rules</span><span class="pg-ds">A 4px scale, a gap ladder 4 / 8 / 16 / 32, insets that grow with focus, two click heights</span></summary>
 <section class="jig-section" id="rules">
-  <h2>The rules (decided 4 Nov: Regular, separate cards)</h2>
   <ol class="rules">
     <li><b>One base unit: 4px.</b> Every padding, gap and height is a step on the scale <code>2 4 6 8 10 12 16 20 24 32 40</code>. Nothing else. 2 is for optical nudges only.</li>
     <li><b>Gaps climb a ladder, and each level is at least 1.5× the one inside it</b> (2× at Regular), so grouping reads without boxes:
@@ -87,23 +79,12 @@
     </tbody>
   </table>
 </section>
+</details>
 
-<section class="jig-section" id="stage">
-  <h2>The stage, built only from these rules</h2>
-  <div class="viewer-bar">
-    <span class="seg" data-seg="view"><span>View</span><span class="seg-group"><button type="button" value="sections" aria-pressed="true">Sections</button><button type="button" value="columns">Columns</button><button type="button" value="atlas">Atlas</button><button type="button" value="timeline">Timeline</button></span></span>
-    <span class="seg" data-seg="density"><span>Density</span><span class="seg-group"><button type="button" value="compact">Compact</button><button type="button" value="regular" aria-pressed="true">Regular</button><button type="button" value="comfortable">Comfortable</button></span></span>
-    <span class="seg" data-seg="list"><span>Middle column</span><span class="seg-group"><button type="button" value="cards" aria-pressed="true">Cards</button><button type="button" value="rows">One container</button></span></span>
-    <span class="seg" data-seg="overlay"><span>Show spacing</span><span class="seg-group"><button type="button" value="off" aria-pressed="true">Off</button><button type="button" value="on">On</button></span></span>
-  </div>
-  <p class="stage-label">Stage: the app's current layout, unchanged. Show spacing tints padding pink and gaps green, each labelled with its role.</p>
-  <div class="stg-host" id="viewer" data-stage='{"density":"regular"}'></div>
-</section>
-
-
+<details class="pg-details" id="d-views">
+  <summary><span class="pg-dt">Four views</span><span class="pg-ds">Sections, Columns, Atlas and Timeline with spacing shown</span></summary>
 <section class="jig-section" id="views">
-  <h2>Same rules, four views</h2>
-  <p>Theme sections, Columns, Atlas and Timeline, each built only from the roles above, with spacing shown. The density and middle-column choices apply to all four (use the switches above the full-size stage).</p>
+  <p>The stage switches apply to all four.</p>
   <div class="views-grid" data-overlay>
     <div><p class="view-name">Theme sections</p><div class="stg-host" data-stage='{"density":"regular","view":"sections"}'></div></div>
     <div><p class="view-name">Columns</p><div class="stg-host" data-stage='{"density":"regular","view":"columns"}'></div></div>
@@ -111,23 +92,52 @@
     <div><p class="view-name">Timeline</p><div class="stg-host" data-stage='{"density":"regular","view":"timeline"}'></div></div>
   </div>
 </section>
+</details>
 
+<details class="pg-details" id="d-density">
+  <summary><span class="pg-dt">Options weighed: density</span><span class="pg-ds">Compact, Regular or Comfortable</span></summary>
 <section class="jig-section" id="density" data-decision="density" data-question="1. How dense is Aber?" data-default="B regular">
-  <p>Three complete spacing scales on the same stage. Use the full-size switch above to look closely.</p>
+  <p>Three spacing scales on the same stage.</p>
   <div class="jig-compare" style="--jig-min:300px">
     <div class="jig-option" data-option="A compact"><div class="jig-label"><b>A</b> Compact</div><p class="jig-note">Rows 28, cards 10, sections 24. Most on screen; closest to today's tightest views.</p><div class="stg-host" data-option-stage data-stage='{"density":"compact"}'></div></div>
     <div class="jig-option" data-option="B regular"><div class="jig-label"><b>B</b> Regular</div><p class="jig-note">Rows 32, cards 12, sections 32. A strict 2× ladder; calm without wasting space.</p><div class="stg-host" data-option-stage data-stage='{"density":"regular"}'></div></div>
     <div class="jig-option" data-option="C comfortable"><div class="jig-label"><b>C</b> Comfortable</div><p class="jig-note">Rows 36, cards 16, sections 40. Easiest to read; noticeably fewer objects per screen.</p><div class="stg-host" data-option-stage data-stage='{"density":"comfortable"}'></div></div>
   </div>
 </section>
+</details>
 
+<details class="pg-details" id="d-list">
+  <summary><span class="pg-dt">Options weighed: middle column</span><span class="pg-ds">Separate cards, or one container with dividers</span></summary>
 <section class="jig-section" id="list" data-decision="list" data-question="2. How are the middle column's theories separated?" data-default="A cards">
-  <p>Rule 7 says separate objects get gaps; uniform rows get dividers. Theories are objects you open, so cards fit the rule, but one container reads quieter.</p>
+  <p>Theories are objects you open, so cards fit rule 8; one container reads quieter.</p>
   <div class="jig-compare" style="--jig-min:440px">
     <div class="jig-option" data-option="A cards"><div class="jig-label"><b>A</b> Separate cards</div><p class="jig-note">Each theory is its own surface with an item gap between. Today's shape.</p><div class="stg-host" data-option-stage data-stage='{"density":"regular","list":"cards"}'></div></div>
     <div class="jig-option" data-option="B one container"><div class="jig-label"><b>B</b> One container with dividers</div><p class="jig-note">One white box per theme, theories as rows with hairlines. Fewer edges; the open row still rises.</p><div class="stg-host" data-option-stage data-stage='{"density":"regular","list":"rows"}'></div></div>
   </div>
 </section>
+</details>
+
+<details class="pg-details" id="d-today">
+  <summary><span class="pg-dt">Today, measured</span><span class="pg-ds">36 paddings, 18 gaps, 18 margins and 19 heights in the current CSS</span></summary>
+<section class="jig-section" id="today">
+  <p>Every px value in the canonical CSS (27 files in <code>jig/src/homes/</code> and <code>app/web/src/ui/</code>), zero and negative values left out.</p>
+  <table class="audit">
+    <thead><tr><th>Property</th><th>Distinct</th><th>Uses</th><th>Values in use (count)</th></tr></thead>
+    <tbody>
+      <tr><td>Padding</td><td class="n">36</td><td class="n">450</td><td>1(6) 2(37) <em>3</em>(10) 4(42) <em>5</em>(9) 6(44) <em>7</em>(15) 8(73) <em>9</em>(5) 10(56) 12(34) 14(21) <em>15</em>(1) 16(15) 18(2) 20(12) 22(1) 24(8) 26(1) 28(9) 30(3) 32(7) 36(2) 40(8) 46(2) 48(4) 56 60 64 80 90 96 100 110 120 140</td></tr>
+      <tr><td>Gap</td><td class="n">18</td><td class="n">336</td><td>1(5) 2(39) <em>3</em>(15) 4(55) <em>5</em>(11) 6(78) <em>7</em>(2) 8(56) 10(28) 12(17) 14(8) 16(9) 20(5) 24(4) 28 32 48 64</td></tr>
+      <tr><td>Margin</td><td class="n">18</td><td class="n">79</td><td>1 <em>1.5</em> 2(15) <em>3</em>(7) 4(10) 6(12) <em>7</em>(2) 8(9) 10 12(2) 16(3) 18 22 24(9) 32(2) 40 56 64</td></tr>
+      <tr><td>Row and control heights</td><td class="n">19</td><td class="n">138</td><td>16 18 20 22 24 26 28 30 32 34 <em>35</em> 36 40 44 46 48 52 54 56. Nine different heights between 24 and 40 for things that are all "a row" or "a control".</td></tr>
+    </tbody>
+  </table>
+  <ul class="offenders">
+    <li>Odd values beside even ones for the same job: <code>gap: 5px</code> (briefing-app.css:9), <code>gap: 7px</code> (briefing-app.css:26), <code>gap: 3px</code> (atlas2.css:48), all icon-to-text gaps that are 6px elsewhere.</li>
+    <li>One-off paddings: <code>padding: 5px 8px</code> (briefing-app.css:34), <code>padding: 2px 5px</code> (atlas2.css:38), <code>padding: 3px 8px</code> (homes.css:81), <code>padding: 15px</code> (homes.css:221).</li>
+    <li>Heights that match nothing: <code>35px</code> (pill-study.css:163), <code>34px</code> (pill-study.css:197), <code>46px</code> (pill-study.css:284).</li>
+    <li>The most-used values (8, 10, 6 for padding; 6, 4, 8 for gaps) are close to a system already. The rules below keep those and drop the rest.</li>
+  </ul>
+</section>
+</details>
 
 </body>
 </html>

@@ -19,7 +19,10 @@
 <link rel="stylesheet" href="../_shared/surfaces.css">
 <link rel="stylesheet" href="../_shared/controls.css">
 <link rel="stylesheet" href="icons-page.css">
+<link rel="stylesheet" href="../_shared/page.css">
 <script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/manifest.js" defer></script>
+<script src="../_shared/page.js" defer></script>
 <script src="../_shared/stage.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/dialkit@2.1.0/dist/vanilla/browser.global.js" defer></script>
 <script src="../_shared/list-dial.js" defer></script>
@@ -28,48 +31,32 @@
 </head>
 <body class="jig" data-jig="grammar-03-icons">
 
-<header class="jig-head">
-  <h1>Grammar 03: Icons</h1>
-  <p><b>Decided 4 Nov 2026:</b> 16 beside 13 body, 14 beside 12px text; object glyphs on their tile everywhere. These rules are now the default on every grammar stage. Icon size, slot, alignment, buttons, tooltips, colour and one icon per meaning. Already decided: Phosphor; Regular at rest, Fill only for the current or selected thing; the object glyphs; per-type glyph colour on a pale tile; icon to text 6; X only closes transient surfaces. Type is scale B (11 / 12 / 13, title 24) and spacing is Regular.</p>
-</header>
+<header class="pg-head"></header>
 
-<div class="decide">
-  <div class="decide-box">
-    <h2>Decide on this page</h2>
-    <ol>
-      <li data-pick="size"><a href="#size">Icon size: 16 everywhere, or 14 beside 12px text</a> <span class="pick"></span></li>
-      <li data-pick="tile"><a href="#tile">Object glyph tiles: in lists and headers, everywhere, or never</a> <span class="pick"></span></li>
-    </ol>
+
+<section class="jig-section" id="stage">
+  <h2>Stage</h2>
+  <div class="viewer-bar">
+    <span class="seg" data-seg="view"><span>View</span><span class="seg-group"><button type="button" value="sections" aria-pressed="true">Sections</button><button type="button" value="columns">Columns</button><button type="button" value="atlas">Atlas</button><button type="button" value="timeline">Timeline</button></span></span>
+    <span class="seg" data-seg="iconsize"><span>Icon size</span><span class="seg-group"><button type="button" value="one">16</button><button type="button" value="two" aria-pressed="true">16 and 14</button></span></span>
+    <span class="seg" data-seg="tile"><span>Tiles</span><span class="seg-group"><button type="button" value="lists">Lists and headers</button><button type="button" value="always" aria-pressed="true">Everywhere</button><button type="button" value="never">Never</button></span></span>
+    <span class="seg" data-seg="overlay"><span>Show icon specs</span><span class="seg-group"><button type="button" value="off" aria-pressed="true">Off</button><button type="button" value="on">On</button></span></span>
   </div>
-</div>
+  <p class="stage-label">Hover an icon button for its tooltip. Show icon specs labels each icon's role, size and slot, and dashes its 40 hit area.</p>
+  <div class="stg-host" id="viewer" data-stage='{"view":"sections","icons":1,"iconsize":"two","tile":"always"}'></div>
+</section>
 
-<section class="jig-section" id="today">
-  <h2>Today, measured</h2>
-  <p>Every icon in the canonical code: the <code>&lt;Icon&gt;</code> calls and icon CSS in <code>app/web/src/ui/</code> and <code>jig/src/homes/</code> (near-copies of each other; counts are both together).</p>
-  <table class="audit">
-    <thead><tr><th>Property</th><th>Distinct</th><th>Uses</th><th>Values in use (count)</th></tr></thead>
-    <tbody>
-      <tr><td>Icon size (px)</td><td class="n">6</td><td class="n">159</td><td><em>11</em>(5) <em>12</em>(83) <em>13</em>(5) 14(28) <em>15</em>(6) 16(32). More than half are 12, smaller than the 13 text beside them.</td></tr>
-      <tr><td>Weight</td><td class="n">2</td><td class="n">159</td><td>Regular(141), Fill only when pressed, selected or current(14), 4 hard-coded in pill-study. Already consistent.</td></tr>
-      <tr><td>Icon-only button box (px)</td><td class="n">9</td><td class="n">47</td><td><em>16</em> <em>18</em> <em>20</em> 24 <em>26</em> 28 <em>32</em> <em>40</em> <em>44</em>. <code>.ap-iconbtn</code> is 28 (homes.css:25); the view switch is 32 (app-shell.css:32).</td></tr>
-      <tr><td>Icon to text gap (px)</td><td class="n">9</td><td class="n">105</td><td><em>2</em>(4) <em>3</em>(2) <em>4</em>(18) <em>5</em>(4) 6(27) <em>7</em>(4) <em>8</em>(30) <em>10</em>(11) <em>12</em>(4)</td></tr>
-      <tr><td>Alignment nudges</td><td class="n">5</td><td class="n">11</td><td>Hand-set <code>margin-top</code> 1, 2, 3, <code>vertical-align</code> −2, −3 and <code>top: 1</code> to sit icons on their text</td></tr>
-      <tr><td>Icon colour</td><td class="n">4</td><td class="n">—</td><td>Ink 2, ink, type colour, and <em>ink 3</em> on 16 icon rules (e.g. homes.css:110, current-sidebar.css:21, dump-log.css:19)</td></tr>
-    </tbody>
-  </table>
-  <ul class="offenders">
-    <li><b>One object, four sizes.</b> The Prototype glyph is 12 on cards (atoms.tsx:131), 13 in the sidebar (current-sidebar.tsx:91, :95) and 14 as a status glyph (atoms.tsx:163); Theme is 15 and 13 on the timeline (timeline2-shared.tsx:111, :139).</li>
-    <li><b>X means four things:</b> Close (app-shell.tsx:257), Remove evidence (panes.tsx:113), Discard a suggestion (panes.tsx:143, draft-edge.tsx:57) and Dismiss error (app-shell.tsx:285).</li>
-    <li><b>Trash means two things</b> (Delete a dump, dump-log.tsx:103; Retire a theory or theme, panes.tsx:137, :198), and <b>Discard has two icons</b> (X at panes.tsx:143, Trash at panes.tsx:113).</li>
-    <li><b>Arrow up means three things:</b> Supports (panes.tsx:105), Confidence rose (confidence-spark.tsx:40) and Send (atoms.tsx:52).</li>
-    <li><b>Plus and minus</b> mean add, file in a theme, zoom in and later; unfile, zoom out and earlier (atlas2.tsx:287, panes.tsx:113, :150). <b>Check</b> means Accept, Seen and Keep merge (panes.tsx:143, briefing-app.tsx:112, :90).</li>
-    <li>11 hand nudges for alignment (briefing-app.css:41, :47; panes.css:62, :103; homes.css:163, :186, :310; tripwire.css:28; pill-study.css:285, :330; confidence-spark.css:21): each icon placed by eye.</li>
-    <li>Ten icons bypass <code>&lt;Icon&gt;</code> and import Phosphor directly (pill-study.tsx, icons-explore.tsx). The grammar stage itself used the Theme glyph for "Filter by theme".</li>
+<section class="pg-decided">
+  <h2>Decided</h2>
+  <ul class="pg-list">
+    <li><b>Set</b>Phosphor; Regular at rest, Fill only for the current or selected thing</li>
+    <li><b>X</b>only closes transient surfaces</li>
   </ul>
 </section>
 
+<details class="pg-details" id="d-rules">
+  <summary><span class="pg-dt">Rules</span><span class="pg-ds">Size, slot, alignment, buttons, tooltips, colour, one icon per meaning</span></summary>
 <section class="jig-section" id="rules">
-  <h2>The rules (decided 4 Nov 2026)</h2>
   <ol class="rules">
     <li><b>Phosphor only, Regular at rest.</b> Fill marks the current or selected thing (the current view, a pressed toggle) and nothing else. No Light, Bold or Duotone.</li>
     <li><b>Icons are 16, beside 13 body.</b> 14 beside 12px text (chips, card meta, evidence headers, buttons). Nothing smaller than 14. No icon sits beside an 11 count or the 24 title.</li>
@@ -126,21 +113,11 @@
     </tbody>
   </table>
 </section>
+</details>
 
-<section class="jig-section" id="stage">
-  <h2>The stage, built only from these rules</h2>
-  <div class="viewer-bar">
-    <span class="seg" data-seg="view"><span>View</span><span class="seg-group"><button type="button" value="sections" aria-pressed="true">Sections</button><button type="button" value="columns">Columns</button><button type="button" value="atlas">Atlas</button><button type="button" value="timeline">Timeline</button></span></span>
-    <span class="seg" data-seg="iconsize"><span>Icon size</span><span class="seg-group"><button type="button" value="one">16</button><button type="button" value="two" aria-pressed="true">16 and 14</button></span></span>
-    <span class="seg" data-seg="tile"><span>Tiles</span><span class="seg-group"><button type="button" value="lists">Lists and headers</button><button type="button" value="always" aria-pressed="true">Everywhere</button><button type="button" value="never">Never</button></span></span>
-    <span class="seg" data-seg="overlay"><span>Show icon specs</span><span class="seg-group"><button type="button" value="off" aria-pressed="true">Off</button><button type="button" value="on">On</button></span></span>
-  </div>
-  <p class="stage-label">The app's layout. Hover any icon button for its tooltip; Close shows one pinned. Show icon specs labels each icon with its role, size, weight and slot, and dashes each button's 40 hit area.</p>
-  <div class="stg-host" id="viewer" data-stage='{"view":"sections","icons":1,"iconsize":"two","tile":"always"}'></div>
-</section>
-
+<details class="pg-details" id="d-views">
+  <summary><span class="pg-dt">Four views</span><span class="pg-ds">Sections, Columns, Atlas and Timeline with icon specs</span></summary>
 <section class="jig-section" id="views">
-  <h2>Same rules, four views</h2>
   <div class="views-grid" data-iconoverlay>
     <div><p class="view-name">Theme sections</p><div class="stg-host" data-stage='{"view":"sections","icons":1}'></div></div>
     <div><p class="view-name">Columns</p><div class="stg-host" data-stage='{"view":"columns","icons":1}'></div></div>
@@ -148,23 +125,57 @@
     <div><p class="view-name">Timeline</p><div class="stg-host" data-stage='{"view":"timeline","icons":1}'></div></div>
   </div>
 </section>
+</details>
 
+<details class="pg-details" id="d-size">
+  <summary><span class="pg-dt">Options weighed: size beside 12px text</span><span class="pg-ds">16 everywhere, or 16 and 14</span></summary>
 <section class="jig-section" id="size" data-decision="size" data-question="1. What size are icons beside 12px text?" data-default="B 16 and 14">
-  <p>Beside 13 body every icon is 16. The question is the 12px places: chips, card meta, the evidence headers and buttons. Look at the theme chip, Rival, the related chips and the prototype count on the cards.</p>
+  <p>Beside 13 body every icon is 16. This is about the 12px places: chips, card meta, evidence headers and buttons.</p>
   <div class="jig-compare" style="--jig-min:440px">
     <div class="jig-option" data-option="A 16 everywhere"><div class="jig-label"><b>A</b> One size: 16 everywhere</div><p class="jig-note">One number to remember; glyphs read clearly in chips. The glyph is taller than the 12px text beside it.</p><div class="stg-host" data-option-stage data-stage='{"icons":1,"iconsize":"one"}'></div></div>
     <div class="jig-option" data-option="B 16 and 14"><div class="jig-label"><b>B</b> Two sizes: 16 beside 13, 14 beside 12</div><p class="jig-note">Each icon keeps the same ratio to its text (1.2×), so chips and meta sit quieter. Two sizes to keep straight.</p><div class="stg-host" data-option-stage data-stage='{"icons":1,"iconsize":"two"}'></div></div>
   </div>
 </section>
+</details>
 
+<details class="pg-details" id="d-tile">
+  <summary><span class="pg-dt">Options weighed: glyph tiles</span><span class="pg-ds">In lists and headers, everywhere, or never</span></summary>
 <section class="jig-section" id="tile" data-decision="tile" data-question="2. Where do object glyphs sit on their pale tile?" data-default="B everywhere">
-  <p>The tile is 24 with the 16 glyph inside. Look at the section headers, the evidence rows, the chips in the pane and the card meta.</p>
+  <p>The tile is 24 with the 16 glyph inside.</p>
   <div class="jig-compare" style="--jig-min:300px">
     <div class="jig-option" data-option="A lists and headers"><div class="jig-label"><b>A</b> In lists and headers</div><p class="jig-note">Tiles mark the start of a row or group: section heads, rail, evidence, tripwire, map labels. Chips and inline meta show the bare glyph.</p><div class="stg-host" data-option-stage data-stage='{"icons":1,"tile":"lists"}'></div></div>
     <div class="jig-option" data-option="B everywhere"><div class="jig-label"><b>B</b> Everywhere</div><p class="jig-note">Every object glyph sits on its tile, including chips (flush in the corner) and card meta. Most colour; most consistent.</p><div class="stg-host" data-option-stage data-stage='{"icons":1,"tile":"always"}'></div></div>
     <div class="jig-option" data-option="C never"><div class="jig-label"><b>C</b> Never</div><p class="jig-note">Bare glyphs only; the glyph colour alone carries the type. Quietest; rows lose a strong left edge.</p><div class="stg-host" data-option-stage data-stage='{"icons":1,"tile":"never"}'></div></div>
   </div>
 </section>
+</details>
+
+<details class="pg-details" id="d-today">
+  <summary><span class="pg-dt">Today, measured</span><span class="pg-ds">Every icon call and icon rule in the current code</span></summary>
+<section class="jig-section" id="today">
+  <p>Every icon in the canonical code: the <code>&lt;Icon&gt;</code> calls and icon CSS in <code>app/web/src/ui/</code> and <code>jig/src/homes/</code> (near-copies of each other; counts are both together).</p>
+  <table class="audit">
+    <thead><tr><th>Property</th><th>Distinct</th><th>Uses</th><th>Values in use (count)</th></tr></thead>
+    <tbody>
+      <tr><td>Icon size (px)</td><td class="n">6</td><td class="n">159</td><td><em>11</em>(5) <em>12</em>(83) <em>13</em>(5) 14(28) <em>15</em>(6) 16(32). More than half are 12, smaller than the 13 text beside them.</td></tr>
+      <tr><td>Weight</td><td class="n">2</td><td class="n">159</td><td>Regular(141), Fill only when pressed, selected or current(14), 4 hard-coded in pill-study. Already consistent.</td></tr>
+      <tr><td>Icon-only button box (px)</td><td class="n">9</td><td class="n">47</td><td><em>16</em> <em>18</em> <em>20</em> 24 <em>26</em> 28 <em>32</em> <em>40</em> <em>44</em>. <code>.ap-iconbtn</code> is 28 (homes.css:25); the view switch is 32 (app-shell.css:32).</td></tr>
+      <tr><td>Icon to text gap (px)</td><td class="n">9</td><td class="n">105</td><td><em>2</em>(4) <em>3</em>(2) <em>4</em>(18) <em>5</em>(4) 6(27) <em>7</em>(4) <em>8</em>(30) <em>10</em>(11) <em>12</em>(4)</td></tr>
+      <tr><td>Alignment nudges</td><td class="n">5</td><td class="n">11</td><td>Hand-set <code>margin-top</code> 1, 2, 3, <code>vertical-align</code> −2, −3 and <code>top: 1</code> to sit icons on their text</td></tr>
+      <tr><td>Icon colour</td><td class="n">4</td><td class="n">—</td><td>Ink 2, ink, type colour, and <em>ink 3</em> on 16 icon rules (e.g. homes.css:110, current-sidebar.css:21, dump-log.css:19)</td></tr>
+    </tbody>
+  </table>
+  <ul class="offenders">
+    <li><b>One object, four sizes.</b> The Prototype glyph is 12 on cards (atoms.tsx:131), 13 in the sidebar (current-sidebar.tsx:91, :95) and 14 as a status glyph (atoms.tsx:163); Theme is 15 and 13 on the timeline (timeline2-shared.tsx:111, :139).</li>
+    <li><b>X means four things:</b> Close (app-shell.tsx:257), Remove evidence (panes.tsx:113), Discard a suggestion (panes.tsx:143, draft-edge.tsx:57) and Dismiss error (app-shell.tsx:285).</li>
+    <li><b>Trash means two things</b> (Delete a dump, dump-log.tsx:103; Retire a theory or theme, panes.tsx:137, :198), and <b>Discard has two icons</b> (X at panes.tsx:143, Trash at panes.tsx:113).</li>
+    <li><b>Arrow up means three things:</b> Supports (panes.tsx:105), Confidence rose (confidence-spark.tsx:40) and Send (atoms.tsx:52).</li>
+    <li><b>Plus and minus</b> mean add, file in a theme, zoom in and later; unfile, zoom out and earlier (atlas2.tsx:287, panes.tsx:113, :150). <b>Check</b> means Accept, Seen and Keep merge (panes.tsx:143, briefing-app.tsx:112, :90).</li>
+    <li>11 hand nudges for alignment (briefing-app.css:41, :47; panes.css:62, :103; homes.css:163, :186, :310; tripwire.css:28; pill-study.css:285, :330; confidence-spark.css:21): each icon placed by eye.</li>
+    <li>Ten icons bypass <code>&lt;Icon&gt;</code> and import Phosphor directly (pill-study.tsx, icons-explore.tsx). The grammar stage itself used the Theme glyph for "Filter by theme".</li>
+  </ul>
+</section>
+</details>
 
 </body>
 </html>

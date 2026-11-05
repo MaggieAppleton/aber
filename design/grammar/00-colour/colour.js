@@ -1,7 +1,5 @@
-// Grammar 00: full-size viewer, token strips with live contrast checks, the decide box and the colour dials.
+// Grammar 00: full-size viewer, token strips with live contrast checks and the colour dials.
 (() => {
-  // The shell's Copy choices dock lives in the page header, so it never covers a stage
-  addEventListener("load", () => { const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d); });
   const root = document.documentElement;
   const TYPES = { dump: "tray-arrow-down", signal: "pulse", theme: "binoculars", theory: "target", prototype: "pencil-ruler", tripwire: "signpost" };
 
@@ -50,17 +48,10 @@
     }
   };
 
-  // Decide box
-  const paintPick = () => {
-    let v = null; try { v = JSON.parse(localStorage.getItem("jig:grammar-00-colour:system"))?.choice; } catch {}
-    document.querySelector("[data-pick] .pick").innerHTML = v ? `Current pick: <b>${v}</b>` : "No pick yet";
-  };
-  document.addEventListener("click", e => { if (e.target.closest(".jig-choose")) setTimeout(paintPick, 0); });
-
   // Dials
   const DIALS = { neutralTone: { token: "--tone", def: [0, -1, 1, 0.05] }, typeColour: { token: "--type-k", def: [1, 0, 1, 0.05] } };
   const start = () => {
-    paintPick(); check();
+    check();
     if (!window.DialKit) return console.warn("Dial Kit did not load");
     window.DialKit.createDialRoot({ position: "top-right", defaultOpen: matchMedia("(min-width: 1100px)").matches, theme: "light" });
     const config = Object.fromEntries(Object.entries(DIALS).map(([k, d]) => [k, d.def]));

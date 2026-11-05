@@ -21,7 +21,10 @@
 <link rel="stylesheet" href="../_shared/controls.css">
 <link rel="stylesheet" href="objects.css">
 <link rel="stylesheet" href="page.css">
+<link rel="stylesheet" href="../_shared/page.css">
 <script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/manifest.js" defer></script>
+<script src="../_shared/page.js" defer></script>
 <script src="objects.js" defer></script>
 <script src="frames.js" defer></script>
 <script src="page.js" defer></script>
@@ -31,38 +34,33 @@
 </head>
 <body class="jig" data-jig="grammar-06-objects" data-align="c" data-challenge="c" data-fresh="weight">
 
-<header class="jig-head">
-  <h1>Grammar 06: Objects, preview, peek, full</h1>
-  <p><b>Decided 4 Nov 2026.</b> Every object in Aber follows one anatomy and appears at three rungs: a <b>preview</b> where it's mentioned (a list row, a card, a chip), a <b>peek</b> that grows from that preview, and a <b>full</b> view that fills the main area. Built only from 00–05 and the decided type-first navigation. The list rows here replace the nav jig's placeholders.</p>
-</header>
+<header class="pg-head"></header>
 
-<div class="decide">
-  <div class="decide-box">
-    <h2>Decided 4 Nov (Maggie): her picks on this page</h2>
-    <ol>
-      <li data-pick="align"><a href="#align">Tile and text alignment</a> <span class="pick"></span><span class="why">Decided c. The tile sits inside the name's first line, 2px above the capitals, so one-line and two-line rows align the same way and nothing overhangs; 18 with a 14 glyph is already 03's card-meta tile.</span></li>
-      <li data-pick="challenge"><a href="#challenge">A challenged theory on previews</a> <span class="pick"></span><span class="why">Decided c. It follows "beautiful or not at all"; a challenge still can't be missed, because Briefing lists it first and the peek and full view open on the tripped tripwire.</span></li>
-      <li data-pick="fresh"><a href="#fresh">Unseen activity: nothing on objects, unread weight, or text</a> <span class="pick"></span><span class="why">Decided b. Rows with unseen activity set their name in ink at 600; seen rows keep their usual weight. Cards and peeks are unchanged (their names are already 600, and only signals and themes have unseen activity, which show as rows).</span></li>
-      <li data-pick="peek"><a href="#peek">Peek: essentials and relations, or essentials only</a> <span class="pick"></span><span class="why">Decided a. A peek should answer "what is this tied to" without costing your place.</span></li>
-      <li data-pick="full"><a href="#full">Full view: prose first, or a fields table</a> <span class="pick"></span><span class="why">Decided a. The key line under the title carries the same values with no labels; you called the label table noisy (DI-010).</span></li>
-    </ol>
-    <h2 class="decided-h">Decided 4 Nov (Maggie)</h2>
-    <ul class="decided">
-      <li><b>Pending suggestions are not shown on previews.</b> No count or mark on rows, cards or chips; suggestions appear in the peek, the full view and Briefing home. "If we can't find a beautiful way to show it, we should not show it."</li>
-      <li><b>No jade "new" dot on objects.</b> How unseen activity shows, if at all, is choice 1.</li>
-      <li><b>Short labels are one compact line:</b> themes and prototypes show the tile, the name in ink 2 and a bare count or status glyph at the right. Sentences (theories, signals, dumps) keep two lines.</li>
-      <li><b>No red challenge dot</b> on previews or cards. Tripwire text is ink; only the Signpost glyph is red.</li>
-      <li><b>Counts are a bare glyph and a number</b>, no noun: a theme's peek reads [Target] 5 [Pulse] 23 on the title's line.</li>
-      <li><b>A peek shows as many relations as fit, then fades out</b> at the bottom (a surface-colour gradient). No scrolling, no "Show more"; Open shows everything.</li>
-      <li><b>Confidence on previews is a small meter track</b> right of the name (06b option C); the full view keeps the five-segment setter with its history.</li>
-      <li><b>Briefing is the first rail item</b> and the default on open; "Aber" is just the app name.</li>
-      <li><b>Signals always show Pulse</b> on their tile; kind, if shown, is text.</li>
-    </ul>
-  </div>
-</div>
+<section class="jig-section" id="context">
+  <h2>In context</h2>
+  <p>The default view opens on Briefing. Pick a type, then an item; point at or click any row, card or chip to peek, Open to go there, Back to return.</p>
+  <div class="ob-host" id="hero" data-follows-picks data-ob='{"frame":"app","type":"home"}'></div>
+  <h3 class="sub">Columns, with the same previews</h3>
+  <p class="lede">Columns keeps its layout and docked pane; only the objects change. Click a card to open it in the pane.</p>
+  <div class="ob-host" id="columns" data-follows-picks data-ob='{"frame":"columns","pane":"t1"}'></div>
+</section>
 
+<section class="pg-decided">
+  <h2>Decided</h2>
+  <ul class="pg-list">
+    <li><b>Suggestions on previews</b>Not shown; they appear in the peek, full view and Briefing</li>
+    <li><b>No dots</b>No jade new dot and no red challenge dot on previews or cards</li>
+    <li><b>Short labels</b>Themes and prototypes are one line; theories, signals and dumps keep two</li>
+    <li><b>Counts</b>A bare glyph and a number, no noun</li>
+    <li><b>Peek overflow</b>As many relations as fit, then a fade; Open shows everything</li>
+    <li><b>Confidence</b>A small meter right of the name on previews; the setter in full (06b)</li>
+    <li><b>Signals</b>Always the Pulse glyph; kind, if shown, is text</li>
+  </ul>
+</section>
+
+<details class="pg-details" id="d-grammar">
+  <summary><span class="pg-dt">The object grammar</span><span class="pg-ds">One anatomy, the same slots in the same order at every rung, and the attribute ranking</span></summary>
 <section class="jig-section" id="grammar">
-  <h2>The object grammar</h2>
   <p>One anatomy, the same slots in the same order at every rung. The tile hangs in its own column; everything else shares the name's left edge (the two guides below).</p>
   <ol class="rules">
     <li><b>1 Tile:</b> the type's glyph on its tile, the same 24 tile at every level. A signal is always Pulse; its kind, if shown, is text in the key value. No type word is ever written.</li>
@@ -94,34 +92,34 @@
   </table>
   </div>
 </section>
+</details>
 
+<details class="pg-details" id="d-matrix">
+  <summary><span class="pg-dt">The matrix</span><span class="pg-ds">Every object at every rung, from the same four components</span></summary>
 <section class="jig-section wide" id="matrix">
-  <h2>The matrix</h2>
   <p>Read down a column to see every object at one rung. Every cell comes from the same four components. Hover a row or card to see its date. Click a full view to open it at full size.</p>
   <div class="mx" id="matrix-grid"></div>
 </section>
+</details>
 
-<section class="jig-section" id="context">
-  <h2>In context</h2>
-  <p>The type-first default view with the new rows, peeks and full views. It opens on Briefing, the first item in the rail. Pick a type in the rail, then an item. Point at or click any row, card or chip in the main area to peek; Open goes there, and Back returns. This window follows the three picks.</p>
-  <div class="ob-host" id="hero" data-follows-picks data-ob='{"frame":"app","type":"home"}'></div>
-  <h3 class="sub">Columns, with the same previews</h3>
-  <p class="lede">Columns keeps today's layout and docked pane; only the objects change. Themes are one-line rows, theories are cards, and the pane holds the full view. Click a card to open it in the pane.</p>
-  <div class="ob-host" id="columns" data-follows-picks data-ob='{"frame":"columns","pane":"t1"}'></div>
-</section>
-
-<section class="jig-section" id="before">
-  <h2>Before and after</h2>
-  <p>Today's rows and cards from /app (screenshots) beside the proposed previews. The theory card keeps what worked: the claim at card weight with confidence beneath it.</p>
-  <div class="ba-grid" id="ba-grid"></div>
-</section>
-
+<details class="pg-details" id="d-states">
+  <summary><span class="pg-dt">States</span><span class="pg-ds">One treatment per state at every rung</span></summary>
 <section class="jig-section wide" id="states">
-  <h2>States</h2>
   <p>One treatment per state, the same at every rung. Hover reveals dates and the Remove action; selected is the neutral raise; drafts are dashed; the only mark is red, for a challenge. Unseen activity is choice 1.</p>
   <div class="board-wrap"><div class="st-grid" id="states-grid"></div></div>
 </section>
+</details>
 
+<details class="pg-details" id="d-before">
+  <summary><span class="pg-dt">Before and after</span><span class="pg-ds">Today's rows and cards beside the new previews</span></summary>
+<section class="jig-section" id="before">
+  <p>Today's rows and cards from /app (screenshots) beside the proposed previews. The theory card keeps what worked: the claim at card weight with confidence beneath it.</p>
+  <div class="ba-grid" id="ba-grid"></div>
+</section>
+</details>
+
+<details class="pg-details" id="d-options">
+  <summary><span class="pg-dt">Options weighed</span><span class="pg-ds">Tile alignment, challenges, unseen activity, peek and full view against their alternatives</span></summary>
 <section class="jig-section" id="align" data-decision="align" data-question="1. How does a tile line up with its text?" data-default="c Smaller tile, centred">
   <p class="lede">Today (03 rule 4) a 24 tile is centred on an 18.2 line, so its top sits 2.9px above the line box and 7.3px above the capitals: it reads as too high beside two-line names. Each window opens a peek on the Theories list. This changes the decided 03 alignment rule (proposed amendment).</p>
   <div class="jig-compare" style="--jig-min:100%">
@@ -133,7 +131,6 @@
       <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theory","opt":{"align":"c"},"peekOn":"s1"}'></div></div>
   </div>
 </section>
-
 <section class="jig-section" id="challenge" data-decision="challenge" data-question="2. How does a challenged theory show on its previews?" data-default="c Not on previews">
   <p class="lede">A challenge means a new signal matched the theory's tripwire ("what would change my mind"). The red dot is gone. Each option shows the Theories list with "Agents keep context across months" open, and Columns with its card.</p>
   <div class="jig-compare" style="--jig-min:100%">
@@ -148,7 +145,6 @@
       <div class="ob-host" data-ob='{"frame":"columns","colTheme":"mem","pane":"t4","opt":{"challenge":"c"}}'></div></div>
   </div>
 </section>
-
 <section class="jig-section" id="fresh" data-decision="fresh" data-question="3. How does unseen activity show on objects, if at all?" data-default="b Unread weight">
   <p class="lede">The dot meant "arrived since you last looked": a signal you haven't seen, or a theme with signals you haven't seen (design model: a signal's seen state; a theme's new count). Each window shows the Themes list and Cost of intelligence, which has 3 unseen signals.</p>
   <div class="jig-compare" style="--jig-min:100%">
@@ -160,7 +156,6 @@
       <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theme","opt":{"fresh":"text"}}'></div></div>
   </div>
 </section>
-
 <section class="jig-section" id="peek" data-decision="peek" data-question="4. What does a peek show?" data-default="a Essentials and relations">
   <div class="jig-compare" style="--jig-min:100%">
     <div class="jig-option" data-option="a Essentials and relations"><div class="jig-label"><b>a</b> Its essentials, then up to three of its most important relations</div><p class="jig-note">Clicking a relation peeks it in place; you can walk a chain without leaving the page you're on.</p>
@@ -169,7 +164,6 @@
       <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theory","opt":{"peek":"own"},"peekOn":"s1"}'></div></div>
   </div>
 </section>
-
 <section class="jig-section" id="full" data-decision="full" data-question="5. How does a full view lay out its attributes?" data-default="a Prose first">
   <div class="jig-compare" style="--jig-min:100%">
     <div class="jig-option" data-option="a Prose first"><div class="jig-label"><b>a</b> Prose first: a key line under the title, no labels</div><p class="jig-note">The same values as the peek's key line, now editable in place, then the note.</p>
@@ -178,6 +172,7 @@
       <div class="ob-host" data-option-stage data-ob='{"frame":"app","type":"theory","opt":{"full":"fields"}}'></div></div>
   </div>
 </section>
+</details>
 
 <dialog class="big" id="big" aria-label="Full view at full size">
   <div class="big-bar"><button type="button" class="big-x" data-big-close aria-label="Close"><i class="ph ph-x" aria-hidden="true"></i></button></div>

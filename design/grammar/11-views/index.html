@@ -20,7 +20,10 @@
 <link rel="stylesheet" href="../_shared/objects.css">
 <link rel="stylesheet" href="views.css">
 <link rel="stylesheet" href="page.css">
+<link rel="stylesheet" href="../_shared/page.css">
 <script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/manifest.js" defer></script>
+<script src="../_shared/page.js" defer></script>
 <script src="../_shared/objects.js" defer></script>
 <script src="views.js" defer></script>
 <script src="page.js" defer></script>
@@ -28,103 +31,30 @@
 </head>
 <body class="jig" data-jig="grammar-11-views">
 
-<header class="jig-head">
-  <h1>Grammar 11: Columns, Atlas, Timeline</h1>
-  <p><b>Proposed, 4 Nov 2026.</b> Maggie: "I want Columns, Map and Atlas to stay as they are." So this is a restyle and detail fix, not a restructure. Each view keeps today's layout, navigation and docked pane exactly; only values change, and every value comes from the decided foundations: colour D, Regular spacing, type scale B, icons 16 and 14 with tiles, surfaces and tiers, and the 05 controls.</p>
-  <p>Every stage is live: click a theme, theory, territory or timeline item and the pane slides in; Esc, X or empty canvas closes it. The view switcher inside a stage switches views. Pane contents, object cards and rows, and the Dump or ask pill are <b>placeholders</b> (06 Objects and 07 Rungs design them); approving a view here approves only the view.</p>
-</header>
+<header class="pg-head"></header>
 
-<div class="decide">
-  <div class="decide-box">
-    <h2>Decide on this page</h2>
-    <ol>
-      <li data-pick="dim"><a href="#dim">With something open, how unrelated objects recede</a> <span class="pick"></span></li>
-      <li data-pick="size"><a href="#size">What an Atlas territory's size means</a> <span class="pick"></span></li>
-      <li data-pick="labels"><a href="#labels">When theory names show on the Atlas</a> <span class="pick"></span></li>
-    </ol>
-  </div>
-</div>
-
-<section class="jig-section" id="today">
-  <h2>Today, measured</h2>
-  <p>The app's three views (<code>app/web/src/ui/</code>; <code>jig/src/homes/</code> holds near-copies) against RULES 00–05.</p>
-  <ul class="headline">
-    <li><b>Shared chrome.</b> Each view draws its own floating controls in a different recipe, and the pane pads 40 / 48 instead of the pane inset.</li>
-    <li><b>Columns.</b> The closest to the rules. The problems are details: theory cards 4 apart with 8 / 10 insets, 44 rails with ink 3 icons and black count badges, and an open card that sinks instead of rising.</li>
-    <li><b>Atlas.</b> Worst for legibility. Names collide with discs and pins, disc size encodes nothing, theory names hide until zoom 1.6, and the map has its own ground and ink 3 text.</li>
-    <li><b>Timeline.</b> Its type is off-role: labels are 13 / 500 with a triple text-shadow halo and the year axis is ink 3. Empty lanes are as tall as full ones, and filtering uses the Theme glyph as a control.</li>
-  </ul>
-  <div class="table-wrap">
-  <table class="audit">
-    <thead><tr><th>View</th><th>What's there</th><th>Where</th></tr></thead>
-    <tbody>
-      <tr><td>All three</td><td>View switcher is a <em>40 bar with 32 buttons, radius 20</em>, ink 3 icons, press 0.94 (rule: 32 bar, 28 segments, radius 14, ink 2, 0.98)</td><td class="loc">app-shell.css:31–34</td></tr>
-      <tr><td></td><td>Pane pads <em>40 / 48</em> (Columns, Atlas) and <em>40 / 36</em> (Timeline); rule: 20 / 24. Close sits 10 in, off the content edge</td><td class="loc">app-shell.css:26, :13; timeline2.css:9–10</td></tr>
-      <tr><td></td><td>Pane docks on a 500ms spring with bounce; contents cross-fade 140ms (rule: spring 380, fades 160)</td><td class="loc">app-shell.tsx:31, :261</td></tr>
-      <tr><td></td><td>Three dim values for "not related": 0.32, 0.18, 0.25 / 0.3 / 0.2</td><td class="loc">homes.css:299; timeline2.css:62, :111–120</td></tr>
-      <tr><td>Columns</td><td>Column head <em>44 high, padded 0 6 0 14</em>; theory column 300 (rule <code>--list-w</code> 296)</td><td class="loc">homes.css:280; columns2.tsx:22</td></tr>
-      <tr><td></td><td>Theory cards <em>4 apart</em>, radius 8, inset 8 / 10 (rule: 8 apart, radius 7, inset 12)</td><td class="loc">homes.css:293–294, :300</td></tr>
-      <tr><td></td><td>Open card <em>sinks</em> (sunk fill + selection shadow, both <code>!important</code>); rule: selected raises (<code>--sel</code>)</td><td class="loc">homes.css:298</td></tr>
-      <tr><td></td><td>Rails 44 wide, icons <em>ink 3</em>, no tile; related counts are <em>ink-filled 11 / 600 badges</em></td><td class="loc">homes.css:318, :322</td></tr>
-      <tr><td></td><td>"More above/below" pill: 20 high, 11 / 600 on ink, press 0.94; transitions 200, 150, 120, 100ms</td><td class="loc">homes.css:288–294</td></tr>
-      <tr><td>Atlas</td><td>Own ground <code>rgb(246 245 241)</code> instead of the ground token</td><td class="loc">atlas2.css:2</td></tr>
-      <tr><td></td><td>Disc size encodes nothing: Personal software (27 signals) is drawn smaller than Cost of intelligence (23); the count beside a name doesn't match its pane</td><td class="loc">measured in /app</td></tr>
-      <tr><td></td><td>Names collide: "AI funding cycle" sits on Frontier's pin inside Cost's disc; "Cost of intelligence" sits inside Personal software's</td><td class="loc">atlas2.tsx label at disc top + 16</td></tr>
-      <tr><td></td><td>Theory names hidden below zoom 1.6, so at rest pins can't be told apart</td><td class="loc">atlas2.tsx:54</td></tr>
-      <tr><td></td><td>Signal counts in <em>ink 3 text</em>; claim labels <em>12 / 600, line 16</em>, radius 4, padding 2 / 5 (rule: list name 13 / 400)</td><td class="loc">atlas2.css:48, :38–39</td></tr>
-      <tr><td></td><td>Zoom box radius 8 with the card shadow; focus is a 1.5 <em>ink 3 ring</em> on map, discs and zoom (rule: the jade ring)</td><td class="loc">atlas2.css:95, :6, :15, :97</td></tr>
-      <tr><td>Timeline</td><td>Item labels <em>13 / 500, line 17</em>, with a triple text-shadow halo; dot 10, gap 7</td><td class="loc">timeline2.css:59, :65, :69</td></tr>
-      <tr><td></td><td>Year axis <em>12 / 500 ink 3</em> (ink 3 is never text)</td><td class="loc">timeline2.css:50</td></tr>
-      <tr><td></td><td>Toolbar: separate 32 squares, radius 8, card shadow, press 0.96; filter uses <em>Binoculars</em>, the Theme glyph, as a control</td><td class="loc">timeline2.css:13–16</td></tr>
-      <tr><td></td><td>Plot inset 72 / 74 / 12 (off-scale); an empty lane is as tall as a full one</td><td class="loc">timeline2-fieldx.tsx:23</td></tr>
-      <tr><td></td><td>Selected dot: its own ring and drop shadow, not <code>--sel</code>; focus offset 1</td><td class="loc">timeline2.css:64, :68</td></tr>
-    </tbody>
-  </table>
+<section class="jig-section wide" id="dim" data-decision="dim" data-question="1. With something open, how do unrelated objects recede?" data-default="A fade">
+  <p class="lede">One treatment in all three views. Each stage has a theory open; switch views with its view switcher.</p>
+  <div class="jig-compare">
+    <div class="jig-option" data-option="A fade"><div class="jig-label"><b>A</b> Fade to 40%</div><p class="jig-note">Today's approach, one value instead of five. It borrows disabled's 40%, so faded cards can look broken.</p><div data-option-stage data-v11='{"view":"columns","sel":"t1","dim":"fade"}'></div></div>
+    <div class="jig-option" data-option="B recede"><div class="jig-label"><b>B</b> Flatten and quieten</div><p class="jig-note">Unrelated cards lose their surface and sit on the ground, text in ink 2. Still readable; only what relates keeps its height.</p><div data-option-stage data-v11='{"view":"columns","sel":"t1","dim":"recede"}'></div></div>
   </div>
 </section>
 
-<section class="jig-section" id="rules">
-  <h2>Rules for these three views (proposed)</h2>
-  <ol class="rules">
-    <li><b>Same layout, decided values.</b> Each view keeps today's layout, navigation and docked pane. Canvases sit on the ground, not a ground of their own; plot content starts at <code>--inset-canvas</code> (16).</li>
-    <li><b>One float bar recipe.</b> Each group of floating controls is one bar: surface, <code>--sh-float</code>, radius 14, 2 padding, 28 icon buttons (radius 12) with tooltips. Every bar sits <code>--inset-float</code> (12) from the window edge: the view switcher bottom-left, zoom (Atlas) and tools (Timeline) top-left.</li>
-    <li><b>The pane enters from its edge and pushes.</b> Pane and view move together on the 380ms spring, and the contents fade in over 160ms. Under reduced motion it cross-fades. Default widths stay today's: in Columns the pane takes what the rails leave, Atlas 940 (wide), Timeline 560. The pane pads <code>--inset-pane</code> (20 / 24). Close and full width sit in its 28 header row, glyphs on the content edge.</li>
-    <li><b>One selection grammar across the views.</b> The open object is the neutral raise (<code>--sel</code>) on a surface: a card, theme row, territory label, map label or timeline item. A pin gets a ground gap and an ink ring instead. Related objects stay as they are. Unrelated objects recede with one treatment (choice 1). Esc, X or a click on empty canvas closes the pane.</li>
-    <li><b>Columns.</b>
-      <ul>
-        <li>Widths are fixed: Themes 230 at nav inset, Theories <code>--list-w</code> 296 at list inset, Prototypes 220, Dumps 250, Signals 290.</li>
-        <li>Flows (dumps and signals) sit on sunk.</li>
-        <li>A column head is a 32 row: tile, then the section header (13 / 600 ink 2). Fold (<code>sidebar-simple</code>) shows on hover.</li>
-        <li>A folded column is a 40 rail: its tile on the head's centre line, then a plain count (11 / 500 ink 2) of objects related to what's open. No ink badge.</li>
-      </ul></li>
-    <li><b>Atlas encoding.</b>
-      <ul>
-        <li>A territory is a disc: 4% ink with the strong hairline; selected, 6% with a 1px ink 3 edge. Disc size is choice 2.</li>
-        <li>A theory is a pin whose size is its confidence (8 + 1.5 per step). Drafts are a dashed 10.</li>
-        <li>Text never scales with zoom: names are placed in screen space and stay 13.</li>
-      </ul></li>
-    <li><b>Map labels never collide.</b>
-      <ul>
-        <li>A territory name tries the inside top of its disc, then just above it, then the inside bottom.</li>
-        <li>A theory name tries the right of its pin, then the left, then centred below it.</li>
-        <li>No name covers another name, a pin or a floating control, and none leaves the map. A name with no clear place waits for hover. The open object's name always shows, and opening a territory names its theories. When the other theory names show is choice 3.</li>
-      </ul></li>
-    <li><b>Timeline lanes and axis.</b>
-      <ul>
-        <li>Years run across as meta (12 / 400 ink 2). Confidence runs down, 5 at the top, with drafts last behind a dashed dot.</li>
-        <li>The 56 gutter holds the confidence bars, centred on the first line.</li>
-        <li>An empty lane collapses to 40; populated lanes share the rest. Cells pad <code>--inset-row</code> and stack with <code>--gap-item</code>.</li>
-        <li>An item is an 8 dot and a list name (13 / 400 ink).</li>
-      </ul></li>
-    <li><b>Timeline with something open.</b>
-      <ul>
-        <li>Related items shrink to one line; unrelated items shrink to their dot.</li>
-        <li>Follows lines are 1.5 ink 2 elbows with a head. Rival lines are 1 ink 3 with no head.</li>
-        <li>Chain (<code>tree-structure</code>) shows only while something is open and extends the lines to the whole chain.</li>
-        <li>Filter by theme is the funnel, opening a tethered menu. Once set, it becomes a labelled button.</li>
-      </ul></li>
-    <li><b>Vocabulary.</b> One new row: <i>Fold a column</i> uses <code>sidebar-simple</code>, the Collapse sidebar glyph, because a folded column is a sidebar.</li>
-  </ol>
+<section class="jig-section wide" id="size" data-decision="size" data-question="2. What does a territory's size mean?" data-default="B area">
+  <p class="lede">Today discs are sized by hand, so Personal software looks smaller than Cost of intelligence despite having more signals. A size that looks like a quantity gets read as one.</p>
+  <div class="jig-compare">
+    <div class="jig-option" data-option="A placed"><div class="jig-label"><b>A</b> As placed today</div><p class="jig-note">The map as you know it. Size means nothing; the count beside each name does the work.</p><div data-option-stage data-v11='{"view":"atlas","size":"placed"}'></div></div>
+    <div class="jig-option" data-option="B area"><div class="jig-label"><b>B</b> Area is the theme's signals</div><p class="jig-note">Radius grows with the square root of signals, so area reads true. Positions stay; the map barely moves.</p><div data-option-stage data-v11='{"view":"atlas","size":"area"}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="labels" data-decision="labels" data-question="3. When do theory names show on the Atlas?" data-default="A on hover and zoom">
+  <p class="lede">Today a pin is anonymous until you zoom past 1.6 or hover. Either way names never collide.</p>
+  <div class="jig-compare">
+    <div class="jig-option" data-option="A on hover and zoom"><div class="jig-label"><b>A</b> On hover, on open, and when zoomed in</div><p class="jig-note">Today's behaviour: a map of themes, theories come forward when you look closer.</p><div data-option-stage data-v11='{"view":"atlas","labels":"hover"}'></div></div>
+    <div class="jig-option" data-option="B always"><div class="jig-label"><b>B</b> Always, wherever they fit</div><p class="jig-note">Every theory with room is named at rest. Readable without touching, at the cost of more text.</p><div data-option-stage data-v11='{"view":"atlas","labels":"always"}'></div></div>
+  </div>
 </section>
 
 <section class="jig-section wide cmp" id="columns" data-sel="t1">
@@ -139,7 +69,7 @@
   </div>
   <ul class="changes">
     <li>Column heads are a 32 row at the nav or list inset, with the type tile. Rails are 40 wide, with a tile and a plain count.</li>
-    <li>Theory cards are 8 apart with a 12 inset and radius 7. The open card rises (<code>--sel</code>) instead of sinking. Confidence is the 5-bar mark. No pending badge (suggestions show only in peek, full view and Briefing). No red challenge mark on theory cards, Atlas pins or timeline dots (decided 4 Nov); how a challenge shows is open in 06.</li>
+    <li>Theory cards are 8 apart with a 12 inset and radius 7. The open card rises (<code>--sel</code>) instead of sinking. Confidence is the 5-bar mark. No pending badge (suggestions show only in peek, full view and Briefing). No red challenge mark.</li>
     <li>Theme rows are 32 nav items; the current one is a raised surface. No new dot and no open ring: no mark without a clear, beautiful meaning.</li>
     <li>The pane pads 20 / 24 and enters from its edge on the spring.</li>
   </ul>
@@ -181,29 +111,90 @@
   </ul>
 </section>
 
-<section class="jig-section wide" id="dim" data-decision="dim" data-question="1. With something open, how do unrelated objects recede?" data-default="A fade">
-  <p>The same treatment in all three views: cards in Columns, discs and pins in Atlas, items in Timeline. Each stage has a theory open; switch views with its view switcher.</p>
-  <div class="jig-compare">
-    <div class="jig-option" data-option="A fade"><div class="jig-label"><b>A</b> Fade to 40%</div><p class="jig-note">Today's approach, one value instead of five. Simple, but it borrows disabled's 40%, and faded cards look broken rather than quiet.</p><div data-option-stage data-v11='{"view":"columns","sel":"t1","dim":"fade"}'></div></div>
-    <div class="jig-option" data-option="B recede"><div class="jig-label"><b>B</b> Flatten and quieten</div><p class="jig-note">Unrelated cards lose their surface and shadow and sit on the ground; text drops to ink 2, dots to ink 3. Everything stays readable, and only what relates keeps its height.</p><div data-option-stage data-v11='{"view":"columns","sel":"t1","dim":"recede"}'></div></div>
-  </div>
+<details class="pg-details" id="d-rules">
+  <summary><span class="pg-dt">Rules</span><span class="pg-ds">Proposed: same layouts, decided values, one float bar, one selection grammar, labels that never collide</span></summary>
+<section class="jig-section" id="rules">
+  <ol class="rules">
+    <li><b>Same layout, decided values.</b> Each view keeps today's layout, navigation and docked pane. Canvases sit on the ground, not a ground of their own; plot content starts at <code>--inset-canvas</code> (16).</li>
+    <li><b>One float bar recipe.</b> Each group of floating controls is one bar: surface, <code>--sh-float</code>, radius 14, 2 padding, 28 icon buttons (radius 12) with tooltips. Every bar sits <code>--inset-float</code> (12) from the window edge: the view switcher bottom-left, zoom (Atlas) and tools (Timeline) top-left.</li>
+    <li><b>The pane enters from its edge and pushes.</b> Pane and view move together on the 380ms spring, and the contents fade in over 160ms. Under reduced motion it cross-fades. Default widths stay today's: in Columns the pane takes what the rails leave, Atlas 940 (wide), Timeline 560. The pane pads <code>--inset-pane</code> (20 / 24). Close and full width sit in its 28 header row, glyphs on the content edge.</li>
+    <li><b>One selection grammar across the views.</b> The open object is the neutral raise (<code>--sel</code>) on a surface: a card, theme row, territory label, map label or timeline item. A pin gets a ground gap and an ink ring instead. Related objects stay as they are. Unrelated objects recede with one treatment (choice 1). Esc, X or a click on empty canvas closes the pane.</li>
+    <li><b>Columns.</b>
+      <ul>
+        <li>Widths are fixed: Themes 230 at nav inset, Theories <code>--list-w</code> 296 at list inset, Prototypes 220, Dumps 250, Signals 290.</li>
+        <li>Flows (dumps and signals) sit on sunk.</li>
+        <li>A column head is a 32 row: tile, then the section header (13 / 600 ink 2). Fold (<code>sidebar-simple</code>) shows on hover.</li>
+        <li>A folded column is a 40 rail: its tile on the head's centre line, then a plain count (11 / 500 ink 2) of objects related to what's open. No ink badge.</li>
+      </ul></li>
+    <li><b>Atlas encoding.</b>
+      <ul>
+        <li>A territory is a disc: 4% ink with the strong hairline; selected, 6% with a 1px ink 3 edge. Disc size is choice 2.</li>
+        <li>A theory is a pin whose size is its confidence (8 + 1.5 per step). Drafts are a dashed 10.</li>
+        <li>Text never scales with zoom: names are placed in screen space and stay 13.</li>
+      </ul></li>
+    <li><b>Map labels never collide.</b>
+      <ul>
+        <li>A territory name tries the inside top of its disc, then just above it, then the inside bottom.</li>
+        <li>A theory name tries the right of its pin, then the left, then centred below it.</li>
+        <li>No name covers another name, a pin or a floating control, and none leaves the map. A name with no clear place waits for hover. The open object's name always shows, and opening a territory names its theories. When the other theory names show is choice 3.</li>
+      </ul></li>
+    <li><b>Timeline lanes and axis.</b>
+      <ul>
+        <li>Years run across as meta (12 / 400 ink 2). Confidence runs down, 5 at the top, with drafts last behind a dashed dot.</li>
+        <li>The 56 gutter holds the confidence bars, centred on the first line.</li>
+        <li>An empty lane collapses to 40; populated lanes share the rest. Cells pad <code>--inset-row</code> and stack with <code>--gap-item</code>.</li>
+        <li>An item is an 8 dot and a list name (13 / 400 ink).</li>
+      </ul></li>
+    <li><b>Timeline with something open.</b>
+      <ul>
+        <li>Related items shrink to one line; unrelated items shrink to their dot.</li>
+        <li>Follows lines are 1.5 ink 2 elbows with a head. Rival lines are 1 ink 3 with no head.</li>
+        <li>Chain (<code>tree-structure</code>) shows only while something is open and extends the lines to the whole chain.</li>
+        <li>Filter by theme is the funnel, opening a tethered menu. Once set, it becomes a labelled button.</li>
+      </ul></li>
+    <li><b>Vocabulary.</b> One new row: <i>Fold a column</i> uses <code>sidebar-simple</code>, the Collapse sidebar glyph, because a folded column is a sidebar.</li>
+  </ol>
 </section>
+</details>
 
-<section class="jig-section wide" id="size" data-decision="size" data-question="2. What does a territory's size mean?" data-default="B area">
-  <p>Today the discs are sized by hand: Agent memory is the largest and Personal software looks smaller than Cost of intelligence despite having more signals. A size that looks like a quantity gets read as one.</p>
-  <div class="jig-compare">
-    <div class="jig-option" data-option="A placed"><div class="jig-label"><b>A</b> As placed today</div><p class="jig-note">Keeps the map exactly as Maggie knows it. Size means nothing, so the count beside each name does the work.</p><div data-option-stage data-v11='{"view":"atlas","size":"placed"}'></div></div>
-    <div class="jig-option" data-option="B area"><div class="jig-label"><b>B</b> Area is the theme's signals</div><p class="jig-note">Radius grows with the square root of signals, so area reads true. The positions stay; a theory in two themes sits in the middle of their overlap. The map barely moves.</p><div data-option-stage data-v11='{"view":"atlas","size":"area"}'></div></div>
+<details class="pg-details" id="d-today">
+  <summary><span class="pg-dt">Today, measured</span><span class="pg-ds">Columns is close; Atlas names collide and disc size means nothing; Timeline type is off-role</span></summary>
+<section class="jig-section" id="today">
+  <ul class="headline">
+    <li><b>Shared chrome.</b> Each view draws its own floating controls in a different recipe, and the pane pads 40 / 48 instead of the pane inset.</li>
+    <li><b>Columns.</b> The closest to the rules. The problems are details: theory cards 4 apart with 8 / 10 insets, 44 rails with ink 3 icons and black count badges, and an open card that sinks instead of rising.</li>
+    <li><b>Atlas.</b> Worst for legibility. Names collide with discs and pins, disc size encodes nothing, theory names hide until zoom 1.6, and the map has its own ground and ink 3 text.</li>
+    <li><b>Timeline.</b> Its type is off-role: labels are 13 / 500 with a triple text-shadow halo and the year axis is ink 3. Empty lanes are as tall as full ones, and filtering uses the Theme glyph as a control.</li>
+  </ul>
+  <div class="table-wrap">
+  <table class="audit">
+    <thead><tr><th>View</th><th>What's there</th><th>Where</th></tr></thead>
+    <tbody>
+      <tr><td>All three</td><td>View switcher is a <em>40 bar with 32 buttons, radius 20</em>, ink 3 icons, press 0.94 (rule: 32 bar, 28 segments, radius 14, ink 2, 0.98)</td><td class="loc">app-shell.css:31–34</td></tr>
+      <tr><td></td><td>Pane pads <em>40 / 48</em> (Columns, Atlas) and <em>40 / 36</em> (Timeline); rule: 20 / 24. Close sits 10 in, off the content edge</td><td class="loc">app-shell.css:26, :13; timeline2.css:9–10</td></tr>
+      <tr><td></td><td>Pane docks on a 500ms spring with bounce; contents cross-fade 140ms (rule: spring 380, fades 160)</td><td class="loc">app-shell.tsx:31, :261</td></tr>
+      <tr><td></td><td>Three dim values for "not related": 0.32, 0.18, 0.25 / 0.3 / 0.2</td><td class="loc">homes.css:299; timeline2.css:62, :111–120</td></tr>
+      <tr><td>Columns</td><td>Column head <em>44 high, padded 0 6 0 14</em>; theory column 300 (rule <code>--list-w</code> 296)</td><td class="loc">homes.css:280; columns2.tsx:22</td></tr>
+      <tr><td></td><td>Theory cards <em>4 apart</em>, radius 8, inset 8 / 10 (rule: 8 apart, radius 7, inset 12)</td><td class="loc">homes.css:293–294, :300</td></tr>
+      <tr><td></td><td>Open card <em>sinks</em> (sunk fill + selection shadow, both <code>!important</code>); rule: selected raises (<code>--sel</code>)</td><td class="loc">homes.css:298</td></tr>
+      <tr><td></td><td>Rails 44 wide, icons <em>ink 3</em>, no tile; related counts are <em>ink-filled 11 / 600 badges</em></td><td class="loc">homes.css:318, :322</td></tr>
+      <tr><td></td><td>"More above/below" pill: 20 high, 11 / 600 on ink, press 0.94; transitions 200, 150, 120, 100ms</td><td class="loc">homes.css:288–294</td></tr>
+      <tr><td>Atlas</td><td>Own ground <code>rgb(246 245 241)</code> instead of the ground token</td><td class="loc">atlas2.css:2</td></tr>
+      <tr><td></td><td>Disc size encodes nothing: Personal software (27 signals) is drawn smaller than Cost of intelligence (23); the count beside a name doesn't match its pane</td><td class="loc">measured in /app</td></tr>
+      <tr><td></td><td>Names collide: "AI funding cycle" sits on Frontier's pin inside Cost's disc; "Cost of intelligence" sits inside Personal software's</td><td class="loc">atlas2.tsx label at disc top + 16</td></tr>
+      <tr><td></td><td>Theory names hidden below zoom 1.6, so at rest pins can't be told apart</td><td class="loc">atlas2.tsx:54</td></tr>
+      <tr><td></td><td>Signal counts in <em>ink 3 text</em>; claim labels <em>12 / 600, line 16</em>, radius 4, padding 2 / 5 (rule: list name 13 / 400)</td><td class="loc">atlas2.css:48, :38–39</td></tr>
+      <tr><td></td><td>Zoom box radius 8 with the card shadow; focus is a 1.5 <em>ink 3 ring</em> on map, discs and zoom (rule: the jade ring)</td><td class="loc">atlas2.css:95, :6, :15, :97</td></tr>
+      <tr><td>Timeline</td><td>Item labels <em>13 / 500, line 17</em>, with a triple text-shadow halo; dot 10, gap 7</td><td class="loc">timeline2.css:59, :65, :69</td></tr>
+      <tr><td></td><td>Year axis <em>12 / 500 ink 3</em> (ink 3 is never text)</td><td class="loc">timeline2.css:50</td></tr>
+      <tr><td></td><td>Toolbar: separate 32 squares, radius 8, card shadow, press 0.96; filter uses <em>Binoculars</em>, the Theme glyph, as a control</td><td class="loc">timeline2.css:13–16</td></tr>
+      <tr><td></td><td>Plot inset 72 / 74 / 12 (off-scale); an empty lane is as tall as a full one</td><td class="loc">timeline2-fieldx.tsx:23</td></tr>
+      <tr><td></td><td>Selected dot: its own ring and drop shadow, not <code>--sel</code>; focus offset 1</td><td class="loc">timeline2.css:64, :68</td></tr>
+    </tbody>
+  </table>
   </div>
 </section>
-
-<section class="jig-section wide" id="labels" data-decision="labels" data-question="3. When do theory names show on the Atlas?" data-default="A on hover and zoom">
-  <p>Today a pin is anonymous until you zoom past 1.6 or hover. Either way names never collide; a name with no clear place waits.</p>
-  <div class="jig-compare">
-    <div class="jig-option" data-option="A on hover and zoom"><div class="jig-label"><b>A</b> On hover, on open, and when zoomed in</div><p class="jig-note">Today's behaviour. The map stays a map of themes; theories come forward when you look closer.</p><div data-option-stage data-v11='{"view":"atlas","labels":"hover"}'></div></div>
-    <div class="jig-option" data-option="B always"><div class="jig-label"><b>B</b> Always, wherever they fit</div><p class="jig-note">Every theory that has room is named at rest; the rest wait for hover. You can read the map without touching it, at the cost of more text.</p><div data-option-stage data-v11='{"view":"atlas","labels":"always"}'></div></div>
-  </div>
-</section>
+</details>
 
 </body>
 </html>

@@ -57,28 +57,26 @@ body[data-slow="4"] .r7-win { --t-hover: 360ms; --t-float: 640ms; --t-press: 360
 .r7-pslot > .ob-pane { position: absolute; top: 0; bottom: 0; left: 0; width: 802px; box-shadow: inset 0.5px 0 0 var(--hairline-strong); }
 
 /* ── Page ── */
-.jig-section.wide { max-width: 1504px; }
-.r7-bar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; padding: 10px 0; background: #e9e6e1; }
-.r7-tog { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #cfc9bf; background: #fff; color: #2b2925; font: 600 13px/1 ui-sans-serif, system-ui, -apple-system, sans-serif; cursor: pointer; }
-.r7-tog:hover { border-color: #2b2925; }
-.r7-tog:focus-visible { outline: 2px solid #2b2925; outline-offset: 2px; }
-.r7-tog[aria-pressed="true"] { background: #2b2925; border-color: #2b2925; color: #fff; }
-.r7-bar .hint { color: #5d5850; font-size: 13px; }
-.r7-try { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 4px 24px; margin: 0 0 16px; padding: 0; list-style: none; font-size: 13px; color: #3d3a34; }
-.r7-try b { color: #2b2925; }
-kbd.k { font: 500 12px/1 ui-monospace, "Geist Mono", monospace; padding: 2px 5px; border-radius: 4px; background: #fff; box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.15); color: #2b2925; }
-.r7-sub { margin: 28px 0 8px; font-size: 14px; font-weight: 650; }
-.r7-play { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid #cfc9bf; background: transparent; color: #2b2925; font: 600 13px/1 ui-sans-serif, system-ui, sans-serif; cursor: pointer; }
-.r7-play:hover { border-color: #2b2925; background: #fff; }
+.r7-bar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; padding: 10px 0; background: var(--ground); }
+.r7-tog { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 7px; border: 0; background: var(--surface); box-shadow: var(--ring, 0 0 0 0.5px var(--hairline-strong)), var(--btn-shadow); color: var(--ink); font: 500 12px/1 var(--font); cursor: pointer; }
+.r7-tog:hover { background: color-mix(in oklch, var(--surface), var(--ink) 4%); }
+.r7-tog:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.r7-tog[aria-pressed="true"] { background: var(--ink); color: var(--on-ink); box-shadow: none; }
+.r7-bar .hint { color: var(--ink-2); font-size: var(--fs-label); }
+.r7-try { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 4px 24px; margin: 0 0 16px; padding: 0; list-style: none; font-size: var(--fs-body); line-height: var(--lh-prose); color: var(--ink-2); }
+.r7-try b { color: var(--ink); font-weight: 500; }
+kbd.k { font: 500 12px/1 ui-monospace, "Geist Mono", monospace; padding: 2px 5px; border-radius: 4px; background: var(--surface); box-shadow: var(--ring); color: var(--ink); }
+.r7-sub { margin: 32px 0 8px; font-size: var(--fs-body); font-weight: 600; color: var(--ink); }
+.r7-play { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 7px; border: 0; background: var(--surface); box-shadow: var(--ring, 0 0 0 0.5px var(--hairline-strong)), var(--btn-shadow); color: var(--ink); font: 500 12px/1 var(--font); cursor: pointer; }
+.r7-play:hover { background: color-mix(in oklch, var(--surface), var(--ink) 4%); }
 .r7-play i.ph { font-size: 14px; }
-.r7-spec h3 { margin: 24px 0 8px; font-size: 14px; font-weight: 650; }
+.r7-spec h3 { margin: 24px 0 8px; font-size: var(--fs-body); font-weight: 600; color: var(--ink); }
+.r7-spec h3:first-child { margin-top: 0; }
 .r7-spec .audit td:first-child { white-space: normal; }
 .r7-spec .audit td.n { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .r7-spec .table-wrap { margin-bottom: 8px; }
 .r7-spec .audit { min-width: 640px; }
-.decide-box .inherit { margin: 0; padding-left: 20px; display: grid; gap: 4px; color: #3d3a34; font-size: 13px; }
-.decide-box .decided-h { margin-top: 14px; }
 @media (max-width: 640px) {
-  .jig-section { padding: 24px 16px; } .decide { padding: 16px 16px 0; } .jig-head { padding: 32px 16px 8px; }
+  
   .r7-bar .hint { flex-basis: 100%; }
 }

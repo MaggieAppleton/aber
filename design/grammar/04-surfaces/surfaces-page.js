@@ -1,6 +1,6 @@
-// Grammar 04 surfaces: viewer switches, the Show layers overlay (tags each surface with tier, fill, edge, shadow, radius), decide box picks.
+// Grammar 04 surfaces: viewer switches, the Show layers overlay (tags each surface with tier, fill, edge, shadow, radius).
 (() => {
-  addEventListener("load", () => { const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d); paintPicks(); document.fonts.ready.then(tagAll); });
+  addEventListener("load", () => document.fonts.ready.then(tagAll));
 
   // Name a computed value by matching it against the tokens, measured on a probe inside the same stage
   const namer = (stg, prop, names) => {
@@ -69,14 +69,4 @@
     state.view = vb.dataset.view; document.querySelectorAll('[data-seg="view"] button').forEach(x => x.setAttribute("aria-pressed", String(x.value === state.view))); });
   addEventListener("resize", () => requestAnimationFrame(tagAll));
 
-  const page = document.body.dataset.jig;
-  const paintPicks = () => {
-    for (const li of document.querySelectorAll("[data-pick]")) {
-      const id = li.dataset.pick, sec = document.querySelector(`[data-decision="${id}"]`);
-      let v = null; try { v = JSON.parse(localStorage.getItem(`jig:${page}:${id}`))?.choice; } catch {}
-      v = v ?? sec?.dataset.default;
-      li.querySelector(".pick").innerHTML = v ? `Current pick: <b>${v}</b>` : "No pick yet";
-    }
-  };
-  document.addEventListener("click", e => { if (e.target.closest(".jig-choose")) setTimeout(paintPicks, 0); });
 })();

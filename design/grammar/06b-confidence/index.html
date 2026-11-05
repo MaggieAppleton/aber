@@ -19,46 +19,41 @@
 <link rel="stylesheet" href="../_shared/controls.css">
 <link rel="stylesheet" href="objects.css">
 <link rel="stylesheet" href="conf.css">
+<link rel="stylesheet" href="../_shared/page.css">
+<script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/manifest.js" defer></script>
+<script src="../_shared/page.js" defer></script>
 <script src="conf.js" defer></script>
-<script src="choose.js" defer></script>
 <script type="module" src="../_shared/agentation.js" data-app-name="Grammar 06b: Confidence"></script>
 </head>
 <body class="jig" data-jig="grammar-06b-confidence" data-align="c">
 
-<header class="jig-head">
-  <h1>Grammar 06b: Confidence</h1>
-  <p><b>Exploration.</b> Confidence is my stance on a theory, 1 to 5, set by me, with a dated history. Today it's five short dashes on the line below the name, and a larger version plus a sparkline in the full view. You asked for something more concise, possibly on the right of the name. Below are eight encodings, each drawn small (lists, cards, peeks) and large (the full view's setter), all with the same theories.</p>
-  <ul class="jig-rules">
-    <li>Real cases throughout: <b>Code review becomes the bottleneck</b> at 4, just rose from 3 (2 Nov). <b>Frontier intelligence stays scarce</b> at 2, just fell from 3 (3 Nov). <b>Tokens become nearly free</b> and <b>Agents run continuously</b> at 3, steady. <b>Agents keep context</b> at 4 with a challenge. <b>Local models absorb most everyday agent work</b> is a draft with nothing set.</li>
-    <li>Colour stays two meanings (D): accent for up, red for down. Every mark is ink first; colour only ever doubles what shape or words already say.</li>
-    <li>Setters: point to preview, click or drag to set, or focus and use arrows, Home, End or 1–5. Setting the draft shows the unset state turning into a first stance.</li>
-  </ul>
-</header>
+<header class="pg-head"></header>
 
-<div class="decide">
-  <div class="decide-box">
-    <h2>Decide on this page</h2>
-    <ol>
-      <li data-pick="small"><a href="#enc-A">Small: the mark in rows, cards and peeks</a><span class="pick"></span>
-        <span class="why">Recommended A Ticks: exact at 12px, fixed width so the right-hand column stays straight, and a list of them reads as a tiny bar chart. Trend goes in words in the peek, not on the preview (G is the version that puts it on the preview).</span>
-        <div data-decision="small" data-question="Small: which mark beside a theory's name?" data-default="A Ticks"></div></li>
-      <li data-pick="large"><a href="#enc-A">Large: the setter in the full view</a><span class="pick"></span>
-        <span class="why">Recommended A Ticks: the same five ticks at 22 tall, so the thing you set is the thing you scan, with H's step line and "Rose from 3, 2 Nov" beside it as the history. If you want the history to be the setter, H is the richer large.</span>
-        <div data-decision="large" data-question="Large: which setter in the full view?" data-default="A Ticks"></div></li>
-      <li data-pick="position"><a href="#position">Position in rows: right of the name, or the line below</a><span class="pick"></span>
-        <span class="why">Recommended right of the name: it's one less line per theory and the marks form a column you can scan.</span></li>
-    </ol>
-  </div>
-</div>
-
-<section class="jig-section wide" id="today-sec">
-  <h2>Today</h2>
-  <p>06's mark: five 10 × 3 dashes on the key line under the name, with the hover date. The dashes are short and low, so at a glance they read as a rule rather than a level.</p>
-  <div class="cf-small ob-scope ctl" data-align="c" id="today"></div>
+<section class="jig-section wide" id="mark">
+  <h2>The decided mark</h2>
+  <p>A 20 × 4 meter right of the name in rows, cards and peek relations. The full view keeps 06's five-segment setter with its history.</p>
+  <div class="cf-pos ob-scope ctl" data-align="c" data-pos="right"></div>
 </section>
 
-<div id="encodings"></div>
+<section class="pg-decided">
+  <h2>Decided</h2>
+  <ul class="pg-list">
+  </ul>
+</section>
 
+<details class="pg-details" id="d-encodings">
+  <summary><span class="pg-dt">Eight encodings weighed</span><span class="pg-ds">Ticks, bars, meter, ring, numeral, word, ticks with change, stance line; each small and large</span></summary>
+  <div class="pg-body">
+    <p>The same theories throughout: one at 4 that just rose, one at 2 that just fell, two steady at 3, one at 4 with a challenge, and a draft with nothing set. Colour only doubles what shape already says.</p>
+    <div data-decision="small" data-question="Small: which mark beside a theory's name?" data-default="A Ticks"></div>
+    <div data-decision="large" data-question="Large: which setter in the full view?" data-default="A Ticks"></div>
+    <div id="encodings"></div>
+  </div>
+</details>
+
+<details class="pg-details" id="d-position">
+  <summary><span class="pg-dt">Position in rows</span><span class="pg-ds">Right of the name, or the line below as before</span></summary>
 <section class="jig-section wide" id="position" data-decision="position" data-question="Position in rows: where does the mark sit?" data-default="a Right of the name">
   <p class="lede">Both use the small pick (<b data-pos-enc></b>). Right of the name moves the mark to the first line and drops the second line, and the date leaves the row (it's in the peek). Below keeps today's key line, with the date on hover.</p>
   <div class="jig-compare" style="--jig-min:100%">
@@ -68,6 +63,15 @@
       <div class="cf-pos ob-scope ctl" data-align="c" data-pos="below" data-option-stage></div></div>
   </div>
 </section>
+</details>
+
+<details class="pg-details" id="d-today">
+  <summary><span class="pg-dt">Today</span><span class="pg-ds">Five short dashes on the line under the name</span></summary>
+<section class="jig-section wide" id="today-sec">
+  <p>06's mark: five 10 × 3 dashes on the key line under the name, with the hover date. The dashes are short and low, so at a glance they read as a rule rather than a level.</p>
+  <div class="cf-small ob-scope ctl" data-align="c" id="today"></div>
+</section>
+</details>
 
 </body>
 </html>

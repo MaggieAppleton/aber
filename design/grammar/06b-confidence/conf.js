@@ -215,8 +215,7 @@
   };
   window.CfPos = posRender;
   posRender();
-  document.addEventListener("jig:change", ev => { if (ev.detail.id === "small") posRender(); summary(); });
-  const summary = () => document.querySelectorAll("[data-pick]").forEach(li => { const v = window.JigPick?.(li.dataset.pick); li.querySelector(".pick").innerHTML = v ? `Current pick: <b>${v}</b>` : "No pick yet"; });
-  // choose.js runs after this file; repaint once every pick is loaded
-  document.addEventListener("DOMContentLoaded", () => { posRender(); summary(); });
+  document.addEventListener("jig:change", ev => { if (ev.detail.id === "small") posRender(); });
+  // The shell's jig.js sets up picks on DOMContentLoaded; repaint once they're loaded (small is decided: C Meter)
+  addEventListener("DOMContentLoaded", () => posRender());   // on window, so it runs after jig.js (also on window, registered first)
 })();

@@ -1,4 +1,4 @@
-// Grammar 11 page: before/after viewers (state and layout), the decide box, and choices flowing into the main stages.
+// Grammar 11 page: before/after viewers (state and layout), and choices flowing into the main stages.
 (() => {
   const page = document.body.dataset.jig;
   const load = id => { try { return JSON.parse(localStorage.getItem(`jig:${page}:${id}`)) || {}; } catch { return {}; } };
@@ -18,10 +18,6 @@
     document.querySelectorAll(".cmp-after [data-v11]").forEach(h => { if (!h.v11) return; const S = h.v11; const patch = {};
       if (S.root.dataset.dim !== c.dim) patch.dim = c.dim; if (S.size !== c.size) patch.size = c.size; if (S.labels !== c.labels) patch.labels = c.labels;
       if (Object.keys(patch).length) h.v11.set(patch); });
-    document.querySelectorAll(".decide-box [data-pick]").forEach(li => {
-      const s = load(li.dataset.pick), def = document.querySelector(`[data-decision="${li.dataset.pick}"]`)?.dataset.default;
-      li.querySelector(".pick").innerHTML = s.choice ? `: <b>${s.choice}</b>` : def ? `: default ${def}` : "";
-    });
   };
 
   // Before/after: state (at rest, selected) and layout (side by side, today, rebuilt)
@@ -43,7 +39,7 @@
     }));
   });
 
-  document.addEventListener("click", e => { if (e.target.closest(".jig-choose")) setTimeout(applyChoices, 0); });
+  document.addEventListener("jig:change", applyChoices);
   const ready = () => document.querySelectorAll("[data-v11]").length === document.querySelectorAll("[data-v11] .v11").length;
   const wait = () => ready() ? applyChoices() : setTimeout(wait, 50);
   wait();

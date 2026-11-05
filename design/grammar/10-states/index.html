@@ -20,54 +20,50 @@
 <link rel="stylesheet" href="../_shared/controls.css">
 <link rel="stylesheet" href="../_shared/objects.css">
 <link rel="stylesheet" href="states.css">
+<link rel="stylesheet" href="../_shared/page.css">
 <script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/manifest.js" defer></script>
+<script src="../_shared/page.js" defer></script>
 <script src="../_shared/stage.js" defer></script>
 <script src="states.js" defer></script>
 <script type="module" src="../_shared/agentation.js" data-app-name="Grammar 10: States"></script>
 </head>
 <body class="jig" data-jig="grammar-10-states">
 
-<header class="jig-head">
-  <h1>Grammar 10: States</h1>
-  <p><b>Decided 4 Nov 2026:</b> agent work in progress shows on the Dumps rail entry; a finished dump reports with a toast with Undo; offline shows beside the view switcher. Anything placed relative to "the composer" (toasts, the composer status segment) is pending 09's rebuild of capture around the "Dump or ask" chat sidebar. Empty, loading, background work, errors, offline, toasts, the one confirmation and success, each shown in the type-first default view and, where it applies, in Columns, Atlas and Timeline. Built only from 00–05 and the decided navigation. The item-list rows, cards and the Add slot are placeholders until 06 Objects; only the state treatments are proposed here.</p>
-</header>
+<header class="pg-head"></header>
 
-<div class="decide">
-  <div class="decide-box">
-    <h2>Decide on this page</h2>
-    <ol>
-      <li data-pick="work"><a href="#work">Where agent work in progress shows: the composer, the Dumps type, or only the dump</a> <span class="pick"></span></li>
-      <li data-pick="done"><a href="#done">When a dump finishes: a toast, or silent (it appears in Briefing)</a> <span class="pick"></span></li>
-      <li data-pick="offline"><a href="#offline">Where offline shows: beside the view switcher, or in the composer</a> <span class="pick"></span></li>
-    </ol>
+<section class="jig-section" id="board">
+  <h2>States board</h2>
+  <p>Pick a state and a view. Every state follows the decided picks.</p>
+  <div id="state-groups" class="viewer-bar" style="display:grid;gap:8px;justify-items:start"></div>
+  <div class="viewer-bar">
+    <span class="seg" data-seg="view"><span>View</span><span class="seg-group"><button type="button" value="default" aria-pressed="true">Default</button><button type="button" value="columns">Columns</button><button type="button" value="atlas">Atlas</button><button type="button" value="timeline">Timeline</button></span></span>
   </div>
-</div>
+  <div class="st-mount" id="viewer"></div>
+  <p class="state-note" id="state-note"></p>
+</section>
 
-<section class="jig-section" id="today">
-  <h2>Today, measured</h2>
-  <p>Every empty, loading, working, error, offline, toast and confirmation treatment in the app (<code>app/web/src/</code>; the jig in <code>jig/src/homes/</code> is a near-copy).</p>
-  <div class="table-wrap">
-  <table class="audit">
-    <thead><tr><th>State</th><th>Treatments</th><th>What's there</th></tr></thead>
-    <tbody>
-      <tr><td>Empty</td><td class="n">9 phrasings</td><td>"All caught up<em>.</em>" with a full stop (briefing-app.tsx:64; the jig has none, homes/briefing-app.tsx:140); "No dumps yet", "Nothing deleted" (dump-log.tsx:63); "No matches" (dialogs.tsx:39); "No theme" (timeline2-shared.tsx:145); "Empty body", "No note" (suggestion-review.tsx:25, confidence-spark.tsx:41); <em>"Not evidence for a theory yet" survives</em> in Atlas (atlas2.tsx:83) after it was removed on 4 Nov; an empty Columns column is a blank filler (columns2.tsx:118). A theme with no theories gets a hollow ring (atoms.tsx:156, panes.tsx:230) and <em>no Add slot</em>. No first-run state; no filtered-empty state.</td></tr>
-      <tr><td>Loading</td><td class="n">6</td><td><em>"Loading Aber…" twice</em>: before React (main.tsx:14) and as a full-window overlay that hides the chrome too (app-shell.tsx:286, production.css <code>.ab-loading</code>). "Searching…" replaces results (dialogs.tsx:39). "Uploading media…" (panes.tsx:301). A spinner swaps the composer's dump icon (pill-study.tsx:111, :829). A shimmering "Processing" (dump-log.css:31). Accept goes <code>aria-busy</code> with no visual (suggestion-review.tsx:20, :27). No skeletons; no 300ms threshold anywhere.</td></tr>
-      <tr><td>Background work</td><td class="n">2</td><td>The pill's log dot "while processing or failed" is specified (design-model.md:292) and computed (app-shell.tsx:298) but <em>never drawn</em>: <code>log.status</code> is unused (pill-study.tsx:513). Briefing's processing count is <em>only in a tooltip</em> (briefing-app.tsx:28, :76). The spend-limit pause shows only in the dump log (dump-status.ts:3, dump-log.tsx:91).</td></tr>
-      <tr><td>Errors</td><td class="n">4</td><td><em>Every error goes to one banner</em>, fixed top centre over everything, in a third red (<code>rgb(180 64 47)</code>), with Retry and an X (app-shell.tsx:285, production.css:1; fed by live.ts:62). A failed dump shows its reason and Retry only inside the dump log (dump-log.tsx:92, :102). A failed edit is marked in the queue (edit-queue.ts:56) but <em>the field shows nothing</em>; only the banner's "Retry saving". Search and chat show the raw error message (dialogs.tsx:39, parts.tsx:17).</td></tr>
-      <tr><td>Offline</td><td class="n">0</td><td><code>connected</code> is tracked from the event stream (live.ts:82–83) and <em>read nowhere</em> in the UI.</td></tr>
-      <tr><td>Toast</td><td class="n">1 host</td><td>Good bones: one toast, 5s, plus 1.5s while hovered, ⌘Z, a new one settles the last (capture-results.ts:58–70). But it's a 36 pill, radius 18, Undo 26 high at scale 0.96 (pill-study.css:154–159), against the decided 44, radius 10. Hidden while the composer is open (pill-study.tsx:736). Only two callers: capture counts and <em>"Draft accepted as yours"</em>, a success toast (draft-decisions.ts:47). <em>No Undo</em> for discard signal, remove evidence or unfile (panes.tsx:113), or retire (dialogs.tsx:80–83).</td></tr>
-      <tr><td>Confirmations</td><td class="n">5 modals</td><td>Delete dump: counts, then <em>"Move to bin"</em>, not verb + object (dialogs.tsx:94). Merge <em>asks twice</em> (signal-merge.tsx:12–19; decided: at once, with Undo). Retire is a modal list (dialogs.tsx:80; decided: a tethered menu with Undo). Unfile opens a modal to pick the theme (panes.tsx:113). Reading a dump uses the confirmation dialog with a "Close" button (dialogs.tsx:99).</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <ul class="offenders">
-    <li><b>Headline:</b> no state is designed once. Six loading treatments and no skeleton; empty copy in nine phrasings; every error in one top banner, away from its object; the processing dot computed but never drawn; offline tracked but never shown; Undo on two of seven reversible actions, and four modals where one was decided.</li>
-    <li><b>Already right:</b> one toast at a time with a hover hold and ⌘Z; the delete confirmation in ink with real counts; creating opens the new object (dialogs.tsx:63).</li>
+<section class="pg-decided">
+  <h2>Decided</h2>
+  <ul class="pg-list">
+    <li><b>Errors</b>Beside their object, in words, with the way out; never a global banner</li>
+    <li><b>Loading</b>Nothing under 300ms, then a skeleton in the content's own geometry</li>
+    <li><b>Toasts</b>Tier 6, one at a time, always with Undo</li>
+    <li><b>Confirmation</b>Only Delete dump asks first</li>
   </ul>
 </section>
 
+<details class="pg-details" id="d-all">
+  <summary><span class="pg-dt">Every state</span><span class="pg-ds">All states in the default view as thumbnails; click one to open it in the board</span></summary>
+<section class="jig-section" id="all">
+  <p>Click one to open it in the board above.</p>
+  <div class="thumbs" id="thumbs"></div>
+</section>
+</details>
+
+<details class="pg-details" id="d-rules">
+  <summary><span class="pg-dt">Rules</span><span class="pg-ds">Empty, loading, background work, errors, offline, toasts, confirmation, success</span></summary>
 <section class="jig-section" id="rules">
-  <h2>The rules (decided 4 Nov 2026)</h2>
   <ol class="rules">
     <li><b>Empty: say what's absent in one line, and show the action that fills it.</b> One line in the empty-state role (13 / 400 / ink 2), no full stop, no illustration, no instructions.
       <ul>
@@ -83,7 +79,7 @@
         <li>A dump appears the moment it's sent, at the top of Today, saying Processing in words with the Working spinner; its page shows what I sent.</li>
         <li>It resolves in place: the status line goes and what it made appears there; Briefing lists what's new. Paused (spend limit) is a hollow ring and the reason, and resumes by itself.</li>
         <li>Agent work I didn't start (evidence linking, tripwires, suggestions) shows nothing until it produces something; then it appears dashed where it applies, and Briefing lists it. No new dots and no pending-suggestion badges on rows or cards: suggestions show only in the peek, the full view and Briefing.</li>
-        <li>Where in-progress work also shows outside the dump is choice 1.</li>
+        <li>Outside the dump, work in progress shows on the Dumps type in the rail (decided).</li>
       </ul></li>
     <li><b>Errors sit beside their object, in words, with the way out.</b> Never only in a tooltip, never in a global banner. Words do the work, in ink: no red dot on the row, page or field. The only red dot left is the global mark for a failed dump (composer, Dumps type or Columns strip), where there's no room for words and it leads to the dump that says why.
       <ul>
@@ -92,29 +88,16 @@
         <li><b>A failed dump stays visible</b> in Dumps and on its page, with everything I sent. A failed save keeps my text in the field with "Not saved" and Retry. A list that didn't load says so where the list would be.</li>
         <li>Copy says what happened and what to do, in plain words; never a raw error message or a code.</li>
       </ul></li>
-    <li><b>Offline is shown once, for as long as it lasts, and changes nothing else.</b> Edits save locally and sync on reconnect. A dump sent offline waits with a hollow ring ("Waiting to send"). Reconnecting shows nothing. Where the one indicator sits is choice 3.</li>
+    <li><b>Offline is shown once, for as long as it lasts, and changes nothing else.</b> Edits save locally and sync on reconnect. A dump sent offline waits with a hollow ring ("Waiting to send"). Reconnecting shows nothing. It shows beside the view switcher (decided).</li>
     <li><b>Toasts are tier 6 and carry Undo.</b> Ink, one line, 44 high, radius 10; only the quoted name truncates. They sit just above the composer, right edges aligned, in every view. 5 seconds, held while hovered or focused (then 1.5 more); ⌘Z while one shows. One at a time: a new one replaces the last and commits it; they never stack. They never take focus (<code>role="status"</code>), and never carry an error.</li>
     <li><b>Only Delete dump asks first.</b> A modal (tier 5) with the real counts ("Removes 3 signals and 2 evidence links. It stays in the bin for 30 days."), Cancel, and an ink "Delete dump". Esc and the X close it. No toast after confirming. Everything else that removes (discard, remove, unfile, retire, merge, move to the bin) happens at once with an Undo toast.</li>
     <li><b>Success is mostly silent: the object appearing is the feedback.</b> Accept solidifies a draft in place; saving shows nothing; creating opens the new object; filing shows the chip. A toast appears only when something leaves the screen (and so needs Undo).</li>
   </ol>
 </section>
+</details>
 
-<section class="jig-section" id="board">
-  <h2>States board</h2>
-  <div id="state-groups" class="viewer-bar" style="display:grid;gap:8px;justify-items:start"></div>
-  <div class="viewer-bar">
-    <span class="seg" data-seg="view"><span>View</span><span class="seg-group"><button type="button" value="default" aria-pressed="true">Default</button><button type="button" value="columns">Columns</button><button type="button" value="atlas">Atlas</button><button type="button" value="timeline">Timeline</button></span></span>
-  </div>
-  <div class="st-mount" id="viewer"></div>
-  <p class="state-note" id="state-note"></p>
-</section>
-
-<section class="jig-section" id="all">
-  <h2>Every state, default view</h2>
-  <p>Click one to open it in the board above.</p>
-  <div class="thumbs" id="thumbs"></div>
-</section>
-
+<details class="pg-details" id="d-options">
+  <summary><span class="pg-dt">Options weighed</span><span class="pg-ds">Where work in progress shows, whether a finished dump toasts, where offline shows</span></summary>
 <section class="jig-section" id="work" data-decision="work" data-question="1. Where does agent work in progress show, beyond the dump itself?" data-default="B On the Dumps type">
   <p>A link dump is processing. The dump's own row and page always say so; this is about the one mark you'd see from anywhere else.</p>
   <div class="jig-compare">
@@ -139,6 +122,32 @@
     <div class="jig-option" data-option="B In the composer"><div class="jig-label"><b>B</b> In the composer</div><p class="jig-note">The composer's left segment reads "Offline". Sits where it matters most (dumps wait) and where choice 1 A puts work, so all status lives in one place.</p><div class="st-mount" data-scene="offline" data-ch='{"offline":"composer"}'></div></div>
   </div>
 </section>
+</details>
+
+<details class="pg-details" id="d-today">
+  <summary><span class="pg-dt">Today, measured</span><span class="pg-ds">No state is designed once: six loading treatments, nine empty phrasings, one global error banner</span></summary>
+<section class="jig-section" id="today">
+  <p>Every empty, loading, working, error, offline, toast and confirmation treatment in the app (<code>app/web/src/</code>; the jig in <code>jig/src/homes/</code> is a near-copy).</p>
+  <div class="table-wrap">
+  <table class="audit">
+    <thead><tr><th>State</th><th>Treatments</th><th>What's there</th></tr></thead>
+    <tbody>
+      <tr><td>Empty</td><td class="n">9 phrasings</td><td>"All caught up<em>.</em>" with a full stop (briefing-app.tsx:64; the jig has none, homes/briefing-app.tsx:140); "No dumps yet", "Nothing deleted" (dump-log.tsx:63); "No matches" (dialogs.tsx:39); "No theme" (timeline2-shared.tsx:145); "Empty body", "No note" (suggestion-review.tsx:25, confidence-spark.tsx:41); <em>"Not evidence for a theory yet" survives</em> in Atlas (atlas2.tsx:83) after it was removed on 4 Nov; an empty Columns column is a blank filler (columns2.tsx:118). A theme with no theories gets a hollow ring (atoms.tsx:156, panes.tsx:230) and <em>no Add slot</em>. No first-run state; no filtered-empty state.</td></tr>
+      <tr><td>Loading</td><td class="n">6</td><td><em>"Loading Aber…" twice</em>: before React (main.tsx:14) and as a full-window overlay that hides the chrome too (app-shell.tsx:286, production.css <code>.ab-loading</code>). "Searching…" replaces results (dialogs.tsx:39). "Uploading media…" (panes.tsx:301). A spinner swaps the composer's dump icon (pill-study.tsx:111, :829). A shimmering "Processing" (dump-log.css:31). Accept goes <code>aria-busy</code> with no visual (suggestion-review.tsx:20, :27). No skeletons; no 300ms threshold anywhere.</td></tr>
+      <tr><td>Background work</td><td class="n">2</td><td>The pill's log dot "while processing or failed" is specified (design-model.md:292) and computed (app-shell.tsx:298) but <em>never drawn</em>: <code>log.status</code> is unused (pill-study.tsx:513). Briefing's processing count is <em>only in a tooltip</em> (briefing-app.tsx:28, :76). The spend-limit pause shows only in the dump log (dump-status.ts:3, dump-log.tsx:91).</td></tr>
+      <tr><td>Errors</td><td class="n">4</td><td><em>Every error goes to one banner</em>, fixed top centre over everything, in a third red (<code>rgb(180 64 47)</code>), with Retry and an X (app-shell.tsx:285, production.css:1; fed by live.ts:62). A failed dump shows its reason and Retry only inside the dump log (dump-log.tsx:92, :102). A failed edit is marked in the queue (edit-queue.ts:56) but <em>the field shows nothing</em>; only the banner's "Retry saving". Search and chat show the raw error message (dialogs.tsx:39, parts.tsx:17).</td></tr>
+      <tr><td>Offline</td><td class="n">0</td><td><code>connected</code> is tracked from the event stream (live.ts:82–83) and <em>read nowhere</em> in the UI.</td></tr>
+      <tr><td>Toast</td><td class="n">1 host</td><td>Good bones: one toast, 5s, plus 1.5s while hovered, ⌘Z, a new one settles the last (capture-results.ts:58–70). But it's a 36 pill, radius 18, Undo 26 high at scale 0.96 (pill-study.css:154–159), against the decided 44, radius 10. Hidden while the composer is open (pill-study.tsx:736). Only two callers: capture counts and <em>"Draft accepted as yours"</em>, a success toast (draft-decisions.ts:47). <em>No Undo</em> for discard signal, remove evidence or unfile (panes.tsx:113), or retire (dialogs.tsx:80–83).</td></tr>
+      <tr><td>Confirmations</td><td class="n">5 modals</td><td>Delete dump: counts, then <em>"Move to bin"</em>, not verb + object (dialogs.tsx:94). Merge <em>asks twice</em> (signal-merge.tsx:12–19; decided: at once, with Undo). Retire is a modal list (dialogs.tsx:80; decided: a tethered menu with Undo). Unfile opens a modal to pick the theme (panes.tsx:113). Reading a dump uses the confirmation dialog with a "Close" button (dialogs.tsx:99).</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <ul class="offenders">
+    <li><b>Headline:</b> no state is designed once. Six loading treatments and no skeleton; empty copy in nine phrasings; every error in one top banner, away from its object; the processing dot computed but never drawn; offline tracked but never shown; Undo on two of seven reversible actions, and four modals where one was decided.</li>
+    <li><b>Already right:</b> one toast at a time with a hover hold and ⌘Z; the delete confirmation in ink with real counts; creating opens the new object (dialogs.tsx:63).</li>
+  </ul>
+</section>
+</details>
 
 </body>
 </html>

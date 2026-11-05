@@ -229,7 +229,8 @@
   const picks = () => {
     const out = { ...DEF };
     for (const [id, [key, vals]] of Object.entries(PICK)) {
-      let v; try { v = JSON.parse(localStorage.getItem(`jig:${page}:${id}`))?.choice; } catch {}
+      let v = window.Jig?.pick(id);
+      if (v === undefined) { try { v = JSON.parse(localStorage.getItem(`jig:${page}:${id}`))?.choice; } catch {} }
       if (v === undefined) v = document.querySelector(`[data-decision="${id}"]`)?.dataset.default;
       if (vals[v]) out[key] = vals[v];
     }
@@ -366,17 +367,8 @@
     }
     mountAll();
     if (viewer) paintViewer();
-    // The decide box and the viewer follow the picks
-    const paintPicks = () => document.querySelectorAll("[data-pick]").forEach(li => {
-      let v = null; try { v = JSON.parse(localStorage.getItem(`jig:${page}:${li.dataset.pick}`))?.choice; } catch {}
-      v = v === undefined ? document.querySelector(`[data-decision="${li.dataset.pick}"]`)?.dataset.default : v;
-      li.querySelector(".pick").innerHTML = v ? `Current pick: <b>${v}</b>` : "No pick yet";
-    });
-    addEventListener("load", () => {
-      const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d);
-      paintPicks();
-      document.addEventListener("click", e => { if (e.target.closest(".jig-choose")) setTimeout(() => { paintPicks(); if (viewer) paintViewer(); document.querySelectorAll("#thumbs .st-mount").forEach(mount); }, 0); });
-    });
+    // The viewer and thumbnails follow the picks
+    document.addEventListener("jig:change", () => { if (viewer) paintViewer(); document.querySelectorAll("#thumbs .st-mount").forEach(mount); });
   };
   if (document.readyState === "loading") addEventListener("DOMContentLoaded", start); else start();
   window.AberStates = { S, mount };

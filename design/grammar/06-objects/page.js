@@ -114,14 +114,12 @@
   document.addEventListener("keydown", e => { const b = (e.key === "Enter" || e.key === " ") && e.target.closest?.("[data-big]"); if (b) { e.preventDefault(); b.click(); } });
   dlg?.addEventListener("click", e => { if (e.target === dlg || e.target.closest("[data-big-close]")) dlg.close(); });
 
-  /* ── Hero follows the picks; the decide box shows them ── */
+  /* ── Hero follows the picks (decided values, via jig.js) ── */
   const MAP = { challenge: ["challenge", { "a Signpost at the bottom right": "a", "b Under the type tile": "b", "c Not on previews": "c" }], align: ["align", { "a Tile matches the line": "a", "b Tile top on the caps": "b", "c Smaller tile, centred": "c" }], fresh: ["fresh", { "a Nothing on objects": "none", "b Unread weight": "weight", "c Text in the key value": "text" }], peek: ["peek", { "a Essentials and relations": "rel", "b Essentials only": "own" }], full: ["full", { "a Prose first": "prose", "b Fields table": "fields" }] };
   addEventListener("load", () => {
-    const d = document.querySelector(".jig-dock"), h = document.querySelector(".jig-head"); if (d && h) h.append(d);
     const page = document.body.dataset.jig;
-    const pick = id => { let v; try { v = JSON.parse(localStorage.getItem(`jig:${page}:${id}`))?.choice; } catch {} return v === undefined ? document.querySelector(`[data-decision="${id}"]`)?.dataset.default : v; };
+    const pick = id => { if (window.Jig) return window.Jig.pick(id); let v; try { v = JSON.parse(localStorage.getItem(`jig:${page}:${id}`))?.choice; } catch {} return v === undefined ? document.querySelector(`[data-decision="${id}"]`)?.dataset.default : v; };
     const paint = () => {
-      document.querySelectorAll("[data-pick]").forEach(li => { const v = pick(li.dataset.pick); li.querySelector(".pick").innerHTML = v ? `Current pick: <b>${v}</b>` : "No pick yet"; });
       const patch = {}; for (const [id, [key, vals]] of Object.entries(MAP)) { const v = pick(id); if (vals[v]) patch[key] = vals[v]; }
       if (patch.align) document.body.dataset.align = patch.align;
       if (patch.challenge) document.body.dataset.challenge = patch.challenge;

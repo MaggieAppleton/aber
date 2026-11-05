@@ -22,7 +22,10 @@
 <link rel="stylesheet" href="../06-objects/objects.css">
 <link rel="stylesheet" href="briefing.css">
 <link rel="stylesheet" href="page.css">
+<link rel="stylesheet" href="../_shared/page.css">
 <script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/manifest.js" defer></script>
+<script src="../_shared/page.js" defer></script>
 <script src="../06-objects/objects.js" defer></script>
 <script src="../06-objects/frames.js" defer></script>
 <script src="data.js" defer></script>
@@ -34,38 +37,115 @@
 </head>
 <body class="jig" data-jig="grammar-08-briefing" data-align="c" data-challenge="c" data-fresh="weight">
 
-<header class="jig-head">
-  <h1>Grammar 08: Briefing</h1>
-  <p><b>Proposed.</b> Briefing is the first rail item and what Aber opens on: one column of what changed since you last looked. Built only from 00–06 and the decided navigation. Every row, peek, full view and dashed block below is 06's decided component; what's new here is the order, the grouping, how much shows before you click, and how deciding feels.</p>
-</header>
+<header class="pg-head"></header>
 
-<div class="decide">
-  <div class="decide-box">
-    <h2>Decide here: 6 open choices</h2>
-    <ol>
-      <li><a href="#c-group">New signals grouped by theme, or by the theory they bear on</a><span class="why">I'd pick A, by theme: it matches the Themes list and the way you browse. B puts news beside your claims but scatters a theme across several groups and needs a "No theory yet" bucket.</span></li>
-      <li><a href="#c-settle">After you decide, the item leaves with an Undo toast, or settles to one line in place</a><span class="why">I'd pick A, leaves: Briefing empties as you work, which is the point, and it follows 10 States (a toast when something leaves the screen). B is calmer for a long run of decisions and keeps a visible trail.</span></li>
-      <li><a href="#c-seen">When a new signal counts as seen</a><span class="why">I'd pick A, once Briefing has shown it: the weight goes after one look, like an inbox. B only clears it when you peek or open the signal, or press Mark seen on its group.</span></li>
-      <li><a href="#c-labels">Decision buttons say Dismiss | Accept, or what they do</a><span class="why">I'd pick B, verbs: "Keep confidence | Lower to 3" can't be misread, and every pair still reads no on the left, yes on the right. It amends DI-009's labels, so it needs your call.</span></li>
-      <li><a href="#c-sections">How sections begin and end</a><span class="why">I'd pick A, a 16 header with a hairline above: the clearest break for the least chrome. It keeps the main area one surface and every edge on the title's line, but it adds a fifth type size (16).</span></li>
-      <li><a href="#c-change">How a challenge shows the confidence it would lose</a><span class="why">I'd pick A, the lost step in red at 40%: it uses the decided "down" red, stays one small mark, and still reads at rest.</span></li>
-    </ol>
-    <h2 class="decided-h">Proposed here, following decided rules (not open)</h2>
-    <ul class="decided">
-      <li><b>No second sidebar.</b> Already decided in Navigation rule 2; Briefing's main area starts at the rail's edge.</li>
-      <li><b>Briefing is a full view of "since you last looked"</b>: the 32 newspaper tile, the title, a key line, one summary sentence, the hairline, then sections.</li>
-      <li><b>Decisions wait; news expires.</b> Challenges, suggestions and drafts stay until handled. Signals and dumps are only what arrived since you last looked.</li>
-      <li><b>Decisions show in full; news folds.</b> Dismiss | Accept are always visible, never on hover, never an X.</li>
-      <li><b>Every decision has Undo.</b> Today none do.</li>
-      <li><b>Subjects and proposals can't be confused.</b> The object a change touches is a solid row with its name at 600. The proposal hangs one step in, dashed and labelled "Suggested support", "Suggested new wording" and so on.</li>
-      <li><b>A decision's buttons sit inside the one dashed block they decide.</b> A challenge's block holds only the signal that tripped it, the consequence and the buttons; the theory and its tripwire sit above it as the subject.</li>
-    </ul>
+<section class="jig-section wide" id="c-group" data-decision="group" data-question="1. How are new signals grouped?" data-default="A By theme">
+  <p class="jig-why"><b>Recommended A.</b> It matches the Themes list and the way you browse; B scatters a theme across groups and needs a "No theory yet" bucket.</p>
+  <p class="lede">New signals are news, so they follow the decisions. Each group starts with its object's row; a group of more than three shows two, a fade and Show all. Both windows open at New signals on the busy morning.</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="A By theme"><div class="jig-label"><b>A</b> By theme, the busiest first</div><p class="jig-note">Answers "what's happening in each area". A signal in two themes shows under its first.</p>
+      <div class="br8-host" data-option-stage data-scroll="sig" data-br='{"day":"busy","h":640,"opt":{"group":"theme"}}'></div></div>
+    <div class="jig-option" data-option="B By theory"><div class="jig-label"><b>B</b> By the theory each bears on, with its stance</div><p class="jig-note">Answers "what does today mean for my claims". Each signal carries ↑ or ↓.</p>
+      <div class="br8-host" data-option-stage data-scroll="sig" data-br='{"day":"busy","h":640,"opt":{"group":"theory"}}'></div></div>
   </div>
-</div>
+</section>
 
+<section class="jig-section wide" id="c-settle" data-decision="settle" data-question="2. What happens to an item once you decide it?" data-default="A Leaves, with Undo">
+  <p class="jig-why"><b>Recommended A.</b> Briefing empties as you work, and it follows 10 States: a toast when something leaves. B is calmer over a long run and keeps a trail.</p>
+  <p class="lede">Accept or dismiss a few suggestions in each window.</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="A Leaves, with Undo"><div class="jig-label"><b>A</b> It solidifies, leaves, and a toast offers Undo</div><p class="jig-note">The section count drops; at zero the section goes. ⌘Z works while the toast shows.</p>
+      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"settle":"leave"}}'></div></div>
+    <div class="jig-option" data-option="B Settles in place"><div class="jig-label"><b>B</b> It settles to one line in place, with Undo, until you leave</div><p class="jig-note">No toast. The trail clears next time you open Briefing.</p>
+      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"settle":"inline"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="c-seen" data-decision="seen" data-question="3. When does a new signal count as seen?" data-default="A Once shown">
+  <p class="jig-why"><b>Recommended A.</b> The weight goes after one look, like an inbox.</p>
+  <p class="lede">Unseen names are ink at 600 in both. To see the difference, click Signals in the rail, then Briefing.</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="A Once shown"><div class="jig-label"><b>A</b> Once Briefing has shown it</div><p class="jig-note">Signals in an open group count as seen when you leave. Folded groups stay unseen.</p>
+      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"seen":"shown"}}'></div></div>
+    <div class="jig-option" data-option="B When read"><div class="jig-label"><b>B</b> Only when you peek or open it, or press Mark seen</div><p class="jig-note">A check on each group with unseen signals marks them all seen.</p>
+      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"seen":"read"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="c-labels" data-decision="labels" data-question="4. What do a decision's buttons say?" data-default="B Verbs">
+  <p class="jig-why"><b>Recommended B.</b> "Keep confidence | Lower to 3" can't be misread, and every pair still reads no left, yes right. It amends DI-009's labels.</p>
+  <p class="lede">Read down a few decisions in each window: a challenge, a support, the new wording, the merge, a draft.</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="A Dismiss | Accept"><div class="jig-label"><b>A</b> Dismiss | Accept everywhere (Discard | Accept on drafts)</div><p class="jig-note">One pair to learn; the block's last sentence says what Accept does.</p>
+      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"labels":"generic"}}'></div></div>
+    <div class="jig-option" data-option="B Verbs"><div class="jig-label"><b>B</b> What each button does</div><p class="jig-note">Keep confidence | Lower to 3. Dismiss | Add evidence. Dismiss | Use wording. Keep apart | Merge. Discard | Keep. A still presses the right-hand one.</p>
+      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"labels":"verb"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="c-sections" data-decision="sections" data-question="5. How do sections begin and end?" data-default="A Header rule">
+  <p class="jig-why"><b>Recommended A.</b> The clearest break for the least chrome, with every edge on the title's line, but it adds a fifth type size (16).</p>
+  <p class="lede">Opened where Challenges ends and Suggestions begins. Scroll each: can you tell where a section starts, and which rows you hold (solid, bold) from proposals (dashed, one step in)?</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="A Header rule"><div class="jig-label"><b>A</b> A 16 / 600 header with a hairline above</div><p class="jig-note">40 above the hairline, 16 to the header, 16 to the first item.</p>
+      <div class="br8-host" data-option-stage data-scroll="sug" data-scroll-off="300" data-br='{"day":"busy","h":640,"opt":{"sections":"rule"}}'></div></div>
+    <div class="jig-option" data-option="B Section boxes"><div class="jig-label"><b>B</b> Each section its own surface on the sunk ground</div><p class="jig-note">Header inside at 16 / 600; groups split by hairlines. The box reaches 16 past the title's edge.</p>
+      <div class="br8-host" data-option-stage data-scroll="sug" data-scroll-off="300" data-br='{"day":"busy","h":640,"opt":{"sections":"box"}}'></div></div>
+    <div class="jig-option" data-option="C Sticky bands"><div class="jig-label"><b>C</b> A sunk band that pins while its section scrolls</div><p class="jig-note">Header 13 / 600 with its count: no new type size.</p>
+      <div class="br8-host" data-option-stage data-scroll="sug" data-scroll-off="300" data-br='{"day":"busy","h":640,"opt":{"sections":"band"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="c-change" data-decision="change" data-question="6. How does a challenge show the confidence it would lose?" data-default="A Red step">
+  <p class="jig-why"><b>Recommended A.</b> The decided "down" red marks the step that would go; it stays one small mark and still reads at rest (C looks like a 3 once its fade ends).</p>
+  <p class="lede">Each window opens on Challenges. Every proposal reads label, then why, then the object, then the decision; the kept three steps stay ink.</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="A Red step"><div class="jig-label"><b>A</b> The step that would go, filled in red at 40%</div>
+      <div class="br8-host" data-option-stage data-scroll="ch" data-br='{"day":"busy","h":560,"opt":{"change":"fill"}}'></div></div>
+    <div class="jig-option" data-option="B Red outline"><div class="jig-label"><b>B</b> The step that would go as an empty red outline</div>
+      <div class="br8-host" data-option-stage data-scroll="ch" data-br='{"day":"busy","h":560,"opt":{"change":"outline"}}'></div></div>
+    <div class="jig-option" data-option="C Fades out"><div class="jig-label"><b>C</b> The step that would go fades from red to empty, on appear and on hover</div>
+      <div class="br8-host" data-option-stage data-scroll="ch" data-br='{"day":"busy","h":560,"opt":{"change":"fade"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="live">
+  <h2>The Briefing</h2>
+  <p class="lede">Accept, Dismiss and Discard work, with Undo in the toast or ⌘Z. Point at a row to peek, Open for its full view, Back to return. J, K and A move and accept.</p>
+  <div class="live-bar ctl" id="days">
+    <div class="ctl-seg" role="group" aria-label="Day">
+      <button type="button" data-day="quiet" aria-pressed="false">Quiet day</button>
+      <button type="button" data-day="busy" aria-pressed="true">Busy day, 40 items</button>
+      <button type="button" data-day="clear" aria-pressed="false">Caught up</button>
+    </div>
+    <button type="button" class="reset" data-reset>Reset</button>
+    <span class="hint">Uses the recommended choices. Main-area inset dial, top right.</span>
+  </div>
+  <div class="br8-host" id="hero" data-br='{"day":"busy","h":860}'></div>
+</section>
+
+<details class="pg-details" id="d-rules">
+  <summary><span class="pg-dt">Rules</span><span class="pg-ds">Proposed: ordered by need, decisions wait, news expires, act in place with Undo</span></summary>
+<section class="jig-section" id="rules">
+  <ol class="rules">
+    <li><b>Briefing is a full view of "since you last looked."</b> It has 06's anatomy: the newspaper tile, "Since yesterday", the key line "Last looked 18:40", then one summary sentence and a hairline. Sections follow, at pane insets. There's no second sidebar.</li>
+    <li><b>Ordered by what needs you, not by time.</b> Decisions come first: Challenges, then Suggestions, then Drafts. News follows: New signals, then Dumps.</li>
+    <li><b>Decisions wait; news expires.</b> Pending decisions stay until handled, however old. Signals and dumps show only what arrived since you last looked.</li>
+    <li><b>Summary before detail.</b> One sentence counts what needs you and what arrived, names the busiest theme and any failure. Decisions show in full, because they're the work. News folds: a group of three or fewer shows its rows, and a bigger one folds to its label and count.</li>
+    <li><b>Grouped by the object a change touches.</b> A theory's suggestions sit under its row, one block each, and a challenge sits under the theory it trips. One theory with three proposals is one group, not three cards.</li>
+    <li><b>Every item is a 06 component.</b> Rows peek and open. A challenge is its theory and tripwire line, then a dashed block holding only what's decided: the signal that tripped it, the consequence in words, and the buttons. A suggestion is a dashed block whose label names the relation (Supports, Undermines, New wording, Merge with). A draft is a dashed block with where it came from. An automatic merge is one signal row naming both sources, with Unmerge on hover. No dots, badges, per-item cards or type words.</li>
+    <li><b>Act in place.</b> The buttons sit at the bottom right inside the dashed block they decide, always visible, and act on that block alone (labels: choice 4). Accept solidifies the item: the dash goes, then it leaves. Every decision can be undone with a toast and ⌘Z. Keys: J and K move, A accepts, O peeks, ⌘Z undoes. There's no key for Dismiss.</li>
+    <li><b>Seen is unread weight and nothing else.</b> An unseen signal's name, and the label of a folded group holding one, are ink at 600. Peeking or opening a signal marks it seen.</li>
+    <li><b>Failures in words, first.</b> A dump that couldn't be read leads the Dumps section, says why, and has Retry. The summary names it. Work in progress says Processing with the Working spinner.</li>
+    <li><b>Handled is quiet.</b> A section with nothing left disappears. When no decisions remain, the sentence says "Nothing needs you." and the news stays. With nothing new at all, the page says "Nothing new since 18:40" and drops the key line. Nothing celebrates.</li>
+    <li><b>Narrow screens show Briefing alone.</b> The rail becomes a sheet from the left edge, and the composer spans the window.</li>
+  </ol>
+</section>
+</details>
+
+<details class="pg-details" id="d-today">
+  <summary><span class="pg-dt">Today, measured</span><span class="pg-ds">Equal cards, decisions hidden until hover, an X that throws away a theme, no Undo</span></summary>
 <section class="jig-section" id="today">
-  <h2>Today, measured</h2>
-  <p class="headline"><b>Today's Briefing is a stack of equal cards. Their decisions hide until you hover, and an X rejects them. On New signals that X throws away a whole theme's signals, and nothing can be undone.</b></p>
   <figure class="today-shot"><img src="screenshots/today-briefing.png" alt="Today's Briefing in the jig app at 1440: a centred column of cards under Challenges, Drafts and Suggestions" width="1440" height="900" loading="lazy"><figcaption>Today, <code>/app?view=briefing</code> at 1440. Source: <code>app/web/src/ui/briefing-app.tsx</code> and <code>.css</code>.</figcaption></figure>
   <div class="table-wrap">
   <table class="audit">
@@ -89,107 +169,11 @@
   </table>
   </div>
 </section>
+</details>
 
-<section class="jig-section" id="rules">
-  <h2>Rules</h2>
-  <ol class="rules">
-    <li><b>Briefing is a full view of "since you last looked."</b> It has 06's anatomy: the newspaper tile, "Since yesterday", the key line "Last looked 18:40", then one summary sentence and a hairline. Sections follow, at pane insets. There's no second sidebar.</li>
-    <li><b>Ordered by what needs you, not by time.</b> Decisions come first: Challenges, then Suggestions, then Drafts. News follows: New signals, then Dumps.</li>
-    <li><b>Decisions wait; news expires.</b> Pending decisions stay until handled, however old. Signals and dumps show only what arrived since you last looked.</li>
-    <li><b>Summary before detail.</b> One sentence counts what needs you and what arrived, names the busiest theme and any failure. Decisions show in full, because they're the work. News folds: a group of three or fewer shows its rows, and a bigger one folds to its label and count.</li>
-    <li><b>Grouped by the object a change touches.</b> A theory's suggestions sit under its row, one block each, and a challenge sits under the theory it trips. One theory with three proposals is one group, not three cards.</li>
-    <li><b>Every item is a 06 component.</b> Rows peek and open. A challenge is its theory and tripwire line, then a dashed block holding only what's decided: the signal that tripped it, the consequence in words, and the buttons. A suggestion is a dashed block whose label names the relation (Supports, Undermines, New wording, Merge with). A draft is a dashed block with where it came from. An automatic merge is one signal row naming both sources, with Unmerge on hover. No dots, badges, per-item cards or type words.</li>
-    <li><b>Act in place.</b> The buttons sit at the bottom right inside the dashed block they decide, always visible, and act on that block alone (labels: choice 4). Accept solidifies the item: the dash goes, then it leaves. Every decision can be undone with a toast and ⌘Z. Keys: J and K move, A accepts, O peeks, ⌘Z undoes. There's no key for Dismiss.</li>
-    <li><b>Seen is unread weight and nothing else.</b> An unseen signal's name, and the label of a folded group holding one, are ink at 600. Peeking or opening a signal marks it seen.</li>
-    <li><b>Failures in words, first.</b> A dump that couldn't be read leads the Dumps section, says why, and has Retry. The summary names it. Work in progress says Processing with the Working spinner.</li>
-    <li><b>Handled is quiet.</b> A section with nothing left disappears. When no decisions remain, the sentence says "Nothing needs you." and the news stays. With nothing new at all, the page says "Nothing new since 18:40" and drops the key line. Nothing celebrates.</li>
-    <li><b>Narrow screens show Briefing alone.</b> The rail becomes a sheet from the left edge, and the composer spans the window.</li>
-  </ol>
-</section>
-
-<section class="jig-section wide" id="live">
-  <h2>The Briefing</h2>
-  <p class="lede">The default view on open: Briefing selected in the rail, no second sidebar. Accept, Dismiss and Discard work. Undo is in the toast or ⌘Z. Point at or click any row to peek it, and Open goes to its full view (06's window); Back or Briefing returns. Unfold a signal group, Unmerge a merged signal on hover, and Retry the dump that failed. Click into a decision and use J, K and A.</p>
-  <div class="live-bar ctl" id="days">
-    <div class="ctl-seg" role="group" aria-label="Day">
-      <button type="button" data-day="quiet" aria-pressed="false">Quiet day</button>
-      <button type="button" data-day="busy" aria-pressed="true">Busy day, 40 items</button>
-      <button type="button" data-day="clear" aria-pressed="false">Caught up</button>
-    </div>
-    <button type="button" class="reset" data-reset>Reset</button>
-    <span class="hint">The "Main-area inset" dial (top right) tunes the padding live. Choices follow the recommended options: by theme, leaves with Undo, seen once shown, verb labels.</span>
-  </div>
-  <div class="br8-host" id="hero" data-br='{"day":"busy","h":860}'></div>
-</section>
-
-<section class="jig-section wide" id="c-group" data-decision="group" data-question="1. How are new signals grouped?" data-default="A By theme">
-  <p class="lede"><b>New signals are the signals that arrived since you last looked.</b> They're news to read, not decisions, so they sit after Challenges, Suggestions and Drafts. Each group starts with the object it belongs to as a row, with how many new signals it holds; its signals sit one step in. A group of more than three shows two and a fade, then Show all. Both windows open at New signals on the busy morning (14 signals).</p>
-  <div class="jig-compare" style="--jig-min:100%">
-    <div class="jig-option" data-option="A By theme"><div class="jig-label"><b>A</b> By theme: the busiest first</div><p class="jig-note">Cost of intelligence, then its signals. It answers "what's happening in each area", and matches the Themes list. A signal in two themes shows under its first.</p>
-      <div class="br8-host" data-option-stage data-scroll="sig" data-br='{"day":"busy","h":640,"opt":{"group":"theme"}}'></div></div>
-    <div class="jig-option" data-option="B By theory"><div class="jig-label"><b>B</b> By the theory each bears on, with its stance</div><p class="jig-note">Tokens become nearly free for routine work, then the signals for and against it, each with ↑ or ↓. It answers "what does today mean for my claims". Signals that bear on no theory group last, as "No theory yet".</p>
-      <div class="br8-host" data-option-stage data-scroll="sig" data-br='{"day":"busy","h":640,"opt":{"group":"theory"}}'></div></div>
-  </div>
-</section>
-
-<section class="jig-section wide" id="c-settle" data-decision="settle" data-question="2. What happens to an item once you decide it?" data-default="A Leaves, with Undo">
-  <p class="lede">Accept or dismiss a few suggestions in each window.</p>
-  <div class="jig-compare" style="--jig-min:100%">
-    <div class="jig-option" data-option="A Leaves, with Undo"><div class="jig-label"><b>A</b> It solidifies, leaves, and a toast offers Undo</div><p class="jig-note">The section count drops; when it reaches zero the section goes. ⌘Z works while the toast shows.</p>
-      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"settle":"leave"}}'></div></div>
-    <div class="jig-option" data-option="B Settles in place"><div class="jig-label"><b>B</b> It settles to one line in place, with Undo, until you leave Briefing</div><p class="jig-note">No toast. The trail clears the next time you open Briefing.</p>
-      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"settle":"inline"}}'></div></div>
-  </div>
-</section>
-
-<section class="jig-section wide" id="c-seen" data-decision="seen" data-question="3. When does a new signal count as seen?" data-default="A Once shown">
-  <p class="lede">Both windows set unseen names in ink at 600 and clear one when you peek it. To see the difference, click Signals in the rail, then Briefing to come back.</p>
-  <div class="jig-compare" style="--jig-min:100%">
-    <div class="jig-option" data-option="A Once shown"><div class="jig-label"><b>A</b> Once Briefing has shown it</div><p class="jig-note">Signals in an open group count as seen when you leave. Folded groups stay unseen.</p>
-      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"seen":"shown"}}'></div></div>
-    <div class="jig-option" data-option="B When read"><div class="jig-label"><b>B</b> Only when you peek or open it, or press Mark seen</div><p class="jig-note">A check on each group with unseen signals marks them all seen.</p>
-      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"seen":"read"}}'></div></div>
-  </div>
-</section>
-
-<section class="jig-section wide" id="c-labels" data-decision="labels" data-question="4. What do a decision's buttons say?" data-default="B Verbs">
-  <p class="lede">The same busy morning, with the challenges first. Read down a few decisions in each window: a challenge, a support, the new wording, the merge, a draft.</p>
-  <div class="jig-compare" style="--jig-min:100%">
-    <div class="jig-option" data-option="A Dismiss | Accept"><div class="jig-label"><b>A</b> Dismiss | Accept everywhere (Discard | Accept on drafts)</div><p class="jig-note">One pair to learn; the block's last sentence says what Accept does ("Accepting lowers confidence from 4 to 3").</p>
-      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"labels":"generic"}}'></div></div>
-    <div class="jig-option" data-option="B Verbs"><div class="jig-label"><b>B</b> What each button does</div><p class="jig-note">Challenge: Keep confidence | Lower to 3. Evidence: Dismiss | Add evidence. Wording: Dismiss | Use wording. Merge: Keep apart | Merge. Draft: Discard | Keep. A still presses the right-hand button.</p>
-      <div class="br8-host" data-option-stage data-br='{"day":"busy","h":640,"opt":{"labels":"verb"}}'></div></div>
-  </div>
-</section>
-
-<section class="jig-section wide" id="c-sections" data-decision="sections" data-question="5. How do sections begin and end?" data-default="A Header rule">
-  <p class="lede">The busy morning, opened where Challenges ends and Suggestions begins. Scroll each window: can you tell where a section starts, and which rows are things you hold (solid, bold names) and which are proposals (dashed, one step in, "Suggested …")? The subject and proposal treatment is the same in all three.</p>
-  <div class="jig-compare" style="--jig-min:100%">
-    <div class="jig-option" data-option="A Header rule"><div class="jig-label"><b>A</b> A section header role, 16 / 600 ink, with a hairline above</div><p class="jig-note">40 above the hairline, 16 to the header, 16 to the first item. Adds 16 to the decided 11 / 12 / 13 / 24 scale.</p>
-      <div class="br8-host" data-option-stage data-scroll="sug" data-scroll-off="300" data-br='{"day":"busy","h":640,"opt":{"sections":"rule"}}'></div></div>
-    <div class="jig-option" data-option="B Section boxes"><div class="jig-label"><b>B</b> Each section is its own surface on the sunk main ground</div><p class="jig-note">Header inside at 16 / 600; the groups in a section are split by hairlines. Contents stay on the title's edge; the box reaches 16 past it.</p>
-      <div class="br8-host" data-option-stage data-scroll="sug" data-scroll-off="300" data-br='{"day":"busy","h":640,"opt":{"sections":"box"}}'></div></div>
-    <div class="jig-option" data-option="C Sticky bands"><div class="jig-label"><b>C</b> A sunk band across the main area that pins while its section scrolls</div><p class="jig-note">Header 13 / 600 ink with its count: no new type size. You always know which section you're in.</p>
-      <div class="br8-host" data-option-stage data-scroll="sug" data-scroll-off="300" data-br='{"day":"busy","h":640,"opt":{"sections":"band"}}'></div></div>
-  </div>
-</section>
-
-<section class="jig-section wide" id="c-change" data-decision="change" data-question="6. How does a challenge show the confidence it would lose?" data-default="A Red step">
-  <p class="jig-why"><b>Recommended A.</b> The decided "down" red marks the step that would go; it stays one small mark and still reads at rest (C looks like a 3 once its fade ends).</p>
-  <p class="lede">Each window opens on Challenges. Every proposal reads label, then why, then the object, then the decision; the kept three steps stay ink.</p>
-  <div class="jig-compare" style="--jig-min:100%">
-    <div class="jig-option" data-option="A Red step"><div class="jig-label"><b>A</b> The step that would go, filled in red at 40%</div>
-      <div class="br8-host" data-option-stage data-scroll="ch" data-br='{"day":"busy","h":560,"opt":{"change":"fill"}}'></div></div>
-    <div class="jig-option" data-option="B Red outline"><div class="jig-label"><b>B</b> The step that would go as an empty red outline</div>
-      <div class="br8-host" data-option-stage data-scroll="ch" data-br='{"day":"busy","h":560,"opt":{"change":"outline"}}'></div></div>
-    <div class="jig-option" data-option="C Fades out"><div class="jig-label"><b>C</b> The step that would go fades from red to empty, on appear and on hover</div>
-      <div class="br8-host" data-option-stage data-scroll="ch" data-br='{"day":"busy","h":560,"opt":{"change":"fade"}}'></div></div>
-  </div>
-</section>
-
+<details class="pg-details" id="d-spec">
+  <summary><span class="pg-dt">For RULES.md</span><span class="pg-ds">The spec text, as added under "08 Briefing — PROPOSED"</span></summary>
 <section class="jig-section" id="spec">
-  <h2>For RULES.md</h2>
-  <p class="lede">Added to RULES.md as "08 Briefing — PROPOSED".</p>
   <pre class="spec" id="spec-text">Briefing is a full view of "since you last looked", the first rail item and what Aber opens on. It has no second sidebar (Navigation rule 2). Jig: 08-briefing/.
 
 1. Head: the 32 newspaper tile, "Since yesterday", key line "Last looked 18:40", one summary sentence, the hairline, then sections (06 full-view anatomy, pane insets).
@@ -207,6 +191,7 @@
 Open: signals by theme (A) or by theory (B); a decided item leaves with Undo (A) or settles in place (B); a signal is seen once shown (A) or when read (B); buttons read Dismiss | Accept (A) or what they do (B, recommended); sections open with a 16 / 600 header and a hairline (A, recommended), are boxes on the sunk ground (B), or sticky sunk bands (C).
 Subjects are solid rows, names at 600; proposals hang one step in, dashed and labelled "Suggested …".</pre>
 </section>
+</details>
 
 </body>
 </html>

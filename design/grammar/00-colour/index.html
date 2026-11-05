@@ -19,27 +19,21 @@
 <link rel="stylesheet" href="../_shared/surfaces.css">
 <link rel="stylesheet" href="../_shared/controls.css">
 <link rel="stylesheet" href="colour.css">
+<link rel="stylesheet" href="../_shared/page.css">
 <script src="https://cdn.jsdelivr.net/npm/dialkit@2.1.0/dist/vanilla/browser.global.js" defer></script>
 <script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/manifest.js" defer></script>
+<script src="../_shared/page.js" defer></script>
 <script src="../_shared/stage.js" defer></script>
 <script src="colour.js" defer></script>
 <script type="module" src="../_shared/agentation.js" data-app-name="Grammar 00: Colour"></script>
 </head>
 <body class="jig" data-jig="grammar-00-colour">
 
-<header class="jig-head">
-  <h1>Grammar 00: Colour</h1>
-  <p>Four complete colour systems on the app's real layout. Each sets the neutrals, inks, accent, selection, six type hues and status colours. The dials (top right) shift neutral tone and type-colour strength on top of whichever system you're looking at.</p>
-</header>
+<header class="pg-head"></header>
 
-<div class="decide">
-  <div class="decide-box">
-    <h2>Decide on this page</h2>
-    <ol><li data-pick="system"><a href="#systems">Which colour system?</a> <span class="pick"></span></li></ol>
-  </div>
-</div>
-
-<section class="jig-section viewer">
+<section class="jig-section viewer" id="stage">
+  <h2>Stage</h2>
   <div class="viewer-bar">
     <span class="viewer-label">Full size</span>
     <span class="seg-group" role="group" aria-label="System at full size">
@@ -49,21 +43,32 @@
       <button type="button" value="studio" aria-pressed="false">C Studio grey</button>
     </span>
   </div>
-  <p class="stage-label">Stage: the app's current layout, unchanged. Only colour changes here.</p>
+  <p class="stage-label">The app's layout; only colour changes. Dials, top right: neutral tone and type-colour strength.</p>
   <div class="stg-host" id="viewer" data-stage='{"system":"linenbright"}'></div>
 </section>
 
+<section class="pg-decided">
+  <h2>Decided</h2>
+  <ul class="pg-list">
+    <li><b>Primary</b>black ink; teal marks only new, focus and the current view</li>
+    <li><b>Status</b>green up and good, red down or a challenge, no amber</li>
+    <li><b>Dashed</b>means not yet mine: drafts and suggestions</li>
+  </ul>
+</section>
+
+<details class="pg-details" id="d-systems">
+  <summary><span class="pg-dt">Options weighed</span><span class="pg-ds">Four complete systems, each with its swatches and contrast checks</span></summary>
 <section class="jig-section" id="systems" data-decision="system" data-question="Which colour system?" data-default="D linen bright types">
   <div class="jig-compare systems">
     <div class="jig-option" data-option="D linen bright types">
       <div class="jig-label"><b>D</b> Linen, bright types</div>
-      <p class="jig-note"><b>Maggie, 4 Nov: linen neutrals + bright types.</b> Ink on linen's quiet off-white, near-black ink and black primary, with Clean light's bright type tints and glyphs. Teal only marks new and focus.</p>
+      <p class="jig-note">Ink on linen's off-white, near-black ink and black primary, with Clean light's bright type tints. Teal only marks new and focus.</p>
       <div class="stg-host" data-option-stage data-stage='{"system":"linenbright"}'></div>
       <div class="strip" data-strip="linenbright"></div>
     </div>
     <div class="jig-option" data-option="A clean light">
       <div class="jig-label"><b>A</b> Clean light</div>
-      <p class="jig-note">Near-white and barely warm, crisp ink, fresh light type tints and a jade primary. The neutrals almost disappear; colour comes from glyphs, jade and status. Closest to Foglamp.</p>
+      <p class="jig-note">Near-white, crisp ink, light type tints and a jade primary. Closest to Foglamp.</p>
       <div class="stg-host" data-option-stage data-stage='{"system":"clean"}'></div>
       <div class="strip" data-strip="clean"></div>
     </div>
@@ -74,13 +79,14 @@
       <div class="strip" data-strip="linen"></div>
     </div>
     <div class="jig-option" data-option="C studio grey">
-      <div class="jig-label"><b>C</b> Studio grey (agent's pick)</div>
-      <p class="jig-note">True neutral, lifted light, with the rail only just below the ground. With no tint in the neutrals, the six type glyphs and jade are the only colour, so they read vividly: calm surface, vivid where it counts.</p>
+      <div class="jig-label"><b>C</b> Studio grey</div>
+      <p class="jig-note">True neutral, lifted light; the type glyphs and jade are the only colour.</p>
       <div class="stg-host" data-option-stage data-stage='{"system":"studio"}'></div>
       <div class="strip" data-strip="studio"></div>
     </div>
   </div>
 </section>
+</details>
 
 </body>
 </html>

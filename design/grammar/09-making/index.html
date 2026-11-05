@@ -20,7 +20,11 @@
 <link rel="stylesheet" href="../_shared/controls.css">
 <link rel="stylesheet" href="../_shared/objects.css">
 <link rel="stylesheet" href="making.css">
+<link rel="stylesheet" href="page.css">
+<link rel="stylesheet" href="../_shared/page.css">
 <script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/manifest.js" defer></script>
+<script src="../_shared/page.js" defer></script>
 <script src="data.js" defer></script>
 <script src="making.js" defer></script>
 <script src="page.js" defer></script>
@@ -28,83 +32,34 @@
 </head>
 <body class="jig" data-jig="grammar-09-making">
 
-<header class="jig-head">
-  <h1>Grammar 09: Making things</h1>
-  <p><b>Proposed, round 3.</b> How new things get into Aber, in the type-first default view. Capture now matches the live app (127.0.0.1:5174) in shape and behaviour. The "Dump or ask" pill sits at the bottom right and grows into a chat column on the right edge. Its replies show what it filed and drafted. History is a Dumps sheet. Only the styling changes, to the decided foundations and 06's objects, plus a few marked improvements. Making and linking happen in place, and everything is live.</p>
-</header>
+<header class="pg-head"></header>
 
-<div class="decide">
-  <div class="decide-box">
-    <h2>Decide on this page</h2>
-    <ol>
-      <li data-pick="log"><a href="#log">History (⌘⇧L): keep the live Dumps sheet, or go to Dumps in the rail</a> <span class="pick"></span></li>
-    </ol>
-    <p class="why"><b>Decided 4 Nov:</b> a new object left without a name but with content is kept as "Untitled", with Undo. Editing a draft's wording accepts it. Evidence is added with a + on each stance (Supports, Undermines).</p>
+<section class="jig-section" id="log" data-decision="log" data-question="Where does ⌘⇧L take you?" data-default="A the Dumps sheet">
+  <p class="lede">Live, ⌘⇧L raises a Dumps sheet above the pill. The rail's Dumps type already lists the same dumps.</p>
+  <div class="jig-compare">
+    <div class="jig-option" data-option="A the Dumps sheet"><div class="jig-label"><b>A</b> Keep the live Dumps sheet</div><p class="jig-note">As today: a sheet over whatever you're doing that closes back to where you were. A second list of the same dumps.</p><div class="mk-host" data-option-stage data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"log","opt":{"log":"sheet"}}'></div></div>
+    <div class="jig-option" data-option="B Dumps in the rail"><div class="jig-label"><b>B</b> Go to Dumps in the rail</div><p class="jig-note">One list of dumps. ⌘⇧L selects Dumps and its newest dump; Back returns. Press ⌘⇧L in this window.</p><div class="mk-host" data-option-stage data-crop="right" data-mk='{"type":"dump","sel":"d1","opt":{"log":"rail"}}'></div></div>
   </div>
-</div>
+</section>
 
-<section class="jig-section" id="today">
-  <h2>Live vs redesign</h2>
-  <p>Live screenshots are read-only, from Maggie's app at <code>127.0.0.1:5174</code>; every write request was blocked. Each redesign window beside them is live: click through it. Code: <code>ui/pill-study.tsx</code> (pill, column, composer, take), <code>chat/parts.tsx:11–33</code> (reply parts), <code>ui/dump-log.tsx</code> (history).</p>
-  <div class="mk-vs">
-    <figure><img src="screenshots/live/01-closed.png" alt="Live: the pill closed at the bottom right"><figcaption><b>Live, closed.</b></figcaption></figure>
-    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi"}'></div><figcaption><b>Redesign, closed.</b></figcaption></figure>
-    <figure><img src="screenshots/live/02-open.png" alt="Live: the column open"><figcaption><b>Live, open.</b> 360 wide, 12 in, the view pushed.</figcaption></figure>
-    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","chat":1}'></div><figcaption><b>Redesign, open.</b></figcaption></figure>
-    <figure><img src="screenshots/live/03-thread-top.png" alt="Live: a draft card with rephrase, discard, accept and an evidence split"><figcaption><b>Live, the reply.</b> A draft with Rephrase, Discard and Accept, then a theory with its evidence split.</figcaption></figure>
-    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","chat":1,"scene":"chat-top"}'></div><figcaption><b>Redesign, the reply.</b></figcaption></figure>
-    <figure><img src="screenshots/live/04-filed-open.png" alt="Live: a filed theme token unfolded and a voice note"><figcaption><b>Live, filed and voice.</b> The theme token unfolds to the gists; a voice dump plays, with its transcript.</figcaption></figure>
-    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","scene":"chat-filed"}'></div><figcaption><b>Redesign, filed and voice.</b></figcaption></figure>
-    <figure><img src="screenshots/live/05-typing-attach.png" alt="Live: typing a question with a link attached"><figcaption><b>Live, typing.</b> A link chip above the field; "?" turns Send into Ask.</figcaption></figure>
-    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","scene":"chat-typing"}'></div><figcaption><b>Redesign, typing.</b></figcaption></figure>
-    <figure><img src="screenshots/live/08-pill-voice.png" alt="Live: recording from the pill"><figcaption><b>Live, voice from the pill.</b></figcaption></figure>
-    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","scene":"pill-rec"}'></div><figcaption><b>Redesign, voice from the pill.</b></figcaption></figure>
-    <figure><img src="screenshots/live/09-log.png" alt="Live: the Dumps sheet above the pill"><figcaption><b>Live, history</b> (⌘⇧L).</figcaption></figure>
-    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","scene":"log"}'></div><figcaption><b>Redesign, history.</b></figcaption></figure>
-  </div>
+<section class="jig-section" id="try">
+  <h2>Try it</h2>
+  <p>Type in the composer and press Return; "will" or "theory" also gets you a draft. Accept or discard drafts, click a row to peek it, or press the crosshair and click a card.</p>  <div class="mk-host" data-live="1" data-mk='{"type":"theme","sel":"coi","chat":1}'></div>
+</section>
 
-  <h3 class="sub">Every difference</h3>
-  <div class="table-wrap">
-  <table class="audit">
-    <thead><tr><th>Part</th><th>Live</th><th>Redesign</th><th>Change</th></tr></thead>
-    <tbody>
-      <tr><td>Pill position</td><td>Bottom right, 12 from both edges, 40 high</td><td>The same</td><td>Kept</td></tr>
-      <tr><td>Pill contents</td><td>Dump glyph, "Dump or ask", microphone on a round tile</td><td>The same, with the microphone as a 28 icon button</td><td>Restyled</td></tr>
-      <tr><td>Pill shape</td><td>Radius 20 (a capsule), its own shadow</td><td>Radius 14, the float shadow (04 floating bar)</td><td>Restyled</td></tr>
-      <tr><td>Opening</td><td>Click the pill or ⌘J; it grows into the column</td><td>The same</td><td>Kept</td></tr>
-      <tr><td>Column size and place</td><td>360 wide, 12 in from the top, right and bottom; pushes the view (1208 → 836)</td><td>The same</td><td>Kept</td></tr>
-      <tr><td>Column surface</td><td>White, radius 14, a 0 8 24 shadow</td><td>Surface, radius 14, the float shadow</td><td>Restyled</td></tr>
-      <tr><td>Closing</td><td>A grab handle at the top centre (Close, Esc); Esc; clicking away doesn't close it</td><td>The same</td><td>Kept</td></tr>
-      <tr><td>Esc order</td><td>Discards a take first, then closes</td><td>The same, with picking, peeks and the sheet in the stack</td><td>Kept</td></tr>
-      <tr><td>My message</td><td>Grey bubble on the right, time under it</td><td>Sunk bubble (radius 10, card inset), time under it, Delete dump on hover</td><td>Restyled; Delete dump <b>improved</b></td></tr>
-      <tr><td>Voice dump in the thread</td><td>A playable bubble (play, wave, length), its transcript under it</td><td>The same, with an icon button and the wave in ink 2</td><td>Restyled</td></tr>
-      <tr><td>Agent prose</td><td>Plain text on the left, with bold and italic</td><td>The same (13 / 1.55)</td><td>Kept</td></tr>
-      <tr><td>Filed token</td><td>Theme glyph, name, a count badge; unfolds to the gists</td><td>The 06 theme chip, a bare count and a caret; unfolds to 06 signal rows that peek</td><td>Restyled; peek <b>improved</b></td></tr>
-      <tr><td>Draft in a reply</td><td>Dashed card; pencil, Discard, Accept under it</td><td>06 draft row, dashed; Rephrase (pencil-simple) opens it with the claim editable, then Discard | Accept</td><td>Restyled</td></tr>
-      <tr><td>Theory with its evidence</td><td>A card, then a Supports / Undermines split</td><td>06 theory row and a ringed split of 06 signal rows</td><td>Restyled</td></tr>
-      <tr><td>Objects in replies</td><td>Click opens the object</td><td>Click grows the 06 peek; Open shows it in the main area, the column stays</td><td><b>Improved</b> (06 rungs)</td></tr>
-      <tr><td>While working</td><td>(Streaming text)</td><td>"Reading" with the Working spinner; the Dumps rail entry spins (10)</td><td><b>Improved</b> (10, decided)</td></tr>
-      <tr><td>What it sees</td><td>Floating pills over the thread's foot ("Theme sections", minus), then the crosshair</td><td>The same place and behaviour; the pill is a 06 chip of the object in the main area</td><td>Restyled</td></tr>
-      <tr><td>Composer</td><td>A hairline, then "Dump anything, or ask", +, microphone, send</td><td>The same order and copy; attach is the paperclip (03 vocabulary)</td><td>Restyled</td></tr>
-      <tr><td>Send</td><td>A grey circle; ink when ready; a "?" speech bubble when asking</td><td>A 28 primary: 40% until ready, then ink; paper plane, or a question mark when asking</td><td>Restyled</td></tr>
-      <tr><td>Attachments</td><td>Chips above the field (globe, host, minus)</td><td>The same, with the 03 link glyph</td><td>Restyled</td></tr>
-      <tr><td>Recording</td><td>Pill or composer becomes the take; discard is a dot or an X; Stop and dump</td><td>The same; discard is a labelled trash button</td><td>Discard <b>improved</b> (DI-009)</td></tr>
-      <tr><td>Discarding a take</td><td>Gone, no Undo</td><td>A toast with Undo, which brings the take back as a voice chip</td><td><b>Improved</b> (05 rule 7)</td></tr>
-      <tr><td>A finished dump with the column closed</td><td>A toast with what it made</td><td>"Made 1 signal" with Undo, just above the pill</td><td>Kept (10)</td></tr>
-      <tr><td>History</td><td>⌘⇧L raises a Dumps sheet above the pill: day groups, kind, first line, time, what it made, the bin, X</td><td>The same sheet, with 06 dump rows and bare counts; open choice below</td><td>Restyled</td></tr>
-    </tbody>
-  </table>
-  </div>
-
-  <h3 class="sub">The rest of making today</h3>
-  <ul class="offenders">
-    <li>Nine of the thirteen ways to make or link something open one centred modal, <code>ask()</code> (<code>app/dialogs.tsx:13</code>). The only name check is the browser's <code>required</code> bubble (<code>:40</code>). Cancel is an X beside Create (<code>:44</code>). Picker options end in a chevron that doesn't expand (<code>:38</code>).</li>
-    <li>Esc keeps a rename (<code>editable.tsx:16</code>), so you can't cancel one. A blank name saves as blank.</li>
+<section class="pg-decided">
+  <h2>Decided</h2>
+  <ul class="pg-list">
+    <li><b>Unnamed with content</b>Kept as "Untitled", with Undo</li>
+    <li><b>Editing a draft's wording</b>Accepts it</li>
+    <li><b>Adding evidence</b>A + on each stance, Supports and Undermines</li>
+    <li><b>Dump or ask</b>A floating window over its surface, with the sheet shadow (5 Nov)</li>
   </ul>
 </section>
 
+<details class="pg-details" id="d-rules">
+  <summary><span class="pg-dt">Rules</span><span class="pg-ds">Proposed: capture keeps the live shape, chat is dumps, make it where it lives, names edit in place</span></summary>
 <section class="jig-section" id="rules">
-  <h2>The rules (proposed)</h2>
   <ol class="rules">
     <li><b>Capture keeps the live shape.</b>
       <ul>
@@ -135,7 +90,6 @@
     <li><b>Make it where it will live.</b> + at a list's head (or N) makes one, in its list and filling the main area, with the caret in its name. Add theory in a theme makes a card in place. No modal.</li>
     <li><b>The name is the title, edited in place.</b> Plain at rest. The 5% layer behind the text on hover and while editing, and the text never moves. No ring. An unnamed object's placeholder is in ink 2. Esc restores the old name, and a blank rename keeps it.</li>
     <li><b>The eyebrow</b> holds notes about the whole object, above the title: "Draft from [dump]", "Already a theme [chip]". It shares one line with the object's verbs; the group gap (16) separates it from the title.</li>
-    <li><b>Decided:</b> unnamed with content is kept as "Untitled" with Undo; editing a draft's wording accepts it; evidence is added with a + on each stance.</li>
     <li><b>A modal only when it must block</b> (Delete dump, Find): the title and X in the head, Cancel left of the primary in the foot.</li>
   </ol>
   <h3 class="sub">Keys</h3>
@@ -148,15 +102,11 @@
     <dt>N, F2, ⌘Z</dt><dd>New in this list, rename the focused row, Undo from the toast</dd>
   </dl>
 </section>
+</details>
 
-<section class="jig-section" id="try">
-  <h2>Try it: the default view with the column open</h2>
-  <p>Type in the composer and press Return; a "will" or "theory" in it also gets you a draft. Accept or discard drafts in the thread. Click any row to peek it, then Open. Press the crosshair, then click a card. Close the column (Esc) and use the pill's microphone. Make a theme with +, rename a title, and add evidence on a theory.</p>
-  <div class="mk-host" data-live="1" data-mk='{"type":"theme","sel":"coi","chat":1}'></div>
-</section>
-
+<details class="pg-details" id="d-flows">
+  <summary><span class="pg-dt">Each flow, step by step</span><span class="pg-ds">Capture, a theme, a theory, evidence, rename and drafts, the one modal</span></summary>
 <section class="jig-section" id="flows">
-  <h2>Each flow, step by step</h2>
 
   <div class="mk-flow" id="capture">
     <h3>1. Capture: the pill and the chat column</h3>
@@ -210,14 +160,68 @@
     </div>
   </div>
 </section>
+</details>
 
-<section class="jig-section" id="log" data-decision="log" data-question="Where does ⌘⇧L take you?" data-default="A the Dumps sheet">
-  <p>In the live app, ⌘⇧L raises a Dumps sheet above the pill. In the type-first default view, the Dumps type in the rail lists the same dumps, with status in words.</p>
-  <div class="jig-compare">
-    <div class="jig-option" data-option="A the Dumps sheet"><div class="jig-label"><b>A</b> Keep the live Dumps sheet</div><p class="jig-note">It's as it is today: a sheet over whatever you're doing, which closes back to where you were. That's a second list of the same dumps.</p><div class="mk-host" data-option-stage data-crop="right" data-mk='{"type":"theme","sel":"coi","scene":"log","opt":{"log":"sheet"}}'></div></div>
-    <div class="jig-option" data-option="B Dumps in the rail"><div class="jig-label"><b>B</b> Go to Dumps in the rail</div><p class="jig-note">One list of dumps in the default view. ⌘⇧L selects Dumps and its newest dump, so you leave what you were looking at; Back returns. Press ⌘⇧L in this window.</p><div class="mk-host" data-option-stage data-crop="right" data-mk='{"type":"dump","sel":"d1","opt":{"log":"rail"}}'></div></div>
+<details class="pg-details" id="d-today">
+  <summary><span class="pg-dt">Live vs redesign</span><span class="pg-ds">The live chat sidebar beside the redesign, and every difference</span></summary>
+<section class="jig-section" id="today">
+  <p>Live screenshots are read-only, from the app at <code>127.0.0.1:5174</code>. Each redesign window beside them is live.</p>  <div class="mk-vs">
+    <figure><img src="screenshots/live/01-closed.png" alt="Live: the pill closed at the bottom right"><figcaption><b>Live, closed.</b></figcaption></figure>
+    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi"}'></div><figcaption><b>Redesign, closed.</b></figcaption></figure>
+    <figure><img src="screenshots/live/02-open.png" alt="Live: the column open"><figcaption><b>Live, open.</b> 360 wide, 12 in, the view pushed.</figcaption></figure>
+    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","chat":1}'></div><figcaption><b>Redesign, open.</b> The type rail collapses to its icons while the chat is open (proposed 5 Nov; Choose on nav).</figcaption></figure>
+    <figure><img src="screenshots/live/03-thread-top.png" alt="Live: a draft card with rephrase, discard, accept and an evidence split"><figcaption><b>Live, the reply.</b> A draft with Rephrase, Discard and Accept, then a theory with its evidence split.</figcaption></figure>
+    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","chat":1,"scene":"chat-top"}'></div><figcaption><b>Redesign, the reply.</b></figcaption></figure>
+    <figure><img src="screenshots/live/04-filed-open.png" alt="Live: a filed theme token unfolded and a voice note"><figcaption><b>Live, filed and voice.</b> The theme token unfolds to the gists; a voice dump plays, with its transcript.</figcaption></figure>
+    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","scene":"chat-filed"}'></div><figcaption><b>Redesign, filed and voice.</b></figcaption></figure>
+    <figure><img src="screenshots/live/05-typing-attach.png" alt="Live: typing a question with a link attached"><figcaption><b>Live, typing.</b> A link chip above the field; "?" turns Send into Ask.</figcaption></figure>
+    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","scene":"chat-typing"}'></div><figcaption><b>Redesign, typing.</b></figcaption></figure>
+    <figure><img src="screenshots/live/08-pill-voice.png" alt="Live: recording from the pill"><figcaption><b>Live, voice from the pill.</b></figcaption></figure>
+    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","scene":"pill-rec"}'></div><figcaption><b>Redesign, voice from the pill.</b></figcaption></figure>
+    <figure><img src="screenshots/live/09-log.png" alt="Live: the Dumps sheet above the pill"><figcaption><b>Live, history</b> (⌘⇧L).</figcaption></figure>
+    <figure><div class="mk-host" data-mk='{"type":"theme","sel":"coi","scene":"log"}'></div><figcaption><b>Redesign, history.</b></figcaption></figure>
   </div>
+
+  <h3 class="sub">Every difference</h3>
+  <div class="table-wrap">
+  <table class="audit">
+    <thead><tr><th>Part</th><th>Live</th><th>Redesign</th><th>Change</th></tr></thead>
+    <tbody>
+      <tr><td>Pill position</td><td>Bottom right, 12 from both edges, 40 high</td><td>The same</td><td>Kept</td></tr>
+      <tr><td>Pill contents</td><td>Dump glyph, "Dump or ask", microphone on a round tile</td><td>The same, with the microphone as a 28 icon button</td><td>Restyled</td></tr>
+      <tr><td>Pill shape</td><td>Radius 20 (a capsule), its own shadow</td><td>Radius 14, the float shadow (04 floating bar)</td><td>Restyled</td></tr>
+      <tr><td>Opening</td><td>Click the pill or ⌘J; it grows into the column</td><td>The same</td><td>Kept</td></tr>
+      <tr><td>Column size and place</td><td>360 wide, 12 in from the top, right and bottom; pushes the view (1208 → 836)</td><td>The same</td><td>Kept</td></tr>
+      <tr><td>Column surface</td><td>White, radius 14, a 0 8 24 shadow</td><td>Surface, radius 14, the float shadow</td><td>Restyled</td></tr>
+      <tr><td>Closing</td><td>A grab handle at the top centre (Close, Esc); Esc; clicking away doesn't close it</td><td>The same</td><td>Kept</td></tr>
+      <tr><td>Esc order</td><td>Discards a take first, then closes</td><td>The same, with picking, peeks and the sheet in the stack</td><td>Kept</td></tr>
+      <tr><td>My message</td><td>Grey bubble on the right, time under it</td><td>Sunk bubble (radius 10, card inset), time under it, Delete dump on hover</td><td>Restyled; Delete dump <b>improved</b></td></tr>
+      <tr><td>Voice dump in the thread</td><td>A playable bubble (play, wave, length), its transcript under it</td><td>The same, with an icon button and the wave in ink 2</td><td>Restyled</td></tr>
+      <tr><td>Agent prose</td><td>Plain text on the left, with bold and italic</td><td>The same (13 / 1.55)</td><td>Kept</td></tr>
+      <tr><td>Filed token</td><td>Theme glyph, name, a count badge; unfolds to the gists</td><td>The 06 theme chip, a bare count and a caret; unfolds to 06 signal rows that peek</td><td>Restyled; peek <b>improved</b></td></tr>
+      <tr><td>Draft in a reply</td><td>Dashed card; pencil, Discard, Accept under it</td><td>06 draft row, dashed; Rephrase (pencil-simple) opens it with the claim editable, then Discard | Accept</td><td>Restyled</td></tr>
+      <tr><td>Theory with its evidence</td><td>A card, then a Supports / Undermines split</td><td>06 theory row and a ringed split of 06 signal rows</td><td>Restyled</td></tr>
+      <tr><td>Objects in replies</td><td>Click opens the object</td><td>Click grows the 06 peek; Open shows it in the main area, the column stays</td><td><b>Improved</b> (06 rungs)</td></tr>
+      <tr><td>While working</td><td>(Streaming text)</td><td>"Reading" with the Working spinner; the Dumps rail entry spins (10)</td><td><b>Improved</b> (10, decided)</td></tr>
+      <tr><td>What it sees</td><td>Floating pills over the thread's foot ("Theme sections", minus), then the crosshair</td><td>The same place and behaviour; the pill is a 06 chip of the object in the main area</td><td>Restyled</td></tr>
+      <tr><td>Composer</td><td>A hairline, then "Dump anything, or ask", +, microphone, send</td><td>The same order and copy; attach is the paperclip (03 vocabulary)</td><td>Restyled</td></tr>
+      <tr><td>Send</td><td>A grey circle; ink when ready; a "?" speech bubble when asking</td><td>A 28 primary: 40% until ready, then ink; paper plane, or a question mark when asking</td><td>Restyled</td></tr>
+      <tr><td>Attachments</td><td>Chips above the field (globe, host, minus)</td><td>The same, with the 03 link glyph</td><td>Restyled</td></tr>
+      <tr><td>Recording</td><td>Pill or composer becomes the take; discard is a dot or an X; Stop and dump</td><td>The same; discard is a labelled trash button</td><td>Discard <b>improved</b> (DI-009)</td></tr>
+      <tr><td>Discarding a take</td><td>Gone, no Undo</td><td>A toast with Undo, which brings the take back as a voice chip</td><td><b>Improved</b> (05 rule 7)</td></tr>
+      <tr><td>A finished dump with the column closed</td><td>A toast with what it made</td><td>"Made 1 signal" with Undo, just above the pill</td><td>Kept (10)</td></tr>
+      <tr><td>History</td><td>⌘⇧L raises a Dumps sheet above the pill: day groups, kind, first line, time, what it made, the bin, X</td><td>The same sheet, with 06 dump rows and bare counts; open choice below</td><td>Restyled</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3 class="sub">The rest of making today</h3>
+  <ul class="offenders">
+    <li>Nine of the thirteen ways to make or link something open one centred modal, <code>ask()</code> (<code>app/dialogs.tsx:13</code>). The only name check is the browser's <code>required</code> bubble (<code>:40</code>). Cancel is an X beside Create (<code>:44</code>). Picker options end in a chevron that doesn't expand (<code>:38</code>).</li>
+    <li>Esc keeps a rename (<code>editable.tsx:16</code>), so you can't cancel one. A blank name saves as blank.</li>
+  </ul>
 </section>
+</details>
 
 </body>
 </html>
