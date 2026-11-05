@@ -158,7 +158,7 @@
   // The take (live: a recording dot, the wave, the time, Stop). Improved: Discard is a trash button (DI-009: never X, never an unlabelled dot).
   const take = (c, where) => `<div class="mk-take" data-take="${where}">
       ${ib("trash", "Discard take", "data-rec-no", "Esc")}
-      <span class="mk-wave" aria-hidden="true">${Array.from({ length: where === "pill" ? 20 : 26 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</span>
+      <span class="mk-wave" aria-hidden="true">${Array.from({ length: where === "pill" ? 34 : 46 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</span>
       <span class="mk-time" data-time>${mmss(c.rec.sec || 0)}</span>
       <button type="button" class="ctl-icon primary" aria-label="Stop and dump" data-tip="Stop and dump" data-key="⏎" data-rec-stop>${ic("stop", true)}</button></div>`;
   // Closed (live): a 40-high pill, bottom right, 12 from both edges: the dump glyph and "Dump or ask" (⌘J), then the microphone.

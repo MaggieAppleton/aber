@@ -415,3 +415,7 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 4 Nov 2026 (Maggie, 09): a new object left without a name but with content is kept as 'Untitled' with Undo; editing a draft's wording accepts it; evidence is added with a + on each stance (Supports, Undermines).
 
 5 Nov 2026 (Maggie, 07): Open carries the tile and title to the full view's title (shared element); peeks sit beside their trigger, falling back to below; Back lands on the preview with focus.
+
+5 Nov 2026 (Maggie): the Dump or ask chat is a floating window over whatever surface it opens on; when a white pane or full view is open, the chat sits on that white surface with no strip, seam, border or background change behind it.
+
+5 Nov 2026 (Maggie): the type rail is condensed: Briefing in the same list as the types, rows closer together, and closer to the Aber/Find header.

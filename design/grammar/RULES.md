@@ -316,6 +316,7 @@ Jig: `nav/`. Columns, Atlas and Timeline are unchanged (see the note at the top 
    - Peek: a card tethered to that link, opened by a 500ms hover or a click. It shows the essentials and an Open button, and a click inside it peeks the next object. Esc or a click elsewhere closes it.
    - Full: Open moves the rail and list to the object; Back returns.
 4. **The view switcher floats at the rail foot**, in the same spot as in the other three views.
+   - **Rail spacing (decided 5 Nov):** rail rows 28, 2 apart (`--rail-row`, `--rail-row-gap`); header to first row 8 (`--gap-item`); Briefing in the same list as the types, with the same gap. Each row's hit layer fills the 2 gaps, so the rail is one unbroken strip of targets.
 5. **Pending:** the second sidebar's row and list designs are placeholders, not approved. They're designed in 06 Objects.
 
 ## 06 Objects — DECIDED (4 Nov 2026: preview, peek, full)
@@ -405,7 +406,9 @@ Evidence: the live app (127.0.0.1:5174, read-only) captures through a pill that 
 
 1. **Capture keeps the live shape.**
    - **Pill:** bottom right, 12 in, 40 high: "Dump or ask" (⌘J) and the microphone, which records without opening anything.
-   - **Column:** opening grows the pill into a 360 column, 12 in from the top, right and bottom, radius 14 and the float shadow. It pushes the main area.
+   - **Column:** opening grows the pill into a 360 column, 12 in from the top, right and bottom, radius 14 and the sheet shadow (tier 3, `--sh-sheet`). It pushes the main area.
+   - **A floating window over its surface** (DECIDED, Maggie, 5 Nov). Whatever it opens over runs on under and around it. Over a white pane or full view, the room it reserves is that same white: no cream strip, seam, left border or background change. Over a canvas (Atlas, Timeline) or the ground, it continues that.
+   - **Recording:** Discard (trash), the wave, the time and Stop share one centre line. The wave fills all the space between Discard and the time. The time is Geist at 13, tabular. Stop is a 28 control like Discard. The bar is inset the same on both sides.
    - **Closing:** a grab handle at the top centre (Close, Esc) or Esc. Clicking away doesn't close it. Esc discards a take before it closes anything.
 2. **Chat is dumps; the thread is the conversation's history.**
    - **Mine:** a sunk bubble on the right, the time under it, Delete dump on hover. A voice dump is a playable bubble with its transcript.

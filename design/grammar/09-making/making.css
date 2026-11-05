@@ -77,16 +77,23 @@ body[data-jig="grammar-09-making"] { --jig-min: 1200px; }
 .mk .mk-pill.rec { width: 300px; }
 .mk .mk-take { flex: 1; min-width: 0; display: flex; align-items: center; gap: 2px; }
 .mk .mk-take .ctl-icon.primary, .mk .mk-take .nv-ib { border-radius: calc(var(--r-bar) - 6px); }
-.mk .mk-wave { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 2px; height: var(--control); padding: 0 var(--gap-icon); overflow: hidden; }
+.mk .mk-wave { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 2px; height: var(--control); padding: 0 var(--gap-icon); overflow: hidden; }
 .mk .mk-wave i { flex: none; display: block; width: 2px; height: 16px; border-radius: 1px; background: var(--ink-2); animation: mk-wave 1.1s ease-in-out infinite; animation-delay: calc(var(--i) * -97ms); }
 @keyframes mk-wave { 0%, 100% { scale: 1 0.2; } 50% { scale: 1 1; } }
 @media (prefers-reduced-motion: reduce) { .mk .mk-wave i { animation: none; scale: 1 0.5; } }
-.mk .mk-time { min-width: 4ch; padding-right: var(--gap-icon); text-align: right; font-size: var(--fs-label); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.mk .mk-time { min-width: 4ch; padding-right: var(--gap-icon); text-align: right; font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.mk .mk-bubble .mk-time { font-size: var(--fs-label); }
+/* Recording: Discard, the wave, the time and Stop on one centre line, inset the same (6) on both sides of the bar */
+.mk .mk-comp:has(> .mk-take) { padding-left: var(--gap-icon); align-items: center; }
 
 /* ── Capture, open (live shape): the pill grows into a 360 column, 12 in from the top, right and bottom, radius 14 (the pill's bar radius),
    with the float shadow it had as a pill. It pushes the main area. No header: a grab handle at the top centre closes it. ── */
-.mk .mk-chat { position: relative; z-index: var(--z-chrome); min-width: 0; min-height: 0; margin: var(--inset-float) var(--inset-float) var(--inset-float) 0; display: grid; grid-template-rows: minmax(0, 1fr) auto auto;
-  border-radius: var(--r-bar); background: var(--surface); box-shadow: var(--sh-float); overflow: hidden; }
+.mk .mk-chat { position: relative; z-index: var(--z-sheet); grid-column: -2; grid-row: 1; min-width: 0; min-height: 0; margin: var(--inset-float) var(--inset-float) var(--inset-float) 0; display: grid; grid-template-rows: minmax(0, 1fr) auto auto;
+  border-radius: var(--r-bar); background: var(--surface); box-shadow: var(--sh-sheet); overflow: hidden; }
+/* The column floats over whatever surface it opens on (Maggie, 5 Nov): the main area runs on under it and around it, so the room it
+   reserves is the main area's own white, with no strip, seam or border. The scroller stops short of it, so nothing hides beneath. */
+.mk:has(> .mk-chat) > .nv-main { grid-column: 3 / -1; grid-row: 1; }
+.mk:has(> .mk-chat) > .nv-main > .nv-scroller { margin-right: calc(var(--chat-w) + var(--inset-float)); }
 .mk .mk-grab { position: absolute; z-index: 2; top: 4px; left: 50%; translate: -50% 0; display: grid; place-items: center; width: 64px; height: 18px; border-radius: var(--r-control); }
 .mk .mk-grab i { display: block; width: 32px; height: 4px; border-radius: 2px; background: var(--hairline-strong); transition: background-color var(--t-hover) var(--ease-out); }
 .mk .mk-grab:hover i { background: var(--ink-3); }

@@ -6,6 +6,7 @@
   /* Shadow per tier: same tier, same shadow; nothing on tier 0 or docked chrome */
   --sh-raised: var(--elev-2);   /* 2 raised objects: cards (choice 1) */
   --sh-float:  var(--elev-2);   /* floating chrome over the canvas: view switch, zoom, filter (choice 3) */
+  --sh-sheet:  var(--elev-3);   /* 3 sheets: the Dump or ask column; rail and pane on narrow screens */
   --sh-pop:    var(--elev-4);   /* 4 tethered: peek, menu (choice 2) */
   --sh-modal:  var(--elev-5);   /* 5 modal */
   --sh-toast:  var(--elev-6);   /* 6 ephemeral */
