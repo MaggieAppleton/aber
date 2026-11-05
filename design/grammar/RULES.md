@@ -455,13 +455,13 @@ Evidence (`app/web/src/ui/briefing-app.tsx`, `.css`): every item is a raised car
 
 **Open (choices on the jig):** new signals grouped A by theme (recommended) or B by the theory they bear on; a decided item A leaves with an Undo toast (recommended) or B settles to one line in place until you leave; a signal counts as seen A once Briefing has shown it (recommended) or B only when peeked, opened or marked seen; buttons read A Dismiss | Accept, or B what they do (recommended: Keep confidence | Lower to 3, Dismiss | Add evidence, Dismiss | Use wording, Keep apart | Merge, Discard | Keep), which would amend DI-009.
 
-## 07 Moving between levels — PROPOSED (jig `07-rungs/`)
+## 07 Moving between levels — DECIDED (5 Nov 2026: shared tile and title on Open; peeks beside their trigger; Back lands on the preview)
 
 How you move between 06's three rungs, preview → peek → full, and back; and how Columns' docked pane opens and closes. Built only from 04's tiers and origins, 05's 90 and 160ms and 11's 380ms pane spring. The jig runs the default view and Columns live, with slow motion (0.25×), a reduced-motion switch and a "show origins" overlay.
 
 1. **Every move starts from the thing you acted on and returns to it.** A peek grows from its trigger's tile (`transform-origin` on the tile's centre). Open carries the tile and title to the full view's title. Back carries them home.
 2. **Preview → peek.** A 500ms rest or a click (Space or → from the keyboard) opens it. It grows from 0.96 with a fade, 160ms on the spring. It leaves in 90ms ease-out, shrinking to 0.98 toward the same origin. Tier 4: `--sh-pop`, radius 10, z 40.
-   - **Position (choice 2):** beside a row or card, its tile level with the row's tile, falling back to below when there's no room; or below, its tile on the row's tile column, flipping above near the bottom. Chips always peek below, since their siblings sit beside them.
+   - **Position:** beside a row or card, its tile level with the row's tile, falling back to below (its tile on the row's tile column, flipping above near the bottom) when there's no room. Chips always peek below, since their siblings sit beside them.
 3. **One peek, ever.**
    - While a peek is open, a 150ms rest on another preview slides the same card to it (160ms spring) and fades its contents in (90ms).
    - A preview inside a peek replaces it in place: the row's tile and name travel to the head (260ms spring).
@@ -476,10 +476,9 @@ How you move between 06's three rungs, preview → peek → full, and back; and 
    - A keyboard peek follows ↑ ↓ to the next preview, like Quick Look.
 6. **Peek → full: Open, Enter on a preview, or ⌘↵.**
    - The rail's current item slides to the object's type (160ms spring). The list shows the object selected and scrolled to the middle. The main area shows its full view; focus moves to its title.
-   - **Transition (choice 1):** the tile and title travel from the peek (or the preview) to the full view's title, 380ms on the spring, the two wordings cross-fading on one path. The peek and old view fade in 90ms; the rest of the full view fades in over 160ms after them. Or: the old view fades out (90ms, 16px left) and the full view slides in 16px from the right (260ms spring).
+   - **Transition:** the tile and title travel from the peek (or the preview) to the full view's title, 380ms on the spring, the two wordings cross-fading on one path. The peek and old view fade in 90ms; the rest of the full view fades in over 160ms after them.
 7. **Back: the Back button, Esc (when nothing transient is open) or ⌘[.**
    - Back restores the type, selection, list scroll and main scroll, and focus on the preview you opened from. The tile and title travel back to it.
-   - **Landing (choice 3):** on the preview, or in the peek you opened from, open again.
 8. **Selecting in a list or the rail is instant.** ↑ ↓ select in the item list and the main area follows (like Mail). It is the most frequent move, so only the rail's current item slides.
 9. **The docked pane (Columns, Atlas, Timeline).**
    - Selecting pushes the pane in from its edge: 380ms spring, contents fading in over 160ms. In Columns, Prototypes folds to a 40 rail.
@@ -505,10 +504,10 @@ How you move between 06's three rungs, preview → peek → full, and back; and 
 | Select in a list | 0 | – |
 | Pane in; out; contents change | 380; 260; 160ms | Spring; ease-out; linear |
 
-**Open (choices on the jig):**
-- How Open moves you to the full view: A shared tile and title (recommended), or B cross-fade and slide.
-- Where a peek sits: A beside the trigger (recommended), or B below it.
-- Where Back lands: A the preview (recommended), or B the peek you opened from.
+**Decided (Maggie, 5 Nov):**
+- Open: **A** the tile and title travel to the full view's title (shared element).
+- Peek position: **A** beside the trigger, falling back to below when there's no room (chips always below).
+- Back: **A** lands on the preview, with focus on it.
 
 ## Still to come
 

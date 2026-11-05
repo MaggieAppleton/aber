@@ -413,3 +413,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 4 Nov 2026 (Maggie, 10): agent work in progress shows on the Dumps rail entry; a finished dump reports with a toast with Undo; offline shows beside the view switcher.
 
 4 Nov 2026 (Maggie, 09): a new object left without a name but with content is kept as 'Untitled' with Undo; editing a draft's wording accepts it; evidence is added with a + on each stance (Supports, Undermines).
+
+5 Nov 2026 (Maggie, 07): Open carries the tile and title to the full view's title (shared element); peeks sit beside their trigger, falling back to below; Back lands on the preview with focus.
