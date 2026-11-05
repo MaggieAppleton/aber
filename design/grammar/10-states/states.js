@@ -229,7 +229,7 @@
   const PICK = { work: ["work", { "A In the composer": "composer", "B On the Dumps type": "rail", "C Only on the dump": "row" }],
     done: ["done", { "A Toast with Undo": "toast", "B Silent: it appears in Briefing": "silent" }], offline: ["offline", { "A Beside the view switcher": "switcher", "B In the composer": "composer" }],
     err: ["err", { "a Callout box": "box", "b Red hairline": "line", "c Inline, no box": "inline" }] };
-  const DEF = { work: "rail", done: "toast", offline: "switcher", err: "box" };   // decided 4 Nov 2026; err is open (5 Nov)   // decided 4 Nov 2026
+  const DEF = { work: "rail", done: "toast", offline: "switcher", err: "box" };   // decided 4 Nov 2026; err decided 5 Nov (a callout box)   // decided 4 Nov 2026
   const picks = () => {
     const out = { ...DEF };
     for (const [id, [key, vals]] of Object.entries(PICK)) {

@@ -431,3 +431,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 5 Nov 2026 (Maggie, 11): unrelated objects fade to 40% when something is open; Atlas territory area matches the theme's signal count; Atlas theory names show on hover, open and zoom.
 
 5 Nov 2026 (Maggie, 10 and every full view): paused or waiting work shows the pause glyph, not a hollow ring; the failed-dump dot sits on its rail tile's top-right corner; every full view, docked panes included, puts its content on the title's left edge (the tile stays inside a pane).
+
+5 Nov 2026 (Maggie, 10): errors in place are a callout box on a faint red wash with a red warning-circle, the message in ink and Retry on the right.
