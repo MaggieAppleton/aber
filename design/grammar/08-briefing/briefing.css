@@ -158,3 +158,41 @@
    the title and key line start at L, and so does everything below: summary, hairline, section labels, row tiles, block borders, group headers.
    Row text sits at L + 26 (18 tile + 8); a block's contents at its 12 inset; a group's signals one step in. Narrow screens keep the tile on L (24 inset is too small to hang it). */
 .br8-host .nv:not(.narrow) .br8-doc > .ob-head { margin-left: calc((32px + 12px) * -1); }
+
+/* ═══ Subjects and proposals (every option) ═══
+   The object a change touches is the subject: solid, its name ink at 600. What's proposed hangs one step in (its border on the subject's text edge),
+   dashed, on the draft fill and labelled "Suggested …", so a proposal never reads as something you already hold. Drafts have no subject and stay on L. */
+.br8-doc .ob-row.br8-subject > .nm { font-weight: 600; color: var(--ink); }
+.br8-doc .br8-g > .br8-subject ~ .ob-block, .br8-doc .br8-g > .br8-subject ~ .br8-settled { margin-left: 0; max-width: 560px; }
+.br8-doc .br8-g > .br8-subject ~ .br8-settled { padding-left: var(--inset-row); }
+
+/* ═══ Section structure (choice 5) ═══ */
+/* A: section headers are a new type role, 16 / 600 ink (adds 16 to the decided 11 / 12 / 13 / 24 scale). A hairline across the column opens each
+   section after the first; 40 above it, 16 to the header, 16 to the first item. The count is a bare number in ink 2 at body size. */
+:root { --fs-section: 16px; }
+[data-sections="rule"] .br8-secs { gap: 0; }
+[data-sections="rule"] .br8-sec + .br8-sec { margin-top: 40px; padding-top: var(--gap-group); border-top: 0.5px solid var(--hairline-strong); }
+[data-sections="rule"] .br8-sec > .ob-sh { min-height: 0; font-size: var(--fs-section); line-height: 1.25; color: var(--ink); gap: var(--gap-item); }
+[data-sections="rule"] .br8-sec > .ob-sh .ob-n { font-size: var(--fs-body); font-weight: 400; }
+[data-sections="rule"] .br8-sec > .ob-sh + * { margin-top: var(--gap-group); }
+
+/* B: each section is its own surface on the sunk main ground; header inside at 16 / 600; groups inside separated by hairlines.
+   The box pads 16 and bleeds 16 left of L, so its contents stay on the one left edge. */
+.br8-win[data-sections="box"] .nv-main { background: var(--ground); }
+[data-sections="box"] .br8-secs { gap: var(--gap-group); }
+[data-sections="box"] .br8-sec { margin-left: calc(var(--hang) * -1 - var(--gap-group)); padding: var(--gap-group) var(--gap-group) var(--gap-group) calc(var(--hang) + var(--gap-group)); border-radius: var(--r-box); background: var(--surface); box-shadow: var(--sh-raised); max-width: calc(560px + var(--hang) + var(--gap-group) * 2 + var(--inset-row)); }
+[data-sections="box"] .br8-sec > .ob-sh { min-height: 0; font-size: var(--fs-section); line-height: 1.25; color: var(--ink); gap: var(--gap-item); }
+[data-sections="box"] .br8-sec > .ob-sh .ob-n { font-size: var(--fs-body); font-weight: 400; }
+[data-sections="box"] .br8-sec > .ob-sh + * { margin-top: var(--gap-group); }
+[data-sections="box"] .br8-sec > .br8-g + .br8-g { margin-top: var(--gap-group); padding-top: var(--gap-group); border-top: 0.5px solid var(--hairline); }
+[data-sections="box"] .br8-doc .ob-full, [data-sections="box"] .br8-doc { background: transparent; }
+
+/* C: a sticky band per section: sunk fill across the main area, the header 13 / 600 ink and its count; it pins while its section scrolls */
+[data-sections="band"] .br8-secs { gap: var(--gap-section); }
+[data-sections="band"] .br8-sec > .ob-sh { position: sticky; top: 0; z-index: 2; height: 36px; min-height: 0; color: var(--ink); background: var(--ground-2);
+  box-shadow: 0 0 0 100vmax var(--ground-2), 0 0.5px 0 100vmax var(--hairline); clip-path: inset(0 -100vmax -0.5px); }
+[data-sections="band"] .br8-sec > .ob-sh + * { margin-top: var(--gap-group); }
+/* A's hairline starts on L, not on the row text */
+[data-sections="rule"] .br8-sec + .br8-sec { margin-left: calc(var(--hang) * -1); padding-left: var(--hang); max-width: calc(560px + var(--hang)); }
+/* Bold means subject: inside a proposal, the signal keeps regular weight even if unseen (its unread weight shows in New signals) */
+.br8-win[data-fresh] .br8-doc .ob-block .ob-row.unseen > .nm { font-weight: 400; }

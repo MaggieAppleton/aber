@@ -41,12 +41,13 @@
 
 <div class="decide">
   <div class="decide-box">
-    <h2>Decide here: 4 open choices</h2>
+    <h2>Decide here: 5 open choices</h2>
     <ol>
       <li><a href="#c-group">New signals grouped by theme, or by the theory they bear on</a><span class="why">I'd pick A, by theme: it matches the Themes list and the way you browse. B puts news beside your claims but scatters a theme across several groups and needs a "No theory yet" bucket.</span></li>
       <li><a href="#c-settle">After you decide, the item leaves with an Undo toast, or settles to one line in place</a><span class="why">I'd pick A, leaves: Briefing empties as you work, which is the point, and it follows 10 States (a toast when something leaves the screen). B is calmer for a long run of decisions and keeps a visible trail.</span></li>
       <li><a href="#c-seen">When a new signal counts as seen</a><span class="why">I'd pick A, once Briefing has shown it: the weight goes after one look, like an inbox. B only clears it when you peek or open the signal, or press Mark seen on its group.</span></li>
       <li><a href="#c-labels">Decision buttons say Dismiss | Accept, or what they do</a><span class="why">I'd pick B, verbs: "Keep confidence | Lower to 3" can't be misread, and every pair still reads no on the left, yes on the right. It amends DI-009's labels, so it needs your call.</span></li>
+      <li><a href="#c-sections">How sections begin and end</a><span class="why">I'd pick A, a 16 header with a hairline above: the clearest break for the least chrome. It keeps the main area one surface and every edge on the title's line, but it adds a fifth type size (16).</span></li>
     </ol>
     <h2 class="decided-h">Proposed here, following decided rules (not open)</h2>
     <ul class="decided">
@@ -55,6 +56,7 @@
       <li><b>Decisions wait; news expires.</b> Challenges, suggestions and drafts stay until handled. Signals and dumps are only what arrived since you last looked.</li>
       <li><b>Decisions show in full; news folds.</b> Dismiss | Accept are always visible, never on hover, never an X.</li>
       <li><b>Every decision has Undo.</b> Today none do.</li>
+      <li><b>Subjects and proposals can't be confused.</b> The object a change touches is a solid row with its name at 600. The proposal hangs one step in, dashed and labelled "Suggested support", "Suggested new wording" and so on.</li>
       <li><b>A decision's buttons sit inside the one dashed block they decide.</b> A challenge's block holds only the signal that tripped it, the consequence and the buttons; the theory and its tripwire sit above it as the subject.</li>
     </ul>
   </div>
@@ -159,6 +161,18 @@
   </div>
 </section>
 
+<section class="jig-section wide" id="c-sections" data-decision="sections" data-question="5. How do sections begin and end?" data-default="A Header rule">
+  <p class="lede">The busy morning, opened where Challenges ends and Suggestions begins. Scroll each window: can you tell where a section starts, and which rows are things you hold (solid, bold names) and which are proposals (dashed, one step in, "Suggested …")? The subject and proposal treatment is the same in all three.</p>
+  <div class="jig-compare" style="--jig-min:100%">
+    <div class="jig-option" data-option="A Header rule"><div class="jig-label"><b>A</b> A section header role, 16 / 600 ink, with a hairline above</div><p class="jig-note">40 above the hairline, 16 to the header, 16 to the first item. Adds 16 to the decided 11 / 12 / 13 / 24 scale.</p>
+      <div class="br8-host" data-option-stage data-scroll="sug" data-scroll-off="300" data-br='{"day":"busy","h":640,"opt":{"sections":"rule"}}'></div></div>
+    <div class="jig-option" data-option="B Section boxes"><div class="jig-label"><b>B</b> Each section is its own surface on the sunk main ground</div><p class="jig-note">Header inside at 16 / 600; the groups in a section are split by hairlines. Contents stay on the title's edge; the box reaches 16 past it.</p>
+      <div class="br8-host" data-option-stage data-scroll="sug" data-scroll-off="300" data-br='{"day":"busy","h":640,"opt":{"sections":"box"}}'></div></div>
+    <div class="jig-option" data-option="C Sticky bands"><div class="jig-label"><b>C</b> A sunk band across the main area that pins while its section scrolls</div><p class="jig-note">Header 13 / 600 ink with its count: no new type size. You always know which section you're in.</p>
+      <div class="br8-host" data-option-stage data-scroll="sug" data-scroll-off="300" data-br='{"day":"busy","h":640,"opt":{"sections":"band"}}'></div></div>
+  </div>
+</section>
+
 <section class="jig-section" id="spec">
   <h2>For RULES.md</h2>
   <p class="lede">Added to RULES.md as "08 Briefing — PROPOSED".</p>
@@ -176,7 +190,8 @@
 10. Handled is quiet: empty sections go; "Nothing needs you." while news remains; "Nothing new since 18:40" with no key line when nothing is new.
 11. Narrow: Briefing alone; the rail is a sheet from the left; the composer spans the window.
 
-Open: signals by theme (A) or by theory (B); a decided item leaves with Undo (A) or settles in place (B); a signal is seen once shown (A) or when read (B); buttons read Dismiss | Accept (A) or what they do (B, recommended).</pre>
+Open: signals by theme (A) or by theory (B); a decided item leaves with Undo (A) or settles in place (B); a signal is seen once shown (A) or when read (B); buttons read Dismiss | Accept (A) or what they do (B, recommended); sections open with a 16 / 600 header and a hairline (A, recommended), are boxes on the sunk ground (B), or sticky sunk bands (C).
+Subjects are solid rows, names at 600; proposals hang one step in, dashed and labelled "Suggested …".</pre>
 </section>
 
 </body>

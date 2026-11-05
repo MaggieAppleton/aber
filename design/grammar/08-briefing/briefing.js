@@ -74,21 +74,23 @@
 
   const challenge = (st, d) => {
     const t = O[d.theory], s = O[d.signal];
-    if (st.decided.has(d.id)) return `<div class="ob-rows br8-g">${row(t, { omit: "when" })}${settled(st, d, s.name)}</div>`;
+    if (st.decided.has(d.id)) return `<div class="ob-rows br8-g">${row(t, { omit: "when", cls: "br8-subject" })}${settled(st, d, s.name)}</div>`;
     // The subject (the theory and its tripwire) sits above; the dashed block holds only what's decided: the signal, the consequence, the buttons
     const why = st.opt.labels === "verb" ? `Lowering takes confidence from ${t.c} to ${Math.max(1, t.c - 1)}.` : `Accepting lowers confidence from ${t.c} to ${Math.max(1, t.c - 1)}.`;
-    return `<div class="ob-rows br8-g br8-ch">${row(t, { omit: "when" })}<div class="ob-attach lg">${tile("tripwire", ICON.tripwire)}<p class="ob-prose">${t.trip}</p></div>
-      <div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-blabel">Tripped by</div>${row(s, { omit: "when" })}<p class="ob-why-t">${why}</p>${decide(st, d)}</div></div>`;
+    return `<div class="ob-rows br8-g br8-ch">${row(t, { omit: "when", cls: "br8-subject" })}<div class="ob-attach lg">${tile("tripwire", ICON.tripwire)}<p class="ob-prose">${t.trip}</p></div>
+      <div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-blabel">Tripped by a new signal</div>${row(s, { omit: "when" })}<p class="ob-why-t">${why}</p>${decide(st, d)}</div></div>`;
   };
+  // A proposal is labelled as one, so it can't be mistaken for something you already hold
+  const LABEL = { Supports: "Suggested support", Undermines: "Suggested counter-evidence", "New wording": "Suggested new wording", "Merge with": "Suggested merge with" };
   const sugBlock = (st, d) => {
     if (st.decided.has(d.id)) return settled(st, d, nameOf(d));
     const body = d.signal ? row(O[d.signal], { omit: "when" }) : d.other ? row(O[d.other], { omit: "when" }) : `<p class="br8-words">${d.text}</p>`;
-    return `<div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-blabel">${d.as}</div>${body}<p class="ob-why-t">${d.why}</p>${decide(st, d)}</div>`;
+    return `<div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-blabel">${LABEL[d.as] || d.as}</div>${body}<p class="ob-why-t">${d.why}</p>${decide(st, d)}</div>`;
   };
   // Suggestions are grouped by the object they would change: one row for the theory, its proposals under it
   const suggestions = (st, xs) => {
     const by = new Map(); xs.forEach(d => by.set(d.target, [...(by.get(d.target) || []), d]));
-    return [...by].map(([t, ds]) => `<div class="ob-rows br8-g">${row(O[t], { omit: "when" })}${ds.map(d => sugBlock(st, d)).join("")}</div>`).join("");
+    return [...by].map(([t, ds]) => `<div class="ob-rows br8-g">${row(O[t], { omit: "when", cls: "br8-subject" })}${ds.map(d => sugBlock(st, d)).join("")}</div>`).join("");
   };
   const draft = (st, d) => {
     if (st.decided.has(d.id)) return settled(st, d, nameOf(d));
@@ -168,7 +170,7 @@
       <div class="nv-switch" role="group" aria-label="Views">${VIEWS.map(([v, i, l, k]) => `<button type="button" data-view="${v}" aria-pressed="${v === "default"}" aria-label="${l}" data-tip="${l}" data-key="${k}"${v === "atlas" || v === "timeline" ? ' aria-disabled="true"' : ""}><i class="ph${v === "default" ? "-fill" : ""} ph-${i}" aria-hidden="true"></i></button>`).join("")}</div></aside>`;
   // Placeholder for the Dump or ask pill: capture is being rebuilt as the chat sidebar in 09, so nothing here is designed
   const composer = `<div class="br8-pill-ph" role="note" aria-label="Placeholder for the Dump or ask pill"><b>Dump or ask</b><span>placeholder</span></div>`;
-  const frame = (st, main) => `<div class="nv ctl ob-win br8-win${st.narrow ? " narrow" : ""}" data-v="A" data-fresh="weight" data-align="c" data-challenge="c" style="${st.h ? `height:${st.h}px` : ""}">
+  const frame = (st, main) => `<div class="nv ctl ob-win br8-win${st.narrow ? " narrow" : ""}" data-v="A" data-fresh="weight" data-align="c" data-challenge="c" data-sections="${st.opt.sections}" style="${st.h ? `height:${st.h}px` : ""}">
       ${rail(st)}${st.narrow && st.railOpen ? `<div class="br8-scrim" data-rail-close></div>` : ""}<main class="nv-main"><div class="nv-scroller">${main}</div></main>${composer}</div>`;
 
   /* ═══ Render ═══ */
@@ -253,12 +255,12 @@
   /* ═══ Init ═══ */
   const init = host => {
     const o = JSON.parse(host.dataset.br || "{}");
-    const st = host._st = { _host: host, day: o.day || "quiet", h: o.h, opt: { group: "theme", settle: "leave", seen: "shown", labels: "verb", ...(o.opt || {}) }, decided: new Map(), seen: new Set(), open: {}, unmerged: new Set(), dumps: {}, mode: "brief", narrow: false, railOpen: false, full: null, peek: null };
+    const st = host._st = { _host: host, day: o.day || "quiet", h: o.h, opt: { group: "theme", settle: "leave", seen: "shown", labels: "verb", sections: "rule", ...(o.opt || {}) }, decided: new Map(), seen: new Set(), open: {}, unmerged: new Set(), dumps: {}, mode: "brief", narrow: false, railOpen: false, full: null, peek: null };
     const measure = () => { const n = host.clientWidth < NARROW; if (n !== st.narrow) { st.narrow = n; st.railOpen = false; if (st.mode === "brief") render(host); } fit(host); };
     st.narrow = host.clientWidth > 0 && host.clientWidth < NARROW; render(host); new ResizeObserver(measure).observe(host);
     // A choice window can open at the section it's about
     if (host.dataset.scroll) document.fonts.ready.then(() => { const sc = host.querySelector(".nv-scroller"), sec = host.querySelector(`[data-sec="${host.dataset.scroll}"]`); if (!sc || !sec) return;
-      const k = sc.getBoundingClientRect().width / sc.offsetWidth || 1; sc.scrollTop += (sec.getBoundingClientRect().top - sc.getBoundingClientRect().top) / k - 24; });
+      const k = sc.getBoundingClientRect().width / sc.offsetWidth || 1; sc.scrollTop += (sec.getBoundingClientRect().top - sc.getBoundingClientRect().top) / k - (+host.dataset.scrollOff || 24); });
 
     let hoverT, leaveT;
     const peekable = e => st.mode === "brief" && e.target.closest(".nv-scroller [data-open], .ob-peek [data-open]");

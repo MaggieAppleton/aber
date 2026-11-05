@@ -453,7 +453,9 @@ Evidence (`app/web/src/ui/briefing-app.tsx`, `.css`): every item is a raised car
 10. **Handled is quiet.** An empty section goes. With no decisions left the sentence reads "Nothing needs you." and the news stays; with nothing new, "Nothing new since 18:40" and no key line. No celebration.
 11. **Narrow:** Briefing alone; the rail is a sheet from the left; the composer spans the window.
 
-**Open (choices on the jig):** new signals grouped A by theme (recommended) or B by the theory they bear on; a decided item A leaves with an Undo toast (recommended) or B settles to one line in place until you leave; a signal counts as seen A once Briefing has shown it (recommended) or B only when peeked, opened or marked seen; buttons read A Dismiss | Accept, or B what they do (recommended: Keep confidence | Lower to 3, Dismiss | Add evidence, Dismiss | Use wording, Keep apart | Merge, Discard | Keep), which would amend DI-009.
+**Open (choices on the jig):** new signals grouped A by theme (recommended) or B by the theory they bear on; a decided item A leaves with an Undo toast (recommended) or B settles to one line in place until you leave; a signal counts as seen A once Briefing has shown it (recommended) or B only when peeked, opened or marked seen; buttons read A Dismiss | Accept, or B what they do (recommended: Keep confidence | Lower to 3, Dismiss | Add evidence, Dismiss | Use wording, Keep apart | Merge, Discard | Keep), which would amend DI-009; sections open with A a 16 / 600 header role and a hairline (recommended; adds 16 to the type scale), B a surface per section on the sunk ground, or C a sticky sunk band.
+
+**Proposed with it:** the object a change touches is the subject, a solid row with its name at 600; its proposals hang one step in, dashed, labelled "Suggested support", "Suggested counter-evidence", "Suggested new wording", "Suggested merge with", and their rows keep regular weight. One left edge at the title; the 32 title tile hangs left of it in a 56 main-area inset.
 
 ## 07 Moving between levels — DECIDED (5 Nov 2026: shared tile and title on Open; peeks beside their trigger; Back lands on the preview)
 
