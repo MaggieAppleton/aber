@@ -74,17 +74,20 @@
 .nv-tip kbd { font: 500 var(--fs-label)/1.4 var(--font-mono); color: color-mix(in oklab, var(--on-primary) 65%, var(--ink)); }
 
 /* ── Type rail ── */
-.nv-rail { position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: var(--gap-group); padding: var(--inset-nav-block) var(--inset-nav-inline); background: var(--ground-2); box-shadow: inset -0.5px 0 0 var(--hairline); }
+.nv-rail { position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: var(--gap-item); padding: var(--inset-nav-block) var(--inset-nav-inline); background: var(--ground-2); box-shadow: inset -0.5px 0 0 var(--hairline); }
 .nv-brand { display: flex; align-items: center; justify-content: space-between; height: var(--control); padding-left: var(--inset-row); font-weight: 600; }
 .nv-home { display: inline-flex; align-items: center; gap: var(--gap-icon); height: var(--control); margin-left: calc(var(--inset-row) * -1); padding: 0 var(--inset-row); border-radius: var(--r-icon); font-weight: 600; }
 .nv-home:hover { background: var(--hover); }
 .nv-home[aria-current="true"] { background: var(--surface); box-shadow: var(--elev-2); }
-.nv-types { display: grid; gap: 1px; }
-.nv-type { display: flex; align-items: center; gap: var(--gap-icon); height: var(--row); padding: 0 var(--inset-row) 0 4px; border-radius: var(--r-icon); color: var(--ink-2); transition: background-color var(--t-hover) var(--ease-out); }
+/* Condensed (Maggie, 5 Nov): rows 28, 2 apart, 8 below the header; Briefing in the same list with the same gap. The hit layer fills the
+   2 gaps so the rail is one unbroken strip of targets (a 30 pitch can't hold 40 each without stealing from the neighbour). */
+.nv-types { display: grid; gap: var(--rail-row-gap); }
+.nv-type { display: flex; align-items: center; gap: var(--gap-icon); height: var(--rail-row); padding: 0 var(--inset-row) 0 4px; border-radius: var(--r-icon); color: var(--ink-2); transition: background-color var(--t-hover) var(--ease-out); }
+.nv-type { position: relative; }
+.nv-type::before { content: ""; position: absolute; inset: calc(var(--rail-row-gap) / -2) 0; }
 .nv-type:hover { background: var(--hover); }
 .nv-type[aria-current="true"] { background: var(--surface); color: var(--ink); font-weight: 500; box-shadow: var(--elev-2); }
 .nv-type .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.nv-type.brief { margin-bottom: var(--gap-item); }
 .nv-type .gw { position: relative; display: inline-grid; }
 .nv[data-v="C"] .nv-rail { align-items: center; padding-inline: 8px; }
 .nv[data-v="C"] .nv-brand { padding: 0; justify-content: center; }

@@ -28,6 +28,7 @@
   --inset-float: 12px;      /* floating controls (zoom, filter, view switcher) from the window edge */
   /* Heights */
   --row: 32px; --control: 28px; --control-sm: 24px; --chip-h: 24px; --hit: 40px;
+  --rail-row: 28px; --rail-row-gap: 2px;   /* type rail rows (5 Nov): condensed, 2 apart; the header sits --gap-item above the first */
 }
 [data-density="compact"] {
   --gap-tight: 4px; --gap-icon: 4px; --gap-item: 6px; --gap-group: 12px; --gap-section: 24px;

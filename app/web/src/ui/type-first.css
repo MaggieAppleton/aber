@@ -1,17 +1,19 @@
 /* The type-first default view (RULES Navigation): rail 160, list 296, the main area pads 48 on every side with a 720 column,
    left-aligned. Values come from the grammar tokens in design-tokens.css. */
-.ap.tf { --rail-w: 160px; position: relative; display: grid; grid-template-columns: var(--rail-w) var(--list-w) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr);
+.ap.tf { --rail-w: 160px; --rail-row: 28px; --rail-row-gap: 2px; position: relative; display: grid; grid-template-columns: var(--rail-w) var(--list-w) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr);
   height: 100%; background: var(--ground); color: var(--ink); font: var(--w-regular) var(--fs-body)/var(--lh-ui) var(--font); overflow: hidden; }
 .ap.tf[data-type="briefing"] { grid-template-columns: var(--rail-w) minmax(0, 1fr); }
 .tf .tf-n { font-size: var(--fs-small); font-weight: var(--w-medium); color: var(--ink-2); font-variant-numeric: tabular-nums; }
 
 /* ── Rail ── */
-.tf-rail { display: flex; flex-direction: column; gap: var(--gap-group); min-width: 0; min-height: 0; padding: var(--inset-nav-block) var(--inset-nav-inline) 64px; background: var(--ground-2); box-shadow: inset -0.5px 0 0 var(--hairline); }
+.tf-rail { display: flex; flex-direction: column; gap: var(--gap-item); min-width: 0; min-height: 0; padding: var(--inset-nav-block) var(--inset-nav-inline) 64px; background: var(--ground-2); box-shadow: inset -0.5px 0 0 var(--hairline); }
 .tf-brand { display: flex; align-items: center; justify-content: space-between; height: var(--control); padding-left: var(--inset-row); font-weight: var(--w-strong); color: var(--ink); }
-.tf-types { display: grid; gap: 1px; }
-.tf-type { display: flex; align-items: center; gap: var(--gap-tile); height: var(--row); padding: 0 var(--inset-row) 0 calc(var(--inset-row) - 2px); border: 0; border-radius: var(--r-control); background: transparent;
+/* Condensed (RULES Navigation, 5 Nov): rows 28, 2 apart, 8 below the header; Briefing in the same list with the same gap.
+   The hit layer fills the gaps so the rail is one unbroken strip of targets. */
+.tf-types { display: grid; gap: var(--rail-row-gap); }
+.tf-type { position: relative; display: flex; align-items: center; gap: var(--gap-tile); height: var(--rail-row); padding: 0 var(--inset-row) 0 calc(var(--inset-row) - 2px); border: 0; border-radius: var(--r-control); background: transparent;
   color: var(--ink-2); font: inherit; text-align: left; cursor: pointer; transition: background-color var(--t-hover) var(--ease-out); }
-.tf-type:first-child { margin-bottom: var(--gap-item); }
+.tf-type::before { content: ""; position: absolute; inset: calc(var(--rail-row-gap) / -2) 0; }
 .tf-type:hover { background: var(--hover); }
 .tf-type[aria-current] { background: var(--surface); color: var(--ink); font-weight: var(--w-medium); box-shadow: var(--sh-raised); }
 .tf-type:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }

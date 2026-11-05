@@ -309,6 +309,7 @@ Jig: `nav/`. Columns, Atlas and Timeline are unchanged (see the note at the top 
 1. **Four views.** Default (type-first), Columns, Atlas, Timeline. Columns, Atlas and Timeline stay as they are, each with its own index and the docked pane.
 2. **The default view has three columns, with no docked pane.**
    - A type rail. **Briefing comes first and is selected on open**, then the types refined to raw: Themes, Theories, Prototypes, Signals, Dumps, each with its glyph tile and a count. "Aber" at the top is plain text, not a link. The rail is 160 wide by default (`--nv-rail-w`, on a dial).
+   - **Rail spacing (decided 5 Nov):** rail rows 28, 2 apart (`--rail-row`, `--rail-row-gap`); header to first row 8 (`--gap-item`); Briefing in the same list as the types, with the same gap. Each row's hit layer fills the 2 gaps, so the rail is one unbroken strip of targets.
    - A second sidebar listing the chosen type's items. Theories and Signals can be filtered by theme. Signals have no Unseen group. Briefing has no second sidebar.
    - The main area holds the selected item as its full view, padded at pane level because it is the focus region. With Briefing selected, it holds one column of what changed since you last looked.
 3. **Related objects disclose in three steps.**
@@ -316,7 +317,6 @@ Jig: `nav/`. Columns, Atlas and Timeline are unchanged (see the note at the top 
    - Peek: a card tethered to that link, opened by a 500ms hover or a click. It shows the essentials and an Open button, and a click inside it peeks the next object. Esc or a click elsewhere closes it.
    - Full: Open moves the rail and list to the object; Back returns.
 4. **The view switcher floats at the rail foot**, in the same spot as in the other three views.
-   - **Rail spacing (decided 5 Nov):** rail rows 28, 2 apart (`--rail-row`, `--rail-row-gap`); header to first row 8 (`--gap-item`); Briefing in the same list as the types, with the same gap. Each row's hit layer fills the 2 gaps, so the rail is one unbroken strip of targets.
 5. **Pending:** the second sidebar's row and list designs are placeholders, not approved. They're designed in 06 Objects.
 
 ## 06 Objects — DECIDED (4 Nov 2026: preview, peek, full)

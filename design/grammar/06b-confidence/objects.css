@@ -280,8 +280,6 @@
 .ob-peek > .ob-div { margin-top: var(--gap-tight); }
 .ob-peek.has-meta > .ob-div { margin-top: 0; }
 [data-align="b"] .ob-peek { padding-top: calc(12px - 2.37px); }   /* b drops the tile 2.37; keep the visual top at 12 */
-/* Briefing is the first rail item (Maggie, 4 Nov); a little space sets it apart from the types */
-.ob-win .nv-type.ob-brief { margin-bottom: var(--gap-item); }
 /* Two left edges only (Maggie, 4 Nov): labels, tiles, chip lists and cards start on the tile column; text after a tile starts on the text edge */
 .ob-sec > .ob-chips, .ob-sec > .ob-cards, .ob-reply > .ob-label { margin-left: calc(var(--hang) * -1); }
 .ob-block > .ob-why-t { margin-left: calc(var(--hang) + var(--inset-row)); }
