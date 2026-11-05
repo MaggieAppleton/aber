@@ -28,6 +28,7 @@
 <script src="../_shared/page.js" defer></script>
 <script src="../_shared/stage.js" defer></script>
 <script src="../_shared/objects.js" defer></script>
+<script src="rail.js" defer></script>
 <script src="nav.js" defer></script>
 <script src="../09-making/data.js" defer></script>
 <script src="../09-making/making.js" defer></script>
@@ -42,7 +43,7 @@
 <section class="jig-section" id="try">
   <h2>The default view</h2>
   <p class="lede">Opens on Briefing. Point at or click any signal, theory, chip or card to peek; Open goes there. The switcher at the rail foot moves to Columns, Atlas and Timeline. Rail width dial, top right.</p>
-  <div class="nv-host" id="hero" data-nav='{"v":"A","type":"home"}'></div>
+  <div class="nv-host" id="hero" data-rail-persist data-nav='{"v":"A","type":"home"}'></div>
   <p class="narrow-h">At 390</p>
   <ul class="narrow">
     <li>The type rail becomes a bottom tab bar: Home (Briefing) and the five types.</li>
@@ -50,6 +51,18 @@
     <li>A peek becomes a bottom sheet with Open; dragging it up opens the item.</li>
     <li>Columns, Atlas and Timeline keep today's phone behaviour (not shown on a phone).</li>
   </ul>
+</section>
+
+<section class="jig-section" id="collapse" data-decision="railauto" data-question="Does the rail collapse on its own when the chat opens?" data-default="A Auto-collapse when the chat opens">
+  <p class="lede">Proposed 5 Nov (Maggie, from 09): with the chat open, the rail takes room the item needs. It collapses to a 48 icon bar: Find on top, then Briefing and the types on their tiles; the toggle and the view switcher stack at the foot. Hover or focus an icon for its name, count and key. The sidebar button or ⌘\ toggles it (not ⌘B, the usual bold key in text); ⌥1 to ⌥6 go to Briefing and the types. The window above remembers your toggle. These windows are live: close and reopen the chat with its handle and the pill.</p>
+  <div class="jig-compare">
+    <div class="jig-option" data-option="A Auto-collapse when the chat opens"><div class="jig-label"><b>A</b> Auto-collapse when the chat opens</div><p class="jig-note">Opening the chat collapses the rail; closing it puts the rail back as you left it. Expanding it by hand holds until the chat closes. A window narrower than 1280 collapses it too.</p>
+      <div class="mk-host" data-option-stage data-rail-auto="on" data-mk='{"type":"theme","sel":"coi","chat":1}'></div></div>
+    <div class="jig-option" data-option="B Manual only"><div class="jig-label"><b>B</b> Manual only</div><p class="jig-note">The rail stays as you set it. With the chat open, the item is 112 narrower.</p>
+      <div class="mk-host" data-option-stage data-rail-auto="off" data-mk='{"type":"theme","sel":"coi","chat":1}'></div></div>
+  </div>
+  <p class="narrow-h">Collapsed by hand, no chat</p>
+  <div class="nv-host" data-rail-start="icons" data-nav='{"v":"A","type":"theory"}'></div>
 </section>
 
 <section class="pg-decided">

@@ -26,6 +26,7 @@
 <script src="../_shared/manifest.js" defer></script>
 <script src="../_shared/page.js" defer></script>
 <script src="objects.js" defer></script>
+<script src="../nav/rail.js" defer></script>
 <script src="frames.js" defer></script>
 <script src="page.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/dialkit@2.1.0/dist/vanilla/browser.global.js" defer></script>
@@ -39,7 +40,10 @@
 <section class="jig-section" id="context">
   <h2>In context</h2>
   <p>The default view opens on Briefing. Pick a type, then an item; point at or click any row, card or chip to peek, Open to go there, Back to return.</p>
-  <div class="ob-host" id="hero" data-follows-picks data-ob='{"frame":"app","type":"home"}'></div>
+  <div class="ob-host" id="hero" data-follows-picks data-rail-persist data-ob='{"frame":"app","type":"home"}'></div>
+  <h3 class="sub">The rail as an icon bar (proposed 5 Nov)</h3>
+  <p class="lede">The rail can collapse to its icons to give the item room, and does so on its own while the chat is open (nav, Choose). The sidebar button at its foot, or ⌘\, toggles any of these windows; hover an icon for its name, count and key.</p>
+  <div class="ob-host" data-rail-start="icons" data-ob='{"frame":"app","type":"theory","sel":{"theory":"t4"}}'></div>
   <h3 class="sub">Columns, with the same previews</h3>
   <p class="lede">Columns keeps its layout and docked pane; only the objects change. Click a card to open it in the pane.</p>
   <div class="ob-host" id="columns" data-follows-picks data-ob='{"frame":"columns","pane":"t1"}'></div>

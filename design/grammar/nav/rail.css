@@ -1,0 +1,42 @@
+/* Grammar nav: the type rail's icon state (PROPOSED 5 Nov, Maggie). Loaded by rail.js. The state lives on .nv as data-rail="full" | "icons".
+   Icons: 48 wide; Find on top, then Briefing and the types on their tiles, the toggle and the view switcher (a vertical stack) at the foot.
+   Width moves at --t-float, ease-out (07); reduced motion is instant. Tiles stay where they are (3 px of drift); labels and counts fade. */
+
+.nv[data-rail="icons"] { --nv-rail-w: 48px; }
+.nv.rail-anim { transition: grid-template-columns var(--t-float) var(--ease-out); }
+.nv.rail-anim > .nv-rail, .nv[data-rail="icons"] > .nv-rail { overflow: hidden; }
+
+/* Brand row: "Aber" fades out; Find keeps the right edge, so it slides in with it and ends up on top, as wide as a row */
+.nv[data-rail] .nv-brand > span { transition: opacity var(--t-hover) var(--ease-out); white-space: nowrap; }
+.nv[data-rail] .nv-brand .nv-ib { transition: width var(--t-float) var(--ease-out), background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out); }
+.nv[data-rail="icons"] .nv-brand { padding-left: 0; justify-content: flex-end; }
+.nv[data-rail="icons"] .nv-brand > span { position: absolute; opacity: 0; pointer-events: none; }
+.nv[data-rail="icons"] .nv-brand .nv-ib { width: 100%; }
+
+/* Rows: the same 28 rows, as wide as the rail's inside (32); the tile centres; name and count fade and leave the flow */
+.nv[data-rail] .nv-type { transition: background-color var(--t-hover) var(--ease-out), padding var(--t-float) var(--ease-out); }
+.nv[data-rail] .nv-type :is(.nm, .nv-n) { transition: opacity var(--t-hover) var(--ease-out); }
+.nv[data-rail="icons"] .nv-type { padding-left: calc((100% - var(--tile)) / 2); padding-right: 0; overflow: hidden; }
+.nv[data-rail="icons"] .nv-type .nm { flex: none; opacity: 0; }
+.nv[data-rail="icons"] .nv-type .nv-n { position: absolute; opacity: 0; }
+/* A status in place of a count (10: a working dump's spinner) stays visible: it takes the tile's place */
+.nv[data-rail="icons"] .nv-type:has(> .nv-n[role="img"]) .gw { opacity: 0; }
+.nv[data-rail="icons"] .nv-type > .nv-n[role="img"] { opacity: 1; left: 50%; translate: -50% 0; }
+
+/* The view switcher re-forms as a vertical stack, centred; it fades in rather than sliding */
+.nv[data-rail="icons"] .nv-rail .nv-switch { flex-direction: column; left: 50%; translate: -50% 0; }
+.nv.rail-anim .nv-rail .nv-switch { animation: rail-fade var(--t-float) var(--ease-out); }
+@keyframes rail-fade { from { opacity: 0; } }
+
+/* The toggle (sidebar-simple, ⌘\): at the foot, just above the switcher, on its first button's column */
+.nv-rail .nv-rail-toggle { position: absolute; z-index: 3; left: calc(var(--inset-float) + 2px); bottom: calc(var(--inset-float) + var(--control) + 8px);
+  transition: left var(--t-float) var(--ease-out), bottom var(--t-float) var(--ease-out), translate var(--t-float) var(--ease-out), background-color var(--t-hover) var(--ease-out), color var(--t-hover) var(--ease-out); }
+.nv[data-rail="icons"] .nv-rail .nv-rail-toggle { left: 50%; translate: -50% 0; bottom: calc(var(--inset-float) + var(--control) * 4 + 14px); }
+.nv-rail:not(:has(.nv-switch)) .nv-rail-toggle { bottom: var(--inset-float); }
+
+/* Rail tooltips sit to the right of the button: name, count (ink 2 on ink), key */
+.nv-tip.rail .n { color: color-mix(in oklab, var(--on-primary) 65%, var(--ink)); font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nv.rail-anim, .nv[data-rail] .nv-rail *, .nv.rail-anim .nv-rail .nv-switch { transition: none !important; animation: none !important; }
+}

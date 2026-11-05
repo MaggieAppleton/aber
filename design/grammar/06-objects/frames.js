@@ -114,7 +114,7 @@
   const render = host => {
     const s = host._s, scrolls = [...host.querySelectorAll(".ob-scroll")].map(el => el.scrollTop);
     const focused = document.activeElement?.matches?.("[data-q]") && host.contains(document.activeElement);
-    s.peek = null; host.innerHTML = s.frame === "columns" ? colFrame(s) : appFrame(s); fit(host);
+    s.peek = null; host.innerHTML = s.frame === "columns" ? colFrame(s) : appFrame(s); fit(host); window.AberRail?.apply(host);
     if (focused) { const i = host.querySelector("[data-q]"); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
     host.querySelectorAll(".ob-scroll").forEach((el, i) => el.scrollTop = scrolls[i] || 0);
   };

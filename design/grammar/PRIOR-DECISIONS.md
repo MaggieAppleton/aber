@@ -419,3 +419,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 5 Nov 2026 (Maggie): the Dump or ask chat is a floating window over whatever surface it opens on; when a white pane or full view is open, the chat sits on that white surface with no strip, seam, border or background change behind it.
 
 5 Nov 2026 (Maggie): the type rail is condensed: Briefing in the same list as the types, rows closer together, and closer to the Aber/Find header.
+
+5 Nov 2026 (Maggie): the type rail can collapse to an icon bar (search first, then the type icons); proposed: auto-collapse when the chat opens.

@@ -318,6 +318,7 @@ Jig: `nav/`. Columns, Atlas and Timeline are unchanged (see the note at the top 
    - Full: Open moves the rail and list to the object; Back returns.
 4. **The view switcher floats at the rail foot**, in the same spot as in the other three views.
 5. **Pending:** the second sidebar's row and list designs are placeholders, not approved. They're designed in 06 Objects.
+6. **The rail collapses to an icon bar — PROPOSED (5 Nov, Maggie; Choose on `nav/`).** 48 wide: Find on top, then Briefing and the types on their tiles, in the same order, the current one in the selected treatment; no counts. Each icon's tooltip gives its name, count and key (⌥1 to ⌥6, proposed). The toggle (`sidebar-simple`, ⌘\; not ⌘B, the usual bold key in text) sits at the foot above the view switcher, which stacks vertically. Proposed: it collapses on its own while the chat is open, and in a window narrower than 1280, and returns to how you left it when the chat closes; your own toggle is remembered. The width moves at 160ms ease-out, the tiles stay put and the labels fade; reduced motion is instant. Shared code: `nav/rail.js`, `nav/rail.css`.
 
 ## 06 Objects — DECIDED (4 Nov 2026: preview, peek, full)
 

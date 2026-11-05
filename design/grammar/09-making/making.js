@@ -270,7 +270,7 @@
   const render = (host, focus) => {
     const s = host._s;
     const keep = [...host.querySelectorAll(".nv-scroll, .nv-scroller")].map(el => el.scrollTop);
-    host.innerHTML = frame(s); fit(host);
+    host.innerHTML = frame(s); fit(host); window.AberRail?.apply(host, { chat: !!s.chat });   // the rail collapses while the chat is open (proposed 5 Nov)
     host.querySelectorAll(".nv-scroll, .nv-scroller").forEach((el, i) => el.scrollTop = keep[i] || 0);
     place(host);
     if (focus) { const el = host.querySelector(focus); if (el) { el.focus({ preventScroll: !host.dataset.live }); caretEnd(el); } }

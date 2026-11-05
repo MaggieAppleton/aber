@@ -390,7 +390,7 @@
     const scrolls = [...host.querySelectorAll(".nv-scroll")].map(el => el.scrollTop);
     const focused = document.activeElement?.matches?.("[data-q]") && host.contains(document.activeElement);
     s.peek = null;
-    host.innerHTML = frame(s); fit(host);
+    host.innerHTML = frame(s); fit(host); window.AberRail?.apply(host);
     if (s.view !== "default") {
       const st = host.firstElementChild; window.AberStage.render(st);
       const b = st.querySelector('.stg-switch button[data-view="sections"]'); if (b) { b.dataset.tip = "Default"; b.dataset.key = "⌘1"; b.setAttribute("aria-label", "Default"); }
