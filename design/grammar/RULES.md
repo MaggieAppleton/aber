@@ -91,6 +91,7 @@ Evidence: today's CSS uses 36 distinct paddings, 18 gaps, 18 margins and 19 row 
    - Floating controls (zoom, filter, view switcher) sit `--inset-float` from the window edge in every view: 8 / 12 / 16.
    - Columns view: the Themes column is navigation (`--inset-nav`); the Theories column is a list (`--inset-list`).
    - Timeline cells pad by `--inset-row` and stack items with `--gap-item`.
+   - **Main-area full views pad more than docked panes.** A full view that fills the main area (an object, Briefing) uses `--main-inset-inline` 88 and `--main-inset-block` 48, content at most 720 wide, left-aligned; docked panes (Columns, Atlas, Timeline) keep `--inset-pane` (24). **DECIDED, 5 Nov** (from 08).
    - **List column width, fixed; pane flexes.** `--list-w` is 296, the app's theories column (measured in jig `/app` at 1440: 296 including its insets, cards 240). It is the same in Sections and Columns; Columns' Themes column is fixed at 230 (`--colnav-w`). A wider window widens the pane, never the theories column. A jig changes the width only by setting `--list-w`. **DECIDED, 4 Nov.**
 6. **Two click heights.** `--row` is 32, for list and rail rows. `--control` is 28, for buttons and inputs; `--control-sm` is 24, inside dense rows. Every target has a 40px hit area.
 7. **Text inputs** centre their text in `--control`. Their horizontal padding is the vertical padding plus 4.
@@ -103,7 +104,7 @@ Evidence: today's CSS uses 36 distinct paddings, 18 gaps, 18 margins and 19 row 
 - Density is **Regular**: the values above. Compact and Comfortable are not used.
 - The middle column's theories are **separate cards with gaps** (`--gap-item` between them), not one container with dividers.
 
-## 02 Type — DECIDED (4 Nov 2026: scale 11/12/13, pane title 24 (20 removed 4 Nov), section headers ink 2)
+## 02 Type — DECIDED (4 Nov 2026: scale 11/12/13, pane title 24 (20 removed 4 Nov), section headers ink 2; 5 Nov: a 16 / 600 main-area section header)
 
 Geist (Geist Mono for keys and exact times), body 13, colour system D inks. Jig: `02-type/`. Values live in `_shared/type.css`, which every grammar page loads.
 
@@ -117,9 +118,10 @@ Evidence: today's CSS uses 11 px font sizes (including 9, 10 and 14.5) plus 10 s
 | `--fs-small` (count) | 11 | Counts and badges only |
 | `--fs-label` | 12 | Labels, meta, button and chip labels, tooltips, keys |
 | `--fs-body` | 13 | Everything you read: names, values, nav, prose |
+| `--fs-section` | 16 | Major section headers in a full view that fills the main area (Briefing's Challenges, Suggestions …) |
 | `--fs-title` | 24 | The pane title, the only text at 24 |
 
-   Nothing is smaller than 11. 20 was removed from the scale (4 Nov).
+   Nothing is smaller than 11. 20 was removed from the scale (4 Nov). 16 joined it for main-area section headers (5 Nov, from 08); relation sections inside an object keep the 13 section header.
 3. **Two inks for text.** Ink is for what you read and act on; ink 2 is for what names or describes it. Ink 3 is never text.
 4. **Three weights.**
    - 600: the subject.
@@ -137,6 +139,7 @@ Evidence: today's CSS uses 11 px font sizes (including 9, 10 and 14.5) plus 10 s
 | --- | --- |
 | Pane title | 24 / 600 / ink / 1.2, −0.01em |
 | Card name | 13 / 600 / ink / 1.4 |
+| Main-area section header | 16 / 600 / ink / 1.25; a hairline above, its count a bare 13 / 400 ink 2 number (DECIDED 5 Nov, from 08) |
 | Section header | 13 / 600 / ink 2 / 1.4 |
 | List name (an object listed or referenced) | 13 / 400 / ink / 1.4 |
 | Nav item | 13 / 400 / ink 2; when current: 500 / ink |
@@ -164,7 +167,7 @@ Evidence: 159 icons at six sizes (11, 12, 13, 14, 15, 16; 83 are 12, smaller tha
 6. **Icon-only buttons are 28 squares** (`--control`), 24 in dense rows (`--control-sm`), with a 40 hit area.
 7. **Every icon-only button has a tooltip:** vocabulary name, then the key in Geist Mono; 12 / 500 on ink; below the button (above in bottom bars); after 500ms.
 8. **Give it a text label** when the verb is destructive or rare (Retire, Delete), when it is the main decision on a surface, or when it isn't in the vocabulary.
-   - **Rejecting a suggestion is a labelled "Dismiss" text button, left of "Accept", never an icon** (DI-009).
+   - **Rejecting a suggestion is a labelled text button, left of the accepting one, never an icon** (DI-009). Both say what happens (05 rule 6).
 9. **Colour has four roles.** Ink 2 at rest; ink on hover and pressed; type colour only for object glyphs; accent only for the current view. Status is a dot, never a coloured icon. Ink 3 is never an icon.
 10. **One icon per meaning.** The table is the whole vocabulary; a new meaning gets a new row.
 
@@ -246,7 +249,7 @@ Evidence: 176 distinct backgrounds; 158 distinct box shadows, with only 127 of 4
 
 `_shared/surfaces.css` is loaded by every grammar page as the default. Controls' radius is 7 everywhere (`--r-icon` now equals `--r`).
 
-## 05 Controls — DECIDED (4 Nov 2026: secondary white with a hairline; fields filled; delete confirmation ink)
+## 05 Controls — DECIDED (4 Nov 2026: secondary white with a hairline; fields filled; delete confirmation ink; 5 Nov: verb labels on decisions)
 
 Every control, built only from 00–04. Values live in `_shared/controls.css`, which every grammar page 00–05 loads as the default. Jig: `05-controls/`, with a states board of every control in every state.
 
@@ -268,7 +271,7 @@ Evidence: about 14 text-button recipes at seven heights (24 to 40) and 16 contro
 
 4. **Motion:** hover and press 90ms (`--t-hover`, `--t-press`); selection, segments and tethered surfaces 160ms (`--t-float`); ease `cubic-bezier(0.2, 0.8, 0.2, 1)`, menus and peeks on the spring. The ring never animates. Never `transition: all`.
 5. **One primary per surface** (pane, peek, modal, composer, row). Secondary for the alternative on that surface (Open, Cancel, Dismiss, Discard). Quiet for navigation (Back) and toolbars. Icon-only for frequent verbs in the icon vocabulary.
-6. **Dismiss left of Accept** (Discard for drafts): the one place two text buttons sit together.
+6. **Decision buttons say what happens; reject left, accept right** (DI-009; DECIDED 5 Nov, from 08). The one place two text buttons sit together. Suggested support: Dismiss | Add evidence; counter-evidence: Dismiss | Add evidence; new wording: Dismiss | Use wording; merge: Keep apart | Merge; draft: Discard | Keep; challenge: Keep confidence | Lower to N. Plain Dismiss | Accept only where no clearer verb exists. A presses the right-hand verb.
 7. **Reversible: act, then Undo.** Remove, retire (a menu of reasons), discard, merge and move to the bin happen at once with an Undo toast just above the composer. Only the irreversible asks first: deleting a dump is the one confirmation, a modal whose button names verb and object ("Delete dump").
 8. **Labels:** verb first, sentence case, one or two words, no trailing ellipsis, concept names exact. Icon-only names are vocabulary names; the tooltip adds the key in mono. Removal says what it removes in its accessible name ("Remove Agent memory from this theory").
 9. **Prefer explaining to disabling.** `aria-disabled`, focusable, with a tooltip saying why. Send is the exception: it waits for text.
@@ -302,7 +305,7 @@ Evidence: about 14 text-button recipes at seven heights (24 to 40) and 16 contro
 - Text fields: **A filled**, a sunk well with no edge; on focus a surface with a hairline and the ring.
 - The one destructive confirmation (Delete dump): **A ink**, like every primary. Red stays for challenge and down.
 
-## Navigation — DECIDED (4 Nov 2026: type-first default view; Briefing is the first rail item; tethered peeks)
+## Navigation — DECIDED (4 Nov 2026: type-first default view; Briefing is the first rail item; tethered peeks; 5 Nov: the rail collapses to icons while the chat is open)
 
 Jig: `nav/`. Columns, Atlas and Timeline are unchanged (see the note at the top and 11).
 
@@ -318,7 +321,7 @@ Jig: `nav/`. Columns, Atlas and Timeline are unchanged (see the note at the top 
    - Full: Open moves the rail and list to the object; Back returns.
 4. **The view switcher floats at the rail foot**, in the same spot as in the other three views.
 5. **Pending:** the second sidebar's row and list designs are placeholders, not approved. They're designed in 06 Objects.
-6. **The rail collapses to an icon bar — PROPOSED (5 Nov, Maggie; Choose on `nav/`).** 48 wide: Find on top, then Briefing and the types on their tiles, in the same order, the current one in the selected treatment; no counts. Each icon's tooltip gives its name, count and key (⌥1 to ⌥6, proposed). The toggle (`sidebar-simple`, ⌘\; not ⌘B, the usual bold key in text) sits at the foot above the view switcher, which stacks vertically. Proposed: it collapses on its own while the chat is open, and in a window narrower than 1280, and returns to how you left it when the chat closes; your own toggle is remembered. The width moves at 160ms ease-out, the tiles stay put and the labels fade; reduced motion is instant. Shared code: `nav/rail.js`, `nav/rail.css`.
+6. **The rail collapses to an icon bar — DECIDED (5 Nov, Maggie: A, auto-collapse when the chat opens).** 48 wide: Find on top, then Briefing and the types on their tiles, in the same order, the current one in the selected treatment; no counts. Each icon's tooltip gives its name, count and key (⌥1 to ⌥6, proposed). The toggle (`sidebar-simple`, ⌘\; not ⌘B, the usual bold key in text) sits at the foot above the view switcher, which stacks vertically. It collapses on its own while the chat is open, and in a window narrower than 1280, and returns to how you left it when the chat closes; your own toggle (⌘\) is remembered. The width moves at 160ms ease-out, the tiles stay put and the labels fade; reduced motion is instant. Shared code: `nav/rail.js`, `nav/rail.css`.
 
 ## 06 Objects — DECIDED (4 Nov 2026: preview, peek, full)
 
@@ -339,14 +342,18 @@ Every object follows one anatomy and appears at three rungs: a **preview** where
 | 7 Relations | As preview rows; chips for themes | – | – | – | As many as fit, then a fade | All |
 
 2. **Two left edges.** Everything in a peek or full view starts on the tile column or on the text edge. The head's title and key line sit on the text edge, after the title tile. Below the head, anything with a leading tile (rows, tripwire lines) puts its tile on the tile column and its text on the text edge; anything without one (prose, notes, reasons, section labels, chip lists, cards, the fields table) starts on the tile column, with no empty gutter. No decorative icons are added to fill the gutter. Relation and attached rows hang their tiles in the title's tile column; hover layers and dashed outlines bleed 8 into the padding. The full view's 32 title tile hangs further out so the title starts on the text edge.
+   - **One left edge at the title in main-area full views (DECIDED 5 Nov, from 08).** In a full view that fills the main area, the 32 title tile and its 12 gap hang left of the title into the 88 main-area inset, so the title starts on the tile column (L). Everything below starts on L: key line, prose, the hairline, section labels, row tiles, dashed block edges, chip lists, cards; text after a row's tile sits at L + 26. Docked panes (24 inset) and narrow windows keep the title tile on L and the title on the text edge.
 3. **Rows.** Short labels (themes, prototypes) are one line, 32 high: tile, name in ink 2 (ink and 500 when current), a bare count or status glyph at the right. Sentences (theories, signals, dumps) wrap to two lines with the key value under them; a theory's confidence meter sits right of its first line. A row never repeats what its group says.
 4. **Cards** are the row, raised: surface, `--sh-raised`, inset 10 inline / 8 block, name at 600. Hover is the surface hover fill; selected `--sel`; drafts dashed.
 5. **Unread weight.** A row with unseen activity (a signal you haven't seen, a theme with unseen signals) sets its name in ink at 600; seen rows keep their weight. Cards and peeks don't change: their names are already 600, and only signals and themes have unseen activity. No other mark.
 6. **Confidence.** Previews (rows, cards, peek head, relation rows): one 20 × 4 meter track with a proportional fill, right of the name's first line; unset is an empty track. The full view keeps the five-segment setter with its history.
 7. **Counts** are a bare glyph (ink 2, 14) and a tabular number, no noun: 4 inside a pair, 8 between (theme peek: [Target] 5 [Pulse] 23; evidence: [arrow-up] 2 [arrow-down] 1). In the Themes list the count stays bare, since every count in that column is theories.
 8. **Peek.** Inset 16 at the sides and bottom, 12 at the top, so the head has equal visual space above and below (12 to the tile; 12 from the head's baseline or tile to the hairline). Head (tile, title, key line), a full-bleed hairline (the one sanctioned hairline inside an object), the body (prose, tripwire line), then relations with their label on the tile column; every labelled section has the group gap (16) above it. Relations show as many as fit in one shared max height, then a surface-colour fade rises from the bottom; no scroll, no "show more"; Open sits below.
-9. **Attached objects.** A suggested relation sits first in the group it would join, dashed: a dashed row in a peek; in a full view a dashed block with the row, the reason (on the text edge) and Dismiss | Accept at the bottom right. No Sparkle inside it. Tripwire text is ink; only the Signpost glyph is red. A challenge shows in the peek and full view as the tripped tripwire, and in Briefing.
-10. **Full view, top to bottom:** Back (quiet) left and the object's verbs right (drafts: Discard | Accept); the title with its 32 tile; the key line (key value, then on-demand attributes, editable in place; no labels); prose; the tripwire; a hairline; relation sections. Relation rows are at most 560 wide.
+9. **Attached objects.** A suggested relation sits first in the group it would join, dashed: a dashed row in a peek; in a full view a dashed proposal block. No Sparkle inside it. Tripwire text is ink; only the Signpost glyph is red. A challenge shows in the peek and full view as the tripped tripwire, and in Briefing.
+   - **Proposal blocks (DECIDED 5 Nov, from 08):** label ("Suggested support", "Suggested counter-evidence", "Suggested new wording", "Suggested merge with", "Tripped by a new signal") → reason (12, ink 2, at most 2 lines) → the object row(s) → the change visual (a challenge's confidence mark and "I suggest lowering confidence from 4 to 3") and the verb buttons on one line, right-aligned (05 rule 6). Subject (its row, or its tripwire line) → block 6; label → reason 2–4; reason → row text 6–8; row → buttons 8; successive subject + block units at least 16 apart. The block pads 10 with its contents on a 12 inset; a row's hover layer sits 2 inside the dash on every side.
+   - **New wording** shows the current claim struck through in a quiet hairline box (ink 2) and the proposed one below it in a solid surface box (ink), both body size and the block's full width.
+   - **Hover layers are never clipped.** A container that fades or clips (a folded group, a peek's relations) clips on the block axis only, so hover layers bleeding into the tile column keep their edges and corners.
+10. **Full view, top to bottom:** Back (quiet) left and the object's verbs right (drafts: Discard | Keep); an empty top bar takes no height; the title with its 32 tile; the key line (key value, then on-demand attributes, editable in place; no labels); prose; the tripwire; a hairline; relation sections. Relation rows are at most 560 wide.
 11. **Hover reveals dates and actions** (DI-010): a signal's or dump's date on any preview; Remove (minus, 24) on relation rows in a full view.
 12. **If a mark can't be shown beautifully, don't show it on the preview;** push it to the peek or full view.
 13. **Briefing** is the first rail item and the default on open; "Aber" is only the app name.
@@ -358,8 +365,8 @@ Every object follows one anatomy and appears at three rungs: a **preview** where
 | Prototype | Status (glyph; the word in peek and full) | One line: tile, name, status glyph | – | Status on the title line; body; theories it tests | Body, tests |
 | Signal | Source | Tile (Pulse), gist, source | Captured day | Day, note, theories it bears on | Note, supports, undermines, Add theory, themes, File in theme, came from |
 | Dump | Kind and time (Geist, tabular) | Tile, first line, kind and time | Day | Day, length, text, signals made | Via, text, reply, signals, drafts |
-| Tripwire | Its sentence | Nothing | – | One line in ink, red Signpost | Sentence; when tripped, the signal and Dismiss \| Accept |
-| Suggestion | What it proposes | Nothing | – | A dashed row, first in its group | A dashed block in its group: row, why, Dismiss \| Accept |
+| Tripwire | Its sentence | Nothing | – | One line in ink, red Signpost | Sentence; when tripped, a block: why, the signal, the lost step, Keep confidence \| Lower to N |
+| Suggestion | What it proposes | Nothing | – | A dashed row, first in its group | A dashed block in its group: label, why, row, Dismiss \| Add evidence (or the verb for its kind) |
 
 **Tile size per context:**
 
@@ -376,6 +383,8 @@ Every object follows one anatomy and appears at three rungs: a **preview** where
 - **02 Type:** exact times and durations use Geist with tabular figures in the surrounding role; Geist Mono only for keys. A row with unseen activity sets its name at 600.
 - **03 Icons:** an object tile in rows, cards and peeks is 18 with a 12 glyph, centred on the name's first line (replaces 24 centred, which sat 7.3px above the capitals); a glyph on a tile is one step smaller than a bare glyph; the full view's title tile is 32 with a 20 glyph; counts use bare glyphs at 14.
 - **05 Controls:** a chip's tile is the chip's full height, flush in its left corner (`_shared/controls.css` should size `.ctl-chip > .g` by `--chip-h`, not `--tile`).
+
+**Amendments decided with 08 (5 Nov):** one left edge at the title in main-area full views (rule 2); main-area inset 88 / 48 (01); proposal block anatomy, spacing, new-wording boxes and unclipped hover layers (rule 9); verb labels (05 rule 6); the 16 / 600 main-area section header (02).
 
 ## 10 States — DECIDED (4 Nov 2026: work on the Dumps rail entry; finished dump toasts with Undo; offline beside the view switcher)
 
@@ -401,7 +410,7 @@ Evidence: six loading treatments and no skeleton ("Loading Aber…" hides the wh
 - A finished dump: **A a toast with Undo** ("Made 3 signals"; Undo removes the dump and what it made). The one success toast, since its result lands where you may not be looking.
 - Offline: **A beside the view switcher** (at the rail foot, above the switcher; beside it in the other views).
 
-## 09 Making things — PROPOSED (jig `09-making/`; round 3: capture matches the live chat sidebar)
+## 09 Making things — DECIDED (5 Nov 2026: capture matches the live chat sidebar; ⌘⇧L goes to Dumps in the rail)
 
 Evidence: the live app (127.0.0.1:5174, read-only) captures through a pill that grows into a chat column. Its shape and behaviour are right. Its styling is its own: a capsule pill, a grey round Send that becomes a "?" bubble, a dot or an X that discards takes and drafts (`pill-study.tsx:390`, `object-card.tsx:24`), and tokens and cards that aren't 06 objects. Everything else goes through one modal: 9 of 13 ways to make or link open `ask()` (`app/dialogs.tsx:13`); its only name check is the browser's `required` bubble (`:40`). Esc keeps a rename (`editable.tsx:16`). The jig's "Every difference" table lists each kept, restyled and improved part.
 
@@ -413,7 +422,7 @@ Evidence: the live app (127.0.0.1:5174, read-only) captures through a pill that 
    - **Closing:** a grab handle at the top centre (Close, Esc) or Esc. Clicking away doesn't close it. Esc discards a take before it closes anything.
 2. **Chat is dumps; the thread is the conversation's history.**
    - **Mine:** a sunk bubble on the right, the time under it, Delete dump on hover. A voice dump is a playable bubble with its transcript.
-   - **The agent's:** prose, then 06 previews. A filed token (the theme chip and a count) unfolds to signal rows. A theory comes with its Supports / Undermines split. Drafts are dashed rows with Rephrase, Discard and Accept.
+   - **The agent's:** prose, then 06 previews. A filed token (the theme chip and a count) unfolds to signal rows. A theory comes with its Supports / Undermines split. Drafts are dashed rows with Rephrase, Discard and Keep (05 rule 6).
    - **Previews peek** on click or after 500ms. Open shows the object in the main area while the column stays open.
 3. **What the agent sees** floats over the thread's foot: 06 chips with a minus, and the crosshair to pick something on screen.
 4. **The composer.**
@@ -427,7 +436,7 @@ Evidence: the live app (127.0.0.1:5174, read-only) captures through a pill that 
    - At rest it's plain text. Hover and editing put the 5% layer behind the text (radius 7, 2 / 6 with a matching negative margin, so the text never moves); the caret marks editing. No ring, hairline or field surface.
    - An unnamed object shows its placeholder in ink 2 in the same role.
    - Rename: click the title, or press F2 or double-click its row. Esc restores the old name, and a blank rename keeps it.
-9. **The eyebrow** (proposed amendment to 06 rule 10). Notes about the object as a whole sit on one line above the title, at 12 ink 2 with a chip to the related object: "Draft from [dump]", "Already a theme [chip]". The eyebrow shares the top bar with the object's verbs (drafts: Discard | Accept), with the group gap (16) to the title. Never between the title and its key line; an empty top bar takes no height (08).
+9. **The eyebrow** (amends 06 rule 10). Notes about the object as a whole sit on one line above the title, at 12 ink 2 with a chip to the related object: "Draft from [dump]", "Already a theme [chip]". The eyebrow shares the top bar with the object's verbs (drafts: Discard | Keep), with the group gap (16) to the title. Never between the title and its key line; an empty top bar takes no height (08).
 10. **Leaving a new object: empty goes; unnamed with content is kept as "Untitled", with Undo.** DECIDED (Maggie, 4 Nov).
 11. **Editing a draft's wording accepts it.** Accepting solidifies in place, with no toast. DECIDED (Maggie, 4 Nov).
 12. **Linking is a popover picker from a + on each stance** (Supports, Undermines), at the end of the section header. DECIDED (Maggie, 4 Nov).
@@ -435,11 +444,9 @@ Evidence: the live app (127.0.0.1:5174, read-only) captures through a pill that 
     - ↑ ↓ move, Return links, and Esc returns focus to the +.
     - The row lands in place and flashes the accent wash once.
 13. **A modal only when it must block:** Delete dump and Find. The title (13 / 600) and the X sit in the head. The foot sits at the bottom right with Cancel left of the primary. Focus starts on Cancel and stays inside.
-14. **Full views in the main area use 08's main-area inset** (48, top equal, a 720 column) and 06's anatomy: two left edges and section labels on the tile edge. The two-edge audit on this page has 1 element of 382 off either edge: the dump's text inside its well, which 06 defines.
+14. **Full views in the main area use the main-area inset** (88 inline, 48 top, a 720 column) and 06's anatomy: one left edge at the title (06 rule 2), section labels on it, and proposal blocks per 06 rule 9.
 
-15. **History:** ⌘⇧L raises the live Dumps sheet above the pill (tier 3), with 06 dump rows, what each made ("Nothing filed" when nothing), the bin and X.
-
-**Open (choice on the jig):** where ⌘⇧L goes: A keep the live Dumps sheet, or B go to Dumps in the rail, the one list of dumps in the default view.
+15. **History: ⌘⇧L goes to Dumps in the rail** (DECIDED, Maggie, 5 Nov: B). It selects Dumps in the type rail and its newest dump; Back returns. The pill's separate Dumps sheet is dropped, so there is one list of dumps.
 
 ## 08 Briefing — DECIDED (5 Nov 2026: by theme; leaves with Undo; seen when read; verb labels; 16/600 section headers with a hairline; the lost confidence step in red)
 
@@ -450,7 +457,7 @@ Evidence (`app/web/src/ui/briefing-app.tsx`, `.css`): every item is a raised car
 3. **Decisions wait; news expires.** Pending decisions stay until handled, however old; signals and dumps are only what arrived since you last looked.
 4. **Summary before detail.** One sentence counts what needs you and what arrived, and names the busiest theme and any failure. Decisions show in full. A news group of three or fewer shows its rows; a larger one folds to its label and count (06's fold label, caret in the tile column).
 5. **Grouped by the object a change touches.** A theory's row, then its suggestion blocks; a challenge under the theory it trips.
-6. **Only 06 components.** Rows peek and open. Challenge: the theory row and its tripwire line are the subject; below them a dashed block holds only what is decided: "Tripped by", the signal, the consequence in words, and the buttons. Suggestion: a dashed block labelled by relation (Supports, Undermines, New wording, Merge with), the proposal, why, Dismiss | Accept. Draft: a dashed block with the draft row and where it came from, Discard | Accept. Automatic merge: one signal row naming both sources, Unmerge on hover. No dots, badges, per-item cards or type words.
+6. **Only 06 components.** Rows peek and open. Challenge: the theory row and its tripwire line are the subject; below them a dashed block holds only what is decided: "Tripped by", the signal, the consequence in words, and the buttons. Suggestion: a dashed block labelled by relation (Supports, Undermines, New wording, Merge with), the reason, the proposal, and its verbs (Decided below). Draft: a dashed block with where it came from and the draft row, Discard | Keep. Automatic merge: one signal row naming both sources, Unmerge on hover. No dots, badges, per-item cards or type words.
 7. **Act in place.** The buttons sit bottom right inside the dashed block they decide and act on that block alone; always visible, never on hover, never an X. Accept solidifies (the dash goes), then the item leaves; every decision has Undo (toast, ⌘Z). Keys: J / K move, A accepts, O peeks, ⌘Z undoes; no key for Dismiss.
 8. **Seen is unread weight only.** An unseen signal's name, and the label of a folded group holding one, are ink at 600. Peeking or opening a signal marks it seen.
 9. **Failures in words, first.** A dump that couldn't be read leads Dumps, says why, has Retry, and is named in the summary. Work in progress says Processing with the Working spinner.
@@ -465,13 +472,11 @@ Evidence (`app/web/src/ui/briefing-app.tsx`, `.css`): every item is a raised car
 - Sections open with a **16 / 600 ink header and a hairline above** (A): 40 above the hairline, 16 to the header, 16 to the first item; the count a bare number in ink 2.
 - A challenge shows the confidence it would lose as **one mark with the lost step in the "down" red at 40%** (A), then "I suggest lowering confidence from 4 to 3" with the buttons on that line.
 
-**Proposed amendments to other sections (not yet applied there):**
-- **02 Type:** a section-header role at 16 / 600 ink (Briefing sections), a fifth size beside 11 / 12 / 13 / 24.
-- **DI-009 / 05 Controls rule 6:** decision buttons use verb labels that say what happens; the reject verb stays on the left, the accept verb on the right (Dismiss | Accept becomes the fallback where no clearer verb exists).
+**Amendments applied to their home sections (5 Nov):** 02 Type gains the 16 / 600 main-area section header; 05 Controls rule 6 (DI-009): decision buttons say what happens, reject left, accept right; 01 and 06: the 88 / 48 main-area inset, one left edge at the title, and the proposal block's anatomy and spacing (06 rule 9).
 
-**Proposed with it:** the object a change touches is the subject, a solid row with its name at 600; its proposals hang one step in, dashed, labelled "Suggested support", "Suggested counter-evidence", "Suggested new wording", "Suggested merge with", and their rows keep regular weight. One left edge at the title; the 32 title tile hangs left of it in an 88 main-area inset (top 48).
+**Decided with it (5 Nov):** the object a change touches is the subject, a solid row with its name at 600; its proposals hang one step in, dashed, labelled "Suggested support", "Suggested counter-evidence", "Suggested new wording", "Suggested merge with", and their rows keep regular weight. One left edge at the title; the 32 title tile hangs left of it in an 88 main-area inset (top 48).
 
-**Proposal spacing (every proposal block; proposed amendment for 06, 09 and the app):** subject → its block 6 (from the subject's text, or the tripwire line, to the dash); inside the block (10 padding, contents on a 12 inset): label → row 4, row text → sentence 6–8, sentence → buttons 8, or the buttons on the sentence's line when it's short; successive subject + block units 16 or more. A row's hover layer sits 2 inside the dash on every side and is never clipped: a container that fades or clips does so on the block axis only.
+**Proposal spacing (every proposal block; DECIDED 5 Nov, now 06 rule 9):** subject → its block 6 (from the subject's text, or the tripwire line, to the dash); inside the block (10 padding, contents on a 12 inset): label → row 4, row text → sentence 6–8, sentence → buttons 8, or the buttons on the sentence's line when it's short; successive subject + block units 16 or more. A row's hover layer sits 2 inside the dash on every side and is never clipped: a container that fades or clips does so on the block axis only.
 
 **Consequence as a picture:** a challenge's block ends on a change line, "I suggest lowering confidence from 4 to 3" (12, ink 2) after a confidence mark, with the buttons on the same line. Open: A one mark with the step that would go striped (recommended), or B now → proposed as two marks.
 
