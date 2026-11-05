@@ -21,16 +21,28 @@ html:root, html:root > body { height: auto; min-height: 100%; overflow: visible;
 .jig-stage > .ap { height: 100%; }
 .jig-tradeoffs { margin: 0; padding-left: 18px; font-size: 13px; color: #3d3a34; }
 .jig-question-q { margin: 0 0 12px; font-weight: 650; font-size: 15px; }
-.jig-choose { align-self: flex-start; justify-self: start; font: inherit; font-size: 14px; font-weight: 600; min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid #cfc9bf; background: #fff; color: #2b2925; cursor: pointer; }
-.jig-choose:hover { border-color: #2b2925; }
-.jig-choose:focus-visible { outline: 2px solid #2b2925; outline-offset: 2px; }
-.jig-choose[aria-pressed="true"] { background: #2b2925; border-color: #2b2925; color: #fff; }
-.jig-option.is-chosen > .jig-stage, .jig-option.is-chosen > [data-option-stage] { outline: 3px solid #2b2925; outline-offset: 3px; }
-.jig-question-note { display: grid; gap: 6px; margin-top: 14px; font-size: 14px; color: #5d5850; }
-.jig-question-note textarea { font: inherit; color: #2b2925; min-height: 54px; padding: 8px 10px; border-radius: 8px; border: 1px solid #cfc9bf; background: #fff; resize: vertical; }
-.jig-dock { position: fixed; right: 20px; bottom: 20px; z-index: 1000; display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 12px; background: #2b2925; color: #fff; box-shadow: 0 8px 28px rgb(0 0 0 / 0.25); font-size: 13px; }
-.jig-dock button { font: inherit; padding: 6px 12px; border-radius: 8px; border: 0; background: #fff; color: #2b2925; cursor: pointer; }
-.jig-dock output { padding: 0 6px; opacity: 0.8; }
+/* Choose: a 28 control at radius 7. Chosen is the neutral raise (white, a ring and a soft drop), never a black frame. */
+.jig-choose { align-self: flex-start; justify-self: start; display: inline-flex; align-items: center; font: inherit; font-size: 12px; font-weight: 500; height: 28px; padding: 0 10px; border-radius: 7px; border: 0; background: transparent; color: var(--ink-2, #6b665d); box-shadow: inset 0 0 0 0.5px var(--hairline-strong, rgb(0 0 0 / 0.14)); cursor: pointer; transition: background 90ms, color 90ms, box-shadow 90ms; }
+.jig-choose:hover { background: var(--hover, rgb(0 0 0 / 0.05)); color: var(--ink, #2b2925); }
+.jig-choose:active { scale: 0.98; }
+.jig-choose:focus-visible { outline: 2px solid var(--focus, #2b2925); outline-offset: 2px; }
+.jig-choose[aria-pressed="true"] { background: var(--surface, #fff); color: var(--ink, #2b2925); font-weight: 600; box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.12), 0 1px 2px rgb(0 0 0 / 0.1); }
+/* A chosen or decided option sits on a raised white plate (radius 10) that reaches 8 past it; layout doesn't move */
+.jig-option { border-radius: 2px; transition: box-shadow 160ms, background 160ms; }
+.jig-option.is-chosen { background: var(--surface, #fff); box-shadow: 0 0 0 8px var(--surface, #fff), 0 0 0 8.5px rgb(0 0 0 / 0.08), 0 2px 10px 8px rgb(0 0 0 / 0.035); }
+.jig-tag { font-size: 12px; font-weight: 500; color: var(--ink-2, #6b665d); white-space: nowrap; }
+.jig-tag.is-decided { color: var(--ink, #2b2925); }
+.jig-question-note { display: grid; gap: 4px; margin-top: 16px; max-width: 64ch; font-size: 12px; font-weight: 500; color: var(--ink-2, #6b665d); }
+.jig-question-note textarea { font: inherit; font-size: 13px; font-weight: 400; color: var(--ink, #2b2925); min-height: 40px; padding: 6px 10px; border-radius: 7px; border: 0; background: var(--ground-2, #f2f0ec); resize: vertical; }
+.jig-question-note textarea:focus-visible { outline: 2px solid var(--focus, #2b2925); outline-offset: 0; }
+/* The dock: fixed bottom-left, always there while you scroll */
+.jig-dock { position: fixed; left: 16px; bottom: 16px; z-index: 1000; display: flex; gap: 10px; align-items: center; height: 40px; padding: 0 12px 0 6px; border-radius: 10px; background: var(--surface, #fff); color: var(--ink-2, #6b665d); box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.12), 0 6px 12px -2px rgb(0 0 0 / 0.08); font: 500 12px/1 var(--font, ui-sans-serif, system-ui, sans-serif); font-variant-numeric: tabular-nums; }
+.jig-dock-copy { font: inherit; height: 28px; padding: 0 10px; border-radius: 7px; border: 0; background: var(--ink, #2b2925); color: var(--on-ink, #fff); cursor: pointer; white-space: nowrap; }
+.jig-dock-copy:hover { background: var(--ink-hover, #3d3a34); }
+.jig-dock-copy:active { scale: 0.98; }
+.jig-dock-copy:focus-visible { outline: 2px solid var(--focus, #2b2925); outline-offset: 2px; }
+.jig-dock-status, .jig-dock-rev { white-space: nowrap; }
+.jig-dock-status.is-open { color: var(--ink, #2b2925); }
 .jig-table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border-radius: 10px; overflow: hidden; }
 .jig-table th, .jig-table td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #eee9e2; vertical-align: top; }
 .jig-table th { background: #f6f4f0; font-weight: 650; }
