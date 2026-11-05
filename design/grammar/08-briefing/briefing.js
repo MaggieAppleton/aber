@@ -78,18 +78,18 @@
     // The subject (the theory and its tripwire) sits above; the dashed block holds only what's decided: the signal, the consequence, the buttons
     const why = changeLine(st, t.c, Math.max(1, t.c - 1));
     return `<div class="ob-rows br8-g br8-ch">${row(t, { omit: "when", cls: "br8-subject" })}<div class="ob-attach lg">${tile("tripwire", ICON.tripwire)}<p class="ob-prose">${t.trip}</p></div>
-      <div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-blabel">Tripped by a new signal</div>${row(s, { omit: "when" })}<div class="br8-cfoot">${why}${decide(st, d)}</div></div></div>`;
+      <div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-blabel">Tripped by a new signal</div><p class="br8-reason">${d.why}</p>${row(s, { omit: "when" })}<div class="br8-cfoot">${why}${decide(st, d)}</div></div></div>`;
   };
   // The consequence as a picture of the value it changes (choice 6): a confidence mark with the step that would go striped (a), or now → proposed (b)
+  // The step that would go is marked in the decided "down" red (choice 6): a 40% fill (a), an empty outline (b), or a fill that fades out (c)
   const confMark = (n, gone = 0) => `<span class="br8-conf" aria-hidden="true">${[1, 2, 3, 4, 5].map(i => `<i${i <= n - gone ? " data-on" : i <= n ? " data-gone" : ""}></i>`).join("")}</span>`;
-  const changeLine = (st, from, to) => `<p class="br8-change" aria-label="I suggest lowering confidence from ${from} to ${to}">${st.opt.change === "arrow"
-    ? `${confMark(from)}<i class="ph ph-arrow-right" aria-hidden="true"></i>${confMark(to)}` : confMark(from, from - to)}<span>I suggest lowering confidence from ${from} to ${to}</span></p>`;
+  const changeLine = (st, from, to) => `<p class="br8-change" data-change="${st.opt.change}" aria-label="I suggest lowering confidence from ${from} to ${to}">${confMark(from, from - to)}<span>I suggest lowering confidence from ${from} to ${to}</span></p>`;
   // A proposal is labelled as one, so it can't be mistaken for something you already hold
   const LABEL = { Supports: "Suggested support", Undermines: "Suggested counter-evidence", "New wording": "Suggested new wording", "Merge with": "Suggested merge with" };
   const sugBlock = (st, d) => {
     if (st.decided.has(d.id)) return settled(st, d, nameOf(d));
-    const body = d.signal ? row(O[d.signal], { omit: "when" }) : d.other ? row(O[d.other], { omit: "when" }) : `<p class="br8-words">${d.text}</p>`;
-    return `<div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-blabel">${LABEL[d.as] || d.as}</div>${body}<p class="ob-why-t">${d.why}</p>${decide(st, d)}</div>`;
+    const body = d.signal ? row(O[d.signal], { omit: "when" }) : d.other ? row(O[d.other], { omit: "when" }) : `<div class="br8-words"><p class="br8-was"><span class="sr">Current wording: </span>${esc(O[d.target].name)}</p><p class="br8-now"><span class="sr">New wording: </span>${d.text}</p></div>`;
+    return `<div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><div class="ob-blabel">${LABEL[d.as] || d.as}</div><p class="br8-reason">${d.why}</p>${body}${decide(st, d)}</div>`;
   };
   // Suggestions are grouped by the object they would change: one row for the theory, its proposals under it
   const suggestions = (st, xs) => {
@@ -98,7 +98,7 @@
   };
   const draft = (st, d) => {
     if (st.decided.has(d.id)) return settled(st, d, nameOf(d));
-    return `<div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1">${row(O[d.obj], { omit: "key when" })}<p class="ob-why-t">${d.why}</p>${decide(st, d)}</div>`;
+    return `<div class="ob-block sug br8-item" data-item="${d.id}" tabindex="-1"><p class="br8-reason">${d.why}</p>${row(O[d.obj], { omit: "key when" })}${decide(st, d)}</div>`;
   };
 
   // New signals: what arrived since you last looked, grouped (choice 1). Each group is a real object row (theme or theory) with its new-signal count;
@@ -259,7 +259,7 @@
   /* ═══ Init ═══ */
   const init = host => {
     const o = JSON.parse(host.dataset.br || "{}");
-    const st = host._st = { _host: host, day: o.day || "quiet", h: o.h, opt: { group: "theme", settle: "leave", seen: "shown", labels: "verb", sections: "rule", change: "stripe", ...(o.opt || {}) }, decided: new Map(), seen: new Set(), open: {}, unmerged: new Set(), dumps: {}, mode: "brief", narrow: false, railOpen: false, full: null, peek: null };
+    const st = host._st = { _host: host, day: o.day || "quiet", h: o.h, opt: { group: "theme", settle: "leave", seen: "shown", labels: "verb", sections: "rule", change: "fill", ...(o.opt || {}) }, decided: new Map(), seen: new Set(), open: {}, unmerged: new Set(), dumps: {}, mode: "brief", narrow: false, railOpen: false, full: null, peek: null };
     const measure = () => { const n = host.clientWidth < NARROW; if (n !== st.narrow) { st.narrow = n; st.railOpen = false; if (st.mode === "brief") render(host); } fit(host); };
     st.narrow = host.clientWidth > 0 && host.clientWidth < NARROW; render(host); new ResizeObserver(measure).observe(host);
     // A choice window can open at the section it's about

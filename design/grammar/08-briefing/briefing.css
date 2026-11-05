@@ -214,7 +214,7 @@
 .br8-conf { display: inline-flex; gap: 2px; }
 .br8-conf i { display: block; width: 12px; height: 4px; border-radius: 2px; background: color-mix(in oklab, var(--ink) 15%, transparent); }
 .br8-conf i[data-on] { background: var(--ink); }
-.br8-conf i[data-gone] { background: repeating-linear-gradient(-45deg, var(--ink) 0 1.5px, transparent 1.5px 3px); box-shadow: inset 0 0 0 0.5px var(--ink); }
+
 .br8-doc .ob-block > .ob-row { margin-inline: -8px; padding-inline: 10px; }   /* hover layer 2 inside the dash (10 pad − 8); tile still on the 12 inset */
 .br8-doc .ob-block > .ob-row + :is(.br8-cfoot, .ob-why-t) { margin-top: 2px; }   /* 8 from the signal's text: the row's own 7 of padding, then 1–2 */
 .br8-doc .ob-block > .ob-row:has(+ .br8-cfoot) { padding-bottom: 4px; }   /* the hover layer ends 4 under the source; the buttons start 2 under that, the change text ~11 under the source */
@@ -236,3 +236,33 @@
 .br8-g > .ob-row.br8-subject:has(+ .ob-block) { padding-bottom: 3px; }
 .br8-g > .ob-row.br8-subject + .ob-block { margin-top: 3px; }   /* 6 from the subject's text to the dash */
 .br8-doc .ob-block > .ob-row + .br8-cfoot { margin-top: 2px; }   /* 2 clear of the row's hover layer; the change text sits ~10 under the source */
+
+/* ═══ Reason under the label (Maggie, 5 Nov) ═══
+   Every proposal block reads: label → why (12, ink 2, at most 2 lines) → the object row(s) → the buttons (with the change line, for a challenge).
+   Label → reason 2; reason → row text ~8 (the row's own 7 of padding); row → buttons 8. */
+.br8-reason { margin: 2px 0 0; font-size: var(--fs-label); line-height: var(--lh-ui); color: var(--ink-2); max-width: var(--measure); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-wrap: pretty; }
+.br8-doc .ob-block > .ob-blabel + .br8-reason { margin-top: 2px; }
+.br8-doc .ob-block > .br8-reason + :is(.ob-row, .br8-words) { margin-top: 1px; }
+.br8-doc .ob-block > .br8-reason + .br8-words { margin-top: 8px; }
+.br8-doc .ob-block > .ob-row:has(+ .ob-decide) { padding-bottom: 4px; }
+.br8-doc .ob-block > :is(.ob-row, .br8-words) + .ob-decide { margin-top: 4px; justify-content: flex-end; }
+.br8-doc .ob-block > .br8-words + .ob-decide { margin-top: 8px; }
+.br8-doc .ob-block > .ob-blabel + .ob-row { margin-top: var(--gap-tight); }
+
+/* The step that would go, in the decided "down" red (choice 6) */
+[data-change="fill"] .br8-conf i[data-gone] { background: color-mix(in oklab, var(--st-neg-dot) 40%, transparent); }
+[data-change="outline"] .br8-conf i[data-gone] { background: transparent; box-shadow: inset 0 0 0 1px var(--st-neg-dot); }
+[data-change="fade"] .br8-conf i[data-gone] { background: var(--st-neg-dot); animation: br8-gone 1.6s var(--ease-out) 300ms both; }
+[data-change="fade"]:hover .br8-conf i[data-gone] { animation: br8-gone-hover 1.6s var(--ease-out) both; }
+@keyframes br8-gone { to { background: color-mix(in oklab, var(--st-neg-dot) 0%, transparent); box-shadow: inset 0 0 0 0.5px color-mix(in oklab, var(--ink) 15%, transparent); } }
+@keyframes br8-gone-hover { from { background: var(--st-neg-dot); } to { background: color-mix(in oklab, var(--st-neg-dot) 0%, transparent); box-shadow: inset 0 0 0 0.5px color-mix(in oklab, var(--ink) 15%, transparent); } }
+@media (prefers-reduced-motion: reduce) { [data-change="fade"] .br8-conf i[data-gone] { animation: none; background: color-mix(in oklab, var(--st-neg-dot) 40%, transparent); } }
+
+/* New wording: the current claim struck through in a quiet box, the proposed one below it in a solid box; both body size, full width of the block */
+.br8-doc .ob-block > .br8-words { display: grid; gap: var(--gap-item); margin-inline: 2px; max-width: none; }
+.br8-was, .br8-now { margin: 0; padding: 8px 10px; border-radius: var(--r-control); font-size: var(--fs-body); line-height: var(--lh-ui); text-wrap: pretty; }
+.br8-was { box-shadow: inset 0 0 0 0.5px var(--hairline); color: var(--ink-2); text-decoration: line-through; text-decoration-color: color-mix(in oklab, var(--ink-2) 70%, transparent); }
+.br8-now { background: var(--surface); box-shadow: inset 0 0 0 0.5px var(--hairline-strong); color: var(--ink); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* A one-line object row (a theme in a merge) ends 4 sooner; its buttons sit 8 under its text like every other row */
+.br8-doc .ob-block > .ob-row.one + .ob-decide { margin-top: 5px; }

@@ -27,7 +27,7 @@
   O.d8.name = "stratechery.com: agents and the price of a seat";
 
   // Item kinds: challenge { theory, signal } · sug { target, as, signal | other | text, why } · draft { obj, why } · signal ids · dump ids
-  const C = (theory, signal) => ({ id: `c-${theory}`, kind: "challenge", theory, signal });
+  const C = (theory, signal, why) => ({ id: `c-${theory}`, kind: "challenge", theory, signal, why });
   const S = (target, as, x, why) => ({ id: `g-${target}-${x.signal || x.other || "w"}`, kind: "sug", target, as, ...x, why });
   const D = (obj, why) => ({ id: `d-${obj}`, kind: "draft", obj, why });
 
@@ -35,7 +35,7 @@
     quiet: {
       looked: "18:40",
       decisions: [
-        C("t4", "s8"),
+        C("t4", "s8", "A major lab paused long-term memory, which is the rollback your tripwire names."),
         S("t2", "Undermines", { signal: "s2" }, "If last year's frontier now runs open, only the newest tier stays scarce."),
         D("t11", "From your links dump at 09:12"),
       ],
@@ -45,7 +45,7 @@
     busy: {
       looked: "18:40",
       decisions: [
-        C("t4", "s8"), C("t6", "s20"),
+        C("t4", "s8", "A major lab paused long-term memory, which is the rollback your tripwire names."), C("t6", "s20", "Review time per pull request fell while agent pull requests kept growing."),
         S("t1", "Supports", { signal: "s21" }, "Free under a million calls a day is what nearly free looks like for routine work."),
         S("t1", "Supports", { signal: "s29" }, "Prices falling faster than the chips under them means it isn't only cheaper hardware."),
         S("t1", "New wording", { text: "Tokens become nearly free for routine work, but not for frontier reasoning" }, "Three of your signals split routine calls from frontier ones. The claim reads as if both fall."),
