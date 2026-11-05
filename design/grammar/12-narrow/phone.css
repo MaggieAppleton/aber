@@ -1,0 +1,297 @@
+/* Grammar 12: Aber on narrow screens. The phone (390 × 844) and tablet (744 × 1000) windows, built from 06 objects (_shared/objects.css),
+   05 controls (_shared/controls.css) and 09's chat (09-making/making.css, scoped .mk). Every value is a token from 00–11 or a touch value named here.
+   .pw is the window; data-device="phone" | "tablet"; data-frame draws the status bar and home indicator (a stage) instead of reading env(). */
+
+/* ── Touch values (rule 12): 44 targets, 36 text buttons, rows at least 44 ── */
+.pw { --row: 44px; --control: 36px; --control-sm: 32px; --hit: 44px; --bar: 44px; --tabs: 49px; --pill: 44px; --g: 16px;
+  --sa-t: env(safe-area-inset-top, 0px); --sa-b: env(safe-area-inset-bottom, 0px); --sa-l: env(safe-area-inset-left, 0px); --sa-r: env(safe-area-inset-right, 0px); --kb: 0px;
+  --tile-title-y: 0px; }
+.pw[data-frame] { --sa-t: 47px; --sa-b: 34px; --sa-l: 0px; --sa-r: 0px; }
+.pw[data-device="tablet"][data-frame] { --sa-t: 24px; --sa-b: 20px; }
+/* Choice 2: the touch scale, 12 / 13 / 16 / 24. Body and fields are one size, so nothing zooms. Line roles recompute here (they're set on :root). */
+.pw[data-scale="touch"] { --fs-small: 12px; --fs-label: 13px; --fs-body: 16px; --fs-read: 16px; --fs-section: 16px; --icon-label: 16px; --icon: 18px; }
+.pw { --line-ui: calc(var(--fs-body) * var(--lh-ui)); --line-prose: calc(var(--fs-read) * var(--lh-prose)); --name-lh: var(--line-ui); --L: var(--name-lh); }
+
+/* ── The window ── */
+.pw { position: relative; overflow: hidden; isolation: isolate; width: 390px; height: 844px; background: var(--ground); color: var(--ink);
+  font: 400 var(--fs-body)/var(--lh-ui) var(--font); -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; text-align: left;
+  -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
+.pw[data-frame] { border-radius: 48px; box-shadow: 0 0 0 0.5px oklch(var(--shade) / 14%), 0 0 0 8px oklch(0.2 0.004 85), 0 0 0 8.5px oklch(var(--shade) / 30%), 0 24px 60px -20px oklch(var(--shade) / 35%); }
+.pw[data-device="tablet"] { width: 744px; height: 1000px; }
+.pw[data-device="tablet"][data-frame] { border-radius: 22px; }
+.pw:not([data-frame]) { width: 100%; height: 100dvh; }
+.pw *, .pw *::before, .pw *::after { box-sizing: border-box; }
+.pw i[class^="ph"] { display: block; width: var(--icon); height: var(--icon); font-size: var(--icon); line-height: 1; flex: none; }
+:where(.pw) button { font: inherit; color: inherit; border: 0; background: none; padding: 0; margin: 0; cursor: pointer; text-align: left; }
+.pw :is(button, [role="button"], .ph-tab) { touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.pw :focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.pw input, .pw textarea { font-size: max(16px, var(--fs-body)); }   /* rule 13: fields are 16 on touch, so iOS never zooms */
+/* Hover lives only where there is a pointer that hovers (rule 14); touch gets press feedback on :active instead */
+@media (hover: none) { .pw :is(.ob-row, .ob-card, .nv-ib, .ph-ib, .nv-btn, .ob-chip):hover { background: revert-layer; } }
+.pw .ob-row:active, .pw .ph-menu button:active { background: var(--hover); }
+.pw .ob-row .when { display: none; }   /* dates were hover-only: on touch they move to the peek and the long-press menu */
+
+/* Status bar and home indicator: drawn only on a stage frame; on a real phone the system draws them */
+.ph-status { position: absolute; z-index: 80; left: 0; right: 0; top: 0; height: var(--sa-t); display: flex; align-items: center; justify-content: space-between; padding: 6px 32px 0 40px;
+  font: 600 15px/1 var(--font); color: var(--ink); pointer-events: none; }
+.ph-status .r { display: flex; gap: 6px; align-items: center; }
+.ph-status .r i.pw, .ph-status .r i[class^="ph"] { width: 16px; height: 16px; font-size: 16px; }
+.ph-status::after { content: ""; position: absolute; left: 50%; top: 11px; translate: -50% 0; width: 124px; height: 36px; border-radius: 20px; background: oklch(0.15 0 0); }
+.pw[data-device="tablet"] .ph-status { padding: 4px 24px 0; font-size: 12px; }
+.pw[data-device="tablet"] .ph-status::after { display: none; }
+.ph-home { position: absolute; z-index: 80; left: 50%; bottom: 8px; translate: -50% 0; width: 134px; height: 5px; border-radius: 3px; background: var(--ink); pointer-events: none; }
+.pw[data-device="tablet"] .ph-home { width: 300px; bottom: 6px; }
+
+/* ── Screens: a stack per tab. The top screen; the one under it waits a quarter to the left (rule 4) ── */
+.ph-stack { position: absolute; inset: 0; overflow: hidden; }
+.ph-screen { position: absolute; inset: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--ground); will-change: transform; }
+.ph-screen.under { translate: -25% 0; pointer-events: none; }
+.ph-screen.under::after { content: ""; position: absolute; inset: 0; background: oklch(var(--shade) / 4%); }
+.ph-screen.top { box-shadow: -0.5px 0 0 var(--hairline-strong); }
+.ph-scroll { overflow: hidden auto; overscroll-behavior: contain; scrollbar-width: none; padding-bottom: calc(var(--chrome-b) + var(--gap-section)); }
+.ph-scroll::-webkit-scrollbar { display: none; }
+.pw { --chrome-b: calc(var(--sa-b) + var(--tabs) + var(--pill) + var(--gap-item) * 2); }
+
+/* The bar (44): Back with the previous screen's name on the left, verbs on the right; a root screen has Find (and + where you make things) */
+.ph-bar { position: relative; z-index: 2; display: flex; align-items: center; gap: var(--gap-tight); min-height: calc(var(--sa-t) + var(--bar)); padding: var(--sa-t) calc(var(--g) - 10px + var(--sa-r)) 0 calc(var(--g) - 10px + var(--sa-l));
+  background: var(--ground); }
+.ph-bar.scrolled { box-shadow: inset 0 -0.5px 0 var(--hairline-strong); }
+.ph-bar > .sp { flex: 1; }
+.ph-back { display: inline-flex; align-items: center; gap: 2px; min-width: 0; max-width: 60%; height: var(--bar); padding: 0 10px 0 4px; border-radius: var(--r-control); color: var(--ink); font-weight: 500; }
+.ph-back > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ph-back i[class^="ph"] { width: 22px; height: 22px; font-size: 22px; }
+.ph-ib { position: relative; display: inline-grid; place-items: center; width: var(--bar); height: var(--bar); border-radius: var(--r-control); color: var(--ink); flex: none; }
+.ph-ib i[class^="ph"] { width: 20px; height: 20px; font-size: 20px; }
+.ph-ib:active, .ph-back:active { background: var(--hover); }
+.ph-bar .ob-decide { margin-right: 10px; }
+/* A root screen's large title: the pane title role (24 / 600), on the gutter, under the bar */
+.ph-title { margin: 0; padding: 4px calc(var(--g) + var(--sa-r)) var(--gap-item) calc(var(--g) + var(--sa-l)); font-size: var(--fs-title); line-height: var(--lh-head); font-weight: 600; letter-spacing: -0.01em; }
+
+/* ── Lists: the second sidebar becomes the tab's root screen, rows at least 44, on the 16 gutter (rule 3) ── */
+.ph-list { display: grid; gap: var(--gap-group); padding: 0 calc(var(--g) + var(--sa-r)) 0 calc(var(--g) + var(--sa-l)); }
+.ph-group { display: grid; }
+.ph-glabel { display: flex; align-items: center; gap: var(--gap-icon); min-height: var(--control-sm); font: 500 var(--fs-label)/var(--lh-ui) var(--font); color: var(--ink-2); }
+.ph-group > .ob-row { margin-inline: calc(var(--inset-row) * -1); }
+.ph-filter { display: flex; gap: var(--gap-item); padding: 0 var(--g) var(--gap-item); }
+.ph-filter .ctl-chip { height: var(--control-sm); }
+.pw .ob-row { min-height: var(--row); }
+.pw .ob-row.one > .kv { max-width: 140px; }
+
+/* ── Full view on a phone: the 88 inset becomes the 16 gutter. One left edge at L = the gutter: the 32 title tile sits above the title,
+   on L, instead of hanging in an inset the phone doesn't have (rule 5). Everything below the head starts on L, as in 06 rule 2. ── */
+.pw .ob-full { padding: var(--gap-item) calc(var(--g) + var(--sa-r)) 0 calc(var(--g) + var(--sa-l)); max-width: none; --lead: 0px; }
+.pw .ob-full > .ob-top { display: none; }
+.pw .ob-full > .ob-head { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: var(--gap-group); margin-left: 0; }
+.pw .ob-full > .ob-head > .g { margin-top: 0; }
+.pw .ob-full > .ob-head > .ob-col { margin-left: 0; }
+.pw .ob-full > .ob-body { margin-left: var(--hang); }
+.pw .ob-full .ob-block.sug, .pw .ob-full .ob-div, .pw .ob-full .ob-sh { max-width: none; }
+.pw .ob-full .ob-sec .ob-rows .ob-row { margin-right: calc(var(--inset-row) * -1); }
+.pw .ob-decide .nv-btn { height: var(--control); }
+
+/* Briefing on a phone: 08's sections and blocks at the gutter; 16 / 600 headers with a hairline above */
+.pw .ph-brief .ob-rels { gap: 0; }
+.pw .ph-brief .ob-sec > .ob-sh { font-size: var(--fs-section); line-height: 1.25; color: var(--ink); gap: var(--gap-item); min-height: 0; }
+.pw .ph-brief .ob-sec > .ob-sh .ob-n { font-size: var(--fs-body); font-weight: 400; color: var(--ink-2); }
+.pw .ph-brief .ob-sec > .ob-sh + * { margin-top: var(--gap-group); }
+.pw .ph-brief .ob-sec + .ob-sec { margin-top: var(--gap-section); margin-left: calc(var(--hang) * -1); padding: var(--gap-group) 0 0 var(--hang); border-top: 0.5px solid var(--hairline-strong); }
+.pw .ph-brief .ph-sum { margin: 0 0 var(--gap-section) calc(var(--hang) * -1); line-height: var(--lh-prose); color: var(--ink); text-wrap: pretty; }
+.pw .ph-unit { display: grid; gap: 6px; transition: opacity var(--t-surface) var(--ease-out); }
+.pw .ph-unit + .ph-unit { margin-top: var(--gap-group); }
+.pw .ph-unit > .ob-row { font-weight: 600; }
+.pw .ph-unit > .ob-row > .nm { font-weight: 600; }
+.pw .ph-unit .ob-block.sug { margin-left: calc(var(--hang) * -1); }
+.pw .ph-unit.solid .ob-block.sug { outline-color: transparent; border-color: transparent; }
+.pw .ph-unit.leaving { opacity: 0; }
+.pw .ph-unit .ob-dfoot { gap: var(--gap-item); }
+.pw .ph-unit .ob-dfoot > .ob-decide { margin-left: auto; }
+.pw .ph-theme > .ob-rows { margin-left: var(--hang); }
+
+/* ── The tab bar (rule 2): 49 + the home indicator's safe area; the type glyph on its tile, a 12 / 500 label.
+   Current: the Fill glyph and the label in ink. Unread: the label at 600. Work: the Working spinner takes the glyph; a failed dump, the red dot on the tile's corner. ── */
+.ph-tabs { position: absolute; z-index: var(--z-chrome); left: 0; right: 0; bottom: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+  height: calc(var(--tabs) + var(--sa-b)); padding: 0 calc(4px + var(--sa-r)) var(--sa-b) calc(4px + var(--sa-l)); background: var(--ground-2); box-shadow: inset 0 0.5px 0 var(--hairline-strong); }
+.ph-tab { position: relative; display: grid; justify-items: center; align-content: center; gap: 3px; min-width: 0; padding: 0 2px; color: var(--ink-2); font: 500 var(--fs-label)/1.1 var(--font); }
+.ph-tab .nm { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ph-tab .gw { position: relative; display: grid; place-items: center; width: 24px; height: 24px; }
+.ph-tab .g { width: 24px; height: 24px; }
+.ph-tab .g i { width: 14px; height: 14px; font-size: 14px; }
+.ph-tab .bare { color: var(--ink-2); }
+.ph-tab .bare i { width: 20px; height: 20px; font-size: 20px; }
+.ph-tab[aria-current="page"] { color: var(--ink); }
+.ph-tab[aria-current="page"] .bare { color: var(--ink); }
+.ph-tab.unseen .nm { font-weight: 600; color: var(--ink); }
+.ph-tab .ph-dot { position: absolute; right: -3px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--neg-dot); box-shadow: 0 0 0 2px var(--ground-2); }
+.ph-tab .spin { animation: ctl-spin 700ms linear infinite; color: var(--ink-2); }
+@media (prefers-reduced-motion: reduce) { .ph-tab .spin { animation: ctl-pulse 1.2s ease-in-out infinite; } }
+.ph-tab:active .gw { scale: 0.92; }
+
+/* ── Dump or ask (rule 8): the pill spans the gutters just above the tab bar, 44 high; the microphone records without opening anything ── */
+.ph-pill { position: absolute; z-index: var(--z-chrome); left: calc(var(--g) + var(--sa-l)); right: calc(var(--g) + var(--sa-r)); bottom: calc(var(--sa-b) + var(--tabs) + var(--gap-item));
+  display: flex; align-items: center; gap: 2px; height: var(--pill); padding: 4px; border-radius: var(--r-bar); background: var(--surface); box-shadow: var(--sh-float); }
+.ph-pill-open { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--gap-icon); height: 100%; padding: 0 10px; border-radius: 10px; color: var(--ink-2); font-size: var(--fs-body); }
+.ph-pill-open:active { background: var(--hover); }
+.ph-pill .ph-ib { width: 36px; height: 36px; border-radius: 10px; }
+.ph-pill .ph-ib::before { content: ""; position: absolute; inset: -4px; }
+.ph-pill.rec { padding-left: 4px; }
+.ph-pill .mk-take { flex: 1; }
+.ph-pill .mk-take .ctl-icon.primary { width: 36px; height: 36px; border-radius: 10px; }
+.pw .mk-wave { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 2px; height: 28px; padding: 0 var(--gap-icon); overflow: hidden; }
+.pw .mk-wave i { flex: none; display: block; width: 2px; height: 16px; border-radius: 1px; background: var(--ink-2); animation: mk-wave 1.1s ease-in-out infinite; animation-delay: calc(var(--i) * -97ms); }
+@keyframes mk-wave { 0%, 100% { scale: 1 0.2; } 50% { scale: 1 1; } }
+@media (prefers-reduced-motion: reduce) { .pw .mk-wave i { animation: none; scale: 1 0.5; } }
+.pw .mk-time { min-width: 4ch; padding-right: var(--gap-icon); text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.pw .mk-take { display: flex; align-items: center; gap: 2px; min-width: 0; }
+
+/* ── Sheets (tier 3; rule 6): from the bottom edge, a grab handle, detents medium and large, drag down to dismiss, a scrim you can tap ── */
+.ph-scrim { position: absolute; inset: 0; z-index: var(--z-sheet); background: var(--scrim); }
+.ph-scrim.enter { animation: ph-fade var(--t-float) var(--ease-out); }
+@keyframes ph-fade { from { opacity: 0; } }
+.ph-sheet { position: absolute; z-index: var(--z-sheet); left: var(--sa-l); right: var(--sa-r); bottom: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; max-height: calc(100% - var(--sa-t) - 8px);
+  border-radius: var(--r-bar) var(--r-bar) 0 0; background: var(--surface); box-shadow: var(--sh-sheet); touch-action: none; }
+.ph-sheet[data-detent="large"] { height: calc(100% - var(--sa-t) - 8px); }
+.ph-sheet[data-detent="medium"] { max-height: 55%; }
+.ph-grab { display: grid; place-items: center; height: 20px; cursor: grab; touch-action: none; }
+.ph-grab i { display: block; width: 36px; height: 5px; border-radius: 3px; background: var(--hairline-strong); }
+.ph-sheet-body { overflow: hidden auto; overscroll-behavior: contain; touch-action: pan-y; scrollbar-width: none; min-height: 0; }
+.ph-sheet-foot { padding: var(--gap-item) var(--g) calc(var(--gap-item) + var(--sa-b)); }
+.ph-sheet-foot:empty { display: none; }
+/* A peek in a sheet: the 06 peek, full width, no card of its own; Open is a full-width secondary at the foot */
+.ph-sheet .ob-peek { width: auto; box-shadow: none; border-radius: 0; padding: 0 var(--g) var(--gap-item); background: none; }
+.ph-sheet .ob-peek > .ob-div { margin-inline: calc(var(--g) * -1); }
+.ph-sheet .ob-pk-foot { display: none; }
+.ph-sheet[data-detent="large"] .ob-pk-list { max-height: none; }
+.ph-sheet[data-detent="large"] .ob-pk-rel .ob-fade { display: none; }
+.ph-sheet[data-detent="large"] .ob-prose.clamp { -webkit-line-clamp: unset; display: block; }
+.ph-wide { width: 100%; height: 44px; justify-content: center; }
+.pw .nv-btn.ph-wide { height: 44px; }
+/* Menus (tethered on a desktop) are sheets on touch: the preview at the top, its date, then 44 rows */
+.ph-menu { display: grid; padding: 0 var(--gap-item) var(--gap-item); }
+.ph-menu > .ob-row { margin: 0 var(--gap-item) var(--gap-tight); pointer-events: none; }
+.ph-menu .meta { padding: 0 var(--g) var(--gap-item) calc(var(--g) + var(--hang)); font-size: var(--fs-label); color: var(--ink-2); }
+.ph-menu button { display: flex; align-items: center; gap: var(--gap-icon); height: 44px; padding: 0 var(--gap-item); border-radius: var(--r-control); }
+.ph-menu button i[class^="ph"] { color: var(--ink-2); }
+.ph-menu hr { height: 0; margin: var(--gap-tight) 0; border: 0; border-top: 0.5px solid var(--hairline-strong); }
+/* The one confirmation, as a sheet at its content's height: the title, the sentence, Cancel | Delete dump, each half the width */
+.ph-confirm { display: grid; gap: var(--gap-item); padding: 0 var(--g) var(--gap-item); }
+.ph-confirm h2 { margin: 0; font-size: var(--fs-body); font-weight: 600; }
+.ph-confirm p { margin: 0; color: var(--ink-2); line-height: var(--lh-prose); }
+.ph-confirm .ob-decide { margin-top: var(--gap-item); }
+.ph-confirm .ob-decide > .nv-btn { flex: 1; height: 44px; justify-content: center; }
+
+/* Find: a full-height sheet; the field at the top with the caret and the keyboard up, Cancel beside it; results grouped by type */
+.ph-find-head { display: flex; align-items: center; gap: var(--gap-item); padding: 0 var(--g) var(--gap-item); }
+.ph-find-head .ctl-field { flex: 1; height: 40px; }
+.ph-find-head .ctl-field input { all: unset; flex: 1; min-width: 0; font-size: max(16px, var(--fs-body)); color: var(--ink); }
+.ph-find-head .ctl-field input::placeholder { color: var(--ink-2); }
+.ph-find-head > button { height: 44px; padding: 0 4px; color: var(--ink); font-weight: 500; }
+.ph-results { padding: 0 var(--g) var(--g); display: grid; gap: var(--gap-group); }
+.ph-results .ob-row { margin-inline: calc(var(--inset-row) * -1); }
+.ph-results mark { background: none; color: inherit; font-weight: 600; }
+.ph-empty { margin: 0; padding: var(--gap-item) 0; color: var(--ink-2); }
+
+/* The chat (09) on a phone: a full-height sheet; the thread scrolls, the composer sits above the keyboard (rule 8) */
+.ph-sheet.chat { grid-template-rows: auto minmax(0, 1fr) auto; }
+.ph-sheet.chat .mk-thread { display: grid; align-content: start; gap: var(--gap-group); padding: var(--gap-item) var(--g) var(--gap-group); }
+.ph-sheet.chat .mk-comp { display: flex; align-items: flex-end; gap: 2px; padding: var(--gap-icon) var(--gap-icon) calc(var(--gap-icon) + max(var(--sa-b), var(--kb))) var(--g); box-shadow: inset 0 0.5px 0 var(--hairline-strong); }
+.ph-sheet.chat .mk-comp textarea { all: unset; flex: 1; min-width: 0; align-self: center; padding: 8px 0; font: 400 max(16px, var(--fs-body))/var(--lh-ui) var(--font); color: var(--ink); white-space: pre-wrap; field-sizing: content; max-height: 140px; overflow: auto; }
+.ph-sheet.chat .mk-comp textarea::placeholder { color: var(--ink-2); opacity: 1; }
+.ph-sheet.chat .mk-comp .ctl-icon { width: 40px; height: 40px; border-radius: 10px; }
+.ph-sheet.chat .mk-comp .ctl-icon[aria-disabled="true"] { opacity: 0.4; }
+.pw .mk-me { display: grid; justify-items: end; gap: var(--gap-tight); padding-left: 48px; }
+.pw .mk-bubble { display: grid; gap: var(--gap-icon); padding: var(--card-block) var(--card-inline); border-radius: var(--r-box); background: var(--ground-2); }
+.pw .mk-bubble p { margin: 0; line-height: var(--lh-prose); }
+.pw .mk-voice { display: flex; align-items: center; gap: var(--gap-icon); padding: 4px 10px 4px 4px; width: 220px; }
+.pw .mk-wave.still i { animation: none; scale: 1 calc(0.25 + mod(var(--i) * 37, 10) / 13); }
+.pw .mk-when { font-size: var(--fs-label); color: var(--ink-2); }
+.pw .mk-agent { display: grid; gap: var(--gap-item); }
+.pw .mk-say { margin: 0; line-height: var(--lh-prose); text-wrap: pretty; }
+.pw .mk-agent .ob-rows { margin-inline: calc(var(--inset-row) * -1); }
+.pw .mk-working { display: flex; align-items: center; gap: var(--gap-icon); color: var(--ink-2); }
+.pw .mk-working i { animation: ctl-spin 700ms linear infinite; width: 14px; height: 14px; font-size: 14px; }
+.pw .mk-day { font-size: var(--fs-label); font-weight: 500; color: var(--ink-2); }
+
+/* ── The keyboard, drawn on a stage frame when a field has the caret (a real phone draws its own; the composer reads visualViewport) ── */
+.ph-kbd { position: absolute; z-index: 75; left: 0; right: 0; bottom: 0; height: var(--kb); display: grid; align-content: start; gap: 11px; padding: 8px 3px calc(var(--sa-b) + 4px);
+  background: oklch(0.86 0.004 85); pointer-events: none; }
+.ph-kbd.enter { animation: ph-up 260ms var(--spring); }
+.ph-kbd .row { display: flex; justify-content: center; gap: 6px; }
+.ph-kbd .row span { flex: 0 0 32px; height: 42px; border-radius: 5px; background: oklch(0.99 0 0); box-shadow: 0 1px 0 oklch(0.6 0 0 / 0.5); display: grid; place-items: center; font: 400 20px/1 var(--font); color: var(--ink); }
+.ph-kbd .row span.w { flex-basis: 190px; font-size: 15px; }
+.ph-kbd .row span.m { flex-basis: 88px; background: oklch(0.75 0.004 85); font-size: 15px; }
+@keyframes ph-up { from { translate: 0 100%; } }
+@media (prefers-reduced-motion: reduce) { .ph-kbd.enter { animation: ph-fade var(--t-float) linear; } }
+
+/* ── Toast (tier 6; rule 9): just above the pill, on the gutters, 44 high, swipe down to dismiss ── */
+.ph-toast { position: absolute; z-index: var(--z-toast); left: calc(var(--g) + var(--sa-l)); right: calc(var(--g) + var(--sa-r)); bottom: calc(var(--sa-b) + var(--tabs) + var(--pill) + var(--gap-item) * 2);
+  display: flex; align-items: center; gap: var(--gap-item); height: 44px; padding: 0 4px 0 var(--g); border-radius: var(--r-box); background: var(--ink); color: var(--on-ink); box-shadow: var(--sh-toast); touch-action: none; }
+.ph-toast.enter { animation: ph-rise var(--t-float) var(--spring); }
+.ph-toast .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ph-toast button { height: 36px; padding: 0 12px; border-radius: 8px; color: var(--on-ink); font-weight: 500; font-size: var(--fs-label); }
+.ph-toast button:active { background: var(--on-ink-fill); }
+@keyframes ph-rise { from { opacity: 0; translate: 0 8px; } }
+@media (prefers-reduced-motion: reduce) { .ph-toast.enter { animation: ph-fade var(--t-hover) linear; } }
+
+/* A finger, for the flows the page plays */
+.ph-touch { position: absolute; z-index: 90; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; background: oklch(var(--acc-L) var(--acc-c) var(--acc-h) / 0.28); box-shadow: 0 0 0 1.5px oklch(var(--acc-L) var(--acc-c) var(--acc-h) / 0.6); pointer-events: none;
+  animation: ph-touch 600ms var(--ease-out) forwards; }
+.ph-touch.hold { animation-duration: 900ms; }
+@keyframes ph-touch { 0% { scale: 0.6; opacity: 0; } 25% { scale: 1; opacity: 1; } 100% { scale: 1.3; opacity: 0; } }
+
+/* ── Views on a phone (choice 3): Atlas pans and pinches; Columns pages a column at a time; Timeline scrolls sideways. A pane is a bottom sheet. ── */
+.ph-canvas { position: relative; overflow: hidden; touch-action: none; background: var(--ground); }
+.ph-world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.ph-disc { position: absolute; border-radius: 50%; background: oklch(var(--shade) / 4%); box-shadow: inset 0 0 0 0.5px var(--hairline-strong); }
+.ph-disc > .lbl { scale: calc(1 / var(--k)); transform-origin: 50% 0; position: absolute; left: 50%; top: 14px; translate: -50% 0; display: flex; align-items: center; gap: var(--gap-icon); max-width: 90%; white-space: nowrap; font-size: var(--fs-label); font-weight: 500; color: var(--ink-2); }
+.ph-disc > .lbl .t { overflow: hidden; text-overflow: ellipsis; }
+.ph-pin { scale: calc(1 / var(--k)); position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; display: grid; place-items: center; }
+.ph-pin i { display: block; width: var(--d); height: var(--d); border-radius: 50%; background: oklch(0.56 0.16 var(--t-theory)); box-shadow: 0 0 0 2px var(--ground); }
+.ph-pin[aria-pressed="true"] i { box-shadow: 0 0 0 2px var(--ground), 0 0 0 3.5px var(--ink); }
+.ph-float { position: absolute; z-index: 3; display: flex; gap: 2px; padding: 2px; border-radius: var(--r-bar); background: var(--surface); box-shadow: var(--sh-float); }
+.ph-float .ph-ib { width: 40px; height: 40px; border-radius: 12px; }
+.ph-pages { display: flex; gap: var(--gap-item); overflow: auto hidden; scroll-snap-type: x mandatory; padding: 0 var(--g) var(--g); scrollbar-width: none; overscroll-behavior-x: contain; }
+.ph-pages::-webkit-scrollbar { display: none; }
+.ph-col { flex: 0 0 86%; scroll-snap-align: start; scroll-margin-left: var(--g); display: grid; align-content: start; gap: var(--gap-item); padding: var(--gap-item); border-radius: var(--r-box); background: var(--ground-2); min-height: 100%; }
+.ph-col-head { display: flex; align-items: center; gap: var(--gap-tile); min-height: 32px; padding: 0 var(--gap-tight); font-weight: 600; color: var(--sechead-ink); }
+.ph-col .ob-card, .ph-col .ob-row { min-height: var(--row); }
+.ph-dots { display: flex; justify-content: center; gap: 6px; padding-bottom: var(--gap-item); }
+.ph-dots i { display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--hairline-strong); }
+.ph-dots i[data-on] { background: var(--ink-2); }
+.ph-tl { position: relative; overflow: auto; touch-action: pan-x pan-y; overscroll-behavior: contain; scrollbar-width: none; }
+.ph-tl-in { position: relative; }
+.ph-tl .yr { position: absolute; top: 0; font-size: var(--fs-label); color: var(--ink-2); }
+.ph-tl .yr::after { content: ""; position: absolute; left: 0; top: 22px; width: 0; height: var(--h); border-left: 0.5px solid var(--hairline); }
+.ph-tl .lane { position: absolute; left: 0; font-size: var(--fs-label); color: var(--ink-2); }
+.ph-tl-item { position: absolute; display: flex; align-items: center; gap: var(--gap-icon); min-height: 44px; max-width: 200px; font-size: var(--fs-body); }
+.ph-tl-item i { flex: none; display: block; width: 8px; height: 8px; border-radius: 50%; background: oklch(0.56 0.16 var(--t-theory)); }
+.ph-tl-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Tablet (744, rule 1): the rail as icons (nav rule 6), the list (--list-w), the full view at the pane inset with its tile inside; a peek is the tethered card; a view's pane is a sheet from the right ── */
+.pw[data-device="tablet"] .ph-tb { position: absolute; inset: var(--sa-t) 0 0 0; display: grid; grid-template-columns: 56px var(--list-w, 296px) minmax(0, 1fr); }
+.pw[data-device="tablet"] .ph-tb.view { grid-template-columns: 56px minmax(0, 1fr); }
+.ph-rail { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: var(--gap-item) 0 calc(var(--sa-b) + var(--gap-item)); background: var(--ground-2); box-shadow: inset -0.5px 0 0 var(--hairline); }
+.ph-rail > .sp { flex: 1; }
+.ph-rail .ph-ib { width: 44px; height: 44px; }
+.ph-rail .ph-ib[aria-current="page"] { background: var(--surface); box-shadow: var(--sel); }
+.ph-rail .ph-ib .g { width: 24px; height: 24px; }
+.ph-rail .ph-ib .g i { width: 14px; height: 14px; font-size: 14px; }
+.ph-rail .ph-switch { display: grid; gap: 2px; padding: 2px; border-radius: var(--r-bar); background: var(--surface); box-shadow: var(--sh-float); }
+.ph-rail .ph-switch .ph-ib { width: 40px; height: 40px; border-radius: 12px; color: var(--ink-2); }
+.ph-rail .ph-switch .ph-ib[aria-current="page"] { background: var(--accent-wash); color: var(--accent-text); box-shadow: none; }
+.ph-tb .ph-col-list { overflow: hidden auto; padding: var(--gap-item) 0 96px; scrollbar-width: none; box-shadow: inset -0.5px 0 0 var(--hairline); }
+.ph-tb .ph-col-list .ph-title { font-size: var(--fs-body); font-weight: 600; padding-top: var(--gap-item); }
+.ph-tb .ph-main { position: relative; overflow: hidden auto; scrollbar-width: none; padding-bottom: 96px; }
+.pw[data-device="tablet"] .ob-full { padding: var(--inset-pane-block) var(--inset-pane-inline) 0; }
+.pw[data-device="tablet"] .ob-full > .ob-head { grid-template-columns: var(--tile-title) minmax(0, 1fr); column-gap: var(--gap-tile-title); row-gap: 0; }
+.pw[data-device="tablet"] .ob-full > .ob-body { margin-left: calc(var(--tile-title) + var(--gap-tile-title) + var(--hang)); }
+.pw[data-device="tablet"] .ph-pill { left: auto; width: 300px; bottom: calc(var(--sa-b) + var(--inset-float)); right: var(--inset-float); }
+.pw[data-device="tablet"] .ph-toast { left: auto; width: 360px; right: var(--inset-float); bottom: calc(var(--sa-b) + var(--inset-float) + var(--pill) + var(--gap-item)); }
+.pw[data-device="tablet"] { --chrome-b: 0px; }
+.ph-tpeek { position: absolute; z-index: var(--z-pop); left: var(--inset-pane-inline); right: var(--inset-pane-inline); }
+.ph-tpeek .ob-peek { width: auto; max-width: 400px; animation: ob-grow var(--t-float) var(--spring); }
+.pw[data-device="tablet"] .ph-sheet.side { left: auto; top: var(--sa-t); bottom: 0; width: 400px; max-height: none; border-radius: var(--r-bar) 0 0 var(--r-bar); grid-template-rows: auto minmax(0, 1fr) auto; }
+.pw[data-device="tablet"] .ph-sheet.chat { left: auto; right: var(--inset-float); top: calc(var(--sa-t) + var(--inset-float)); bottom: calc(var(--sa-b) + var(--inset-float)); width: 360px; height: auto; max-height: none; border-radius: var(--r-bar); }
+
+@media (prefers-reduced-motion: reduce) { .pw .ph-unit { transition: none; } }
+.pw input[type="search"]::-webkit-search-cancel-button { display: none; }   /* 05: search clears with Esc and has no X */
+.pw .ob-st .ph-spin { animation: ctl-spin 700ms linear infinite; }

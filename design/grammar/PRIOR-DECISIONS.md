@@ -437,3 +437,5 @@ Compiled 4 Nov 2026 from everything on this branch before the grammar jigs. Read
 5 Nov 2026 (Maggie, 14): an inline trigger on a key line (the prototype status) gets 4 vertical padding, its hover layer growing without moving the line; focus rings show only for keyboard interaction, never on click or hover (`_shared/modality.js`; proposed amendment to 05). 14 Menus, pickers and popovers is proposed with three open choices: menu item height, tiles or bare glyphs in pickers, and how the current item is marked.
 
 5 Nov 2026 (Maggie, 14): menu items 32; picker rows show the type tile; the current item shows a check on the right and its glyph fills with the label at 500.
+
+5 Nov 2026 (12, PROPOSED, jig `12-narrow/`): narrow screens. Below 744 a tab bar (Briefing first, five items with More), list roots, full views pushed from the right with the title tile above the title on the 16 gutter, peeks and panes as bottom sheets with detents, the pill above the tab bar, the chat as a full-height sheet on the keyboard, 44 targets, long-press for hover-only things. Open: which items get a tab; body size on touch; whether Columns, Atlas and Timeline exist on a phone.

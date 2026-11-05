@@ -1,0 +1,25 @@
+/* Grammar 12 page chrome (not the app): phone stages side by side, the flows, today's screenshots. The template is _shared/page.css. */
+body.jig .nr-phones { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.nr-host { min-width: 0; display: flex; justify-content: center; padding: 10px 0; }
+.nr-stage { display: grid; gap: 24px; grid-template-columns: minmax(0, 390fr) minmax(0, 744fr); align-items: start; }
+.nr-stage figure { margin: 0; min-width: 0; display: grid; gap: 8px; }
+.nr-stage figcaption { font-weight: 500; }
+.nr-stage figcaption span { font-weight: 400; color: var(--ink-2); margin-left: 8px; }
+@media (max-width: 900px) { .nr-stage { grid-template-columns: minmax(0, 1fr); } }
+.nr-link { color: var(--ink); font-weight: 500; }
+.nr-flows { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+.nr-flows li { display: grid; gap: 4px; align-content: start; }
+.nr-flows .run { display: flex; align-items: center; gap: 8px; height: 28px; font-weight: 500; }
+.nr-flows .run button { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px 0 8px; border: 0; border-radius: var(--r-control); background: var(--ink); color: var(--on-ink); font: 500 var(--fs-label)/1 var(--font); cursor: pointer; }
+.nr-flows .run button[aria-busy="true"] { opacity: 0.4; }
+.nr-flows .run button i { font-size: 14px; }
+.nr-flows ol { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: var(--fs-label); line-height: var(--lh-ui); display: grid; gap: 2px; }
+.nr-flows ol li.on { color: var(--ink); font-weight: 500; }
+.headline { margin: 0 0 16px; padding-left: 18px; display: grid; gap: 6px; line-height: var(--lh-prose); color: var(--ink); }
+.headline li b { font-weight: 500; }
+.audit td:first-child { font-weight: 500; white-space: nowrap; }
+.nr-shots { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); margin-top: 16px; }
+.nr-shots figure { margin: 0; display: grid; gap: 6px; }
+.nr-shots img { display: block; width: 100%; height: auto; border-radius: 14px; box-shadow: var(--window-shadow); }
+.nr-shots figcaption { font-size: var(--fs-label); color: var(--ink-2); }
+@media (max-width: 640px) { .audit td:first-child { white-space: normal; } }

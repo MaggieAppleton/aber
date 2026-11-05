@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grammar 12: Narrow screens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="../../explorations/_shell/jig.css">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/spacing.css">
+<link rel="stylesheet" href="../_shared/type.css">
+<link rel="stylesheet" href="../_shared/icons.css">
+<link rel="stylesheet" href="../_shared/surfaces.css">
+<link rel="stylesheet" href="../_shared/controls.css">
+<link rel="stylesheet" href="../_shared/objects.css">
+<link rel="stylesheet" href="phone.css">
+<link rel="stylesheet" href="page.css">
+<link rel="stylesheet" href="../_shared/page.css">
+<script src="../../explorations/_shell/jig.js" defer></script>
+<script src="../_shared/manifest.js" defer></script>
+<script src="../_shared/page.js" defer></script>
+<script src="../_shared/objects.js" defer></script>
+<script src="phone.js" defer></script>
+<script src="page.js" defer></script>
+<script type="module" src="../_shared/agentation.js" data-app-name="Grammar 12: Narrow screens"></script>
+</head>
+<body class="jig" data-jig="grammar-12-narrow">
+
+<header class="pg-head"></header>
+
+<section class="jig-section wide" id="c-tabs" data-decision="tabs" data-question="1. Which items get a tab?" data-default="B Briefing, Theories, Signals, Dumps">
+  <p class="jig-why"><b>Recommended B.</b> Theories and Signals already filter by theme, so Themes is the one list a phone can do without. Dumps keeps a tab because a dump from the Shortcut is what you check on a phone, and its Working spinner and failed-dump dot need a home.</p>
+  <p class="lede">Six items don't fit at 390 with their names whole (today the app truncates “Prototy…”). Five do. Each phone is live: tap a tab, then More.</p>
+  <div class="jig-compare nr-phones">
+    <div class="jig-option" data-option="A Briefing, Themes, Theories, Signals"><div class="jig-label"><b>A</b> Briefing, Themes, Theories, Signals, More</div><p class="jig-note">Keeps the rail's order. Prototypes and Dumps go in More, so More carries the dump spinner and dot.</p>
+      <div class="nr-host" data-option-stage data-phone='{"tabs":"A","start":{"tab":"theme"}}'></div></div>
+    <div class="jig-option" data-option="B Briefing, Theories, Signals, Dumps"><div class="jig-label"><b>B</b> Briefing, Theories, Signals, Dumps, More</div><p class="jig-note">What you read and capture on a phone. Themes and Prototypes go in More.</p>
+      <div class="nr-host" data-option-stage data-phone='{"tabs":"B","start":{"tab":"dump"}}'></div></div>
+    <div class="jig-option" data-option="C All six"><div class="jig-label"><b>C</b> All six, no More</div><p class="jig-note">Everything one tap away, as today. Labels get tight and “Prototypes” may truncate.</p>
+      <div class="nr-host" data-option-stage data-phone='{"tabs":"C","start":{"tab":"prototype"}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="c-scale" data-decision="scale" data-question="2. What size is body text on a touch screen?" data-default="B Touch scale">
+  <p class="jig-why"><b>Recommended B.</b> At 13 a phone reads like a shrunken desktop page, and fields must be 16 anyway or iOS zooms. One step up keeps four sizes and makes text and fields one size.</p>
+  <p class="lede">Both phones show the same challenged theory. Scroll, and tap a signal row to see a peek at each size.</p>
+  <div class="jig-compare nr-phones">
+    <div class="jig-option" data-option="A Desktop scale"><div class="jig-label"><b>A</b> The desktop scale: 11 / 12 / 13 / 16 / 24</div><p class="jig-note">One scale everywhere. Fields alone go to 16, so a field's text is bigger than the text around it.</p>
+      <div class="nr-host" data-option-stage data-phone='{"scale":"desk","start":{"tab":"theory","push":[{"v":"full","id":"t4"}]}}'></div></div>
+    <div class="jig-option" data-option="B Touch scale"><div class="jig-label"><b>B</b> A touch scale: 12 / 13 / 16 / 24</div><p class="jig-note">Counts 12, labels 13, body and fields 16, the title 24. Section headers are 16 / 600, set apart by weight and their hairline.</p>
+      <div class="nr-host" data-option-stage data-phone='{"scale":"touch","start":{"tab":"theory","push":[{"v":"full","id":"t4"}]}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="c-views" data-decision="views" data-question="3. Do Columns, Atlas and Timeline exist on a phone?" data-default="A Not on a phone">
+  <p class="jig-why"><b>Recommended A.</b> Each needs width to mean anything: Columns is five lists side by side, Timeline is years across. A phone gets the type-first view; all three stay on a tablet (the 744 window below).</p>
+  <p class="lede">Each phone opens where its option puts the views. In B and C a tap on an object raises its pane as a bottom sheet.</p>
+  <div class="jig-compare nr-phones">
+    <div class="jig-option" data-option="A Not on a phone"><div class="jig-label"><b>A</b> Not on a phone</div><p class="jig-note">More holds only types. No view switcher below 744.</p>
+      <div class="nr-host" data-option-stage data-phone='{"views":"none","start":{"tab":"more"}}'></div></div>
+    <div class="jig-option" data-option="B Atlas only"><div class="jig-label"><b>B</b> Atlas only, from More</div><p class="jig-note">The map is the one view touch suits: drag to pan, pinch to zoom, tap a pin.</p>
+      <div class="nr-host" data-option-stage data-phone='{"views":"atlas","start":{"tab":"more","push":[{"v":"view","view":"atlas"}]}}'></div></div>
+    <div class="jig-option" data-option="C All three"><div class="jig-label"><b>C</b> All three, from More</div><p class="jig-note">Columns pages one column at a time, Atlas pans and pinches, Timeline scrolls sideways.</p>
+      <div class="nr-host" data-option-stage data-phone='{"views":"all","start":{"tab":"more","push":[{"v":"view","view":"columns"}]}}'></div></div>
+  </div>
+</section>
+
+<section class="jig-section wide" id="try">
+  <h2>Try it</h2>
+  <p>A phone and a 744 tablet, both live and both following your picks above. Play a flow, or use them with your finger. <a href="app.html" class="nr-link">Open the phone app full screen</a> on your phone to feel the real keyboard, safe areas and swipes.</p>
+  <ol class="nr-flows" id="flows"></ol>
+  <div class="nr-stage">
+    <figure><figcaption>Phone <span>390 × 844</span></figcaption><div class="nr-host" id="main-phone" data-phone='{"device":"phone"}'></div></figure>
+    <figure class="nr-tab"><figcaption>Tablet <span>744 × 1000</span></figcaption><div class="nr-host" id="main-tablet" data-phone='{"device":"tablet"}'></div></figure>
+  </div>
+</section>
+
+<section class="pg-decided">
+  <h2>Builds on</h2>
+  <ul class="pg-list">
+    <li><b>04 rule 10</b>The rail and pane become tier-3 sheets from their own edge; tethered surfaces become bottom sheets</li>
+    <li><b>05 rule 11</b>Fields are 16 at phone width so iOS doesn't zoom</li>
+    <li><b>06 rule 2</b>One left edge at the title in every full view</li>
+    <li><b>07 rule 13</b>A peek is a bottom sheet opened by a tap; Open pushes the full view in from the right; Back slides it out</li>
+    <li><b>08 rule 11, 09, 10</b>Briefing first; capture through Dump or ask; work on the Dumps type; toasts with Undo</li>
+    <li><b>Nav rule 6</b>Below 1280 the rail is its icon bar</li>
+  </ul>
+</section>
+
+<details class="pg-details" id="d-rules">
+  <summary><span class="pg-dt">Rules</span><span class="pg-ds">Proposed: one rule per surface, from the rail to reduced motion</span></summary>
+<section class="jig-section" id="rules">
+  <ol class="rules">
+    <li><b>Two layouts.</b> Compact below 744 (every phone): a tab bar and a stack of screens. Regular from 744 (iPad mini portrait up): the rail as icons, the list, the main area. 744 is where a 296 list leaves the main area 400. Touch values apply wherever the pointer is coarse, whatever the width.</li>
+    <li><b>The type rail becomes a bottom tab bar.</b> 49 high plus the home indicator's safe area, on sunk. Briefing first, then the tabs in choice 1, then More. Each tab is the type glyph on its 24 tile over a 12 / 500 label. The current tab has the Fill glyph and an ink label; the rest are ink 2. No counts. Unread signals set the Signals label at 600, like an unread row. While a dump is read, the Working spinner takes the Dumps glyph; a failed dump is the red dot on its tile's corner (10). When Dumps is in More, More carries both. Tapping the current tab returns to its root and scrolls to the top.</li>
+    <li><b>Find</b> is the magnifying glass at the right of every root screen's bar. It opens a full-height sheet with the field focused and the keyboard up, Cancel beside it, recent objects before you type, then results grouped by type. A result opens in its own tab.</li>
+    <li><b>The second sidebar becomes the tab's root screen.</b> A 44 bar, then the type's name as a large title (24 / 600) and its rows, at least 44 high, on the 16 gutter. Theories and Signals keep the theme filter, a chip whose menu is a sheet.</li>
+    <li><b>The full view pushes in from the right</b> over the list (07 rule 13): 380 on the spring; the list waits a quarter to the left under a 4% shade. Back sits left in the bar with the previous screen's name; a swipe from the left edge also goes back. The object's verbs move behind ⋯ in the bar; a draft keeps Discard | Keep there.</li>
+    <li><b>The 88 main inset becomes the 16 gutter, and one left edge stays.</b> The 32 title tile sits above the title, on L, instead of hanging into an inset a phone doesn't have. Title, key line, prose, section labels, row tiles and proposal blocks all start on L. On a tablet the main area uses the pane's 24 inset with the tile inside (06 rule 2's pane case).</li>
+    <li><b>A peek is a bottom sheet.</b> Tap opens it at the medium detent (its content, at most 55% of the screen); drag the handle up for large, which shows every relation. Drag down or tap the scrim to dismiss. Open is a full-width secondary at the foot. A preview inside it replaces it in place. On a tablet a peek stays the tethered card, opened by a tap.</li>
+    <li><b>The docked pane becomes a sheet.</b> On a tablet, from the right, 400 wide. On a phone (if choice 3 gives it views), from the bottom with the same detents, so the canvas stays visible above it.</li>
+    <li><b>Dump or ask: the pill spans the gutters just above the tab bar,</b> 44 high, the microphone on its right. The microphone records in the pill without opening anything; Stop dumps. The chat is a full-height sheet: the thread scrolls, the composer sits on the keyboard (it reads <code>visualViewport</code>), and the grab handle or a drag down closes it. On a tablet the chat keeps 09's floating 360 column.</li>
+    <li><b>Toasts sit just above the pill,</b> on the gutters, 44 high; swipe down to dismiss. Every other 10 rule holds.</li>
+    <li><b>Modals and menus become sheets</b> at their content's height: Delete dump keeps its sentence and Cancel | Delete dump, each half the width and 44 high. Menus are 44 rows.</li>
+    <li><b>Touch sizes.</b> Every target is at least 44 (a hit layer where the visible control is smaller). Rows 44, text buttons 36, bar icons 44 with 20 glyphs. Visible sizes elsewhere stay 05's.</li>
+    <li><b>Type.</b> The scale in choice 2. Fields are 16 on any touch screen, never smaller, so iOS never zooms. Labels in bars and tabs never wrap.</li>
+    <li><b>Hover-only becomes touch.</b> Peek on hover becomes a tap. Dates on hover and Remove on hover move to a long-press menu, which shows the preview, its date and its verbs. Tooltips and keys don't show on touch. Hover styles only apply under <code>(hover: hover)</code>; press feedback is <code>:active</code>.</li>
+    <li><b>Safe areas.</b> <code>viewport-fit=cover</code>; the bar pads <code>env(safe-area-inset-top)</code>, the tab bar and sheets pad the bottom, and gutters grow to the side insets in landscape. Nothing tappable sits under the home indicator.</li>
+    <li><b>Scroll and taps.</b> No tap highlight, no text selection on controls, no pull-to-refresh: the page doesn't overscroll and inner scrollers contain theirs.</li>
+    <li><b>Reduced motion keeps the map</b> (07 rule 11): pushes and sheets cross-fade (90 out, 160 in), nothing slides; drags still follow the finger.</li>
+  </ol>
+</section>
+</details>
+
+<details class="pg-details" id="d-today">
+  <summary><span class="pg-dt">Today, measured</span><span class="pg-ds">The app has a phone layout already, with six cramped tabs and three left edges; most jigs shrink to 3px text</span></summary>
+<section class="jig-section" id="today">
+  <ul class="headline">
+    <li><b>The app (127.0.0.1:5174 at 390, touch).</b> Below 720 it already has a tab bar, a full-screen list, a push from the right and a peek sheet. The worst problems: six tabs at 62 wide with 11px labels (“Prototy…”); the pill sits under the tab bar, so chrome takes 118px plus the home indicator; full views have three left edges (tile 28, prose 46, title 64); 19 of 25 controls on Briefing are under 44 high; Columns, Atlas and Timeline can't be reached; a + opens a centred modal.</li>
+    <li><b>The jigs.</b> Only 08 adapts. Nav, 06, 07, 09, 10 and 11 shrink a 1280 window to 28%: 60 to 90% of their text renders under 9px, the smallest at 3px. No page scrolls sideways.</li>
+  </ul>
+  <div class="table-wrap">
+  <table class="audit">
+    <thead><tr><th>Where</th><th>What's there at 390</th><th>Rule</th></tr></thead>
+    <tbody>
+      <tr><td>App tabs</td><td>Six tabs, 62 × 50 each, 11 / 500 labels that truncate; the current one a raised white chip</td><td>2</td></tr>
+      <tr><td>App pill</td><td>Below the tab bar, which pads 64 for it: 118 of 844 at the bottom before the safe area</td><td>9</td></tr>
+      <tr><td>App full view</td><td>Tile at 28, prose at 46, title at 64; top padding 16, sides 20</td><td>6</td></tr>
+      <tr><td>App touch</td><td>19 of 25 visible controls under 44 high on Briefing; Dismiss and Accept are 28</td><td>12</td></tr>
+      <tr><td>App peek</td><td>A bottom sheet up to 70%, above the tabs; no handle, no drag, no detents</td><td>7</td></tr>
+      <tr><td>App chat</td><td>A near full-height floating sheet with a grab handle; field 16 (good)</td><td>9</td></tr>
+      <tr><td>App modals</td><td>“State a theory” is a centred card at 12% from the top</td><td>11</td></tr>
+      <tr><td>App views</td><td>No view switcher below 720; Columns, Atlas and Timeline unreachable</td><td>Choice 3</td></tr>
+      <tr><td>App Find</td><td>Only each list's field; nothing on Briefing</td><td>3</td></tr>
+      <tr><td>App breakpoint</td><td>720; the grammar says 640 (05, 06, 07)</td><td>1</td></tr>
+      <tr><td>Jigs</td><td>nav 90%, 06 71%, 07 64%, 09 59%, 10 81%, 11 67% of text under 9px; 08 none</td><td>–</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="nr-shots">
+    <figure><img src="screenshots/today-app-1-briefing.png" alt="Today's app Briefing at 390" width="390" height="844" loading="lazy"><figcaption>Briefing</figcaption></figure>
+    <figure><img src="screenshots/today-app-3-theory.png" alt="Today's app theory full view at 390" width="390" height="844" loading="lazy"><figcaption>A theory</figcaption></figure>
+    <figure><img src="screenshots/today-app-4-peek.png" alt="Today's app peek sheet at 390" width="390" height="844" loading="lazy"><figcaption>A peek</figcaption></figure>
+    <figure><img src="screenshots/today-app-7-chat.png" alt="Today's app chat at 390" width="390" height="844" loading="lazy"><figcaption>The chat</figcaption></figure>
+    <figure><img src="screenshots/today-09-390.png" alt="The 09 jig at 390" width="390" height="844" loading="lazy"><figcaption>Jig 09</figcaption></figure>
+  </div>
+</section>
+</details>
+
+
+</body>
+</html>

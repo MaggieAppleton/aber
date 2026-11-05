@@ -590,6 +590,35 @@ Evidence: each view draws its floating controls differently. The view switcher i
 - Atlas theory names: **A on hover, on open and when zoomed in**.
 - The docked pane follows 06 rule 2: the title tile stays inside the 24 inset and the content moves right to the title's edge.
 
+## 12 Narrow screens — PROPOSED (5 Nov 2026, jig `12-narrow/`)
+
+How every surface changes on a phone (390) and a tablet (744). Jig: `12-narrow/`, with a live phone and tablet built from 06 objects and 09's chat, four playable flows, and `app.html` to open full screen on a real phone. Not approved.
+
+Evidence (127.0.0.1:5174 at 390, touch, read-only): the app already switches below 720 to a tab bar, a full-screen list, a push from the right and a peek sheet. Six tabs at 62 wide with 11px labels ("Prototy…"); the pill sits under the tab bar, so chrome is 118px before the home indicator; full views have three left edges (tile 28, prose 46, title 64); 19 of 25 controls on Briefing are under 44 high; no view switcher, so Columns, Atlas and Timeline are unreachable; + opens a centred modal. Of the jigs only 08 adapts: nav, 06, 07, 09, 10 and 11 shrink a 1280 window to 28%, putting 60–90% of their text under 9px.
+
+1. **Two layouts.** Compact below 744 (phones): a tab bar and a stack of screens. Regular from 744: the rail as icons (nav rule 6), the list (`--list-w`), the main area. Touch values apply wherever the pointer is coarse. (Amends the 640 in 06 and 07 rule 13.)
+2. **The rail becomes a bottom tab bar:** 49 plus the bottom safe area, on sunk. Briefing first, then the tabs in choice 1, then More. Each tab is the glyph on its 24 tile over a 12 / 500 label; current: Fill glyph and an ink label; others ink 2. No counts. Unread signals set the Signals label at 600. While a dump is read the Working spinner takes the Dumps glyph; a failed dump is the red dot on its tile's corner (10); More carries both when Dumps is in it. Tapping the current tab returns to its root. (A bottom tab bar is navigation, not the in-page tab bar 05 rule 10 forbids.)
+3. **Find** is the magnifying glass at the right of every root screen's bar: a full-height sheet, field focused, keyboard up, Cancel beside it; recent objects, then results by type. A result opens in its own tab.
+4. **The second sidebar becomes the tab's root screen:** a 44 bar, the type as a large title (24 / 600), rows at least 44 on the 16 gutter. Theories and Signals keep the theme filter, a chip whose menu is a sheet.
+5. **The full view pushes in from the right** (07 rule 13), 380 on the spring; the list waits a quarter to the left under a 4% shade. Back sits left with the previous screen's name; a swipe from the left edge goes back. The object's verbs sit behind ⋯ in the bar; a draft keeps Discard | Keep there.
+6. **The 88 main inset becomes the 16 gutter; one left edge stays.** On a phone the 32 title tile sits above the title on L, so title, key line, prose, labels, row tiles and blocks all start on the gutter. On a tablet the main area uses the pane inset (24) with the tile inside (06 rule 2's pane case). Replaces 06 rule 2's "08's narrow layout".
+7. **A peek is a bottom sheet** opened by a tap: medium detent (its content, at most 55%), drag up for large (every relation, no fade), drag down or tap the scrim to dismiss; Open is a full-width secondary at the foot; a preview inside replaces it in place. On a tablet it stays the tethered card, opened by a tap.
+8. **The docked pane becomes a sheet:** from the right, 400 wide, on a tablet; from the bottom with the peek's detents on a phone, if choice 3 gives it views.
+9. **Dump or ask:** the pill spans the gutters just above the tab bar, 44 high, the microphone on its right, which records in the pill without opening anything. The chat is a full-height sheet: the thread scrolls, the composer sits on the keyboard (`visualViewport`), the grab handle or a drag down closes it. A tablet keeps 09's floating 360 column.
+10. **Toasts** sit just above the pill on the gutters, 44 high; swipe down to dismiss.
+11. **Modals and menus become sheets** at their content's height: Delete dump keeps Cancel | Delete dump, each half the width, 44 high; menu items are 44.
+12. **Touch sizes:** every target at least 44 (a hit layer where the control is smaller); rows 44, text buttons 36, bar icons 44 with 20 glyphs.
+13. **Type:** the scale in choice 2. Fields are 16 on any touch screen (amends 05 rule 11's ≤639). Labels in bars and tabs never wrap.
+14. **Hover-only becomes touch:** peek on hover → tap; dates and Remove on hover → a long-press menu showing the preview, its date and its verbs; no tooltips or keys. Hover styles only under `(hover: hover)`; press feedback on `:active`.
+15. **Safe areas:** `viewport-fit=cover`; the bar pads the top inset, the tab bar and sheets the bottom; gutters grow to the side insets in landscape.
+16. **Scroll and taps:** no tap highlight, no selectable control text, no pull-to-refresh; inner scrollers contain their overscroll.
+17. **Reduced motion keeps the map** (07 rule 11): pushes and sheets cross-fade; drags still follow the finger.
+
+Open (Maggie to choose in the jig):
+- **Tabs:** A Briefing, Themes, Theories, Signals, More; **B Briefing, Theories, Signals, Dumps, More (recommended)**; C all six.
+- **Body size on touch:** A the desktop scale (13, fields 16); **B a touch scale 12 / 13 / 16 / 24 (recommended)**.
+- **Views on a phone:** **A none, from 744 up only (recommended)**; B Atlas only, from More; C all three from More.
+
 ## 14 Menus, pickers and popovers — DECIDED (5 Nov 2026: items 32; picker rows show the tile; the current item has a check and a filled glyph)
 
 Jig: `14-menus/`. Values live in `14-menus/menus.css`; the input-modality tracker is `_shared/modality.js`.

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#f7f6f3">
+<title>Aber on a phone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+<link rel="stylesheet" href="../_shared/tokens.css">
+<link rel="stylesheet" href="../_shared/spacing.css">
+<link rel="stylesheet" href="../_shared/type.css">
+<link rel="stylesheet" href="../_shared/icons.css">
+<link rel="stylesheet" href="../_shared/surfaces.css">
+<link rel="stylesheet" href="../_shared/controls.css">
+<link rel="stylesheet" href="../_shared/objects.css">
+<link rel="stylesheet" href="phone.css">
+<style>
+  html, body { margin: 0; height: 100%; background: var(--ground); overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
+  #app { height: 100dvh; }
+  #app > .pw { position: fixed; inset: 0; width: 100%; height: 100dvh; }
+</style>
+<script src="../_shared/objects.js" defer></script>
+<script src="phone.js" defer></script>
+<script defer>
+  // Your picks from the jig, read from this browser; the device follows the window (744 and up is the tablet layout).
+  addEventListener("DOMContentLoaded", () => {
+    const get = id => { try { return JSON.parse(localStorage.getItem(`jig:grammar-12-narrow:${id}`))?.choice || ""; } catch { return ""; } };
+    const views = get("views"), cfg = { frame: false, device: innerWidth >= 744 ? "tablet" : "phone", tabs: get("tabs")[0] || "B",
+      scale: /^A/.test(get("scale")) ? "desk" : "touch", views: /^B/.test(views) ? "atlas" : /^C/.test(views) ? "all" : "none" };
+    const host = document.getElementById("app"), ph = AberPhone.mount(host, cfg);
+    // The keyboard: the composer and Find sit on it (the visual viewport shrinks; the layout doesn't, on iOS)
+    const vv = visualViewport, kb = () => host.querySelector(".pw")?.style.setProperty("--kb", `${Math.max(0, innerHeight - vv.height - vv.offsetTop)}px`);
+    vv?.addEventListener("resize", kb); vv?.addEventListener("scroll", kb);
+    new MutationObserver(kb).observe(host, { childList: true });
+  });
+</script>
+</head>
+<body><div id="app"></div></body>
+</html>
