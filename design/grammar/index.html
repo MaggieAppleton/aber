@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="_shared/type.css">
 <link rel="stylesheet" href="_shared/icons.css">
 <link rel="stylesheet" href="_shared/surfaces.css">
+<script src="_shared/manifest.js"></script>
 <script type="module" src="_shared/agentation.js" data-app-name="Grammar index"></script>
 <style>
   /* Built only from the decided grammar: colour D, Regular spacing, type 11/12/13/24, icons 16 and 14 on tiles, surfaces. */
@@ -53,7 +54,7 @@
 
   /* Sections: header role (13 / 600, ink 2) on the tile edge, rows below */
   section { margin-top: var(--gap-section); }
-  hr + section { margin-top: var(--s-5); }
+  hr + #pages > section:first-child { margin-top: var(--s-5); }
   .sec { display: flex; align-items: baseline; gap: var(--gap-item); margin: 0 0 var(--gap-tight); font-size: var(--fs-body); font-weight: 600; color: var(--sechead-ink); }
   .sec .n { font-size: var(--fs-label); font-weight: 400; }
 
@@ -70,7 +71,9 @@
   .nm { grid-area: nm; font-weight: 500; color: var(--ink); }
   .desc { grid-area: desc; color: var(--ink-2); min-width: 0; }
   .st { grid-area: st; justify-self: end; font-size: var(--fs-label); color: var(--ink-2); white-space: nowrap; }
-  .st.open { color: var(--ink); font-weight: 500; }
+  .st { display: flex; gap: 12px; }
+  .st .open { color: var(--ink); font-weight: 500; }
+  .st .new { color: var(--ink); font-weight: 500; }
   .row:hover .tile { color: var(--ink); }
 
   footer { margin-top: var(--gap-section); padding-top: var(--gap-group); box-shadow: inset 0 0.5px 0 var(--hairline); font-size: var(--fs-label); color: var(--ink-2); }
@@ -95,7 +98,7 @@
       <span class="tile" aria-hidden="true"><i class="ph ph-book-open-text"></i></span>
       <div>
         <h1>Aber interface grammar</h1>
-        <div class="key"><b>11 decided</b>, 3 waiting on 10 choices, last decision 5 Nov</div>
+        <div class="key" id="key"></div>
       </div>
     </div>
     <p class="sum">Aber's interface, built from the ground up: colour, then spacing, type, icons, surfaces and controls, then the objects and screens made only from them. <span>Every choice is made on a jig that shows it in the app's own layout, then written into the rules.</span></p>
@@ -107,51 +110,33 @@
 
   <hr>
 
-  <section aria-labelledby="s-found">
-    <h2 class="sec" id="s-found">Foundations <span class="n">6</span></h2>
-    <ol>
-      <li><a class="row" href="00-colour/"><span class="num">00</span><span class="tile"><i class="ph ph-palette"></i></span><span class="nm">Colour</span><span class="desc">System D: linen neutrals, ink primary, bright type tiles</span><span class="st">Decided 4 Nov</span></a></li>
-      <li><a class="row" href="01-spacing/"><span class="num">01</span><span class="tile"><i class="ph ph-ruler"></i></span><span class="nm">Spacing</span><span class="desc">Regular density; five gaps and the insets they set</span><span class="st">Decided 4 Nov</span></a></li>
-      <li><a class="row" href="02-type/"><span class="num">02</span><span class="tile"><i class="ph ph-text-aa"></i></span><span class="nm">Type</span><span class="desc">Geist at 11, 12 and 13, and 24 for the title</span><span class="st">Decided 4 Nov</span></a></li>
-      <li><a class="row" href="03-icons/"><span class="num">03</span><span class="tile"><i class="ph ph-shapes"></i></span><span class="nm">Icons</span><span class="desc">Phosphor at 16 and 14; object glyphs on their tile</span><span class="st">Decided 4 Nov</span></a></li>
-      <li><a class="row" href="04-surfaces/"><span class="num">04</span><span class="tile"><i class="ph ph-stack"></i></span><span class="nm">Surfaces and layers</span><span class="desc">Seven tiers, each with its own shadow and radius</span><span class="st">Decided 4 Nov</span></a></li>
-      <li><a class="row" href="05-controls/"><span class="num">05</span><span class="tile"><i class="ph ph-toggle-left"></i></span><span class="nm">Controls</span><span class="desc">Buttons, fields and menus from the foundations alone</span><span class="st">Decided 4 Nov</span></a></li>
-    </ol>
-  </section>
-
-  <section aria-labelledby="s-nav">
-    <h2 class="sec" id="s-nav">Navigation <span class="n">1</span></h2>
-    <ol>
-      <li><a class="row" href="nav/"><span class="num">Nav</span><span class="tile"><i class="ph ph-sidebar-simple"></i></span><span class="nm">Type-first default</span><span class="desc">A rail of types, a list, the item in the main area</span><span class="st">Decided 4 Nov</span></a></li>
-    </ol>
-  </section>
-
-  <section aria-labelledby="s-obj">
-    <h2 class="sec" id="s-obj">Objects <span class="n">2</span></h2>
-    <ol>
-      <li><a class="row" href="06-objects/"><span class="num">06</span><span class="tile"><i class="ph ph-cube"></i></span><span class="nm">Objects</span><span class="desc">One anatomy at three rungs: preview, peek, full</span><span class="st">Decided 4 Nov</span></a></li>
-      <li><a class="row" href="06b-confidence/"><span class="num">06b</span><span class="tile"><i class="ph ph-gauge"></i></span><span class="nm">Confidence</span><span class="desc">A small meter on previews, the five-segment setter in full</span><span class="st">Decided 4 Nov</span></a></li>
-    </ol>
-  </section>
-
-  <section aria-labelledby="s-beh">
-    <h2 class="sec" id="s-beh">Behaviour <span class="n">1</span></h2>
-    <ol>
-      <li><a class="row" href="07-rungs/"><span class="num">07</span><span class="tile"><i class="ph ph-arrows-out-simple"></i></span><span class="nm">Moving between levels</span><span class="desc">Peeks grow from their trigger; Open carries the title</span><span class="st">Decided 5 Nov</span></a></li>
-    </ol>
-  </section>
-
-  <section aria-labelledby="s-scr">
-    <h2 class="sec" id="s-scr">Screens and flows <span class="n">4</span></h2>
-    <ol>
-      <li><a class="row" href="08-briefing/"><span class="num">08</span><span class="tile"><i class="ph ph-newspaper"></i></span><span class="nm">Briefing</span><span class="desc">What changed since you last looked, ordered by need</span><span class="st open">6 choices open</span></a></li>
-      <li><a class="row" href="09-making/"><span class="num">09</span><span class="tile"><i class="ph ph-plus-circle"></i></span><span class="nm">Making things</span><span class="desc">Capture, making in place, linking and renaming</span><span class="st open">1 choice open</span></a></li>
-      <li><a class="row" href="10-states/"><span class="num">10</span><span class="tile"><i class="ph ph-circle-dashed"></i></span><span class="nm">States</span><span class="desc">Empty, loading, work, errors, offline and toasts</span><span class="st">Decided 4 Nov</span></a></li>
-      <li><a class="row" href="11-views/"><span class="num">11</span><span class="tile"><i class="ph ph-columns"></i></span><span class="nm">Views</span><span class="desc">Columns, Atlas and Timeline restyled, not re-laid out</span><span class="st">Decided 4 Nov</span></a></li>
-    </ol>
-  </section>
+  <div id="pages"></div>
 
   <footer>Earlier rounds live in <a href="_retired/">retired jigs</a>.</footer>
 </main>
+<script>
+  // Rows and counts come from _shared/manifest.js, the same list each jig page reads; picks and last visits from this browser.
+  (() => {
+    const G = window.GRAMMAR, U = G.util;
+    const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const status = p => {
+      const open = U.open(p), left = U.unpicked(p), bits = [];
+      const last = U.latest(p), fresh = p.revised.filter(r => U.isNew(p, r));
+      if (last) bits.push(fresh.length ? `<span class="new" title="New since you last looked">Revised ${U.day(last)}</span>` : `<span>Revised ${U.day(last)}</span>`);
+      bits.push(open.length ? `<span class="open">${left.length} of ${open.length} open</span>` : `<span>Decided ${U.day(p.decided)}</span>`);
+      return bits.join("");
+    };
+    document.getElementById("pages").innerHTML = G.groups.map(g => {
+      const ps = G.pages.filter(p => p.group === g.id);
+      return `<section aria-labelledby="s-${g.id}"><h2 class="sec" id="s-${g.id}">${esc(g.name)} <span class="n">${ps.length}</span></h2><ol>${ps.map(p =>
+        `<li><a class="row" href="${p.dir}/"><span class="num">${esc(p.num)}</span><span class="tile"><i class="ph ph-${p.icon}"></i></span><span class="nm">${esc(p.title)}</span><span class="desc">${esc(p.desc)}</span><span class="st">${status(p)}</span></a></li>`).join("")}</ol></section>`;
+    }).join("");
+    const waiting = G.pages.filter(p => U.open(p).length), decided = G.pages.length - waiting.length;
+    const left = waiting.reduce((n, p) => n + U.unpicked(p).length, 0);
+    const fresh = G.pages.filter(p => p.revised.some(r => U.isNew(p, r))).length;
+    document.getElementById("key").innerHTML = `<b>${decided} decided</b>, ${waiting.length} waiting on ${left} open ${left === 1 ? "choice" : "choices"}${fresh ? `, <b>${fresh} revised since you last looked</b>` : ""}`;
+  })();
+</script>
+
 </body>
 </html>
