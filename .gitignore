@@ -29,6 +29,9 @@ app/playwright-report/
 app/backups/
 app/.e2e-data/
 .agent-kit/
+# Local lane worktrees and the bootstrap marker; memory notes remain trackable.
+/.lane/trees/
+/.lane/.gitkeep
 test-results/
 playwright-report/
 coverage/
