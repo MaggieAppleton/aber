@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "synthetic-review",
+  "text": "Synthetic example: At Juniper Workshop, four maintainers measured human code review rising from 20 to 50 minutes per change during a two-week assistant trial. Save this one observation under code review. This is my own observation; no external source. Do not draft a theory.",
+  "urls": [],
+  "expected": {
+    "count": [1, 1],
+    "observations": [
+      {
+        "key": "review-time",
+        "finding": "Juniper's four maintainers saw human review rise from 20 to 50 minutes per change during a two-week assistant trial.",
+        "clauses": ["Juniper", "four|4", "20|twenty", "50|fifty", "review", "minute", "two.week|2.week"],
+        "themes": ["Code review after agents"],
+        "ownObservation": true
+      }
+    ]
+  }
+}

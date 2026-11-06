@@ -12,7 +12,15 @@ import { runJevComparison } from './jev-compare.js';
 import { withSpendBudget, spendBudgetSnapshot } from '../server/src/agents/spend-budget.js';
 
 const args = process.argv.slice(2);
-if (args.includes('--jev-compare')) {
+if (args.includes('--input')) {
+  try {
+    const { runLocalInputs } = await import('./local-run.js');
+    process.exitCode = await runLocalInputs(args);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : 'Local evaluation failed');
+    process.exitCode = 2;
+  }
+} else if (args.includes('--jev-compare')) {
   await runJevComparison(args);
 } else {
 const fake = args.includes('--fake');
