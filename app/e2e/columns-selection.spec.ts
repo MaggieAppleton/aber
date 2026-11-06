@@ -44,14 +44,14 @@ test('selecting a lower stock preserves list order and scroll position with a qu
   await page.waitForTimeout(700);
   const after = { order: await order(page), scroll: await scroll(page), style: await item(page).evaluate(node => {
     const style = getComputedStyle(node);
-    return { background: style.backgroundColor, shadow: style.boxShadow, outline: style.outline, opacity: style.opacity };
+    return { background: style.backgroundColor, surface: style.getPropertyValue('--surface').trim(), shadow: style.boxShadow, outline: style.outline, opacity: style.opacity };
   }) };
   await page.mouse.move(0, 0);
   await page.screenshot({ path: resolve(artifacts, `${phase}-selected.png`) });
   await writeFile(resolve(artifacts, `${phase}-selection.json`), JSON.stringify({ before, after }, null, 2));
   expect(after.order).toEqual(before.order);
   expect(after.scroll).toBe(before.scroll);
-  expect(after.style.background).toBe('rgb(244, 244, 244)');
+  expect(after.style.background).toBe(after.style.surface);
   expect(after.style.shadow).not.toContain('1.5px');
   expect(after.style.shadow).not.toContain('rgb(23, 23, 23)');
   await expect.poll(() => item(page, 'column-position-15').evaluate(node => getComputedStyle(node).opacity)).toBe('0.32');

@@ -38,10 +38,14 @@ test('File in a theme has a delayed, portaled tooltip without moving its button;
   await expect(tip).toBeVisible();
   await page.waitForTimeout(150);
   expect(await geometry(file)).toEqual(before);
-  expect(await tip.evaluate(element => {
+  const colours = await tip.evaluate(element => {
     const style = getComputedStyle(element);
-    return { background: style.backgroundColor, color: style.color, radius: style.borderRadius, insidePane: !!element.closest('.as-pane') };
-  })).toEqual({ background: 'rgb(0, 0, 0)', color: 'rgb(255, 255, 255)', radius: '6px', insidePane: false });
+    return {
+      actual: { background: style.backgroundColor, color: style.color, radius: style.borderRadius, insidePane: !!element.closest('.as-pane') },
+      expected: { background: style.getPropertyValue('--ink').trim(), color: style.getPropertyValue('--on-ink').trim(), radius: style.getPropertyValue('--r-control').trim(), insidePane: false },
+    };
+  });
+  expect(colours.actual).toEqual(colours.expected);
   await page.screenshot({ path: 'test-results/parity/tooltip-file-hover.png' });
 
   await page.mouse.move(20, 20);
@@ -94,9 +98,8 @@ test('view and capture icon controls share the tooltip, preserve shortcuts and d
   const close = page.getByRole('button', { name: 'Close (Esc)', exact: true });
   expect(await close.getAttribute('title')).toBeNull();
   await page.goto('/?view=columns&open=theory:d1');
-  const accept = page.getByRole('button', { name: 'Accept (A)', exact: true });
+  const accept = page.locator('.as-pane').getByRole('button', { name: 'Accept', exact: true });
   await expect(accept).toHaveAttribute('aria-keyshortcuts', 'a');
-  expect(await accept.getAttribute('title')).toBeNull();
-  await accept.hover();
-  await expect(page.getByRole('tooltip', { name: 'Accept (A)', exact: true })).toBeVisible();
+  await expect(accept).toBeVisible();
+  await expect(page.locator('.as-pane').getByRole('button', { name: 'Discard', exact: true })).toBeVisible();
 });

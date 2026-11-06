@@ -39,10 +39,16 @@ for (const reducedMotion of ['reduce', 'no-preference'] as const) test(`pane con
   });
   expect(paint.pointerEvents).toBe('none');
   expect(paint.shadows.every(shadow => shadow === 'none' || shadow.includes('inset'))).toBe(true);
-  expect(paint.rgba[1]).toBeGreaterThan(paint.rgba[0]); expect(paint.rgba[1]).toBeGreaterThan(paint.rgba[2]);   // the jade accent
+  // At 5% alpha, canvas premultiplication can quantize the teal's green and blue to the same byte.
+  expect(paint.rgba[1]).toBeGreaterThan(paint.rgba[0]); expect(paint.rgba[1]).toBeGreaterThanOrEqual(paint.rgba[2]);
   expect(paint.rgba[3]).toBeGreaterThan(0); expect(paint.rgba[3]).toBeLessThan(40);
   for (const viewport of [{ width: 1130, height: 900 }, { width: 820, height: 760 }, { width: 390, height: 844 }]) {
-    await page.setViewportSize(viewport); await context.hover(); await expectInsideSource(page, 'pane');
+    await page.setViewportSize(viewport); await context.hover();
+    if (viewport.width < 640) {
+      // The phone's pushed full view replaces the docked pane; its saved context has no visible source.
+      await expect(page.locator('[data-region="pane"]')).toHaveCount(0);
+      await expect(page.locator('.ps-hl')).toHaveCount(0);
+    } else await expectInsideSource(page, 'pane');
   }
   await page.screenshot({ path: `test-results/parity/context-glow-${reducedMotion}.png`, animations: 'disabled' });
   await context.getByRole('button', { name: 'Stop sharing Agents keep context across months, not sessions', exact: true }).click();
