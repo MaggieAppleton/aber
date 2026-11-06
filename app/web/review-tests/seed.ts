@@ -37,7 +37,9 @@ const renamed=call("writeTheme",{name:"Review theme rename target"});
 propose("proposeRevision",{themeId:renamed.id,name:"Proposed theme name",reasoning:"Review name reasoning"});
 const evidenceTarget=theory("Review evidence proposal target"), evidenceSignal=signal("Review proposed evidence observation","Evidence source","https://example.org/review-evidence");
 propose("proposeEvidence",{theoryId:evidenceTarget.id,signalId:evidenceSignal.id,stance:"undermines",note:"Proposed evidence note",reasoning:"Review evidence reasoning"});
-const historical=call("writeTheory",{claim:"Review historical challenge decision",confidence:4,horizon:2028,tripwire:"The memory feature is withdrawn."});
+// This is a settled history fixture, with no concurrent lookback job adding unrelated hits.
+const historical=call("writeTheory",{claim:"Review historical challenge decision",confidence:4,horizon:2028});
+db.prepare("UPDATE theories SET tripwire = ?, tripwire_version = 1 WHERE id = ?").run("The memory feature is withdrawn.",historical.id);
 const challenge=propose("proposeChallenge",{theoryId:historical.id,signalId:evidenceSignal.id,why:"A matching withdrawal"});
 call("decideSuggestion",{id:challenge.id,decision:"accepted"});call("setConfidence",{id:historical.id,confidence:5});
 for(const kind of ["theme","theory"]){

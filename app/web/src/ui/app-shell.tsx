@@ -156,7 +156,7 @@ export function AppShell({ initial = "default" }: { initial?: View }) {
   }, [logOpen]);
 
   useEffect(()=>{
-    const openEvent=(e: Event)=>{ const {kind,id,unfolded}=(e as CustomEvent).detail; if(viewRef.current==="default"){tf.open(unfolded&&kind!=="theory"?"signal":kind,unfolded&&kind!=="theory"?unfolded:id);return;} openObj(kind,id);if(unfolded){setUnfolded(unfolded);if(rowFor("signal",unfolded))markRead("signal",unfolded);} };
+    const openEvent=(e: Event)=>{ const {kind,id,unfolded}=(e as CustomEvent).detail; if(viewRef.current==="default"){tf.open(unfolded?"signal":kind,unfolded??id);return;} openObj(kind,id);if(unfolded){setUnfolded(unfolded);if(rowFor("signal",unfolded))markRead("signal",unfolded);} };
     const closeEvent=()=>closeObj();
     const browseEvent=(e:Event)=>{const {kind,id}=(e as CustomEvent).detail;if(viewRef.current==="default"&&(kind==="signal"||kind==="dump")){tf.open(kind as ItemKind,id);return;}closeObj();setView("columns");setUnfolded(id);if(kind==="signal")markRead("signal",id);};
     const pop=()=>{ const state=stateFromUrl(); setView(phone ? "default" : state.view); setOpenState(state.open); tf.fromUrl(); };

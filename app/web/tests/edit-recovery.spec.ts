@@ -11,7 +11,7 @@ test('retrying a confidence save after a lost response creates one stance', asyn
       await route.fulfill({ status: 503, json: { error: 'Synthetic lost acknowledgement' } });
     } else await route.continue();
   });
-  await page.goto(`/?view=current&open=theory:${id}`);
+  await page.goto(`/?view=default&open=theory:${id}`);
   const slider = page.getByRole('slider', { name: 'Confidence', exact: true });
   await slider.focus(); await slider.press('4'); await slider.press('Tab');
   const alert = page.getByRole('alert'); await expect(alert).toContainText('Synthetic lost acknowledgement');
@@ -34,7 +34,7 @@ test('failed personal wording survives refresh and Retry saving persists it', as
     if (attempts === 1) await route.fulfill({ status: 503, json: { error: 'Synthetic save interruption' } });
     else await route.continue();
   });
-  await page.goto(`/?view=current&open=theory:${id}`);
+  await page.goto(`/?view=default&open=theory:${id}`);
   const claim = page.getByRole('textbox', { name: 'Claim', exact: true });
   await claim.fill('Personal wording kept through interruption'); await claim.press('Tab');
   const alert = page.getByRole('alert'); await expect(alert).toContainText('Synthetic save interruption');

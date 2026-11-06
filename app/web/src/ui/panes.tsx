@@ -143,20 +143,9 @@ export function RelRow({ kind, id, name, rk, kv, draft, onClick }: { kind: TileK
 }
 const TheoryRel = ({ id, onOpen }: { id: string; onOpen: OnOpen }) => { const t = theory(id); return <RelRow kind="theory" id={id} draft={t.draft} name={<Claim id={id} />} rk={t.draft ? undefined : <TheoryConf id={id} />} onClick={() => onOpen("theory", id)} />; };
 const ProtoRel = ({ id, onOpen }: { id: string; onOpen: OnOpen }) => <RelRow kind="prototype" id={id} name={<ProtoName id={id} />} rk={<ProtoStatus id={id} />} onClick={() => onOpen("prototype", id)} />;
-/** A suggested piece of evidence, first in the group it would join: a dashed block with the row, why, and Dismiss | Accept. */
-function EvidenceBlock({ suggestion: sg, onOpen, context }: { suggestion: any; onOpen: OnOpen; context: string }) {
-  const payload = json<any>(sg.payload ?? sg.payload_json, {});
-  const sid = payload.signalId ?? payload.signal_id;
-  const sig = SIGNALS.find(x => x.id === sid);
-  const [busy, setBusy] = useState(false);
-  const decide = async (decision: "accepted" | "discarded") => { if (busy) return; setBusy(true); try { await mutate("decideSuggestion", { id: sg.id, decision }); } catch {} finally { setBusy(false); } };
-  return <div className="ab-block" data-suggestion-id={sg.id}>
-    <button type="button" className="ab-obj ab-rel" onClick={() => sid && window.dispatchEvent(new CustomEvent("aber:open", { detail: { kind: "theory", id: context, unfolded: sid } }))}>
-      <Tile kind="signal" /><span className="ab-nm">{sig?.gist ?? payload.gist ?? "Proposed evidence"}</span><span className="ab-kv"><span>{sig?.source ?? "Own observation"}</span></span>
-    </button>
-    {sg.reasoning && <p className="ab-why">{sg.reasoning}</p>}
-    <div className="ab-block-foot"><Decide busy={busy} onDismiss={() => void decide("discarded")} onAccept={() => void decide("accepted")} /></div>
-  </div>;
+/** Evidence keeps the same complete source, wording and rephrase review in every destination. */
+function EvidenceBlock({ suggestion }: { suggestion: any; onOpen: OnOpen; context: string }) {
+  return <div className="ab-block ab-block-review"><SuggestionReview suggestion={suggestion} /></div>;
 }
 const pendingFor = (id: string) => world.suggestions.filter(s => s.status === "pending" && s.kind !== "challenge" && field(s, "targetId") === id);
 const stanceOf = (s: any) => { const p = json<any>(s.payload ?? s.payload_json, {}); return p.stance === "supports" ? "supports" : "undermines"; };

@@ -7,6 +7,7 @@ export let world: World = { themes: [], theories: [], signals: [], dumps: [], pr
 let revision = 0;
 let error = "";
 let loading = true;
+let loaded = false;
 let connected = false;
 const listeners = new Set<() => void>();
 const updates = new Set<() => void>();
@@ -22,7 +23,7 @@ export const onWorld = (listener: () => void) => { updates.add(listener); return
 export function emit() { revision++; listeners.forEach(listener => listener()); }
 export function reportError(value: unknown) { error = value instanceof Error ? value.message : String(value); emit(); }
 export const clearError = () => { error = ""; emit(); };
-export function useWorld() { useSyncExternalStore(subscribe, () => revision); return { world, loading, error, connected, revision }; }
+export function useWorld() { useSyncExternalStore(subscribe, () => revision); return { world, loading, loaded, error, connected, revision }; }
 
 export async function refresh() {
   if (refreshPending) { refreshAgain = true; return refreshPending; }
@@ -48,6 +49,7 @@ export async function refresh() {
           world = { ...world, ...data, signals }; dataVersion++;
           for (const key of ["themes", "theories", "dumps", "prototypes", "suggestions", "merges"]) world[key] = Array.isArray(data[key]) ? data[key] : [];
           loading = false;
+          loaded = true;
           updates.forEach(listener => listener());
           emit();
         } catch (cause) { loading = false; reportError(cause); }

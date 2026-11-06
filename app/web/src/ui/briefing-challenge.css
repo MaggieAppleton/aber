@@ -1,0 +1,25 @@
+/* RULES 06/08: solid subject, dashed proposal, consequence and verbs together. */
+.ap .tf-main .br .br-item:has(.br-challenge) { border-radius: 0; box-shadow: none; margin-bottom: 16px; }
+.br-challenge { color: var(--ink); font-size: var(--fs-body); line-height: var(--lh-ui); }
+.ap .br-ch-subject > .ab-rel { max-width: none; font-weight: 600; }
+.ap .br-ch-signal > .ab-rel { max-width: none; width: calc(100% + 16px); margin-inline: -8px; padding-inline: 10px; padding-bottom: 2px; }
+.br-ch-subject .ab-nm, .br-ch-signal .ab-nm { -webkit-line-clamp: unset; }
+.br-ch-signal { margin-top: 1px; }
+.br-ch-tripwire { display: flex; align-items: flex-start; gap: var(--gap-tile); margin-top: 4px; }
+.br-ch-tripwire .ab-tile { color: var(--neg-dot); background: transparent; margin-top: 1px; }
+.br-ch-tripwire p { margin: 0; }
+.br-ch-proposal { margin-top: 6px; padding: 10px; border: 1px dashed var(--hairline-strong); border-radius: var(--r-box); }
+.br-challenge[data-accepted] .br-ch-proposal { border-style: solid; background: var(--surface); }
+.br-ch-label, .br-ch-reason, .br-ch-footer, .br-ch-message { margin-inline: 2px; }
+.br-ch-label { font-size: var(--fs-label); font-weight: 500; }
+.br-ch-reason { margin-block: 2px 0; font-size: var(--fs-label); color: var(--ink-2); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.br-ch-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 2px; }
+.br-ch-footer > .ab-decide { margin-left: auto; }
+.br-ch-change { display: flex; align-items: center; gap: var(--gap-icon); margin: 0; font-size: var(--fs-label); color: var(--ink-2); }
+.br-ch-marks { display: inline-flex; flex-shrink: 0; gap: 2px; }
+.br-ch-marks i { width: 12px; height: 4px; border-radius: 2px; background: color-mix(in oklab, var(--ink) 15%, transparent); }
+.br-ch-marks i[data-on] { background: var(--ink); }
+.br-ch-marks i[data-gone] { background: color-mix(in oklab, var(--neg-dot) 40%, transparent); }
+.br-ch-message { margin-block: 8px 0; font-size: var(--fs-label); color: var(--ink-2); }
+.br-ch-message[role="alert"] { color: var(--neg-dot); }
+.br-challenge button[aria-disabled="true"] { cursor: default; opacity: .4; }

@@ -1,3 +1,5 @@
+import { BriefingChallenge } from "./briefing-challenge";
+import { briefingChallenge, challengeDecisionNotice, restoreChallengeNotice } from "./briefing-challenge-state";
 import { currentSuggestion } from "../data/challenge-target";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -23,7 +25,15 @@ function itemsNow(): Item[] {
 const GROUPS=["Challenges","Drafts","Suggestions","Merged","New signals"];
 const typing=(target:EventTarget|null)=>target instanceof HTMLElement&&(target.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
 export function BriefingView({host,phone}:{host:BriefingHost;phone?:boolean}) {
-  useWorld(); useDraftDecisions();
+  const { loaded } = useWorld(); useDraftDecisions();
+  const [challengeErrors,setChallengeErrors]=useState<Record<string,string|undefined>>({});
+  const [challengeBusy,setChallengeBusy]=useState<Record<string,boolean>>({});
+  const challengePending=useRef(new Set<string>());
+  useEffect(()=>{
+    if(!loaded)return;
+    // The sibling toast subscribes in its mount effect; restore after those subscriptions exist.
+    const timer=setTimeout(()=>restoreChallengeNotice(loaded),0);return()=>clearTimeout(timer);
+  },[loaded]);
   const items=itemsNow();
   const processing=world.dumps.filter(d=>["processing","received","transcribing"].includes(d.status)).length;
   const [cursor,setCursor]=useState<string>();
@@ -34,6 +44,22 @@ export function BriefingView({host,phone}:{host:BriefingHost;phone?:boolean}) {
     else host.onOpen(item.targetKind,item.target);
   };
   const decide=async(item:Item,decision:"accepted"|"discarded")=>{
+    if(item.kind==="challenge") {
+      if(challengePending.current.has(item.id))return;
+      const suggestion=world.suggestions.find(row=>row.id===item.id);
+      const state=suggestion&&briefingChallenge(suggestion);
+      const blocked=!state||state.unavailable?"This challenge is no longer available. Refresh the Briefing.":decision==="accepted"?state.blocked:undefined;
+      if(blocked){setChallengeErrors(errors=>({...errors,[item.id]:blocked}));return;}
+      challengePending.current.add(item.id);setChallengeBusy(values=>({...values,[item.id]:true}));
+      setChallengeErrors(errors=>({...errors,[item.id]:undefined}));
+      try {
+        await mutate("decideSuggestion",{id:item.id,decision});
+        challengeDecisionNotice(item.id,decision==="accepted"?`Confidence lowered to ${state!.to}`:"Confidence kept");
+        const index=items.findIndex(x=>x.id===item.id);setCursor(items[index+1]?.id??items[index-1]?.id);
+      }catch(cause){setChallengeErrors(errors=>({...errors,[item.id]:`Could not save decision: ${cause instanceof Error?cause.message:String(cause)}. Try again.`}));}
+      finally{challengePending.current.delete(item.id);setChallengeBusy(values=>({...values,[item.id]:false}));}
+      return;
+    }
     const index=items.findIndex(x=>x.id===item.id);setCursor(items[index+1]?.id??items[index-1]?.id);
     try {
       if(item.kind==="signals") for(const signal of item.row.signals) await mutate(decision==="accepted"?"markSeen":"discardSignal",{kind:"signal",id:signal.id});
@@ -51,7 +77,7 @@ export function BriefingView({host,phone}:{host:BriefingHost;phone?:boolean}) {
       const index=Math.max(0,items.findIndex(x=>x.id===current?.id));
       if(["j","k","ArrowDown","ArrowUp"].includes(e.key)){e.preventDefault();const step=e.key==="j"||e.key==="ArrowDown"?1:-1;const item=items[Math.max(0,Math.min(items.length-1,index+step))];if(item){setCursor(item.id);root.current?.querySelector(`[data-bid="${CSS.escape(item.id)}"]`)?.scrollIntoView({block:"nearest",behavior:"smooth"});}}
       if(!current)return;
-      if(e.key.toLowerCase()==="a"){e.preventDefault();void decide(current,"accepted");}
+      if(e.key.toLowerCase()==="a"){e.preventDefault();if(!e.repeat)void decide(current,"accepted");}
       if(e.key.toLowerCase()==="u"&&current.kind==="near-dup"){e.preventDefault();void decide(current,"discarded");}
       if(e.key.toLowerCase()==="o"||e.key==="Enter"&&!(e.target instanceof HTMLButtonElement)){e.preventDefault();open(current);}
     };
@@ -62,7 +88,7 @@ export function BriefingView({host,phone}:{host:BriefingHost;phone?:boolean}) {
     <Overnight onLog={host.onLog} processing={processing}/>
     {!items.length&&<p className="ap-muted">All caught up.</p>}
     {GROUPS.map(group=><section className="br-group" key={group}>{items.some(x=>x.group===group)&&<h3 className="ap-label br-group-name">{group}<span className="ap-num">{items.filter(x=>x.group===group).length}</span></h3>}<AnimatePresence initial={false}>{items.filter(x=>x.group===group).map(item=><motion.div layout="position" key={item.id} className="br-item" data-bid={item.id} data-cursor={current?.id===item.id?"":undefined} onPointerEnter={()=>setCursor(item.id)} onFocus={()=>setCursor(item.id)} onPointerDown={()=>setCursor(item.id)} exit={{opacity:0,x:40}} transition={{duration:.2}}>
-      <BriefingItem item={item} host={host} onOpen={()=>open(item)} onDecide={d=>void decide(item,d)}/>
+      {item.kind==="challenge"?<BriefingChallenge suggestion={item.row} onOpen={host.onOpen} onDecide={d=>void decide(item,d)} busy={challengeBusy[item.id]} error={challengeErrors[item.id]}/>:<BriefingItem item={item} host={host} onOpen={()=>open(item)} onDecide={d=>void decide(item,d)}/>}
     </motion.div>)}</AnimatePresence></section>)}
   </div></div></div>;
 }

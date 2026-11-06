@@ -20,13 +20,13 @@ async function usableTargets(controls: Locator) {
   return measurements;
 }
 
-for (const width of [1360, 390]) test(`pane preserves compact controls and a persistent keyboard confidence slider at ${width}px`, async ({ page, request }) => {
+for (const width of [1360, 390]) test(`full view preserves compact controls and a persistent keyboard confidence slider at ${width}px`, async ({ page, request }) => {
   await page.setViewportSize({ width, height: 844 });
   const response = await request.post("/api/tools/writeTheory", { data: { claim: `Accessible controls at ${width}px`, confidence: 3, horizon: 2028 } });
   expect(response.ok()).toBeTruthy();
   const { id } = await response.json();
-  await page.goto(`/?view=current&open=theory:${id}`);
-  const pane = page.getByRole("complementary", { name: "Open object" });
+  await page.goto(`/?view=default&open=theory:${id}`);
+  const pane = page.getByRole("main");
   const slider = pane.getByRole("slider", { name: "Confidence", exact: true });
   await expect(slider).toHaveAttribute("aria-valuenow", "3");
   await usableTargets(pane.locator("button, .pn-conf-control"));
@@ -49,9 +49,9 @@ for (const width of [1360, 390]) test(`pane preserves compact controls and a per
   await expect.poll(async () => (await (await request.get(`/api/objects/theory/${id}`)).json()).horizon).toBe(2029);
   await page.reload(); await expect(slider).toHaveAttribute("aria-valuenow", "4");
   await expect(pane.locator(".pn-field-val").first()).toHaveText("2029");
-  const overlap = await pane.locator(".as-pane-close").evaluate(node => {
+  const overlap = await pane.locator(".ab-top").evaluate(node => {
     const controls = [...node.querySelectorAll("button")].map(button => button.getBoundingClientRect()).filter(rect => rect.width);
-    return controls.length === 2 && controls[0].right > controls[1].left;
+    return controls.some((rect, index) => controls.slice(index + 1).some(other => rect.left < other.right && rect.right > other.left && rect.top < other.bottom && rect.bottom > other.top));
   });
   expect(overlap).toBe(false);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -59,9 +59,9 @@ for (const width of [1360, 390]) test(`pane preserves compact controls and a per
 });
 
 test("compact chrome and capture controls retain usable targets without changing jig layout", async ({ page }) => {
-  await page.goto("/?view=current");
+  await page.goto("/?view=default&type=theory&item=t1");
   await expect(page.getByRole("navigation", { name: "Views" })).toBeVisible();
-  await usableTargets(page.locator(".as-switch button, .cur-rail button, .cur-rail a, .cur-theme button"));
+  await usableTargets(page.locator(".as-switch button, .tf-rail button, .tf-list button"));
   await page.getByRole("button", { name: /^Timeline \(/ }).click();
   await usableTargets(page.locator(".t2-toolbar button"));
   // Dense chart marks are independently pointer/keyboard tested in the spatial suite.
@@ -79,11 +79,12 @@ test("compact chrome and capture controls retain usable targets without changing
 test("three context pills wrap inside the column with reachable remove and pick controls", async ({ page, request }) => {
   const world = await (await request.get("/api/world")).json();
   const theory = world.theories.find((row: any) => row.status === "held" && row.claim.length > 35);
-  await page.goto(`/?view=current&open=theory:${theory.id}`);
+  await page.goto(`/?view=columns&open=theory:${theory.id}`);
   await page.getByRole("button", { name: "Dump or ask (⌘J)", exact: true }).click();
   await expect(page.locator(".ps-ctxrow .ps-ctx")).toHaveCount(2);
   await page.getByRole("button", { name: "Add something on screen", exact: true }).click();
-  await page.locator(".cur-theme-btn").first().click();
+  await page.getByRole("button", { name: "Show Themes", exact: true }).click();
+  await page.locator('.cd-col[data-kind="theme"] .cd-item-btn').first().click();
   await expect(page.locator(".ps-ctxrow .ps-ctx")).toHaveCount(3);
   const outside = await page.locator(".ps-composer").evaluate(composer => {
     const bounds = composer.getBoundingClientRect();
@@ -101,8 +102,8 @@ test("three context pills wrap inside the column with reachable remove and pick 
   await expect(page.locator(".ps-ctxrow .ps-ctx")).toHaveCount(2);
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator(".ps-panel")).toBeVisible();
-  await expect(page.getByRole("button",{name:"Stop sharing Briefing",exact:true})).toBeVisible();
-  await expect(page.getByRole("button",{name:"Stop sharing Theme sections",exact:true})).toHaveCount(0);
+  await expect(page.getByRole("button",{name:"Stop sharing Default",exact:true})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Stop sharing Columns",exact:true})).toHaveCount(0);
   await usableTargets(page.locator(".ps-ctxrow button, .ps-inputrow button"));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
