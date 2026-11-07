@@ -117,6 +117,7 @@ export async function runAgent(db: AgentDatabase, spec: AgentSpec, input: AgentI
   try {
     const result = await generateText({
       model: run.model, system: spec.system, ...input, tools: run.tools,
+      providerOptions: { openai: { store: false } },
       stopWhen: stepCountIs(spec.maxSteps), maxOutputTokens: spec.maxOutputTokens ?? 4000, maxRetries: 0, abortSignal: ctx.signal,
       toolCallConcurrency: 1,
       prepareStep: ({ messages }) => { const projected = projectToolMessages(messages); run.prepare(projected, true); return { messages: projected }; },
@@ -133,6 +134,7 @@ export async function streamAgent(db: AgentDatabase, spec: AgentSpec, input: Cha
     const messages = await convertToModelMessages(input.messages, { tools: run.tools, ignoreIncompleteToolCalls: true });
     const result = streamText({
       model: run.model, system: spec.system, messages, tools: run.tools,
+      providerOptions: { openai: { store: false } },
       stopWhen: stepCountIs(spec.maxSteps), maxOutputTokens: spec.maxOutputTokens ?? 4000, maxRetries: 0, abortSignal: ctx.signal,
       toolCallConcurrency: 1,
       prepareStep: ({ messages: current }) => { const projected = projectToolMessages(current); run.prepare(projected, true); return { messages: projected }; },
