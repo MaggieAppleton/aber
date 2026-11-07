@@ -1,4 +1,4 @@
-import { wrapLanguageModel } from 'ai';
+import { wrapLanguageModel, type LanguageModel } from 'ai';
 import { createDatabase, type Database } from '../server/src/db/index.js';
 import { seed } from '../server/src/seed.js';
 import { createTools } from '../server/src/tools/index.js';
@@ -25,7 +25,11 @@ const heldSnapshot = (db: Database) => JSON.stringify({
   evidence: rows(db, "SELECT e.* FROM evidence e JOIN theories t ON t.id=e.theory_id WHERE t.status='held' ORDER BY e.id"),
 });
 
-async function evaluateProcessing(fixture: ProcessingFixture, provider: ProviderName): Promise<EvalResult> {
+export async function evaluateProcessing(fixture: ProcessingFixture, provider: ProviderName, options: {
+  configuredPipeline?: boolean;
+  /** Fixed offline adapter tests only; the local CLI never supplies a model. */
+  model?: LanguageModel;
+} = {}): Promise<EvalResult> {
   const db = createDatabase(); seed(db); const tools = createTools(db);
   const details: Record<string, unknown> = { evaluationMode: provider === 'fake' ? 'scripted-replay: scorer/plumbing only, not model accuracy' : 'live-provider' };
   let checks: Record<string, boolean> = {}; let error: string | undefined;
@@ -40,14 +44,15 @@ async function evaluateProcessing(fixture: ProcessingFixture, provider: Provider
       setupSignalId = signal.id;
     }
     const heldBefore = heldSnapshot(db);
-    const capture = { text: fixture.text, urls: fixture.urls, ...(fixture.transcript ? { media: [{ id: 'eval-voice-media', path: 'eval-only-not-playable.wav', mime: 'audio/wav', bytes: 0, sha256: 'synthetic-transcript-no-audio' }] } : {}) };
+    const capture = { text: fixture.text, urls: fixture.urls, ...(fixture.transcript ? { media: [{ id: 'eval-voice-media', path: 'eval-only-not-playable.wav', mime: 'audio/wav', bytes: 0, sha256: options.configuredPipeline ? 'local-transcript-no-audio' : 'synthetic-transcript-no-audio' }] } : {}) };
     const dump = tools.call('captureDump', capture, person);
-    if (fixture.transcript) saveTranscript(db, { dumpId: dump.id, mediaId: 'eval-voice-media', text: fixture.transcript, provider: 'synthetic', model: 'authored-transcript-v2' });
+    if (fixture.transcript) saveTranscript(db, { dumpId: dump.id, mediaId: 'eval-voice-media', text: fixture.transcript, provider: options.configuredPipeline ? 'local-input' : 'synthetic', model: 'authored-transcript-v2' });
     let providerInput = '';
-    const underlying = provider === 'fake' ? processingReplay(fixture, dump.id, setupSignalId) : choiceFor('process_dump', provider).model;
+    const underlying = options.model ?? (provider === 'fake' && !options.configuredPipeline
+      ? processingReplay(fixture, dump.id, setupSignalId) : choiceFor('process_dump', provider).model);
     if (typeof underlying === 'string') throw new Error('Eval requires a model object');
     // Eval-only observation of the actual provider-bound request; no production hook or extra call.
-    const model = wrapLanguageModel({ model: underlying, middleware: { transformParams: async ({ params }) => {
+    const observe = (underlying: Exclude<LanguageModel, string>) => wrapLanguageModel({ model: underlying, middleware: { transformParams: async ({ params }) => {
       if (!providerInput) for (const message of params.prompt) {
         if (message.role !== 'user') continue;
         for (const part of message.content) if (part.type === 'text') {
@@ -56,9 +61,19 @@ async function evaluateProcessing(fixture: ProcessingFixture, provider: Provider
       }
       return params;
     } } });
+    const restore: (() => void)[] = [];
     try {
-      await processDump(db, tools, dump.id, { provider, model, articleFetcher: async url => fixture.article?.url === url ? { ...fixture.article, byline: 'Synthetic fixture', siteName: 'Eval v2', fetchedAt: '2026-11-01T00:00:00.000Z' } : null });
+      if (options.configuredPipeline && !options.model && provider !== 'fake') {
+        // Observe configured choices in place: processDump still chooses its own model/pricing.
+        for (const job of ['process_dump', 'link_evidence'] as const) {
+          const choice = choiceFor(job, provider); const original = choice.model;
+          if (typeof original === 'string') throw new Error('Eval requires a model object');
+          choice.model = observe(original); restore.push(() => { choice.model = original; });
+        }
+      }
+      await processDump(db, tools, dump.id, { provider, ...(!options.configuredPipeline || options.model ? { model: observe(underlying) } : {}), articleFetcher: async url => fixture.article?.url === url ? { ...fixture.article, byline: options.configuredPipeline ? 'Local input' : 'Synthetic fixture', siteName: options.configuredPipeline ? 'Local eval' : 'Eval v2', fetchedAt: options.configuredPipeline ? new Date().toISOString() : '2026-11-01T00:00:00.000Z' } : null });
     } catch (caught) { error = caught instanceof Error ? caught.message : String(caught); }
+    finally { restore.reverse().forEach(task => task()); }
     const result = tools.call('getDump', { id: dump.id }, person);
     const runRows = rows(db, "SELECT * FROM agent_runs WHERE provider NOT IN ('seed','synthetic') ORDER BY started_at,id");
     const diagnostics = traceDiagnostics(runRows, 'process_dump');
@@ -77,7 +92,8 @@ async function evaluateProcessing(fixture: ProcessingFixture, provider: Provider
       heldBefore, heldAfter: heldSnapshot(db), providerInput, dumpId: dump.id, setupSignalId,
       noAuthorityErrors: diagnostics.authorityErrors.length === 0 && runRows.every(item => !item.trace_json?.includes('AuthorityError')),
     };
-    checks = scoreProcessing(fixture, state);
+    checks = scoreProcessing(fixture, state, { localInput: options.configuredPipeline });
+    if (options.configuredPipeline) details.runtimeModels = runRows.map(row => ({ job: row.job, provider: row.provider, model: row.model }));
     if (error) checks.completed = false;
     details.actual = state;
     details.expected = fixture.expected;

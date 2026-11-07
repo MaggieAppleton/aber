@@ -165,3 +165,99 @@ npm run eval -- --fake --jev-compare --jev-suite v2 --split dev --arms off,on --
 ```
 
 Tests exercise the real workflows and final DB extraction, false-merge writes, missed/extra relationships, null denominators, raw costs/tails, shared reservation exhaustion, provider-bound criteria reversal with an injected **offline SDK fetch**, environment restoration and shadow non-mutation. Separate explicit **high-confidence** scripts verify final on-arm evidence proposals, direct tripwire challenges, one-signal multi-theme filings, local contextual chat replies and actual merges; they are not all uncertain/fallback tests. The CLI's default fake script is deliberately uncertain and retains unchanged baseline heuristics, so its labelled mismatches are diagnostic scorer output, not missing fixture-specific quality replays. Handwritten fake answers (using the runtime's `fakeChoice` helper) test plumbing/policy only. They are not empirical quality measurements. No network, keys or paid calls are required.
+
+## Local capture examples
+
+Use `--input` to opt into extraction/filing checks for your own JSON captures. Without
+`--input`, the original runner, flags, 36 default cases and fixture labels are unchanged.
+No new UI, external judge or personal database is involved.
+
+Start with the **invented** tracked template, then keep private examples in the ignored
+`evals/local/` directory. Run from `app/`:
+
+```sh
+mkdir -p evals/local
+cp evals/examples/synthetic-review.json evals/local/my-capture.json
+# Edit that JSON with your capture and expectations, then validate offline:
+npm run eval -- --input evals/local/my-capture.json --validate
+# A directory also works (immediate .json children, sorted; no recursion):
+npm run eval -- --input evals/local --validate
+```
+
+Validation checks the entire batch: schema version, safe unique IDs, required fields,
+count ranges, unique observation keys, regex syntax, HTTP(S) URLs and seeded theme
+names. It creates no databases and makes no model/network calls. Errors omit rejected
+values and capture prose. A successful validation does **not** process the capture.
+
+Each file is one object with `schemaVersion: 1`, `id`, `text`, `urls`, optional
+`transcript` and optional `article: {url,title,text}`. An article URL must also appear
+in `urls`; the supplied article is used without fetching any URL. `text` may be empty
+when a transcript is supplied. `expected.count` is an inclusive `[minimum, maximum]`.
+Each `expected.observations` item has a unique `key`, readable `finding`, `themes`,
+optional `clauses`, and optional source `urls` or `ownObservation: true`.
+Omitting both source fields leaves sources unasserted; supplying either checks the
+declared sources and rejects extras. Scoring and reports share one distinct-signal
+assignment, using asserted themes and sources to resolve overlapping lexical matches.
+
+Theme IDs **or exact names** are accepted:
+
+| ID | Name |
+| --- | --- |
+| cost | Cost of intelligence |
+| memory | Agent memory |
+| review | Code review after agents |
+| personal | Personal software |
+| funding | AI funding cycle |
+| interfaces | Novel agent interfaces |
+| identity | Agent identity |
+
+This first version always uses a fresh in-memory **synthetic seed world**, including
+its held theories and existing observations. It cannot validate filing against themes
+from your personal database; unknown themes fail before spending and list allowed
+names. Every case gets a separate seeded DB, serialized into its result directory.
+
+Clauses are transparent, case-insensitive JavaScript regexes against the actual gist;
+every clause must match and different expectations require distinct signals. They
+are lexical checks, **not semantic truth**. Omit clauses (or use `[]`) to preserve a
+readable expectation for manual review: it is never reported as an automatic pass.
+Theme/source checks for such an observation also require human review. Other structural
+checks (counts, preservation, authority and unexpected drafts/revisions/merges) still
+run. The initial local schema expects observations only, not draft/revision rubrics.
+
+Live processing is separately opt-in. Only run this after explicit approval of the
+finite amount in `APPROVED_BUDGET_USD`; this command itself is not spending approval:
+
+```sh
+npm run eval -- --input evals/local/my-capture.json --live --processing-mode on \
+  --budget "$APPROVED_BUDGET_USD" --acknowledge-paid-budget
+```
+
+`--processing-mode on` is the default, applying the configured Jev processing pipeline
+and its cheaper configured model selection. `off` runs the configured baseline. The
+other job modes, including deduplication, retain their existing configuration. The
+local runner does not inject the legacy baseline model or force Jev off; actual runtime
+provider/model identities are recorded. OpenAI is the text provider for this minimal
+path; the configured Jev provider and embedding calls also participate. All cases and
+nested inference share **one** `withSpendBudget` ledger using `reviewedBudget`; see
+reservation/pricing caveats above. Existing configured credentials are required.
+`--fake`, comparison and legacy case-selection flags are rejected with `--input`;
+fixed offline mocks exist only in adapter tests and never derive outputs from labels.
+
+Each ignored `evals/results/local-<timestamp>-<uuid>/report.json` retains readable
+expected wording beside actual gists, named themes, citations/own-observation sources,
+missing and unmatched outputs, failed checks, manual-review status, input copies/hashes,
+raw DB snapshots, full run traces, actual runtime models, costs and the shared spend
+ledger. It is written before and after each case; `activeId` and `complete` expose an
+interrupted/incomplete batch. Console output contains only IDs/statuses/paths. No local
+report claims that the input is synthetic. Keep all private input files under
+`evals/local/`; reports/traces remain under `evals/results/`. The runner verifies both
+ignore rules before retaining private data. Do not force-add either directory.
+
+Exit codes: `0` means all automatic checks passed; `1` means failed checks/runtime;
+`2` means manual review, invalid input/options, or an incomplete batch. Inspect the
+report rather than interpreting a lexical pass as verified accuracy. Missing/unreturned
+provider usage can remain unknown; the spend ledger retains reservation accounting.
+
+Only capture extraction and filing are exercised. Queued evidence-linking/tripwire
+jobs are **not** drained, and supplied transcripts bypass audio transcription itself.
+No URL fetching, browser work or downstream relationship-quality claim is included.
