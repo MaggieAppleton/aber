@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { field, mutate, useWorld, world, type Row } from "../data/live";
 import type { ToastPart, ToastT } from "../ui/pill-study";
 import { onNotice, type Notice } from "../ui/notices";
+import { restoreChallengeNotice } from "../ui/briefing-challenge-state";
 
 export function producedParts(dumps: Row[]): ToastPart[] {
   const signals = new Set<string>();
@@ -32,7 +33,7 @@ const typing = (target: EventTarget | null) => target instanceof HTMLElement &&
 
 /** A capture finishes when its persisted processing status settles, independently of chat streaming. */
 export function useCaptureResults(open: boolean) {
-  const { revision } = useWorld();
+  const { revision, loaded } = useWorld();
   const [toast, setToast] = useState<ToastT | null>(null);
   const [, rerender] = useState(0);
   const held = useRef(false);
@@ -129,6 +130,8 @@ export function useCaptureResults(open: boolean) {
   }, []);
 
   useEffect(() => onNotice(api.announce), [api]);
+  // Recover after subscribing, on every route rather than only when Briefing is mounted.
+  useEffect(() => { if (loaded) restoreChallengeNotice(true); }, [loaded]);
   // A notice still waiting when the host goes away settles rather than vanishing.
   useEffect(() => () => { const n = notice.current; notice.current = undefined; n?.settle?.(); }, []);
   useEffect(() => {

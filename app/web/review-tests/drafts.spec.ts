@@ -6,8 +6,8 @@ for(const action of ["accept","rephrase","discard"])test(`persist ${action} for 
   for(const kind of ["theme","theory","prototype"]){
     const collection=kind==="theory"?"theories":`${kind}s`,title=`Review ${action} draft ${kind}`;
     const row=world[collection].find((r:any)=>(r.claim??r.name)===title),card=page.locator(`.ps-thread [data-chat-id="${row.id}"]`);
-    await expect(card).toContainText(title);await card.locator(".ap-card").click();await expect(page.locator(".as-pane .pn-title")).toHaveText(title);
-    await page.locator(".as-pane").getByRole("button",{name:"Close (Esc)",exact:true}).click();
+    await expect(card).toContainText(title);await card.locator(".ap-card").click();await expect(page.getByRole("main").locator(".pn-title")).toHaveText(title);
+    await page.getByRole("main").getByRole("button",{name:"Since you last looked",exact:true}).click();
     if(action==="rephrase"){
       await card.getByRole("button",{name:"Rephrase and accept",exact:true}).click();const dialog=page.getByRole("dialog",{name:`Rephrase draft ${kind}`,exact:true});
       await dialog.getByLabel(kind==="theory"?"Claim":"Name",{exact:true}).fill(`Person rephrased ${kind}`);await dialog.getByRole("button",{name:"Accept wording",exact:true}).click();
@@ -36,6 +36,6 @@ test("an accepted unrated draft stays Not set until the person explicitly choose
 
 test("a persisted showTheory reply keeps its later-retired object",async({page})=>{
   await page.goto("/");await openColumn(page);const card=page.locator('.ps-thread [data-chat-kind="theory"]').filter({hasText:"Review archived claim with history"});
-  await expect(card).toContainText("Retired, superseded");await card.locator(".ap-card").click();await expect(page.locator(".as-pane .ab-retired")).toHaveText("Retired, superseded");
+  await expect(card).toContainText("Retired, superseded");await card.locator(".ap-card").click();await expect(page.getByRole("main")).toContainText(/Retired[:,] superseded/);
   await page.reload();await openColumn(page);await expect(card).toContainText("Retired, superseded");
 });

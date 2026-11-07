@@ -6,7 +6,7 @@ import type { Theory, Dump } from "./data";
 
 import {
   MagnifyingGlass, Plus, Minus, Microphone, PencilRuler, TrayArrowDown, Check, X, CaretRight, CaretLeft, CaretDown, Pulse, Link,
-  Waveform, TextAlignLeft, Sun, Target, Binoculars, MapTrifold, Table, Clock, ArrowUp, ArrowDown, SidebarSimple, Signpost,
+  Waveform, TextAlignLeft, Sun, Target, Binoculars, MapTrifold, Table, Clock, ArrowUp, ArrowDown, SidebarSimple, Signpost, WarningCircle,
   ArrowsLeftRight, Paperclip, Stop, Play, Pause, ArrowCounterClockwise, ArrowClockwise, Monitor, Image,
   PencilSimple, Globe, Question, PushPin, QuestionMark, Crosshair, Rows, Columns, ChartScatter, ArrowsOutSimple, ArrowsInSimple, TreeStructure, ArrowRight, ArrowLeft, ArrowElbowDownRight, ArrowElbowUpRight, ClockCounterClockwise, Trash, ArrowsMerge, ArrowsSplit, Newspaper, Archive, TrendUp, TrendDown, Funnel, PaperPlaneRight, MagnifyingGlassPlus, MagnifyingGlassMinus, CornersIn, CircleNotch, Sparkle, type Icon as PhosphorIcon, type IconWeight,
 } from "@phosphor-icons/react";
@@ -54,6 +54,7 @@ const ICONS = {
   play: Play,
   pause: Pause,
   undo: ArrowCounterClockwise,
+  warning: WarningCircle,
   replay: ArrowClockwise,
   screen: Monitor,
   image: Image,
