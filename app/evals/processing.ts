@@ -92,7 +92,7 @@ export async function evaluateProcessing(fixture: ProcessingFixture, provider: P
       heldBefore, heldAfter: heldSnapshot(db), providerInput, dumpId: dump.id, setupSignalId,
       noAuthorityErrors: diagnostics.authorityErrors.length === 0 && runRows.every(item => !item.trace_json?.includes('AuthorityError')),
     };
-    checks = scoreProcessing(fixture, state);
+    checks = scoreProcessing(fixture, state, { localInput: options.configuredPipeline });
     if (options.configuredPipeline) details.runtimeModels = runRows.map(row => ({ job: row.job, provider: row.provider, model: row.model }));
     if (error) checks.completed = false;
     details.actual = state;

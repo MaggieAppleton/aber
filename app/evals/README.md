@@ -195,6 +195,9 @@ in `urls`; the supplied article is used without fetching any URL. `text` may be 
 when a transcript is supplied. `expected.count` is an inclusive `[minimum, maximum]`.
 Each `expected.observations` item has a unique `key`, readable `finding`, `themes`,
 optional `clauses`, and optional source `urls` or `ownObservation: true`.
+Omitting both source fields leaves sources unasserted; supplying either checks the
+declared sources and rejects extras. Scoring and reports share one distinct-signal
+assignment, using asserted themes and sources to resolve overlapping lexical matches.
 
 Theme IDs **or exact names** are accepted:
 

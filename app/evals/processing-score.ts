@@ -1,5 +1,5 @@
 import { normaliseUrl } from '../server/src/tools/core.js';
-import type { ProcessingFixture } from './fixtures/processing-v2.js';
+import type { ExpectedObservation, ProcessingFixture } from './fixtures/processing-v2.js';
 export interface ObservedSignal {
   id: string; gist: string; note: string; themes: string[];
   sources: { url?: string | null; ownObservation: boolean }[]; origins: string[]; fetched: { text: string }[];
@@ -14,35 +14,64 @@ export interface ProcessingSnapshot {
 }
 const matches = (text: string, clauses: string[]) => clauses.every(clause => new RegExp(clause, 'i').test(text));
 const urlMatches = (signal: ObservedSignal, url: string) => signal.sources.some(source => source.url && normaliseUrl(source.url) === normaliseUrl(url));
+type ScoreOptions = { localInput?: boolean };
+function observationChecks(signal: ObservedSignal, expected: ExpectedObservation, themeNames: Record<string, string>, options: ScoreOptions) {
+  const sourceUnspecified = options.localInput && expected.urls === undefined && expected.ownObservation === undefined;
+  const allowed = new Set((expected.urls ?? []).map(normaliseUrl));
+  return {
+    filing: expected.themes.every(theme => signal.themes.some(id => id === theme || themeNames[id] === theme)),
+    sources: !!sourceUnspecified || (expected.urls ?? []).every(url => urlMatches(signal, url)) && (!expected.ownObservation || signal.sources.some(source => source.ownObservation && !source.url)),
+    sourcePrecision: !!sourceUnspecified || signal.sources.every(source => source.url ? allowed.has(normaliseUrl(source.url)) : !!expected.ownObservation && source.ownObservation),
+  };
+}
 
-/** Fixed, handwritten clauses score observable state. No extra model calls or post-run label changes. */
-export function scoreProcessing(fixture: ProcessingFixture, state: ProcessingSnapshot): Record<string, boolean> {
-  const expected = fixture.expected;
-  // A distinct output must satisfy each expected observation. One broad gist cannot count twice.
-  const assign = (index: number, used: Set<string>): ObservedSignal[] | null => {
-    if (index === expected.observations.length) return [];
-    for (const signal of state.signals) {
-      if (used.has(signal.id) || !matches(signal.gist, expected.observations[index].clauses)) continue;
-      const rest = assign(index + 1, new Set([...used, signal.id]));
+/** One shared assignment for scoring and diagnostics; preserve the first complete legacy match. */
+export function assignProcessingObservations(observations: ExpectedObservation[], state: Pick<ProcessingSnapshot, 'signals' | 'themeNames'>, options: ScoreOptions = {}): (ObservedSignal | undefined)[] {
+  const { signals, themeNames } = state;
+  const assign = (index: number, used: Set<string>, assertions: boolean): ObservedSignal[] | null => {
+    if (index === observations.length) return [];
+    for (const signal of signals) {
+      if (used.has(signal.id) || !matches(signal.gist, observations[index].clauses)) continue;
+      if (assertions && !Object.values(observationChecks(signal, observations[index], themeNames, options)).every(Boolean)) continue;
+      const rest = assign(index + 1, new Set([...used, signal.id]), assertions);
       if (rest) return [signal, ...rest];
     }
     return null;
   };
-  const assigned = assign(0, new Set());
+  // Local examples may overlap lexically: use asserted themes/sources to disambiguate them.
+  const complete = (options.localInput && assign(0, new Set(), true)) || assign(0, new Set(), false);
+  if (complete) return complete;
+  // Failed cases still report the maximum distinct subset, rather than hiding valid partial matches.
+  const owner = new Map<number, number>();
+  const place = (index: number, seen: Set<number>): boolean => {
+    for (const [signalIndex, signal] of signals.entries()) {
+      if (seen.has(signalIndex) || !matches(signal.gist, observations[index].clauses)) continue;
+      seen.add(signalIndex);
+      const previous = owner.get(signalIndex);
+      if (previous === undefined || place(previous, seen)) { owner.set(signalIndex, index); return true; }
+    }
+    return false;
+  };
+  observations.forEach((_, index) => place(index, new Set()));
+  return observations.map((_, index) => {
+    const match = [...owner].find(([, observationIndex]) => observationIndex === index);
+    return match ? signals[match[0]] : undefined;
+  });
+}
+
+/** Fixed, handwritten clauses score observable state. No extra model calls or post-run label changes. */
+export function scoreProcessing(fixture: ProcessingFixture, state: ProcessingSnapshot, options: ScoreOptions = {}): Record<string, boolean> {
+  const expected = fixture.expected;
+  const matched = assignProcessingObservations(expected.observations, state, options);
+  const assigned = matched.every((signal): signal is ObservedSignal => !!signal) ? matched : null;
+  const observed = assigned?.map((signal, index) => observationChecks(signal, expected.observations[index], state.themeNames, options));
   const hasThemes = (actual: string[], required: string[]) => required.every(theme => actual.some(id => id === theme || state.themeNames[id] === theme));
   const checks: Record<string, boolean> = {
     signalCount: state.signals.length >= expected.count[0] && state.signals.length <= expected.count[1],
     observations: !!assigned,
-    filing: !!assigned && assigned.every((signal, i) => hasThemes(signal.themes, expected.observations[i].themes)),
-    sources: !!assigned && assigned.every((signal, i) => {
-      const item = expected.observations[i];
-      return (item.urls ?? []).every(url => urlMatches(signal, url)) && (!item.ownObservation || signal.sources.some(source => source.ownObservation && !source.url));
-    }),
-    sourcePrecision: !!assigned && assigned.every((signal, i) => {
-      const item = expected.observations[i];
-      const allowed = new Set((item.urls ?? []).map(normaliseUrl));
-      return signal.sources.every(source => source.url ? allowed.has(normaliseUrl(source.url)) : !!item.ownObservation && source.ownObservation);
-    }),
+    filing: !!observed && observed.every(item => item.filing),
+    sources: !!observed && observed.every(item => item.sources),
+    sourcePrecision: !!observed && observed.every(item => item.sourcePrecision),
     origins: state.signals.every(signal => signal.origins.includes(state.dumpId)),
     noInventedFindings: state.signals.every(signal => !(expected.forbiddenGists ?? []).some(pattern => new RegExp(pattern, 'i').test(signal.gist))),
     heldObjectsUnchanged: state.heldBefore === state.heldAfter,
