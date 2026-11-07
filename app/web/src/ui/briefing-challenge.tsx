@@ -1,12 +1,24 @@
 import { useId } from "react";
-import { world, type Row } from "../data/live";
+import { field, world, type Row } from "../data/live";
 import { useIsPresent } from "motion/react";
 import { SIGNALS } from "./data";
-import { Meter, Tile } from "./atoms";
+import { Icon, Meter, Tile } from "./atoms";
 import { RelRow, type OnOpen } from "./panes";
 import { openObject } from "../app/dialogs";
-import { briefingChallenge } from "./briefing-challenge-state";
+import { briefingChallenge, retryChallengeUndo } from "./briefing-challenge-state";
 import "./briefing-challenge.css";
+
+/** Failed Undo stays beside the affected object, independently of subsequent success toasts. */
+export function BriefingUndoFailure({ id, busy, onOpen }: { id: string; busy: boolean; onOpen: OnOpen }) {
+  const suggestion = world.suggestions.find(row => row.id === id);
+  const theory = world.theories.find(row => row.id === field(suggestion ?? {}, "targetId"));
+  return <article className="br-challenge" data-undo-suggestion-id={id}>
+    <RelRow kind="theory" id={theory?.id} name={theory?.claim ?? "Theory unavailable"} onClick={() => { if (theory) onOpen("theory", theory.id); }} />
+    <div className="br-ch-error" role="alert"><Icon name="warning" size={16}/><p>Could not undo this decision. Try again.</p>
+      <button className="ab-btn secondary" aria-disabled={busy || undefined} aria-busy={busy} onClick={() => { if (!busy) void retryChallengeUndo(id); }}>Retry Undo</button>
+    </div>
+  </article>;
+}
 
 /** The solid subject owns the tripwire; only the proposed change has a dashed edge. */
 export function BriefingChallenge({ suggestion, onOpen, onDecide, busy, error }: {

@@ -26,7 +26,7 @@ test.beforeAll(async () => {
   const { serve } = await import('@hono/node-server');
   api = serve({ fetch: request => app.fetch(request), hostname: '127.0.0.1', port: 3016 });
   const { createServer } = await import('vite');
-  vite = await createServer({ configFile: fileURLToPath(new URL('../vite.config.ts', import.meta.url)), server: { port: 5196, strictPort: true } });
+  vite = await createServer({ configFile: fileURLToPath(new URL('../vite.config.ts', import.meta.url)), cacheDir: resolve(directory, 'vite-cache'), server: { port: 5196, strictPort: true } });
   await vite.listen();
   await mkdir(artifacts, { recursive: true });
 });
@@ -116,17 +116,26 @@ test('keeps pending content and shows decision and Undo failures with retry', as
   await page.goto('/?view=default&type=briefing');
   await page.route('**/api/tools/decideSuggestion', route => route.fulfill({ status: 503, json: { error: 'Synthetic save failure' } }));
   await card(page, ids.first).getByRole('button', { name: 'Lower to 3', exact: true }).click();
-  await expect(card(page, ids.first).getByRole('alert')).toContainText('Synthetic save failure');
+  await expect(card(page, ids.first).getByRole('alert')).toContainText('Could not save this decision. Try again.');
+  await expect(card(page, ids.first).getByRole('alert')).not.toContainText('Synthetic save failure');
   expect(stored(ids.first).status).toBe('pending'); expect(confidence()).toBe(4);
   await page.unroute('**/api/tools/decideSuggestion');
   await card(page, ids.first).getByRole('button', { name: 'Lower to 3', exact: true }).click();
   await expect(card(page, ids.first)).toHaveCount(0);
   await page.route('**/api/tools/decideSuggestion', route => route.fulfill({ status: 503, json: { error: 'Synthetic Undo failure' } }));
   await page.getByRole('button', { name: 'Undo', exact: true }).click();
-  await expect(page.locator('.ps-toast').filter({ hasText: 'Could not undo' })).toBeVisible();
+  const failure = page.locator(`[data-undo-suggestion-id="${ids.first}"]`);
+  await expect(failure.getByRole('alert')).toContainText('Could not undo this decision. Try again.');
+  await expect(failure).toContainText('Routine inference will become nearly free');
+  await expect(page.locator('.ps-toast')).not.toContainText('Could not undo');
   expect(confidence()).toBe(3);
+  await page.waitForTimeout(5200);
+  await page.reload();
+  await expect(failure.getByRole('alert')).toBeVisible();
+  await expect(failure).not.toContainText('Synthetic Undo failure');
   await page.unroute('**/api/tools/decideSuggestion');
-  await page.locator('.ps-toast').filter({ hasText: 'Could not undo' }).getByRole('button', { name: 'Undo', exact: true }).click();
+  await failure.getByRole('button', { name: 'Retry Undo', exact: true }).click();
+  await expect(failure).toHaveCount(0);
   await expect(card(page, ids.first)).toBeVisible(); expect(confidence()).toBe(4);
 });
 
@@ -195,4 +204,17 @@ test('repeated accept keys save one decision while the request is pending', asyn
   await expect(card(page, ids.first)).toHaveCount(0);
   expect(calls).toBe(1); expect(confidence()).toBe(3);
   expect(stored(ids.second).status).toBe('pending');
+});
+
+test('Undo recovers after reloading a different view', async ({ page }) => {
+  await page.goto('/?view=default&type=briefing');
+  await card(page, ids.first).getByRole('button', { name: 'Lower to 3', exact: true }).click();
+  await expect(card(page, ids.first)).toHaveCount(0);
+  await page.getByRole('navigation', { name: 'Views' }).getByRole('button', { name: /Columns/ }).click();
+  await page.reload();
+  await expect(page).toHaveURL(/view=columns/);
+  await expect(page.locator('.ps-toast')).toContainText('Confidence lowered to 3');
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect.poll(confidence).toBe(4);
+  expect(stored(ids.first).status).toBe('pending');
 });

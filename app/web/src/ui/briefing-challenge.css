@@ -23,3 +23,7 @@
 .br-ch-message { margin-block: 8px 0; font-size: var(--fs-label); color: var(--ink-2); }
 .br-ch-message[role="alert"] { color: var(--neg-dot); }
 .br-challenge button[aria-disabled="true"] { cursor: default; opacity: .4; }
+.br-ch-error { display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin-top: 6px; border-radius: var(--r-box); background: color-mix(in oklab, var(--neg-dot) 5%, transparent); }
+.br-ch-error > svg { color: var(--neg-dot); flex-shrink: 0; }
+.br-ch-error p { margin: 0; }
+.br-ch-error > button { margin-left: auto; flex-shrink: 0; }

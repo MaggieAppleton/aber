@@ -4,8 +4,9 @@ anchor: function present
 created: 2026-11-06T16:20:07Z
 norm: '1'
 sig: 04f3f30503c3b09f
-body_hash: 89b05dcec772c60a
-raw_hash: fe5bf0c33e2b962d
+body_hash: 442bd41d8ca56f62
+raw_hash: 968287001b0cf6ec
+vouched: 2026-11-07T07:58:11Z
 lines: 39-50
 ---
 

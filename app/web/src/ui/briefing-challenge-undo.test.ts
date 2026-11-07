@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { challengeDecisionNotice, restoreChallengeNotice } from "./briefing-challenge-state";
+import { challengeDecisionNotice, getChallengeUndoFailures, restoreChallengeNotice, retryChallengeUndo } from "./briefing-challenge-state";
 import { mutate, world } from "../data/live";
 import { onNotice, type Notice } from "./notices";
 
 vi.mock("../data/live", () => ({
-  mutate: vi.fn(), world: { suggestions: [] },
+  mutate: vi.fn(), clearError: vi.fn(), world: { suggestions: [] },
   field: (row: Record<string, unknown>, key: string) => row[key],
   json: (value: unknown) => value,
 }));
@@ -17,6 +17,7 @@ beforeEach(() => {
   notices = []; stop = onNotice(notice => notices.push(notice));
   world.suggestions = [{ id: "a", kind: "challenge", status: "accepted" }];
   vi.mocked(mutate).mockReset();
+  restoreChallengeNotice(true);
 });
 afterEach(() => { stop(); vi.unstubAllGlobals(); vi.useRealTimers(); });
 
@@ -57,4 +58,18 @@ test("a reload cannot resurrect a notice beyond its recovery window", () => {
   restoreChallengeNotice(true);
   expect(sessionStorage.getItem(key)).toBeNull();
   expect(notices).toHaveLength(1);
+});
+
+test("failed Undo remains contextual across expiry and reload and retries without replacing newer Undo", async () => {
+  vi.mocked(mutate).mockRejectedValueOnce(new Error("Raw provider detail"));
+  challengeDecisionNotice("a", "A"); notices[0].undo?.();
+  await vi.waitFor(() => expect(getChallengeUndoFailures()).toEqual([{ id: "a", busy: false }]));
+  expect(notices).toHaveLength(1);
+  vi.useFakeTimers(); vi.advanceTimersByTime(6000); restoreChallengeNotice(true); vi.useRealTimers();
+  expect(getChallengeUndoFailures()).toEqual([{ id: "a", busy: false }]);
+  challengeDecisionNotice("b", "B");
+  vi.mocked(mutate).mockResolvedValueOnce({});
+  await retryChallengeUndo("a");
+  expect(getChallengeUndoFailures()).toEqual([]);
+  expect(JSON.parse(sessionStorage.getItem(key)!).id).toBe("b");
 });

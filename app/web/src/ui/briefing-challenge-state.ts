@@ -1,4 +1,5 @@
-import { field, json, mutate, world, type Row, type World } from "../data/live";
+import { useSyncExternalStore } from "react";
+import { clearError, field, json, mutate, world, type Row, type World } from "../data/live";
 import { notify } from "./notices";
 
 const inactive = (row: Row) => !!(field(row, "discardedAt") || field(row, "deletedByDumpId") || field(row, "mergedIntoId") || ["retired", "discarded"].includes(row.status));
@@ -22,6 +23,24 @@ export function briefingChallenge(suggestion: Row, data: World = world) {
 const undoKey = "aber.briefingChallengeUndo";
 type SavedNotice = { id: string; text: string; token: string; expiresAt: number };
 let active: SavedNotice | undefined;
+const failureKey = "aber.briefingChallengeUndoFailures";
+type UndoFailure = { id: string; busy: boolean };
+let undoFailures: UndoFailure[] = [];
+const failureListeners = new Set<() => void>();
+const subscribeFailures = (listener: () => void) => { failureListeners.add(listener); return () => { failureListeners.delete(listener); }; };
+export const getChallengeUndoFailures = () => undoFailures;
+export const useChallengeUndoFailures = () => useSyncExternalStore(subscribeFailures, getChallengeUndoFailures, getChallengeUndoFailures);
+function setFailures(next: UndoFailure[]) {
+  undoFailures = next;
+  try { sessionStorage.setItem(failureKey, JSON.stringify(next.map(item => item.id))); } catch {}
+  failureListeners.forEach(listener => listener());
+}
+export async function retryChallengeUndo(id: string) {
+  if (!undoFailures.some(item => item.id === id && !item.busy)) return;
+  setFailures(undoFailures.map(item => item.id === id ? { ...item, busy: true } : item));
+  try { await mutate("decideSuggestion", { id, decision: "undo" }); setFailures(undoFailures.filter(item => item.id !== id)); }
+  catch { clearError(); setFailures(undoFailures.map(item => item.id === id ? { ...item, busy: false } : item)); }
+}
 function stored(): SavedNotice | undefined {
   try { return JSON.parse(sessionStorage.getItem(undoKey) ?? "null") ?? undefined; } catch { return active; }
 }
@@ -43,14 +62,24 @@ function present(notice: SavedNotice) {
   notify({ text: notice.text, settle: () => forget(notice), undo: () => {
     if (undoing || active?.token !== notice.token) return;
     undoing = true;
-    void mutate("decideSuggestion", { id: notice.id, decision: "undo" }).then(() => forget(notice)).catch(cause => {
-      if (active?.token === notice.token) challengeDecisionNotice(notice.id, `Could not undo: ${cause instanceof Error ? cause.message : String(cause)}. Try Undo again.`);
+    void mutate("decideSuggestion", { id: notice.id, decision: "undo" }).then(() => forget(notice)).catch(() => {
+      clearError();
+      if (active?.token === notice.token) {
+        setFailures([...undoFailures.filter(item => item.id !== notice.id), { id: notice.id, busy: false }]);
+        forget(notice);
+      }
     }).finally(() => { undoing = false; });
   } });
 }
 
 export function restoreChallengeNotice(worldLoaded: boolean) {
   if (!worldLoaded) return;
+  try {
+    const ids: unknown = JSON.parse(sessionStorage.getItem(failureKey) ?? "[]");
+    if (Array.isArray(ids)) setFailures([...new Set(ids.filter((id): id is string => typeof id === "string"))]
+      .filter(id => world.suggestions.some(row => row.id === id && row.kind === "challenge" && ["accepted", "discarded"].includes(row.status)))
+      .map(id => ({ id, busy: undoFailures.find(item => item.id === id)?.busy ?? false })));
+  } catch { /* Keep in-memory recovery available when storage is unavailable. */ }
   const saved = stored();
   if (!saved) return;
   active = saved;

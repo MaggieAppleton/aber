@@ -1,5 +1,5 @@
-import { BriefingChallenge } from "./briefing-challenge";
-import { briefingChallenge, challengeDecisionNotice, restoreChallengeNotice } from "./briefing-challenge-state";
+import { BriefingChallenge, BriefingUndoFailure } from "./briefing-challenge";
+import { briefingChallenge, challengeDecisionNotice, useChallengeUndoFailures } from "./briefing-challenge-state";
 import { currentSuggestion } from "../data/challenge-target";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -7,7 +7,7 @@ import { Accordion } from "@base-ui/react/accordion";
 import { DUMPS, THEMES, THEORIES, SIGNALS } from "./data";
 import { Balance, Decide, Icon, IconButton, Mark, Tile, type TileKind } from "./atoms";
 import { SignalRow, ThemeName, type ObjKind, type OnOpen } from "./panes";
-import { field, json, markRead, mutate, useWorld, world, type Row } from "../data/live";
+import { clearError, field, json, markRead, mutate, useWorld, world, type Row } from "../data/live";
 import "./briefing-app.css";
 import { SuggestionReview } from "./suggestion-review";
 import { SignalCard } from "./signal-card";
@@ -25,15 +25,11 @@ function itemsNow(): Item[] {
 const GROUPS=["Challenges","Drafts","Suggestions","Merged","New signals"];
 const typing=(target:EventTarget|null)=>target instanceof HTMLElement&&(target.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
 export function BriefingView({host,phone}:{host:BriefingHost;phone?:boolean}) {
-  const { loaded } = useWorld(); useDraftDecisions();
+  useWorld(); useDraftDecisions();
+  const undoFailures = useChallengeUndoFailures();
   const [challengeErrors,setChallengeErrors]=useState<Record<string,string|undefined>>({});
   const [challengeBusy,setChallengeBusy]=useState<Record<string,boolean>>({});
   const challengePending=useRef(new Set<string>());
-  useEffect(()=>{
-    if(!loaded)return;
-    // The sibling toast subscribes in its mount effect; restore after those subscriptions exist.
-    const timer=setTimeout(()=>restoreChallengeNotice(loaded),0);return()=>clearTimeout(timer);
-  },[loaded]);
   const items=itemsNow();
   const processing=world.dumps.filter(d=>["processing","received","transcribing"].includes(d.status)).length;
   const [cursor,setCursor]=useState<string>();
@@ -56,7 +52,7 @@ export function BriefingView({host,phone}:{host:BriefingHost;phone?:boolean}) {
         await mutate("decideSuggestion",{id:item.id,decision});
         challengeDecisionNotice(item.id,decision==="accepted"?`Confidence lowered to ${state!.to}`:"Confidence kept");
         const index=items.findIndex(x=>x.id===item.id);setCursor(items[index+1]?.id??items[index-1]?.id);
-      }catch(cause){setChallengeErrors(errors=>({...errors,[item.id]:`Could not save decision: ${cause instanceof Error?cause.message:String(cause)}. Try again.`}));}
+      }catch{clearError();setChallengeErrors(errors=>({...errors,[item.id]:"Could not save this decision. Try again."}));}
       finally{challengePending.current.delete(item.id);setChallengeBusy(values=>({...values,[item.id]:false}));}
       return;
     }
@@ -84,10 +80,10 @@ export function BriefingView({host,phone}:{host:BriefingHost;phone?:boolean}) {
     window.addEventListener("keydown",key);return()=>window.removeEventListener("keydown",key);
   },[]);
   return <div className="ap br" ref={root} data-phone={phone?"":undefined} data-compact={host.compact?"":undefined}><div className="br-scroll ap-scroll"><div className="br-col">
-    <header className="br-head"><Tile kind="briefing" size="title"/><h1 className="ap-h br-title-text">Since you last looked</h1><span className="br-left ap-muted ap-num" aria-live="polite">{items.length?`${items.length} left`:"Done"}</span></header>
+    <header className="br-head"><Tile kind="briefing" size="title"/><h1 className="ap-h br-title-text">Since you last looked</h1><span className="br-left ap-muted ap-num" aria-live="polite">{items.length+undoFailures.length?`${items.length+undoFailures.length} left`:"Done"}</span></header>
     <Overnight onLog={host.onLog} processing={processing}/>
-    {!items.length&&<p className="ap-muted">All caught up.</p>}
-    {GROUPS.map(group=><section className="br-group" key={group}>{items.some(x=>x.group===group)&&<h3 className="ap-label br-group-name">{group}<span className="ap-num">{items.filter(x=>x.group===group).length}</span></h3>}<AnimatePresence initial={false}>{items.filter(x=>x.group===group).map(item=><motion.div layout="position" key={item.id} className="br-item" data-bid={item.id} data-cursor={current?.id===item.id?"":undefined} onPointerEnter={()=>setCursor(item.id)} onFocus={()=>setCursor(item.id)} onPointerDown={()=>setCursor(item.id)} exit={{opacity:0,x:40}} transition={{duration:.2}}>
+    {!items.length&&!undoFailures.length&&<p className="ap-muted">All caught up.</p>}
+    {GROUPS.map(group=><section className="br-group" key={group}>{(items.some(x=>x.group===group)||group==="Challenges"&&undoFailures.length>0)&&<h3 className="ap-label br-group-name">{group}<span className="ap-num">{items.filter(x=>x.group===group).length+(group==="Challenges"?undoFailures.length:0)}</span></h3>}{group==="Challenges"&&undoFailures.map(failure=><BriefingUndoFailure key={failure.id} {...failure} onOpen={host.onOpen}/>)}<AnimatePresence initial={false}>{items.filter(x=>x.group===group).map(item=><motion.div layout="position" key={item.id} className="br-item" data-bid={item.id} data-cursor={current?.id===item.id?"":undefined} onPointerEnter={()=>setCursor(item.id)} onFocus={()=>setCursor(item.id)} onPointerDown={()=>setCursor(item.id)} exit={{opacity:0,x:40}} transition={{duration:.2}}>
       {item.kind==="challenge"?<BriefingChallenge suggestion={item.row} onOpen={host.onOpen} onDecide={d=>void decide(item,d)} busy={challengeBusy[item.id]} error={challengeErrors[item.id]}/>:<BriefingItem item={item} host={host} onOpen={()=>open(item)} onDecide={d=>void decide(item,d)}/>}
     </motion.div>)}</AnimatePresence></section>)}
   </div></div></div>;
