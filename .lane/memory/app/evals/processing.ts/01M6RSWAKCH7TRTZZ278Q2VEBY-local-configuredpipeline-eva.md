@@ -4,8 +4,9 @@ anchor: function evaluateProcessing
 created: 2026-11-06T16:08:15Z
 norm: '1'
 sig: 8ea24edfe69a64fc
-body_hash: b37f7988d4eec82a
-raw_hash: 30a47a38a6768022
+body_hash: 5b5f8a55b7c81ce4
+raw_hash: b5a18b8b541b646d
+vouched: 2026-11-07T07:59:29Z
 lines: 28-107
 ---
 
