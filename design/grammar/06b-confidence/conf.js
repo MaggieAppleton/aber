@@ -50,8 +50,9 @@
     return `<path d="${d}"/>${tail}`;
   };
 
-  // Faint lines at 5 and 1 so a step line has a scale
-  const frame = (w, h) => `<line class="top" x1="0" x2="${w}" y1="0.5" y2="0.5"/><line class="top" x1="0" x2="${w}" y1="${h - 0.5}" y2="${h - 0.5}"/>`;
+  // No reference lines at 5 and 1: the step line stands alone (Maggie, 9 Nov: the two rails above and below looked bad)
+  // The dated log, for the history's accessible name: "3 on 12 Jun, rose to 4 on 2 Nov"
+  const spoken = h => h.map(([d, c], i) => i === 0 ? `${c} on ${d}` : `${c > h[i - 1][1] ? "rose" : c < h[i - 1][1] ? "fell" : "kept"} to ${c} on ${d}`).join(", ");
 
   /* ═══ The eight encodings ════════════════════════════════════════════════════
      small(t): the inline mark (≤ 16 tall). large(c, pv, t): the setter's face; every hit zone carries data-v. */
@@ -92,10 +93,10 @@
       unset: "Five empty ticks.",
       notes: [["Legibility", "As A. The coloured tick is the same size, so the count never changes."], ["Scanning", "A list shows what moved this fortnight without a second mark; most rows stay plain ink."], ["Right of the name", "As A, with no extra width for the trend."], ["Without colour", "The trend itself is colour-only on the preview; the peek and full view say \"Rose from 3\" in words, and aria-label says it too."], ["Setter", "As A; the coloured tick stays until you set a new value."]] },
     { k: "H", name: "Stance line", idea: "A 28px step line of the stance log, from the first stance to today: level, trend and history in one mark.",
-      small: t => t.hist.length ? svg(28, 12, `${frame(28, 12)}${steps(t.hist, 28, 12, { pad: 1, own: true, recentCls: trend(t) ? tone(t) : "" })}`, "line") : svg(28, 12, frame(28, 12), "line"),
+      small: t => svg(28, 12, steps(t.hist, 28, 12, { pad: 1, own: true, recentCls: trend(t) ? tone(t) : "" }), "line"),
       large: (c, pv, t) => chart(t, c, pv),
-      unset: "An empty frame: the two hairlines and no line.",
-      notes: [["Legibility", "At 12 tall each step is 2.5px: you see up and down, not 3 versus 4."], ["Scanning", "Great for \"what moved\", weak for \"which do I believe most\". Each line spans its own history, so two rows' time scales differ."], ["Right of the name", "28 wide is the widest mark here and it reads as a chart, which is a lot for a list row."], ["Without colour", "Shape carries direction; faint hairlines mark 5 and 1. aria-label as A."], ["Setter", "The full view becomes the history chart: levels 1–5 run down the side, and pointing at a level on the \"Now\" edge previews the new step."]] },
+      unset: "Nothing: an empty 28 × 12 slot, no line.",
+      notes: [["Legibility", "At 12 tall each step is 2.5px: you see up and down, not 3 versus 4."], ["Scanning", "Great for \"what moved\", weak for \"which do I believe most\". Each line spans its own history, so two rows' time scales differ."], ["Right of the name", "28 wide is the widest mark here and it reads as a chart, which is a lot for a list row."], ["Without colour", "Shape carries direction. aria-label as A."], ["Setter", "The full view becomes the history chart: levels 1–5 run down the side, and pointing at a level on the \"Now\" edge previews the new step."]] },
   ];
 
   /* ═══ The large history: a step chart whose right edge is the setter (H), and the compact history line (A–G) ═══ */
@@ -109,10 +110,10 @@
   const histText = (t) => {
     const tr = trend(t), h = t._hist || t.hist;
     if (!h.length) return `<span class="cf-htext">No stance yet. Setting one accepts the draft.</span>`;
-    const spark = svg(56, 16, `${frame(56, 16)}${steps(h, 56, 16, { pad: 1, own: true, recentCls: tr ? (tr.dir === "rose" ? "up" : "down") : "" })}`, "line");
-    const words = tr ? `<span class="cf-htext ${tr.dir === "rose" ? "up" : "down"}">${ico(tr.dir === "rose" ? "trend-up" : "trend-down")}${tr.dir === "rose" ? "Rose" : "Fell"} from ${tr.from}, ${tr.on === "Today" ? "today" : tr.on}</span>`
-      : `<span class="cf-htext">Since ${h.at(-1)[0]}</span>`;
-    return `<span class="cf-hist">${spark}${words}</span>`;
+    const spark = svg(56, 16, steps(h, 56, 16, { pad: 1, own: true, recentCls: tr ? (tr.dir === "rose" ? "up" : "down") : "" }), "line");
+    // Recent news only ("Rose from 3, 2 Nov"); no inline "Since <date>" (Maggie, 9 Nov). The dates stay in the accessible name.
+    const words = tr ? `<span class="cf-htext ${tr.dir === "rose" ? "up" : "down"}">${ico(tr.dir === "rose" ? "trend-up" : "trend-down")}${tr.dir === "rose" ? "Rose" : "Fell"} from ${tr.from}, ${tr.on === "Today" ? "today" : tr.on}</span>` : "";
+    return `<span class="cf-hist" role="img" aria-label="Confidence history: ${spoken(h)}">${spark}${words}</span>`;
   };
 
   /* ═══ Object markup (06's classes; the confidence slot is new) ═══ */

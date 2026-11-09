@@ -6,7 +6,7 @@ import "./confidence-spark.css";
 
 /* Confidence over time, small enough to sit beside the confidence steps. Five variants (A to E); the pane uses one,
    chosen by prop, until a pick is made. Each scales to the full 1 to 5 range so moves read clearly.
-   Rises are green, falls amber; red marks a fall from an accepted tripwire challenge. Hover or focus shows the dated log. */
+   Rises are green, falls red (a challenge's fall too). No top/bottom reference lines or inline "Since" date (9 Nov). Hover or focus shows the dated log. */
 
 export type HistProps = { stances: Stance[] };
 export type SparkVariant = "A" | "B" | "C" | "D" | "E";
@@ -17,7 +17,7 @@ const xOf = (s: Stance, all: Stance[]) => { const span = Math.max(1, daysBetween
 const yOf = (level: number) => PAD + ((5 - level) / 4) * (H - 2 * PAD);
 const delta = (s: Stance[], i: number) => i === 0 ? 0 : s[i].level - s[i - 1].level;
 /** The colour of the move into stance i. */
-const tone = (s: Stance[], i: number) => { const d = delta(s, i); return d === 0 ? "flat" : d > 0 ? "up" : s[i].challenge ? "challenge" : "down"; };
+const tone = (s: Stance[], i: number) => { const d = delta(s, i); return d === 0 ? "flat" : d > 0 ? "up" : s[i].challenge ? "challenge" : "fell"; };
 /** The colour of a level: amber when doubtful, green when sure. */
 const levelTone = (l: number) => l >= 4 ? "up" : l <= 2 ? "down" : "flat";
 
