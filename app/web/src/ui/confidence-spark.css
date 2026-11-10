@@ -6,7 +6,7 @@
 .cs [data-tone="flat"] { --t: var(--ap-ink-3); }
 .cs [data-tone="up"] { --t: var(--cs-up); }
 .cs [data-tone="down"] { --t: var(--cs-down); }
-.cs [data-tone="challenge"] { --t: var(--ap-neg); }
+.cs [data-tone="fell"], .cs [data-tone="challenge"] { --t: var(--ap-neg); }
 .cs-line { fill: none; stroke: var(--t); stroke-width: 1.75; stroke-linecap: square; stroke-linejoin: miter; }
 .cs-round { stroke-linecap: round; stroke-linejoin: round; }
 .cs-ink { stroke: var(--ap-ink-2); stroke-width: 1.5; }

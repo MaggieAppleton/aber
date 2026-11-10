@@ -10,7 +10,6 @@
 .cf-svg.ring .pv { stroke: var(--cf-pv); } .cf-svg.ring .dim { stroke: var(--ink-3); }
 .cf-svg.line path { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
 .cf-svg.line path.up { stroke: var(--pos-mark); } .cf-svg.line path.down { stroke: var(--fell-mark); }
-.cf-svg.line .top { stroke: var(--cf-off); stroke-width: 1; }
 .cf-num { display: inline-flex; align-items: center; gap: 0; font: 400 var(--fs-label)/1 var(--font); color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .cf-num b { font-weight: 500; color: var(--ink); }
 .cf-num i.ph { width: var(--icon-label); height: var(--icon-label); font-size: var(--icon-label); margin-left: 3px; }
