@@ -156,7 +156,7 @@ function DraftFrom({ id, onOpen: _onOpen }: { id: string; onOpen: OnOpen }) {
   return <><span className="ab-draft-tag">Draft</span>{dump && <><span>from</span><button type="button" className="pn-chip" title={dump.first} onClick={() => inspectDump(dump.id)}><Tile kind="dump" size="chip" /><span className="pn-chip-name">{dump.first}</span></button></>}</>;
 }
 
-/* ── Theory: claim, confidence, horizon, body, tripwire, then relations (06 rule 10) ── */
+/* ── Theory: its themes above the claim, then confidence, horizon, body, tripwire, then relations (06 rule 10; themes moved up 10 Nov) ── */
 export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
   const t = theory(id);
   const [edit, set] = useEdit("theory", id);
@@ -182,7 +182,10 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
         {t.draft && <Decide dismiss="Discard" acceptKey="a" acceptTitle="Accept (A)" onDismiss={() => act("discardDraft", { kind: "theory", id })} onAccept={acceptDraft} />}
         <span className="ab-tools"><IconButton icon="plus" label="Add a relationship" onClick={() => void addRelation()} /><RetireButton label="Retire theory" onClick={() => void retireObject("theory", id)} /></span>
       </div>
-      <FullHead kind="theory" draft={t.draft} eyebrow={t.draft ? <DraftFrom id={id} onOpen={onOpen} /> : undefined}
+      <FullHead kind="theory" draft={t.draft} eyebrow={t.themes.length > 0 || t.draft ? <>
+          {t.themes.map(th => <button key={th} type="button" className="pn-chip" title="Theme" data-peek={`theme:${th}`} onClick={() => onOpen("theme", th)}><Tile kind="theme" size="chip" /><span className="pn-chip-name"><ThemeName id={th} /></span></button>)}
+          {t.draft && <span className="ab-eyebrow-note"><DraftFrom id={id} onOpen={onOpen} /></span>}
+        </> : undefined}
         title={<Editable as="h1" className="pn-title" value={edit.claim} onChange={claim => set({ claim })} singleLine aria-label="Claim" data-draft={t.draft ? "" : undefined} />}
         keyLine={<>
           {!t.draft && <span className="ab-key ab-conf"><ConfidenceControl value={conf} onChange={confidence => set({ confidence })} /><ConfidenceSpark stances={stancesFor(id, edit.log, edit.confidence)} variant={SPARK} /></span>}
@@ -197,7 +200,6 @@ export function TheoryPane({ id, nav }: { id: string; nav: PaneNav }) {
       <TheoryTripwire id={id} />
       {otherSugs.map(s => <div key={s.id} className="ab-block ab-block-review"><SuggestionReview suggestion={s} /></div>)}
       <hr className="ab-div" />
-      {t.themes.length > 0 && <Section label="Themes"><div className="pn-chips">{t.themes.map(th => <button key={th} className="pn-chip" data-peek={`theme:${th}`} onClick={() => onOpen("theme", th)}><Tile kind="theme" size="chip" /><span className="pn-chip-name"><ThemeName id={th} /></span></button>)}</div></Section>}
       {(["supports", "undermines"] as const).map(st => {
         const sugs = evidenceSugs.filter(s => stanceOf(s) === st);
         const blocked = new Set(sugs.map(signalOf));

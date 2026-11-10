@@ -220,7 +220,8 @@
   /* ═══ 7. Relations, in order of importance per type ═══════════════════════════ */
   const relsOf = o => ({
     theme: () => [["Theories", theoriesOf(o), "cards"], ["Signals", signalsOf(o), "days"]],
-    theory: () => [["Themes", o.themes.map(id => O[id]), "chips"], ["Supports", evOf(o).filter(e => e.st === "+").map(e => e.s), "rows", "Remove evidence"], ["Undermines", evOf(o).filter(e => e.st === "-").map(e => e.s), "rows", "Remove evidence"],
+    // A theory's themes are not a relation section: they sit as chips above its title (Maggie, 10 Nov; see eyebrowOf)
+    theory: () => [["Supports", evOf(o).filter(e => e.st === "+").map(e => e.s), "rows", "Remove evidence"], ["Undermines", evOf(o).filter(e => e.st === "-").map(e => e.s), "rows", "Remove evidence"],
       ["Rival", o.rival ? [O[o.rival]] : [], "rows"], ["Follows from", (o.follows || []).map(id => O[id]), "rows"], ["Leads to", followers(o), "rows"], ["Prototypes", protosOf(o), "rows"]],
     signal: () => [["Supports", o.ev.filter(([, st]) => st === "+").map(([id]) => O[id]), "rows", "Remove evidence", "Add theory"], ["Undermines", o.ev.filter(([, st]) => st === "-").map(([id]) => O[id]), "rows", "Remove evidence"],
       ["Themes", o.themes.map(id => O[id]), "chips", "", "File in theme"], ["Came from", dumpsOf(o), "rows"]],
@@ -270,6 +271,8 @@
     const n = how === "days" ? o.signals : items.length;
     return `<section class="ob-sec"><div class="ob-sh"><span>${label}</span>${items.length ? `<span class="ob-n">${n}</span>` : ""}</div>${body}</section>`;
   };
+  // A theory's themes lead the head: chips on one line above the title, on the title's text edge (Maggie, 10 Nov). None, no band.
+  const eyebrowOf = o => o.kind === "theory" && o.themes?.length ? `<div class="ob-eyebrow">${o.themes.map(id => chip(O[id])).join("")}</div>` : "";
   const full = (o, { layout = "prose", back = "", cur = null, where = "main" } = {}) => {
     const attrs = attrsOf(o, "full"), p = proseOf(o);
     const acts = o.draft ? `<span class="ob-decide"><button type="button" class="nv-btn secondary">Discard</button><button type="button" class="nv-btn primary">Keep</button></span>`
@@ -283,7 +286,7 @@
     const prose = p ? `<p class="ob-prose${o.kind === "dump" ? " well" : ""}">${p}</p>` : o.kind === "signal" ? `<p class="ob-prose ph-note">Add a note</p>` : "";
     const reply = o.reply ? `<div class="ob-reply"><div class="ob-label">Reply</div><p class="ob-prose">${o.reply}</p></div>` : "";
     return `<article class="ob-full${o.draft ? " draft" : ""}" data-id="${o.id}">${top}
-      <header class="ob-hang ob-head">${tileOf(o)}<div class="ob-col"><h3 class="ob-title">${o.name}</h3>${meta}</div></header>
+      <header class="ob-hang ob-head">${eyebrowOf(o)}${tileOf(o)}<div class="ob-col"><h3 class="ob-title">${o.name}</h3>${meta}</div></header>
       <div class="ob-body">${prose}${reply}${o.kind === "theory" ? tripLine(o, "full") : ""}
         ${relsOf(o).length ? `<hr class="ob-div"><div class="ob-rels">${relsOf(o).map(r => section(o, r, cur)).join("")}</div>` : ""}</div>
     </article>`;
