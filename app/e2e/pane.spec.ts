@@ -40,3 +40,30 @@ test('view URL and back restore state; Escape closes the most recent dock first'
   await expect(page).toHaveURL(/view=columns/);
   await expect(page.getByRole('textbox', { name: 'Claim', exact: true })).toBeVisible();
 });
+
+test('a theory names its themes above its title, with no Themes section below', async ({ page, request }) => {
+  await page.goto('/?view=columns&open=theory:t7');
+  const pane = page.locator('.pn-theory-doc');
+  const claim = pane.getByRole('textbox', { name: 'Claim', exact: true });
+  await expect(claim).toHaveText('Agents run continuously in the background by default');
+  const chips = pane.locator('.ab-head .ab-eyebrow').getByRole('button');
+  await expect(chips).toHaveText(['Cost of intelligence', 'Agent memory']);
+  const chipBox = (await chips.first().boundingBox())!, claimBox = (await claim.boundingBox())!;
+  expect(chipBox.y + chipBox.height).toBeLessThanOrEqual(claimBox.y);
+  await expect(pane.getByRole('region', { name: 'Themes', exact: true })).toHaveCount(0);
+  await expect(chips.first()).toHaveAttribute('data-peek', /^theme:/);
+  await chips.nth(1).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('textbox', { name: 'Theme name', exact: true })).toHaveText('Agent memory');
+
+  await page.goto('/?view=columns&open=theory:d2');
+  const draft = page.locator('.pn-theory-doc .ab-head .ab-eyebrow');
+  await expect(draft.getByText('Draft', { exact: true })).toBeVisible();
+  await expect(draft.locator('[data-peek^="theme:"]')).toHaveText(['Cost of intelligence', 'Personal software']);
+
+  const created = await request.post('/api/tools/writeTheory', { data: { claim: 'A theory with no themes yet', body: '', confidence: 3, horizon: 2029 } });
+  const bare = await created.json();
+  await page.goto(`/?view=columns&open=theory:${bare.id}`);
+  await expect(page.getByRole('textbox', { name: 'Claim', exact: true })).toHaveText('A theory with no themes yet');
+  await expect(page.locator('.pn-theory-doc .ab-eyebrow')).toHaveCount(0);
+});

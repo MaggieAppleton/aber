@@ -162,6 +162,9 @@
 .ap .ab-head > .ab-tile { margin-top: calc((var(--fs-title) * var(--lh-head) - var(--tile-title)) / 2); }
 .ap .ab-head > .ab-eyebrow { grid-column: 2; display: flex; align-items: center; flex-wrap: wrap; gap: var(--gap-key); min-height: var(--chip-h); margin-bottom: var(--gap-item);
   font: var(--w-regular) var(--fs-label)/var(--lh-ui) var(--font); color: var(--ink-2); }
+/* A theory's themes lead its eyebrow (10 Nov); a draft's provenance follows as its own group. */
+.ap .ab-head > .ab-eyebrow > .ab-eyebrow-note { display: inline-flex; align-items: center; gap: var(--gap-key); }
+.ap .ab-head > .ab-eyebrow > .pn-chip + .ab-eyebrow-note { margin-left: var(--gap-item); }
 .ap .ab-head-text { display: grid; gap: var(--gap-tight); min-width: 0; }
 .ap .ab-head .pn-title { overflow-wrap: anywhere; }
 .ap .ab-keyline { display: flex; align-items: center; flex-wrap: wrap; gap: var(--gap-tight) calc(var(--gap-key) * 2); min-height: var(--control); font-size: var(--fs-label); color: var(--ink-2); }

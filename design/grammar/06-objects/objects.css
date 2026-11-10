@@ -294,6 +294,8 @@
 .ob-full > .ob-head { grid-template-columns: 32px minmax(0, 1fr); column-gap: 12px; margin-left: calc(var(--hang) - 44px); }
 .ob-full > .ob-head > .g { width: 32px; height: 32px; border-radius: var(--r-sm); margin-top: calc((var(--fs-title) * var(--lh-head) - 32px) / 2); }
 .ob-full > .ob-head > .g i { width: 20px; height: 20px; font-size: 20px; }
+/* A theory's themes (10 Nov): one line of chips above the title, in the title's column; the tile stays on the title line */
+.ob-full > .ob-head > .ob-eyebrow { grid-column: 2; display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-tight); min-width: 0; margin-bottom: var(--gap-item); }
 /* Below the head, anything without a leading glyph (prose, notes, reasons, the fields table) starts on the tile edge: no empty gutter.
    Items with a leading tile keep the tile column + text edge. The head keeps its title on the text edge. */
 .ob-pk-body { margin-left: 0; }
